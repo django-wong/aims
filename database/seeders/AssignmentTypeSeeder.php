@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\AssignmentType;
 use Illuminate\Database\Seeder;
 
 class AssignmentTypeSeeder extends Seeder
@@ -12,6 +12,12 @@ class AssignmentTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        AssignmentType::query()->insert([
+            ['name' => 'Inspection'],
+            ['name' => 'Maintenance'],
+            ['name' => 'Repair'],
+            ['name' => 'Installation'],
+            ['name' => 'Consultation'],
+        ]);
     }
 }

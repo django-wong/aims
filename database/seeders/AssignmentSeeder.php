@@ -2,7 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Assignment;
 use App\Models\AssignmentType;
+use App\Models\Client;
+use App\Models\Project;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,12 +17,10 @@ class AssignmentSeeder extends Seeder
      */
     public function run(): void
     {
-        AssignmentType::query()->insert([
-            ['name' => 'Inspection'],
-            ['name' => 'Maintenance'],
-            ['name' => 'Repair'],
-            ['name' => 'Installation'],
-            ['name' => 'Consultation'],
-        ]);
+        Assignment::factory(50)
+            ->recycle(Project::query()->get())
+            ->recycle(Client::query()->get())
+            ->recycle(AssignmentType::query()->get())
+            ->create();
     }
 }

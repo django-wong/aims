@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('hours')->default(0)->comment('Hours worked on this item');
             $table->integer('km_traveled')->default(0)->comment('Kilometers traveled for this item');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

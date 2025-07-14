@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
+            $table->foreignId('client_id')->constrained();
             $table->foreignId('project_id')->constrained();
             $table->foreignId('purchase_order_id')->nullable();
-            $table->foreignId('assignee_id')->index()->nullable()->constrained('users');
+            $table->foreignId('assignee_id')->index()->constrained('users');
             $table->timestamps();
         });
     }

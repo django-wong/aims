@@ -8,5 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Timesheet extends Model
 {
     /** @use HasFactory<\Database\Factories\TimesheetFactory> */
-    use HasFactory;
+    use HasFactory, BelongsToAssignment;
+
+    protected $guarded = [
+        'id', 'created_at', 'updated_at', 'deleted_at'
+    ];
 }

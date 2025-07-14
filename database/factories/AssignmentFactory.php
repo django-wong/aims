@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +20,11 @@ class AssignmentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'assignment_type_id' => null,
+            'client_id' => Client::factory(),
+            'project_id' => Project::factory(),
+            'purchase_order_id' => null,
+            'assignee_id' => User::factory(),
         ];
     }
 }

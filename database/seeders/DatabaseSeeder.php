@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Assignment;
+use App\Models\Project;
+use App\Models\Timesheet;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -14,10 +17,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            OrgSeeder::class,
             UserSeeder::class,
             UserRoleSeeder::class,
             ClientSeeder::class,
+            ProjectSeeder::class,
+            AssignmentSeeder::class,
+            TimesheetSeeder::class,
+            TimesheetItemSeeder::class
         ]);
     }
 }
