@@ -9,11 +9,9 @@ import {
   IconFolder,
   IconHelp,
   IconReport,
-  IconSearch,
   IconSettings,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -28,7 +26,8 @@ import {
 } from "@/components/ui/sidebar"
 import { usePage } from '@inertiajs/react';
 import { SharedData } from '@/types';
-import { BookUser, FileSpreadsheet, House, UserRoundSearch } from 'lucide-react';
+import { BookUser, Contact, FileSpreadsheet, House, PiggyBank, Receipt, UserRoundSearch } from 'lucide-react';
+import { NavDocuments } from '@/components/nav-documents';
 
 const data = {
   navMain: [
@@ -48,15 +47,30 @@ const data = {
       icon: UserRoundSearch,
     },
     {
+      title: 'Quotes',
+      url: '/quotes',
+      icon: PiggyBank,
+    },
+    {
       title: "Projects",
       url: "/projects",
       icon: IconFolder,
+    },
+    {
+      title: 'Assignments',
+      url: '/assignments',
+      icon: Contact,
     },
     {
       title: "Timesheet",
       url: "/timesheet",
       icon: FileSpreadsheet,
     },
+    {
+      title: "Invoices",
+      url: "/invoices",
+      icon: Receipt,
+    }
   ],
   navClouds: [
     {
@@ -116,26 +130,21 @@ const data = {
       title: "Get Help",
       url: "/help",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "/search",
-      icon: IconSearch,
-    },
+    }
   ],
   documents: [
     {
-      name: "Data Library",
+      name: "Report A",
       url: "/data-library",
       icon: IconDatabase,
     },
     {
-      name: "Reports",
+      name: "Report B",
       url: "/reports",
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
+      name: "Report C",
       url: "/assistant",
       icon: IconFileWord,
     },

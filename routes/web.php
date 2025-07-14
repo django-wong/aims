@@ -15,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::inertia('setup', 'setup')->name('setup');
     Route::inertia('projects', 'projects')->name('projects');
+    Route::inertia('invoices', 'invoices')->name('invoices');
     Route::inertia('{any}', '404');
 });
 

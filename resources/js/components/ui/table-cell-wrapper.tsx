@@ -25,7 +25,7 @@ export default function TableCellWrapper({
                                            children,
                                            last,
                                            variant,
-  center,
+                                           center,
                                            ...props
                                          }: React.ComponentProps<'div'> & VariantProps<typeof cellVariant> & {
   children?: React.ReactNode

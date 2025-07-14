@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assignment_id')->constrained();
+            // If the morph model is client, then this is a domestic job that is done by the contractor holder office directly for the client.
             $table->morphs('invoiceable');
             $table->timestamps();
             $table->softDeletes();

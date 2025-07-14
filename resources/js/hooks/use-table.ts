@@ -118,10 +118,15 @@ export function useTable<T extends BaseTableData>(api: string, options?: UseTabl
         setTotalPage(response.last_page);
       })
     }).catch(error => {
-      console.info('Fetch error:', error);
+      startTransition(() => {
+        setData([]);
+        setTotal(0);
+        setTotalPage(1);
+      })
+      throw error;
     }).finally(() => {
       startTransition(() => {
-        setInitialLoaded(false);
+        setInitialLoaded(true);
       })
     })
 
