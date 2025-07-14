@@ -1,0 +1,43 @@
+# This file defines a Docker Compose configuration for a web application with a MySQL database.
+# Local development environment only.
+
+volumes:
+    mysql_data:
+
+networks:
+    app:
+        driver: bridge
+
+services:
+    mysql:
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_DATABASE: app
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+        ports:
+            - "13306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ./database/sql:/docker-entrypoint-initdb.d
+        networks:
+            - app
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
+
+    app:
+        build:
+            context: .
+        networks:
+            - app
+        depends_on:
+            mysql:
+                condition: service_healthy
+        volumes:
+            - .:/var/www/html
+        ports:
+            - "5173:5173" # For Vite development server
+            - "8080:80"

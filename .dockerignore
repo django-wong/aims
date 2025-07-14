@@ -1,0 +1,7 @@
+.git
+.github
+.idea
+Dockerfile
+docker-compose.*
+node_modules
+vendor
