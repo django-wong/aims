@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('orgs', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->foreignId('address_id')->nullable()->index();
+            $table->foreignId('address_id')->nullable()->index()->constrained();
             $table->timestamps();
             $table->softDeletes();
         });

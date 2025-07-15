@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Org;
+use App\Models\ProjectType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +20,7 @@ class ProjectFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence(3),
-            'code' => $this->faker->unique()->bothify('PRJ-###??'),
+            'project_type_id' => ProjectType::factory(),
             'org_id' => Org::factory()
         ];
     }

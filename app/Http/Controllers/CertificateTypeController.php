@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserCertificate;
+use App\Models\CertificateType;
 use Illuminate\Http\Request;
 
-class UserCertificateController extends Controller
+class CertificateTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +26,7 @@ class UserCertificateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(UserCertificate $userCertificate)
+    public function show(CertificateType $certificateType)
     {
         //
     }
@@ -34,7 +34,7 @@ class UserCertificateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserCertificate $userCertificate)
+    public function update(Request $request, CertificateType $certificateType)
     {
         //
     }
@@ -42,7 +42,7 @@ class UserCertificateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserCertificate $userCertificate)
+    public function destroy(CertificateType $certificateType)
     {
         //
     }

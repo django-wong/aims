@@ -1,14 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\APIv1\ClientController;
+use App\Http\Controllers\APIv1\MenuController;
+use App\Http\Controllers\APIv1\OrgController;
+use App\Http\Controllers\APIv1\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('menus', [MenuController::class, 'index']);
     Route::apiResources([
-        'orgs' => \App\Http\Controllers\APIv1\OrgController::class,
-        'projects' => \App\Http\Controllers\APIv1\ProjectController::class,
-        'clients' => \App\Http\Controllers\APIv1\ClientController::class,
+        'projects' => ProjectController::class,
+        'clients' => ClientController::class,
+        'orgs' => OrgController::class,
     ]);
-
-    Route::get('menus', [\App\Http\Controllers\APIv1\MenuController::class, 'index']);
 });

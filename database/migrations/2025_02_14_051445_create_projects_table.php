@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('org_id')->constrained();
-            $table->foreignId('quote_id')->nullable()->constrained();
+            $table->foreignId('project_type_id')->nullable()->constrained();
+            $table->foreignId('quote_id')->nullable()->constrained()->comment('The quote associated with this project, if any');
             $table->string('title')->index();
-            $table->string('code')->unique()->index();
             $table->timestamps();
         });
     }

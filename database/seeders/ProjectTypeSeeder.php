@@ -12,6 +12,20 @@ class ProjectTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $types = [
+            'ProjectType',
+            'Drilling',
+            'FPSO',
+            'LNG',
+            'Mining',
+            'Offshore',
+            'Onshore',
+            'Power Generation',
+            'Renewables',
+        ];
+
+        foreach ($types as $type) {
+            \App\Models\ProjectType::query()->create(['name' => $type]);
+        }
     }
 }

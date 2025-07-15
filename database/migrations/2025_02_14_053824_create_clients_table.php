@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('business_name')->index()->comment('The name of the client business or organization');
             $table->foreignId('org_id')->index()->constrained();
             $table->foreignId('user_id')->index()->constrained()->comment('Each client is associated with a user account, which can be used to log in to the system');
-            $table->foreignId('coordinator_id')->nullable()->constrained('users')->index();
+            $table->foreignId('coordinator_id')->nullable()->index()->constrained('users');
+            $table->foreignId('reviewer_id')->nullable()->index()->constrained('users');
             $table->foreignId('address_id')->nullable()->constrained();
             $table->tinyInteger('invoice_reminder')->default(7)->comment('Days before the invoice is due to send a first notice');
             $table->longText('notes')->nullable();

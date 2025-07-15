@@ -20,7 +20,7 @@ export function ClientSelect(props: {
 }) {
   const table = usePagedGetApi<Client>('api/v1/clients', {
     searchParams: new URLSearchParams({
-      'fields[]': 'id,name'
+
     })
   });
 
@@ -35,7 +35,7 @@ export function ClientSelect(props: {
           aria-expanded={open}
           className="w-full justify-between font-normal"
         >
-          {client?.name ?? <span className={'text-gray-500'}>Choose a client</span>}
+          {client?.user?.name ?? client?.business_name ?? <span className={'text-gray-500'}>Choose a client</span>}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       );
@@ -46,7 +46,7 @@ export function ClientSelect(props: {
       <PopoverTrigger asChild>
         {(props.renderTrigger || trigger)(table.data.find((client) => client.id === value))}
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align={'start'}>
+      <PopoverContent className="w-[250px] p-0" align={'start'}>
         <Command>
           <CommandInput placeholder="Search client..." className="h-9"/>
           <CommandList>
@@ -57,7 +57,7 @@ export function ClientSelect(props: {
                   key={client.id}
                   value={String(client.id)}
                   keywords={[
-                    client.name
+                    client.user?.name ?? client.business_name
                   ]}
                   onSelect={() => {
                     setValue(client.id)
@@ -66,7 +66,9 @@ export function ClientSelect(props: {
                     props.onClientChange?.(client);
                   }}
                 >
-                  {client.name}
+                  <span className={'line-clamp-1'}>
+                    {client.user?.name ?? client.business_name}
+                  </span>
                   <Check
                     className={cn(
                       "ml-auto",

@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 interface AppLayoutProps {
     children?: React.ReactNode;
     breadcrumbs?: BreadcrumbItem[];
+    pageAction?: React.ReactNode;
 }
 
 const queryClient = new QueryClient();

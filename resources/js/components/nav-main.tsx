@@ -1,7 +1,3 @@
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
-import { Bell, type LucideIcon } from 'lucide-react';
-
-import { Button } from "@/components/ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -9,45 +5,46 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Badge } from '@/components/ui/badge';
+import { DynamicIcon } from 'lucide-react/dynamic';
+import { router } from '@inertiajs/react';
+
+export interface MainNavItem {
+  name: string;
+  url: string;
+  icon: string;
+  component?: string; // Optional, if you want to use a client-side visit
+}
 
 export function NavMain({
   items,
 }: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon | Icon
-  }[]
+  items: MainNavItem[]
 }) {
-  const isActive = (item: { title: string; url: string; icon?: LucideIcon | Icon }) => {
-    return window.location.pathname === item.url;
+  const isActive = (item: MainNavItem) => {
+    return window.location.pathname === (new URL(item.url)).pathname;
   };
 
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="New Organization"
-            >
-              <IconCirclePlusFilled />
-              <span>New Organization</span>
-            </SidebarMenuButton>
-            <Badge variant={'default'}>
-              <Bell/>
-              20+
-            </Badge>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title} asChild data-active={isActive(item)}>
-                <a href={item.url}>
-                  {item.icon && <item.icon className="size-6" />}
-                  <span>{item.title}</span>
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton tooltip={item.name} asChild data-active={isActive(item)}>
+                <a href={item.url}
+                   onClick={(event) => {
+                      // If the item has a component, we can handle it client-side
+                      if (item.component) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        router.push({
+                          url: item.url,
+                          component: item.component,
+                        })
+                      }
+                   }}>
+                  <DynamicIcon name={item.icon as any} className={'size-6'} />
+                  <span>{item.name}</span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>

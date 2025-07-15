@@ -20,6 +20,7 @@ type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'ge
   filterSearchParams?: (key: string, value: any) => boolean;
   // Each table should have a unique alias if you intend to use multiple tables on the same page
   alias?: string;
+  defaultData?: T[];
 };
 
 export interface BaseTableData {
@@ -32,7 +33,7 @@ function reloadReducer(state: number) {
 
 export function useTable<T extends BaseTableData>(api: string, options?: UseTableOptions<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [data, setData] = useState<T[]>([]);
+  const [data, setData] = useState<T[]>(options?.defaultData ?? []);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [total, setTotal] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
@@ -103,6 +104,7 @@ export function useTable<T extends BaseTableData>(api: string, options?: UseTabl
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     };
 
@@ -119,9 +121,9 @@ export function useTable<T extends BaseTableData>(api: string, options?: UseTabl
       })
     }).catch(error => {
       startTransition(() => {
-        setData([]);
-        setTotal(0);
-        setTotalPage(1);
+        // setData([]);
+        // setTotal(0);
+        // setTotalPage(1);
       })
       throw error;
     }).finally(() => {

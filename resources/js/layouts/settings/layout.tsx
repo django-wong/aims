@@ -1,15 +1,35 @@
-import Heading from '@/components/heading';
+import { FlatTabTrigger, FlatTabList, FlatTabs } from '@/components/ui/flat-tabs';
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <div className="px-4 py-6">
-            <Heading title="Settings" description="Manage your profile and account settings" />
+  const value = window.location.pathname;
 
-            <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">{children}</section>
-                </div>
-            </div>
+  return (
+    <div className="px-6">
+      <FlatTabs value={value} className={'mb-6'}>
+        <FlatTabList>
+          <FlatTabTrigger value={'/settings/profile'}>
+            <a href={route('profile.edit')}>
+              Profile
+            </a>
+          </FlatTabTrigger>
+          <FlatTabTrigger value={'/settings/password'}>
+            <a href={route('password.edit')}>
+              Password
+            </a>
+          </FlatTabTrigger>
+          <FlatTabTrigger value={'/settings/appearance'}>
+            <a href={route('appearance')}>
+              Appearance
+            </a>
+          </FlatTabTrigger>
+        </FlatTabList>
+      </FlatTabs>
+
+      <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
+        <div className="flex-1 md:max-w-2xl">
+          <section className="max-w-xl space-y-12">{children}</section>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

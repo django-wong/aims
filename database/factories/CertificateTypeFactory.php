@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserCertificate>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CertificateType>
  */
-class UserCertificateFactory extends Factory
+class CertificateTypeFactory extends Factory
 {
     /**
      * Define the model's default state.

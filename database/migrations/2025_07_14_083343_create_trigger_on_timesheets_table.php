@@ -18,7 +18,7 @@ return new class extends Migration
                 DECLARE $hours, $km_traveled DECIMAL(10, 2);
                 SELECT SUM(hours), SUM(km_traveled) INTO $hours, $km_traveled
                     FROM timesheet_items
-                    WHERE timesheet_id = $timesheet_id AND deleted_at IS NULL;
+                    WHERE timesheet_id = $timesheet_id AND deleted_at IS NULL AND approved = 1;
                 UPDATE timesheets
                     SET hours = IFNULL($hours, 0), km_traveled = IFNULL($km_traveled, 0)
                     WHERE id = $timesheet_id;

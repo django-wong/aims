@@ -9,6 +9,53 @@ class MenuController
 
     public function index(Request $request)
     {
-        return config('menu')[$request->user()->user_role->role];
+        // $request->user()->user_role->role
+        return [
+            'main' => [
+                'dashboard' => [
+                    'name' => 'Dashboard',
+                    'icon' => 'house',
+                    'url' => route('dashboard'),
+                    'component' => 'dashboard'
+                ],
+                'clients' => [
+                    'name' => 'Clients',
+                    'icon' => 'book-user',
+                    'url' => route('clients'),
+                    'component' => 'clients'
+                ],
+                'vendors' => [
+                    'name' => 'Vendors',
+                    'icon' => 'user-round-search',
+                    'url' => route('vendors')
+                ],
+                // 'quotes' => [
+                //     'name' => 'Quotes',
+                //     'icon' => 'piggy-bank',
+                //     'url' => route('quotes'),
+                // ],
+                'projects' => [
+                    'name' => 'Projects',
+                    'icon' => 'briefcase-business',
+                    'url' => route('projects'),
+                    'component' => 'projects'
+                ],
+                'assignments' => [
+                    'name' => 'Assignments',
+                    'icon' => 'contact',
+                    'url' => route('assignments'),
+                ],
+                'timesheets' => [
+                    'name' => 'Timesheets',
+                    'icon' => 'house',
+                    'url' => route('timesheets'),
+                ],
+                'invoices' => [
+                    'name' => 'Invoices',
+                    'icon' => 'house',
+                    'url' => route('invoices'),
+                ],
+            ],
+        ];
     }
 }

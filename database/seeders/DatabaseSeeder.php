@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Assignment;
 use App\Models\Project;
+use App\Models\ProjectType;
 use App\Models\Timesheet;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             UserRoleSeeder::class,
             ClientSeeder::class,
+            ProjectTypeSeeder::class,
             ProjectSeeder::class,
             AssignmentSeeder::class,
             TimesheetSeeder::class,

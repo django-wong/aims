@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Assignment;
 use App\Models\AssignmentType;
 use App\Models\Client;
+use App\Models\Org;
 use App\Models\Project;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,6 +22,7 @@ class AssignmentSeeder extends Seeder
             ->recycle(Project::query()->get())
             ->recycle(Client::query()->get())
             ->recycle(AssignmentType::query()->get())
+            ->recycle(Org::query()->get())
             ->create();
     }
 }

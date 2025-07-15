@@ -39,17 +39,22 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         return [
+            'menu' => app('App\Http\Controllers\APIv1\MenuController')->index($request),
             ...parent::share($request),
             'name' => config('app.name'),
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
+            'quote' => [
+                'message' => trim($message),
+                'author' => trim($author)
+            ],
             'auth' => [
                 'user' => $request->user(),
                 'org' => $request->user()?->org
             ],
             'flash' => [
-                'message' => fn() => $request->session()->get('message'),
-                'error' => fn() => $request->session()->get('error'),
-            ]
+                'message' => $request->session()->get('message'),
+                'error' => $request
+                    ->session()->get('error'),
+            ],
         ];
     }
 }

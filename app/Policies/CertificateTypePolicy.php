@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
+use App\Models\CertificateType;
 use App\Models\User;
-use App\Models\UserCertificate;
 use Illuminate\Auth\Access\Response;
 
-class UserCertificatePolicy
+class CertificateTypePolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class UserCertificatePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, UserCertificate $userCertificate): bool
+    public function view(User $user, CertificateType $certificateType): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class UserCertificatePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, UserCertificate $userCertificate): bool
+    public function update(User $user, CertificateType $certificateType): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class UserCertificatePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, UserCertificate $userCertificate): bool
+    public function delete(User $user, CertificateType $certificateType): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class UserCertificatePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, UserCertificate $userCertificate): bool
+    public function restore(User $user, CertificateType $certificateType): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class UserCertificatePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, UserCertificate $userCertificate): bool
+    public function forceDelete(User $user, CertificateType $certificateType): bool
     {
         return false;
     }

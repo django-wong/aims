@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_certificates', function (Blueprint $table) {
+        Schema::create('certificate_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->index()->constrained();
+            $table->string('name')->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_certificates');
+        Schema::dropIfExists('certificate_types');
     }
 };

@@ -1,19 +1,69 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { flexRender } from '@tanstack/react-table';
+import { flexRender, Row } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Inbox } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { BaseTableData, useTable } from '@/hooks/use-table';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
+import * as React from 'react';
 
 interface DataTableProps<T extends BaseTableData> {
   table: ReturnType<typeof useTable<T>>;
+  left?: React.ReactNode;
+  right?: React.ReactNode;
+  onRowClick?: (row: Row<T>) => void;
 }
-export function DataTable<T extends BaseTableData>({ table }: DataTableProps<T>) {
+export function DataTable<T extends BaseTableData>({ table, ...props }: DataTableProps<T>) {
   return (
-    <>
-      <div className="rounded-md border">
+    <div className={'flex flex-col gap-6'}>
+      <div className={'flex justify-between items-center'}>
+        <div className={'flex justify-between items-center gap-2'}>{props.left}</div>
+        <div className={'flex justify-between items-center gap-2'}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <IconLayoutColumns />
+                <span className="hidden lg:inline">Customize Columns</span>
+                <span className="lg:hidden">Columns</span>
+                <IconChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {table
+                .getAllColumns()
+                .filter(
+                  (column) =>
+                    typeof column.accessorFn !== "undefined" &&
+                    column.getCanHide()
+                )
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {(typeof column.columnDef.header === 'string' ? column.columnDef.header : null) ||  column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {props.right}
+        </div>
+      </div>
+      <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader className={'bg-muted sticky top-0 z-10'}>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -35,7 +85,10 @@ export function DataTable<T extends BaseTableData>({ table }: DataTableProps<T>)
           <TableBody className="**:data-[slot=table-cell]:first:w-8">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow
+                  onClick={() => props.onRowClick?.(row)}
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell key={cell.id}>
                       <TableCellWrapper last={index === row.getVisibleCells().length - 1}>
@@ -61,7 +114,7 @@ export function DataTable<T extends BaseTableData>({ table }: DataTableProps<T>)
           </TableBody>
         </Table>
       </div>
-      <div className={'mt-2'}>
+      <div>
         <div className="flex items-center justify-between px-4">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
             {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -124,6 +177,6 @@ export function DataTable<T extends BaseTableData>({ table }: DataTableProps<T>)
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
