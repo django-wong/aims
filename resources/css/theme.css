@@ -1,5 +1,5 @@
 :root {
-  --radius: 0.65rem;
+  --radius: 0.55rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -66,3 +66,4 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.488 0.243 264.376);
 }
+

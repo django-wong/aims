@@ -19,13 +19,13 @@ export function ClientSelect(props: {
   createButton?: React.ReactNode
 }) {
   const table = usePagedGetApi<Client>('api/v1/clients', {
+    pageSize: 999,
     searchParams: new URLSearchParams({
-
+      'sort': 'business_name',
     })
   });
 
   const [open, setOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<number|null>(null);
 
   function trigger(client?: Client) {
       return (
@@ -35,7 +35,7 @@ export function ClientSelect(props: {
           aria-expanded={open}
           className="w-full justify-between font-normal"
         >
-          {client?.user?.name ?? client?.business_name ?? <span className={'text-gray-500'}>Choose a client</span>}
+          <ClientTrigger client={client}/>
           <ChevronsUpDown className="opacity-50" />
         </Button>
       );
@@ -44,7 +44,7 @@ export function ClientSelect(props: {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        {(props.renderTrigger || trigger)(table.data.find((client) => client.id === value))}
+        {(props.renderTrigger || trigger)(table.data.find((client) => client.id === props.value))}
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0" align={'start'}>
         <Command>
@@ -60,7 +60,6 @@ export function ClientSelect(props: {
                     client.user?.name ?? client.business_name
                   ]}
                   onSelect={() => {
-                    setValue(client.id)
                     setOpen(false)
                     props.onValueChane(client.id);
                     props.onClientChange?.(client);
@@ -72,7 +71,7 @@ export function ClientSelect(props: {
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === client.id ? "opacity-100" : "opacity-0"
+                      props.value === client.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
@@ -95,4 +94,13 @@ export function ClientSelect(props: {
       </PopoverContent>
     </Popover>
   )
+}
+
+export function ClientTrigger(props: {client?: Client|null}) {
+  if (props.client) {
+    return props.client?.business_name || props.client.user?.name;
+  }
+  return <span className={'text-gray-500'}>
+    Choose a client
+  </span>
 }

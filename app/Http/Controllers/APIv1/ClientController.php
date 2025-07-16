@@ -24,6 +24,13 @@ class ClientController extends Controller
         ];
     }
 
+    protected function allowedSorts()
+    {
+        return [
+            'business_name'
+        ];
+    }
+
     protected function allowedFilters()
     {
         return [

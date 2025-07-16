@@ -17,7 +17,8 @@ import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
 import { EllipsisVertical, Plus } from 'lucide-react';
-import { startTransition, useCallback, useMemo, useState } from 'react';
+import { startTransition, useMemo, useState } from 'react';
+import { ClientForm } from '@/pages/clients/form';
 
 const columns: ColumnDef<Client>[] = [
   {
@@ -76,7 +77,7 @@ const columns: ColumnDef<Client>[] = [
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">
+          <Button variant="ghost" size={'sm'}>
             <EllipsisVertical />
           </Button>
         </DropdownMenuTrigger>
@@ -184,10 +185,11 @@ export default function Clients() {
       <AppLayout
         breadcrumbs={breadcrumbs}
         pageAction={
-          <Button size={'sm'}>
-            {' '}
-            <Plus /> Add new client
-          </Button>
+          <ClientForm>
+            <Button size={'sm'}>
+              <Plus /> Add new client
+            </Button>
+          </ClientForm>
         }
       >
         <div className={'px-6'}>
@@ -197,7 +199,7 @@ export default function Clients() {
               console.info(row);
             }}
             table={table}
-            left={<Input onChange={setSearchKeywords} placeholder={'Search by name, email'} value={keywords} />}
+            left={<Input onChange={setSearchKeywords} className={'max-w-[220px]'} placeholder={'Search by name, email'} value={keywords} />}
           />
         </div>
       </AppLayout>

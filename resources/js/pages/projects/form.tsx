@@ -53,7 +53,7 @@ export function ProjectForm(props: PropsWithChildren<ProjectFormProps>) {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{props.trigger}</DialogTrigger>
-        <DialogContent className={'max-w-lg'}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Project</DialogTitle>
             <DialogDescription>Fill in the details below to create a new project.</DialogDescription>
@@ -63,7 +63,7 @@ export function ProjectForm(props: PropsWithChildren<ProjectFormProps>) {
               <div className={'grid grid-cols-12 gap-4'}>
                 <FormField
                   render={({field, fieldState}) => (
-                    <VFormField label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-8'}>
+                    <VFormField label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-12'}>
                       <Input
                         placeholder={'Give your project a title'}
                         className={'bg-white col-span-12'}

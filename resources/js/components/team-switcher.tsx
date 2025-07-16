@@ -18,7 +18,7 @@ export function TeamSwitcher() {
             <House className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">Vesetail</span>
+            <span className="truncate font-medium">AIMS</span>
             <span className="truncate text-xs">
               Free Trial
             </span>

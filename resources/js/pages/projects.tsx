@@ -242,7 +242,7 @@ export default function Projects() {
                 }}
                 renderTrigger={(client) => (
                   <Button variant={'outline'}>
-                    Client: <Badge variant={'secondary'}>{client?.user?.name ?? 'All'}</Badge>
+                    Client: <Badge variant={'secondary'}>{client?.business_name ?? client?.user?.name ?? 'All'}</Badge>
                   </Button>
                 )}
                 value={parseInt(table.searchParams.get('client') || '')}
@@ -257,7 +257,7 @@ export default function Projects() {
           }
           table={table}
           right={
-            <Button variant={'outline'} size={'sm'}>
+            <Button variant={'outline'}>
               <Eye />
               View
             </Button>

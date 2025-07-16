@@ -22,7 +22,7 @@ export default function Setup() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Vesetail Inc.
+            AIMS Inc.
           </a>
 
           <SetupForm />
@@ -93,7 +93,7 @@ function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
                     error={formState.errors.domain?.message}
                   >
                     <div className={'flex items-center justify-start gap-1'}>
-                      <span className={'text-gray-500'}>https://vesetail.com/</span>
+                      <span className={'text-gray-500'}>https://aims.com/</span>
                       <Input
                         id="domain"
                         type="text"

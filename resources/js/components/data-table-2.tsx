@@ -24,12 +24,12 @@ interface DataTableProps<T extends BaseTableData> {
 export function DataTable<T extends BaseTableData>({ table, ...props }: DataTableProps<T>) {
   return (
     <div className={'flex flex-col gap-6'}>
-      <div className={'flex justify-between items-center'}>
-        <div className={'flex justify-between items-center gap-2'}>{props.left}</div>
-        <div className={'flex justify-between items-center gap-2'}>
+      <div className={'flex justify-between items-center gap-2 flex-wrap'}>
+        <div className={'flex flex-grow justify-start items-center gap-2 flex-wrap'}>{props.left}</div>
+        <div className={'flex justify-start items-center gap-2 flex-wrap'}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline">
                 <IconLayoutColumns />
                 <span className="hidden lg:inline">Customize Columns</span>
                 <span className="lg:hidden">Columns</span>
@@ -65,9 +65,9 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
       </div>
       <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader className={'bg-muted sticky top-0 z-10'}>
+          <TableHeader className={'sticky top-0 z-10 bg-muted/50'}>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
                   <TableHead key={header.id} style={{ width: header.getSize() + 'px' }}>
                     <TableCellWrapper variant={'header'} last={index === headerGroup.headers.length - 1}>
@@ -79,7 +79,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                     </TableCellWrapper>
                   </TableHead>
                 ))}
-              </TableRow>
+              </tr>
             ))}
           </TableHeader>
           <TableBody className="**:data-[slot=table-cell]:first:w-8">
@@ -99,17 +99,17 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <tr>
                 <TableCell colSpan={table.getAllColumns().length} className="text-center text-gray-500">
-                  <div className={'flex min-h-[200px] flex-col items-center justify-center gap-2'}>
-                    {table.initialLoaded ? (
-                      <span>No results.</span>
-                    ) : (
-                      <span>Loading...</span>
-                    )}
+                  <div className={'sticky min-h-[20vh] left-[50%] top-[50%] -translate-x-[50%] w-fit flex items-center justify-center z-50'}>
+                      {table.initialLoaded ? (
+                        <span>No results.</span>
+                      ) : (
+                        <span>Loading...</span>
+                      )}
                   </div>
                 </TableCell>
-              </TableRow>
+              </tr>
             )}
           </TableBody>
         </Table>

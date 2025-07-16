@@ -16,7 +16,7 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
         props.renderLabel(props)
       ) : (
         <div className="flex items-center">
-          <Label htmlFor={props.for}>{props.label}</Label>
+          <Label className={'line-clamp-1'} htmlFor={props.for}>{props.label}</Label>
         </div>
       )}
       <div className={'grid gap-1'}>

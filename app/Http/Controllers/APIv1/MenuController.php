@@ -27,7 +27,8 @@ class MenuController
                 'vendors' => [
                     'name' => 'Vendors',
                     'icon' => 'user-round-search',
-                    'url' => route('vendors')
+                    'url' => route('vendors'),
+                    'component' => 'vendors'
                 ],
                 // 'quotes' => [
                 //     'name' => 'Quotes',
@@ -44,16 +45,19 @@ class MenuController
                     'name' => 'Assignments',
                     'icon' => 'contact',
                     'url' => route('assignments'),
+                    'component' => 'assignments'
                 ],
                 'timesheets' => [
                     'name' => 'Timesheets',
                     'icon' => 'house',
                     'url' => route('timesheets'),
+                    'component' => 'timesheets'
                 ],
                 'invoices' => [
                     'name' => 'Invoices',
                     'icon' => 'house',
                     'url' => route('invoices'),
+                    'component' => 'invoices'
                 ],
             ],
         ];

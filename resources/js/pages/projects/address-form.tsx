@@ -1,0 +1,78 @@
+import { FormField } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { VFormField } from '@/components/vform';
+
+export function AddressForm() {
+  return <>
+    <FormField
+      render={({field}) => {
+        return (
+          <VFormField label={'Address Line 1'} for={'address_line_1'} className={'col-span-12'}>
+            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+          </VFormField>
+        );
+      }}
+      name={'address_line_1'}
+    />
+    <FormField
+      render={({field}) => {
+        return (
+          <VFormField label={'Address Line 2'} for={'address_line_2'} className={'col-span-12'}>
+            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+          </VFormField>
+        );
+      }}
+      name={'address_line_2'}
+    />
+    {/*<FormField*/}
+    {/*  render={({field}) => {*/}
+    {/*    return (*/}
+    {/*      <VFormField label={'Suburb'} for={'suburb'} className={'col-span-4'}>*/}
+    {/*        <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>*/}
+    {/*      </VFormField>*/}
+    {/*    );*/}
+    {/*  }}*/}
+    {/*  name={'suburb'}*/}
+    {/*/>*/}
+    <FormField
+      render={({field}) => {
+        return (
+          <VFormField label={'City'} for={'city'} className={'col-span-4'}>
+            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+          </VFormField>
+        );
+      }}
+      name={'city'}
+    />
+    <FormField
+      render={({field}) => {
+        return (
+          <VFormField label={'State'} for={'state'} className={'col-span-4'}>
+            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+          </VFormField>
+        );
+      }}
+      name={'state'}
+    />
+    <FormField
+      render={({field}) => {
+        return (
+          <VFormField label={'Zip / Post code'} for={'zip'} className={'col-span-4'}>
+            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+          </VFormField>
+        );
+      }}
+      name={'zip'}
+    />
+    <FormField
+      render={({field}) => {
+        return (
+          <VFormField label={'Country'} for={'country'} className={'col-span-12'}>
+            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+          </VFormField>
+        );
+      }}
+      name={'country'}
+    />
+  </>
+}
