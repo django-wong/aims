@@ -7,7 +7,7 @@ import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { BaseTableData, useTable } from '@/hooks/use-table';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LoaderCircle, TableIcon } from 'lucide-react';
 import * as React from 'react';
 import { SvgBg } from '@/components/svg-bg';
 
@@ -55,7 +55,33 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
         </div>
       </div>
       <div className="overflow-hidden rounded-md border relative">
-        <Table>
+        <Table
+          bottom={
+            <>
+              {table.getRowModel().rows.length ? null : (
+                <div
+                  className={'sticky left-0 z-50 min-h-[300px] flex p-8 w-full items-center justify-center overflow-hidden'}>
+                  {table.initialLoaded ? (
+                    <>
+                      <div className={'opacity-5'}>
+                        <SvgBg/>
+                      </div>
+                      <div className={'flex flex-col items-center justify-center gap-2 text-foreground text-center'}>
+                        <TableIcon/>
+                        <p className={'font-bold text-lg'}>No data founds.</p>
+                        <p className={'text-muted-foreground'}>Your search did not match any data. Please try again or create new one.</p>
+                      </div>
+                    </>
+                  ) : (
+                    <span className={'inline-flex items-center gap-2 text-muted-foreground'}>
+                      <LoaderCircle className={'animate-spin'}/> Loading...
+                    </span>
+                  )}
+                </div>
+              )}
+            </>
+          }
+          >
           <TableHeader className={'bg-muted/50 sticky top-0 z-10'}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -82,29 +108,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                   ))}
                 </TableRow>
               ))
-            ) : (
-              <tr>
-                <TableCell colSpan={table.getAllColumns().length} className="text-center text-gray-500">
-                  <div
-                    className={'sticky top-[50%] left-[50%] z-50 flex h-[200px] w-fit -translate-x-[50%] items-center justify-center overflow-hidden'}
-                  >
-                    {table.initialLoaded ? (
-                      <>
-                        <div className={'opacity-10'}>
-                          <SvgBg/>
-                        </div>
-                        <div className={'flex flex-col items-center justify-center gap-2 text-foreground'}>
-                          <p className={'font-bold text-lg'}>No data founds.</p>
-                          <p>Your search did not match any data. Please try again or create new one.</p>
-                        </div>
-                      </>
-                    ) : (
-                      <span>Loading...</span>
-                    )}
-                  </div>
-                </TableCell>
-              </tr>
-            )}
+            ) : null}
           </TableBody>
         </Table>
       </div>

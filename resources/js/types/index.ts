@@ -66,9 +66,8 @@ export interface Address extends BaseModel {
   city: string;
   state: string;
   zip: string;
-  suburb?: string | null;
   country: string;
-  full_address?: string; // Optional, can be computed from other fields
+  full_address?: string|null; // Optional, can be computed from other fields
 }
 
 export interface BaseModel {
@@ -83,13 +82,13 @@ export interface Client extends BaseModel {
   business_name: string;
   org_id: number;
   user_id: number;
-  user?: Partial<User>;
+  user?: User;
   coordinator_id: number | null;
-  coordinator?: Partial<User>;
+  coordinator?: User;
   reviewer_id?: number | null;
-  reviewer?: Partial<User>;
+  reviewer?: User;
   address_id: number | null;
-  address?: Partial<Address>;
+  address?: Address;
   invoice_reminder: number | null;
 }
 
@@ -99,7 +98,7 @@ interface Quote extends BaseModel {
 
 export interface Project extends BaseModel {
   quote_id: number | null;
-  quote?: Partial<Quote>;
+  quote?: Quote;
   title: string;
   code: string;
 }
@@ -111,23 +110,23 @@ export interface AssignmentType extends BaseModel {
 
 export interface PurchaseOrder extends BaseModel {
   org_id: number;
-  org?: Partial<Org>;
+  org?: Org;
   name: string;
 }
 
 export interface Assignment extends BaseModel {
   org_id: number;
-  org?: Partial<Org>;
+  org?: Org;
   operation_org_id: number | null;
-  operation_org?: Partial<Org>;
+  operation_org?: Org;
   assignment_type_id: number;
-  assignment_type?: Partial<AssignmentType>;
+  assignment_type?: AssignmentType;
   client_id: number;
-  client?: Partial<Client>;
+  client?: Client;
   project_id: number;
-  project?: Partial<Project>;
+  project?: Project;
   purchase_order_id: number | null;
-  purchase_order?: Partial<PurchaseOrder>;
+  purchase_order?: PurchaseOrder;
 }
 
 export type Invoiceable = {
@@ -135,17 +134,19 @@ export type Invoiceable = {
 } & (
   | {
       invoiceable_type: 'App\\Models\\Client';
-      invoiceable?: Partial<Client>;
+      invoiceable?: Client;
     }
   | {
       invoiceable_type: 'App\\Models\\Org';
-      invoiceable?: Partial<Org>;
+      invoiceable?: Org;
     }
 );
 
 interface InvoiceBase extends BaseModel {
   assignment_id: number;
-  assignment?: Partial<Assignment>;
+  assignment?: Assignment;
 }
 
 export type Invoice = InvoiceBase & Invoiceable;
+
+export type Literal<T> = Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;

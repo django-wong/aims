@@ -4,7 +4,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({ className, ...props }: React.ComponentProps<"table"> & {bottom: React.ReactNode}) {
   return (
     <div
       data-slot="table-container"
@@ -15,6 +15,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
         className={cn("w-full caption-bottom text-sm", className)}
         {...props}
       />
+      {props.bottom}
     </div>
   )
 }
