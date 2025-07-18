@@ -131,36 +131,7 @@ export default function Clients() {
     defaultParams: {
       include: 'user,address,coordinator,reviewer',
     },
-    columns,
-    defaultData: [
-      {
-        id: 0,
-        org_id: 0,
-        business_name: 'Awesome business',
-        email: '',
-        user_id: 0,
-        coordinator_id: 0,
-        address_id: 0,
-        invoice_reminder: 7,
-        created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z',
-        user: {
-          id: 0,
-          name: 'Django Wong',
-          email: 'me@djangowong.com',
-        },
-        address: {
-          address_line_1: '123 Main St',
-          address_line_2: 'Suite 100',
-          city: 'Cityville',
-          state: 'State',
-          postal_code: '12345',
-          country: 'Country',
-          latitude: 0,
-          longitude: 0,
-        },
-      },
-    ],
+    columns
   });
 
   const { searchParams, setSearchParams } = table;
