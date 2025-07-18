@@ -1,9 +1,12 @@
 import { LucideIcon } from 'lucide-react';
 import { MainNavItem } from '@/components/nav-main';
 
-export interface DialogFormProps {
-  children: React.ReactNode;
-  onSuccess: () => void;
+export interface DialogFormProps<T = BaseModel> {
+  children?: React.ReactNode;
+  onSubmit: (data: T) => void;
+  value?: T | null
+  open?: boolean
+  onOpenChange?: (open: boolean) => void;
 }
 
 export interface Org extends BaseModel {
@@ -75,7 +78,6 @@ export interface BaseModel {
   created_at: string;
   updated_at: string;
   deleted_at?: string | null; // Optional for soft deletes
-  [key: string]: unknown; // This allows for additional properties...
 }
 
 export interface Client extends BaseModel {

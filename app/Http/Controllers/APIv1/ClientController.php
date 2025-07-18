@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\Clients\StoreRequest;
+use App\Http\Requests\APIv1\Clients\UpdateRequest;
+use App\Models\Address;
 use App\Models\Client;
+use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class ClientController extends Controller
@@ -68,9 +74,41 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $data = DB::transaction(function () use ($request) {
+            if ($request->has('address')) {
+                $address = Address::query()->create($request->validated('address'));
+            }
+
+            $user = User::query()->create([
+                ...$request->validated('user'),
+                'password' => ''
+            ]);
+
+            $org = $request->user()->org->id;
+
+            $client = Client::query()->create([
+                ...$request->only([
+                    'business_name',
+                    'coordinator_id',
+                    'reviewer_id'
+                ]),
+                'user_id' => $user->id,
+                'org_id' => $org,
+                'address_id' => $address->id ?? null,
+            ]);
+
+            $user->user_role()->create([
+                'org_id' => $org,
+                'role' => UserRole::CLIENT,
+            ]);
+
+
+            return $client->load(['user', 'address', 'org']);
+        });
+
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -84,9 +122,32 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Client $client)
+    public function update(UpdateRequest $request, Client $client)
     {
-        //
+        $client = DB::transaction(function () use ($request, $client) {
+            if ($request->has('user')) {
+                $client->user->update($request->validated('user'));
+            }
+
+            if ($request->has('address')) {
+                $client->address()->update(
+                    $request->validated('address')
+                );
+            }
+
+            $client->update($request->only([
+                'business_name',
+                'notes',
+                'reviewer_id',
+                'coordinator_id',
+            ]));
+
+            return $client;
+        });
+
+        return response()->json([
+            'data' => $client->load(['user', 'address', 'org'])
+        ]);
     }
 
     /**

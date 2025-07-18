@@ -8,7 +8,7 @@ interface DialogInnerContentProps {
 export function DialogInnerContent(props: PropsWithChildren<DialogInnerContentProps>) {
   return (
     <div className={'-mx-6'}>
-      <div className={cn('bg-slate-100 dark:bg-black border-y p-6', props.className)}>
+      <div className={cn('bg-slate-100 dark:bg-black border-y p-6 max-h-[90vh] overflow-y-auto', props.className)}>
         <div>
           {props.children}
         </div>

@@ -4,116 +4,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { VFormField } from '@/components/vform';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
+import { ClientForm, CoordinatorSelect } from '@/pages/clients/form';
 import { BreadcrumbItem, Client } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { Divide, EllipsisVertical, Filter, Plus } from 'lucide-react';
+import { EllipsisVertical, Filter, Plus } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
-import { ClientForm, CoordinatorSelect } from '@/pages/clients/form';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { VFormField } from '@/components/vform';
-
-const columns: ColumnDef<Client>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <a href={route('clients.edit', row.original.id)}>
-      {row.original.user?.name}
-    </a>,
-    size: 200,
-  },
-  {
-    accessorKey: 'business_name',
-    header: 'Business Name / Group',
-    cell: ({ row }) => row.original.business_name || 'N/A',
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({ row }) => (
-      <a href={`mailto:${row.original.user?.email}`} className={'text-blue-500 hover:underline'}>
-        {row.original.user?.email}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'coordinator',
-    header: 'Coordinator',
-    cell: ({ row }) => row.original.coordinator?.name || 'N/A',
-  },
-  {
-    accessorKey: 'reviewer',
-    header: 'Reviewer',
-    cell: ({ row }) => row.original.reviewer?.name || 'N/A',
-  },
-  {
-    accessorKey: 'address_id',
-    header: 'Address',
-    cell: ({ row }) => {
-      if (! row.original.address) {
-        return 'N/A';
-      }
-      const {
-        address_line_1,
-        city,
-        state,
-        zip,
-        country
-      } = row.original.address;
-
-      return (
-        <span>{address_line_1}, {city}, {state} {zip}, {country}</span>
-      );
-    },
-  },
-  {
-    accessorKey: 'actions',
-    header: 'Actions',
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size={'sm'}>
-            <EllipsisVertical />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              View Details
-              <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Duplicate
-              <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Edit
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem className={'text-red-500'} disabled={true}>
-              Delete
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>View Assignment</DropdownMenuItem>
-            <DropdownMenuItem>View Project</DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-];
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -127,11 +34,111 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Clients() {
+  const [client, setClient] = useState<Client | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const columns: ColumnDef<Client>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <>{row.original.user?.name || 'N/A'}</>,
+      size: 200,
+    },
+    {
+      accessorKey: 'business_name',
+      header: 'Business Name / Group',
+      cell: ({ row }) => row.original.business_name || 'N/A',
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => (
+        <a href={`mailto:${row.original.user?.email}`} className={'text-blue-500 hover:underline'}>
+          {row.original.user?.email}
+        </a>
+      ),
+    },
+    {
+      accessorKey: 'coordinator',
+      header: 'Coordinator',
+      cell: ({ row }) => row.original.coordinator?.name || 'N/A',
+    },
+    {
+      accessorKey: 'reviewer',
+      header: 'Reviewer',
+      cell: ({ row }) => row.original.reviewer?.name || 'N/A',
+    },
+    {
+      accessorKey: 'address_id',
+      header: 'Address',
+      cell: ({ row }) => {
+        if (!row.original.address) {
+          return 'N/A';
+        }
+        const { address_line_1, city, state, zip, country } = row.original.address;
+
+        return (
+          <span>
+            {address_line_1}, {city}, {state} {zip}, {country}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'actions',
+      header: 'Actions',
+      cell: () => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size={'sm'}>
+              <EllipsisVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                View Details
+                <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Duplicate
+                <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Edit
+                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={'text-red-500'}
+                disabled={true}
+                onClick={() => {
+                  fetch(route('clients.destroy', { id: 1 })).then((res) => {
+                    if (res) {
+                      table.reload();
+                    }
+                  });
+                }}
+              >
+                Delete
+                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>View Assignment</DropdownMenuItem>
+              <DropdownMenuItem>View Project</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
   const table = useTable<Client>('api/v1/clients', {
     defaultParams: {
       include: 'user,address,coordinator,reviewer',
     },
-    columns
+    columns,
   });
 
   const { searchParams, setSearchParams } = table;
@@ -143,7 +150,7 @@ export default function Clients() {
       setSearchParams((params) => {
         params.set('filter[keywords]', value);
         return params;
-      })
+      });
     }, 500);
   }, [setSearchParams]);
 
@@ -151,24 +158,35 @@ export default function Clients() {
     startTransition(() => {
       setKeywords(event.target.value);
       setKeywordsSearchParams(event.target.value);
-    })
+    });
   };
 
   return (
     <>
       <Head title={'Clients'} />
+      <ClientForm value={client} onSubmit={table.reload} open={open} onOpenChange={setOpen} />
       <AppLayout
         breadcrumbs={breadcrumbs}
         pageAction={
-          <ClientForm onSuccess={() => {}}>
-            <Button size={'sm'}>
-              <Plus /> Add new client
-            </Button>
-          </ClientForm>
+          <Button
+            size={'sm'}
+            onClick={() => {
+              setClient(null);
+              setOpen(true);
+            }}
+          >
+            <Plus /> Add new client
+          </Button>
         }
       >
         <div className={'px-6'}>
           <DataTable
+            onRowClick={(row) => {
+              startTransition(() => {
+                setClient(row.original);
+                setOpen(true);
+              });
+            }}
             table={table}
             left={
               <>
@@ -182,11 +200,11 @@ export default function Clients() {
                   <PopoverContent align={'start'}>
                     <div className={'flex flex-col gap-4'}>
                       <VFormField label={'Coordinator'} for={'coordinator'}>
-                        <CoordinatorSelect/>
+                        <CoordinatorSelect />
                       </VFormField>
 
                       <VFormField label={'Coordinator'} for={'coordinator'}>
-                        <CoordinatorSelect/>
+                        <CoordinatorSelect />
                       </VFormField>
                     </div>
                   </PopoverContent>

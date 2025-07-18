@@ -6,61 +6,78 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, startTransition, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { useReactiveForm } from '@/hooks/use-form';
-import { Client, DialogFormProps } from '@/types';
+import { Address, Client, DialogFormProps } from '@/types';
 import { FormField, Form } from '@/components/ui/form';
 import { VFormField } from '@/components/vform';
 import { Input } from '@/components/ui/input';
-import { AddressForm } from '@/pages/projects/address-form';
+import {
+  AddressForm,
+  AddressFormContext,
+  AddressFormProvider,
+  schema as addressSchema
+} from '@/pages/projects/address-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useRerender } from '@/hooks/use-rerender';
 import { Textarea } from '@/components/ui/textarea';
+import { zodResolver } from '@hookform/resolvers/zod';
+import zod from 'zod';
+import { Circle, LocationEdit } from 'lucide-react';
 
-export function ClientForm(props: DialogFormProps) {
+const scheme = zod.object({
+  business_name: zod.string().min(1, 'Business name is required'),
+  coordinator_id: zod.number().nullable().optional(),
+  reviewer_id: zod.number().nullable().optional(),
+  address: zod.null().or(
+    addressSchema.nullable().optional()
+  ),
+  user: zod.object({
+    name: zod.string().min(1, 'Contact name is required'),
+    email: zod.string().email('Invalid email format')
+  }).optional(),
+  notes: zod.string().optional()
+})
+
+export function ClientForm(props: DialogFormProps<Client>) {
   const form = useReactiveForm<Client>({
-    url: route('clients.store'),
-    method: 'POST',
-    defaultValues: {
-      business_name: 'My Awesome Name',
-      coordinator_id: null,
-      reviewer_id: null,
-      address: {
-        address_line_1: '123 Main St',
-        address_line_2: 'Suite 100',
-        city: 'Anytown',
-        state: 'CA',
-        zip: '12345',
-        country: 'USA'
-      },
-      user: {
-        name: '',
-        email: '',
-      }
-    }
+    defaultValues: props.value || undefined,
+    resolver: zodResolver(scheme) as any
   });
 
-  const render = useRerender();
+  useEffect(() => {
+    startTransition(() => {
+      form.reset(props.value || {});
+      if (props.value) {
+        form.setUrl(route('clients.update', {client: props.value.id}))
+        form.setMethod('PATCH');
+      } else {
+        form.setUrl(route('clients.store'));
+        form.setMethod('POST');
+      }
+    })
+  }, [props.value]);
 
   function save() {
     form.submit().then(res => {
       if (res) {
-        props.onSuccess();
+        props.onOpenChange?.(false);
+        props.onSubmit(form.getValues());
       }
     })
   }
 
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>{props.children}</DialogTrigger>
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Client</DialogTitle>
           <DialogDescription>Fill in the details below to create or update the client.</DialogDescription>
         </DialogHeader>
-        <DialogInnerContent className={'max-h-[48vh] overflow-y-auto'}>
+        <DialogInnerContent>
           <div className={'grid grid-cols-12 gap-4'}>
             <Form {...form}>
               <div className={'col-span-12'}>
@@ -127,67 +144,40 @@ export function ClientForm(props: DialogFormProps) {
                   name={'reviewer_id'}
                 />
               </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div className={'col-span-12'}>
-                    <FormField
-                      control={form.control}
-                      render={({field}) => {
-                        console.info(field);
-                        return (
-                          <VFormField
-                            label={'Address'}
-                            for={'address'}
-                          >
-                            <div className={'flex items-end gap-2 outline-dashed outline-2 p-4 rounded-md outline-border bg-white'}>
-                              <div className={'text-sm flex-1'}>
+              <div className={'col-span-12'}>
+                <FormField
+                  control={form.control}
+                  name={'address'}
+                  render={({field}) => {
+                    return (
+                      <VFormField
+                        label={'Address'}
+                        for={'address'}
+                      >
+                        <div className={'flex items-center gap-2  p-4 rounded-md border shadow-xs border-border bg-white'}>
+                          <div className={'text-sm flex-1'}>
+                            {field.value?.address_line_1 ? (
+                              <>
                                 <p>{field.value?.address_line_1}</p>
                                 <p>
                                   {field.value?.city}, {field.value?.state}, {field.value?.zip}, {field.value?.country}
                                 </p>
-                              </div>
-                              <Button variant={'secondary'} size={'sm'}>
-                                Edit
-                              </Button>
-                            </div>
-                          </VFormField>
-                        );
-                      }}
-                      name={'address'}
-                    />
-                  </div>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Address</DialogTitle>
-                    <DialogDescription>You can fill in the address manually, or use the location finder.</DialogDescription>
-                  </DialogHeader>
-                  <DialogInnerContent>
-                    <div className={'grid grid-cols-12 gap-4'}>
-                      <AddressForm/>
-                    </div>
-                  </DialogInnerContent>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type={'button'} onClick={render}>
-                        Close
-                      </Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              {/*<div className={'col-span-12 flex gap-4'}>*/}
-              {/*  <VFormField label={'Coordinator'} for={'coordinator'}>*/}
-              {/*    <div className={'h-16 w-16 rounded-full bg-white border border-border border-dashed'}>*/}
-
-              {/*    </div>*/}
-              {/*  </VFormField>*/}
-              {/*  <VFormField label={'Reviewer'} for={'reviewer'}>*/}
-              {/*    <div className={'h-16 w-16 rounded-full bg-white border border-border border-dashed'}>*/}
-
-              {/*    </div>*/}
-              {/*  </VFormField>*/}
-              {/*</div>*/}
+                              </>
+                            ) : (
+                              <p className={'text-muted-foreground'}>No address provided</p>
+                            )}
+                          </div>
+                          <AddressDialog value={field.value} onChange={field.onChange}>
+                            <Button variant={'secondary'} size={'sm'}>
+                              <LocationEdit/> Edit Address
+                            </Button>
+                          </AddressDialog>
+                        </div>
+                      </VFormField>
+                    );
+                  }}
+                />
+              </div>
               <div className={'col-span-12'}>
                 <FormField
                   render={({ field, fieldState }) => {
@@ -207,7 +197,10 @@ export function ClientForm(props: DialogFormProps) {
               Cancel
             </Button>
           </DialogClose>
-          <Button onClick={save}>Save</Button>
+          <Button disabled={form.submitDisabled} onClick={save}>
+            {form.formState.isSubmitting ? (<Circle className={'animate-spin'}/>) : null}
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -230,4 +223,54 @@ export function CoordinatorSelect(props: CoordinatorSelectProps) {
       </SelectContent>
     </Select>
   );
+}
+
+
+function AddressDialog(props: PropsWithChildren<{
+  value?: Address|null;
+  onChange: (value: Address | null) => void;
+}>) {
+  const [open, setOpen] = useState(false);
+  return <Dialog open={open} onOpenChange={setOpen}>
+    <DialogTrigger asChild>
+      {props.children}
+    </DialogTrigger>
+    <DialogContent>
+      <AddressFormProvider value={props.value || null}>
+        <DialogHeader>
+          <DialogTitle>Address</DialogTitle>
+          <DialogDescription>You can fill in the address manually, or use the location finder.</DialogDescription>
+        </DialogHeader>
+        <DialogInnerContent>
+          <div className={'grid grid-cols-12 gap-4 items-start'}>
+            <AddressForm/>
+          </div>
+        </DialogInnerContent>
+        <DialogFooter>
+          <DialogClose asChild>
+            <AddressFormContext.Consumer>
+              {(form) => {
+                return <>
+                  <Button
+                    type={'button'}
+                    onClick={() => {
+                      form?.validate((data) => {
+                        if (data) {
+                          props.onChange(data);
+                          setOpen(false);
+                        }
+                      }, (err) => {
+                        console.info(err);
+                      })
+                    }}>
+                    Save
+                  </Button>
+                </>
+              }}
+            </AddressFormContext.Consumer>
+          </DialogClose>
+        </DialogFooter>
+      </AddressFormProvider>
+    </DialogContent>
+  </Dialog>;
 }

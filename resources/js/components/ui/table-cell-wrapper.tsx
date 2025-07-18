@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { PropsWithChildren } from 'react';
+import { Column, ColumnDef } from '@tanstack/react-table';
 
 const cellVariant = cva('', {
   variants: {
@@ -23,10 +24,25 @@ const cellVariant = cva('', {
   }
 });
 
-type TableCellWrapperProps = PropsWithChildren<React.ComponentProps<'div'> & VariantProps<typeof cellVariant>>
+type TableCellWrapperProps = PropsWithChildren<React.ComponentProps<'div'> & VariantProps<typeof cellVariant>> & {
+  def: Column<any>
+}
 
-export default function TableCellWrapper({ children, last, variant, center, ...props }: TableCellWrapperProps) {
-  return <div className={cn(cellVariant({ last, variant, center }))} {...props}>
+function computedStyle(def: Column<any>): React.CSSProperties {
+  const isPined = def.getIsPinned();
+  console.info([isPined, def.id]);
+  return {
+    position: isPined ? 'sticky' : 'relative',
+    opacity: isPined ? 0.8 : 1,
+    left: isPined ? def.getStart('left') + 'px' : 'initial',
+    right: isPined ? def.getStart('right') + 'px' : 'initial',
+    // width: def.getSize() + 'px',
+    zIndex: isPined ? 1 : 0
+  };
+}
+
+export default function TableCellWrapper({ def, children, last, variant, center, ...props }: TableCellWrapperProps) {
+  return <div style={computedStyle(def)} className={cn(cellVariant({ last, variant, center }))} {...props}>
     {children}
   </div>;
 }

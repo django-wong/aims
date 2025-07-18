@@ -10,9 +10,16 @@ class UserRole extends Model
     /** @use HasFactory<\Database\Factories\UserRoleFactory> */
     use HasFactory, BelongsToOrg, BelongsToUser;
 
+    const SYSTEM = 1;
+    const ADMIN = 2;
+    const FINANCE = 3;
+    const PM = 4;
+    const INSPECTOR = 5;
+    const CLIENT = 6;
+    const VENDOR = 7;
+    const STAFF = 8;
+
     protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
+        'id', 'created_at', 'updated_at',
     ];
 }

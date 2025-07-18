@@ -1,5 +1,6 @@
-import { useForm, FieldValues, UseFormProps } from 'react-hook-form';
-import React from 'react';
+import { useForm, FieldValues, UseFormProps, SubmitErrorHandler } from 'react-hook-form';
+import React, { useState } from 'react';
+import { headers } from '@/lib/utils';
 
 type Method = 'POST' | 'PUT' | 'PATCH';
 type Body = any;
@@ -9,19 +10,20 @@ interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   method?: Method;
 }
 
+/**
+ * Note: form instance can't be used as dependency in useEffect or useMemo hooks,
+ * @param props
+ */
 export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormProps<T> = {}) {
-  const form = useForm<T>({
-    ...props,
-  });
+  const form = useForm<T>(props);
+
+  const [method, setMethod] = useState(props.method ?? 'POST' as Method);
+  const [url, setUrl] = useState(props.url ?? location.href);
 
   function send(data: Body): Promise<Response|void> {
-    return fetch(props.url ?? location.href, {
-      method: props.method ?? 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-        'Accept': 'application/json',
-      },
+    return fetch(url, {
+      method: method,
+      headers: headers(),
       body: JSON.stringify(data),
     }).then(async res => {
       if (!res.ok) {
@@ -42,6 +44,9 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
   }
 
   return {
+    setUrl,
+    setMethod,
+    submitDisabled: form.formState.isSubmitting || !form.formState.isValid || form.formState.disabled,
     ...form,
     submit: (event?: React.FormEvent<HTMLFormElement>) => {
       return new Promise<Response|void>((resolve) => {
@@ -52,6 +57,9 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
           console.error('Form submission error:', error);
         })(event);
       });
+    },
+    validate: (cb: (data: T) => void, ecb?: SubmitErrorHandler<T>) => {
+      form.handleSubmit(cb, ecb)();
     }
   };
 }

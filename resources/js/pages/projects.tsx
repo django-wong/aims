@@ -1,6 +1,5 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,13 +39,6 @@ const breadcrumbs = [
 ];
 
 const columns: ColumnDef<Project>[] = [
-  {
-    accessorKey: 'select',
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}></Checkbox>,
-    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} />,
-    minSize: 32,
-    maxSize: 32,
-  },
   {
     accessorKey: 'id',
     header: 'ID',

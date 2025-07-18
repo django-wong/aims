@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { startTransition, useEffect, useReducer, useState } from 'react';
 import { useSearchParams } from '@/hooks/use-search-params';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'getSortedRowModel' | 'columns'>
   & {
@@ -21,6 +22,7 @@ type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'ge
   // Each table should have a unique alias if you intend to use multiple tables on the same page
   alias?: string;
   defaultData?: T[];
+  selectable?: boolean;
 };
 
 export interface BaseTableData {
@@ -31,7 +33,7 @@ function reloadReducer(state: number) {
   return state + 1;
 }
 
-export function useTable<T extends BaseTableData>(api: string, options?: UseTableOptions<T>) {
+export function useTable<T extends BaseTableData>(api: string, { selectable = true, ...options }: UseTableOptions<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<T[]>(options?.defaultData ?? []);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -41,27 +43,58 @@ export function useTable<T extends BaseTableData>(api: string, options?: UseTabl
   const [params, setParams] = useState<Record<string, string>>(options?.defaultParams ?? {});
   const [initialLoaded, setInitialLoaded] = useState<boolean>(false);
 
+  const columns = Array.from(options?.columns ?? []);
+
+  if (selectable) {
+    columns.unshift({
+      accessorKey: 'select',
+      minSize: 32,
+      maxSize: 32,
+      header: ({ table }) => (
+        <>
+          <Checkbox
+            onClick={(event) => {
+              table.toggleAllPageRowsSelected();
+              event.stopPropagation();
+            }}
+            checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+          />
+        </>
+      ),
+      cell: ({ row }) => (
+        <>
+          <Checkbox onClick={(event) => event.stopPropagation()} checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} />
+        </>
+      ),
+    });
+  }
+
   function aliased(alias: string) {
     return options?.alias ? `${options.alias}_${alias}` : alias;
   }
 
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: (parseInt(searchParams.get(aliased('page')) ?? '1')) - 1,
-    pageSize: parseInt(searchParams.get(aliased('pageSize')) ?? '10')
+    pageIndex: parseInt(searchParams.get(aliased('page')) ?? '1') - 1,
+    pageSize: parseInt(searchParams.get(aliased('pageSize')) ?? '10'),
   });
 
   const table = useReactTable<T>({
+    initialState: {
+      columnPinning: {
+        right: ['actions']
+      }
+    },
     pageCount: totalPage,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    columns: [],
     ...options,
+    columns: columns,
     data: data,
     manualPagination: true,
     state: {
-      pagination
+      pagination,
     },
     onPaginationChange: (updater) => {
       const value = typeof updater === 'function' ? updater(pagination) : updater;
@@ -72,8 +105,8 @@ export function useTable<T extends BaseTableData>(api: string, options?: UseTabl
           params.set(aliased('pageSize'), String(value.pageSize));
           return params;
         });
-      })
-    }
+      });
+    },
   });
 
   useEffect(() => {
@@ -104,44 +137,65 @@ export function useTable<T extends BaseTableData>(api: string, options?: UseTabl
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     };
 
-    fetch(url, fetchOptions).then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    }).then(response => {
-      startTransition(() => {
-        setTotal(response.total || 0)
-        setData(Array.isArray(response.data) ? response.data : []);
-        setTotalPage(response.last_page);
+    fetch(url, fetchOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
       })
-    }).catch(error => {
-      startTransition(() => {
-        // setData([]);
-        // setTotal(0);
-        // setTotalPage(1);
+      .then((response) => {
+        return new Promise<any>((resolve) => {
+          setTimeout(() => {
+            resolve(response);
+          }, 1500);
+        });
       })
-      throw error;
-    }).finally(() => {
-      startTransition(() => {
-        setInitialLoaded(true);
+      .then((response) => {
+        startTransition(() => {
+          setTotal(response.total || 0);
+          setData(Array.isArray(response.data) ? response.data : []);
+          setTotalPage(response.last_page);
+        });
       })
-    })
+      .catch((error) => {
+        startTransition(() => {
+          // setData([]);
+          // setTotal(0);
+          // setTotalPage(1);
+        });
+        throw error;
+      })
+      .finally(() => {
+        startTransition(() => {
+          setInitialLoaded(true);
+        });
+      });
 
     return () => abortController.abort();
-
-  }, [api, pagination, searchParams, sorting, reload, params])
+  }, [api, pagination, searchParams, sorting, reload, params]);
 
   return {
-    initialLoaded, ...table, data, searchParams, setSearchParams, params, setParams, sorting, setSorting, total, totalPage, reload: () => {
+    initialLoaded,
+    ...table,
+    data,
+    searchParams,
+    setSearchParams,
+    params,
+    setParams,
+    sorting,
+    setSorting,
+    total,
+    totalPage,
+    reload: () => {
       startTransition(() => {
         table.setPageIndex(0);
         triggerReload();
-      })
-    }
+      });
+    },
   };
 }

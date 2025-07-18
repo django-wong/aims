@@ -82,6 +82,6 @@
 
   body {
     @apply bg-background text-foreground;
-    scrollbar-color: var(--color-border) transparent;
+    /*scrollbar-color: var(--color-border) transparent;*/
   }
 }

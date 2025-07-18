@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 import { createContext, useState } from 'react';
 
 type DialogContext = {
-  childOpen?: boolean;
-  setChildOpen?: (open: boolean) => void;
+  childOpen: boolean;
+  setChildOpen: (open: boolean) => void;
   parent?: DialogContext
 } | null;
 
@@ -20,10 +20,17 @@ export function useDialog() {
 }
 
 function Dialog({
-  ...props
+  onOpenChange, ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   const [childOpen, setChildOpen] = useState(false);
   const parent = useDialog();
+  if (props.open != undefined) {
+    if (parent) {
+      if (parent.childOpen !== props.open) {
+        parent?.setChildOpen(props.open);
+      }
+    }
+  }
   return (
     <DialogContext.Provider
       value={{
@@ -31,7 +38,12 @@ function Dialog({
         setChildOpen,
         parent
       }}>
-      <DialogPrimitive.Root onOpenChange={parent?.setChildOpen} data-slot="dialog" {...props} />
+      <DialogPrimitive.Root onOpenChange={(open) => {
+        parent?.setChildOpen(open);
+        if (onOpenChange) {
+          onOpenChange(open);
+        }
+      }} data-slot="dialog" {...props} />
     </DialogContext.Provider>
   );
 }

@@ -87,7 +87,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
                   <TableHead key={header.id} style={{ width: header.getSize() + 'px' }}>
-                    <TableCellWrapper variant={'header'} last={index === headerGroup.headers.length - 1}>
+                    <TableCellWrapper def={header.column} variant={'header'} last={index === headerGroup.headers.length - 1}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableCellWrapper>
                   </TableHead>
@@ -101,7 +101,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                 <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell key={cell.id}>
-                      <TableCellWrapper last={index === row.getVisibleCells().length - 1}>
+                      <TableCellWrapper def={cell.column} last={index === row.getVisibleCells().length - 1}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCellWrapper>
                     </TableCell>
