@@ -17,6 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('projects', 'projects')->name('projects');
     Route::inertia('invoices', 'invoices')->name('invoices');
     Route::inertia('clients', 'clients')->name('clients');
+    Route::get('clients/{id}', [\App\Http\Controllers\ClientController::class, 'edit'])->name('clients.edit');
     Route::inertia('vendors', 'vendors')->name('vendors');
     Route::inertia('quotes', '404')->name('quotes');
     Route::inertia('assignments', 'assignments')->name('assignments');

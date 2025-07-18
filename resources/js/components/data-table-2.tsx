@@ -1,19 +1,15 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { flexRender, Row } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Inbox } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { BaseTableData, useTable } from '@/hooks/use-table';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
+import { flexRender, Row } from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import * as React from 'react';
+import { SvgBg } from '@/components/svg-bg';
 
 interface DataTableProps<T extends BaseTableData> {
   table: ReturnType<typeof useTable<T>>;
@@ -21,12 +17,13 @@ interface DataTableProps<T extends BaseTableData> {
   right?: React.ReactNode;
   onRowClick?: (row: Row<T>) => void;
 }
+
 export function DataTable<T extends BaseTableData>({ table, ...props }: DataTableProps<T>) {
   return (
     <div className={'flex flex-col gap-6'}>
-      <div className={'flex justify-between items-center gap-2 flex-wrap'}>
-        <div className={'flex flex-grow justify-start items-center gap-2 flex-wrap'}>{props.left}</div>
-        <div className={'flex justify-start items-center gap-2 flex-wrap'}>
+      <div className={'flex flex-wrap items-center justify-between gap-2'}>
+        <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
+        <div className={'flex flex-wrap items-center justify-start gap-2'}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -39,43 +36,33 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
             <DropdownMenuContent align="end" className="w-56">
               {table
                 .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
-                )
+                .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
                 .map((column) => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
-                      {(typeof column.columnDef.header === 'string' ? column.columnDef.header : null) ||  column.id}
+                      {(typeof column.columnDef.header === 'string' ? column.columnDef.header : null) || column.id}
                     </DropdownMenuCheckboxItem>
-                  )
+                  );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
           {props.right}
         </div>
       </div>
-      <div className="rounded-md border overflow-hidden">
+      <div className="overflow-hidden rounded-md border relative">
         <Table>
-          <TableHeader className={'sticky top-0 z-10 bg-muted/50'}>
+          <TableHeader className={'bg-muted/50 sticky top-0 z-10'}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
                   <TableHead key={header.id} style={{ width: header.getSize() + 'px' }}>
                     <TableCellWrapper variant={'header'} last={index === headerGroup.headers.length - 1}>
-                      {
-                        header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())
-                      }
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableCellWrapper>
                   </TableHead>
                 ))}
@@ -85,10 +72,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
           <TableBody className="**:data-[slot=table-cell]:first:w-8">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  onClick={() => props.onRowClick?.(row)}
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}>
+                <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell key={cell.id}>
                       <TableCellWrapper last={index === row.getVisibleCells().length - 1}>
@@ -101,12 +85,22 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
             ) : (
               <tr>
                 <TableCell colSpan={table.getAllColumns().length} className="text-center text-gray-500">
-                  <div className={'sticky min-h-[20vh] left-[50%] top-[50%] -translate-x-[50%] w-fit flex items-center justify-center z-50'}>
-                      {table.initialLoaded ? (
-                        <span>No results.</span>
-                      ) : (
-                        <span>Loading...</span>
-                      )}
+                  <div
+                    className={'sticky top-[50%] left-[50%] z-50 flex h-[200px] w-fit -translate-x-[50%] items-center justify-center overflow-hidden'}
+                  >
+                    {table.initialLoaded ? (
+                      <>
+                        <div className={'opacity-10'}>
+                          <SvgBg/>
+                        </div>
+                        <div className={'flex flex-col items-center justify-center gap-2 text-foreground'}>
+                          <p className={'font-bold text-lg'}>No data founds.</p>
+                          <p>Your search did not match any data. Please try again or create new one.</p>
+                        </div>
+                      </>
+                    ) : (
+                      <span>Loading...</span>
+                    )}
                   </div>
                 </TableCell>
               </tr>
@@ -130,7 +124,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                   table.setPageSize(Number(value));
                 }}
               >
-                <SelectTrigger className="w-20" id="rows-per-page">
+                <SelectTrigger clearable={false} className="w-20" id="rows-per-page" size={'sm'}>
                   <SelectValue placeholder={table.getState().pagination.pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top">

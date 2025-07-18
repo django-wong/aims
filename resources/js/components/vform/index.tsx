@@ -7,16 +7,18 @@ interface FormFieldProps {
   for: string;
   renderLabel?: (props: Pick<FormFieldProps, 'label' | 'for'>) => React.ReactNode;
   error?: string|null;
+  required?: boolean;
 }
 
 export function VFormField({ className, ...props }: PropsWithChildren<FormFieldProps> & React.ComponentProps<'div'>) {
   return (
-    <div className={cn('grid gap-3', className)}>
+    <div className={cn('grid gap-2', className)}>
       {props.renderLabel ? (
         props.renderLabel(props)
       ) : (
-        <div className="flex items-center">
-          <Label className={'line-clamp-1'} htmlFor={props.for}>{props.label}</Label>
+        <div className="flex items-center justify-between">
+          <Label className={'line-clamp-1 text-foreground text-sm leading-4 font-medium'} htmlFor={props.for}>{props.label}</Label>
+          {props.required && <span className="text-red-500">*</span>}
         </div>
       )}
       <div className={'grid gap-1'}>

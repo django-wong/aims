@@ -8,11 +8,18 @@ export function AddressForm() {
       render={({field}) => {
         return (
           <VFormField label={'Address Line 1'} for={'address_line_1'} className={'col-span-12'}>
-            <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+            <Input
+              value={field.value}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+                field.onBlur();
+              }}
+              className={'bg-white'}
+            />
           </VFormField>
         );
       }}
-      name={'address_line_1'}
+      name={'address.address_line_1'}
     />
     <FormField
       render={({field}) => {
@@ -22,18 +29,8 @@ export function AddressForm() {
           </VFormField>
         );
       }}
-      name={'address_line_2'}
+      name={'address.address_line_2'}
     />
-    {/*<FormField*/}
-    {/*  render={({field}) => {*/}
-    {/*    return (*/}
-    {/*      <VFormField label={'Suburb'} for={'suburb'} className={'col-span-4'}>*/}
-    {/*        <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>*/}
-    {/*      </VFormField>*/}
-    {/*    );*/}
-    {/*  }}*/}
-    {/*  name={'suburb'}*/}
-    {/*/>*/}
     <FormField
       render={({field}) => {
         return (
@@ -42,7 +39,7 @@ export function AddressForm() {
           </VFormField>
         );
       }}
-      name={'city'}
+      name={'address.city'}
     />
     <FormField
       render={({field}) => {
@@ -52,7 +49,7 @@ export function AddressForm() {
           </VFormField>
         );
       }}
-      name={'state'}
+      name={'address.state'}
     />
     <FormField
       render={({field}) => {
@@ -62,7 +59,7 @@ export function AddressForm() {
           </VFormField>
         );
       }}
-      name={'zip'}
+      name={'address.zip'}
     />
     <FormField
       render={({field}) => {
@@ -72,7 +69,7 @@ export function AddressForm() {
           </VFormField>
         );
       }}
-      name={'country'}
+      name={'address.country'}
     />
   </>
 }

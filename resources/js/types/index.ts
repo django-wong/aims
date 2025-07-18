@@ -1,6 +1,11 @@
 import { LucideIcon } from 'lucide-react';
 import { MainNavItem } from '@/components/nav-main';
 
+export interface DialogFormProps {
+  children: React.ReactNode;
+  onSuccess: () => void;
+}
+
 export interface Org extends BaseModel {
   name: string;
 }
@@ -39,8 +44,6 @@ export interface SharedData {
   quote: { message: string; author: string };
   auth: Auth;
 
-  [key: string]: unknown;
-
   flash: {
     [K in FlashMessageType]: string;
   };
@@ -62,9 +65,10 @@ export interface Address extends BaseModel {
   address_line_2?: string | null;
   city: string;
   state: string;
-  postal_code: string;
+  zip: string;
   suburb?: string | null;
   country: string;
+  full_address?: string; // Optional, can be computed from other fields
 }
 
 export interface BaseModel {

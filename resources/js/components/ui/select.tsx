@@ -2,14 +2,36 @@
 
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon, X } from 'lucide-react';
 
 import { cn } from "@/lib/utils"
+import { createContext } from 'react';
+import { Button } from '@/components/ui/button';
+
+
+type SelectContext = Pick<React.ComponentProps<typeof SelectPrimitive.Root>, 'value' | 'onValueChange'>
+
+const SelectContext = createContext<SelectContext|null>(null);
+
+export function useSelectContext() {
+  const context = React.useContext(SelectContext);
+  if (!context) {
+    throw new Error("useSelectContext must be used within a SelectProvider");
+  }
+  return context;
+}
 
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+  return <SelectContext
+    value={{
+      value: props.value,
+      onValueChange: props.onValueChange,
+    }}
+    >
+    <SelectPrimitive.Root data-slot="select" {...props} />
+  </SelectContext>
 }
 
 function SelectGroup({
@@ -28,10 +50,13 @@ function SelectTrigger({
   className,
   size = "default",
   children,
+  clearable = true,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
-  size?: "sm" | "default"
+  size?: "sm" | "default";
+  clearable?: boolean;
 }) {
+  const context = useSelectContext();
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
@@ -43,9 +68,20 @@ function SelectTrigger({
       {...props}
     >
       {children}
-      <SelectPrimitive.Icon asChild>
+      { context.value && clearable ? (
+        <SelectPrimitive.Icon
+          className={'hover:bg-muted cursor-pointer'}
+          onClick={(event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            context.onValueChange?.('');
+          }}
+        >
+          <X className="size-4 opacity-50"/>
+        </SelectPrimitive.Icon>
+      ) : <SelectPrimitive.Icon asChild>
         <ChevronDownIcon className="size-4 opacity-50" />
-      </SelectPrimitive.Icon>
+      </SelectPrimitive.Icon>}
     </SelectPrimitive.Trigger>
   )
 }

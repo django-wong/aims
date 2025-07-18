@@ -9,7 +9,7 @@ import {
   SegmentedControl,
   SegmentedControlList,
   SegmentedControlTrigger
-} from '../../../components/ui/segmented-control';
+} from '@/components/ui/segmented-control';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EllipsisVertical, House, Inbox, Mail, MessageSquare, Plus, Send, User } from 'lucide-react';
@@ -136,26 +136,26 @@ const columns: ColumnDef<Invoice>[] = [
 export default function Page() {
   const table = useTable<Invoice>('api/v1/invoices', {
     columns,
-    defaultData: [
-      {
-        id: 1,
-        invoiceable_id: 1,
-        assignment_id: 1,
-        invoiceable_type: 'App\\Models\\Client',
-        invoiceable: {
-          id: 1,
-          name: 'Client A',
-          business_name: 'Client A Business',
-        },
-        assignment: {
-          project: {
-            name: 'Project A'
-          }
-        },
-        updated_at: '2023-10-01T12:00:00Z',
-        created_at: '2023-10-01T12:00:00Z'
-      }
-    ]
+    // defaultData: [
+      // {
+      //   id: 1,
+      //   invoiceable_id: 1,
+      //   assignment_id: 1,
+      //   invoiceable_type: 'App\\Models\\Client',
+      //   invoiceable: {
+      //     id: 1,
+      //     name: 'Client A',
+      //     business_name: 'Client A Business',
+      //   },
+      //   assignment: {
+      //     project: {
+      //       name: 'Project A'
+      //     }
+      //   },
+      //   updated_at: '2023-10-01T12:00:00Z',
+      //   created_at: '2023-10-01T12:00:00Z'
+      // }
+    // ]
   });
 
   const [value, setValue] = useState('received');

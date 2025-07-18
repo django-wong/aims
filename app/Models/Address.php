@@ -15,4 +15,22 @@ class Address extends Model
         'created_at',
         'updated_at',
     ];
+
+    protected $appends = [
+        'full_address',
+    ];
+
+    public function getFullAddressAttribute(): string
+    {
+        $addressParts = [
+            $this->address_line_1,
+            $this->address_line_2,
+            $this->city,
+            $this->state,
+            $this->zip,
+            $this->country,
+        ];
+
+        return implode(', ', array_filter($addressParts));
+    }
 }

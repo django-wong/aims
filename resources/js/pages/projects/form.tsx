@@ -15,17 +15,11 @@ import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
 import { Loader2Icon } from 'lucide-react';
-import { PropsWithChildren, useState } from 'react';
-import { Project } from '@/types';
+import { DialogFormProps, Project } from '@/types';
+import { useState } from 'react';
 
-// THIS COMPONENT DEMONSTRATED DIFFERENT WAYS TO USE THE FORM COMPONENT
 
-interface ProjectFormProps {
-  trigger: React.ReactNode;
-  onSuccess: () => void;
-}
-
-export function ProjectForm(props: PropsWithChildren<ProjectFormProps>) {
+export function ProjectForm(props: DialogFormProps) {
   const [open, setOpen] = useState(false);
 
   const form = useReactiveForm<Project>({
@@ -52,7 +46,7 @@ export function ProjectForm(props: PropsWithChildren<ProjectFormProps>) {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>{props.trigger}</DialogTrigger>
+        <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Project</DialogTitle>
@@ -62,6 +56,7 @@ export function ProjectForm(props: PropsWithChildren<ProjectFormProps>) {
             <Form {...form}>
               <div className={'grid grid-cols-12 gap-4'}>
                 <FormField
+                  control={form.control}
                   render={({field, fieldState}) => (
                     <VFormField label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-12'}>
                       <Input

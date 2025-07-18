@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIv1;
 
-use App\Models\AssignmentType;
+use App\Http\Controllers\Controller;
+use App\Models\UserRate;
 use Illuminate\Http\Request;
 
-class AssignmentTypeController extends Controller
+class UserRateController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class AssignmentTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AssignmentType $assignmentType)
+    public function show(UserRate $userRate)
     {
         //
     }
@@ -34,7 +35,7 @@ class AssignmentTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, AssignmentType $assignmentType)
+    public function update(Request $request, UserRate $userRate)
     {
         //
     }
@@ -42,7 +43,7 @@ class AssignmentTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AssignmentType $assignmentType)
+    public function destroy(UserRate $userRate)
     {
         //
     }

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIv1;
 
-use App\Models\CertificateType;
+use App\Http\Controllers\Controller;
+use App\Models\Expense;
 use Illuminate\Http\Request;
 
-class CertificateTypeController extends Controller
+class ExpenseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class CertificateTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CertificateType $certificateType)
+    public function show(Expense $expense)
     {
         //
     }
@@ -34,7 +35,7 @@ class CertificateTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CertificateType $certificateType)
+    public function update(Request $request, Expense $expense)
     {
         //
     }
@@ -42,7 +43,7 @@ class CertificateTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CertificateType $certificateType)
+    public function destroy(Expense $expense)
     {
         //
     }

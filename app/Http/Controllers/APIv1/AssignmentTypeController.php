@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIv1;
 
-use App\Models\TimesheetItem;
+use App\Http\Controllers\Controller;
+use App\Models\AssignmentType;
 use Illuminate\Http\Request;
 
-class TimesheetItemController extends Controller
+class AssignmentTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class TimesheetItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TimesheetItem $timesheetItem)
+    public function show(AssignmentType $assignmentType)
     {
         //
     }
@@ -34,7 +35,7 @@ class TimesheetItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TimesheetItem $timesheetItem)
+    public function update(Request $request, AssignmentType $assignmentType)
     {
         //
     }
@@ -42,7 +43,7 @@ class TimesheetItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TimesheetItem $timesheetItem)
+    public function destroy(AssignmentType $assignmentType)
     {
         //
     }

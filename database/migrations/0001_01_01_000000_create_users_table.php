@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('name')->storedAs('CONCAT(first_name, " ", last_name)')->index();
             $table->string('title')->nullable()->comment('The title of the user, e.g., "Mr.", "Ms.", "Dr."');
-            $table->string('email')->index();
+            $table->string('email')->nullable()->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

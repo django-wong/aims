@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIv1;
 
-use App\Models\UserRate;
+use App\Http\Controllers\Controller;
+use App\Models\ExpenseItem;
 use Illuminate\Http\Request;
 
-class UserRateController extends Controller
+class ExpenseItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class UserRateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(UserRate $userRate)
+    public function show(ExpenseItem $expenseItem)
     {
         //
     }
@@ -34,7 +35,7 @@ class UserRateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserRate $userRate)
+    public function update(Request $request, ExpenseItem $expenseItem)
     {
         //
     }
@@ -42,7 +43,7 @@ class UserRateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserRate $userRate)
+    public function destroy(ExpenseItem $expenseItem)
     {
         //
     }

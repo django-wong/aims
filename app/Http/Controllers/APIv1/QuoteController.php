@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIv1;
 
-use App\Models\Certificate;
+use App\Http\Controllers\Controller;
+use App\Models\Quote;
 use Illuminate\Http\Request;
 
-class CertificateController extends Controller
+class QuoteController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class CertificateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Certificate $certificate)
+    public function show(Quote $quote)
     {
         //
     }
@@ -34,7 +35,7 @@ class CertificateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Certificate $certificate)
+    public function update(Request $request, Quote $quote)
     {
         //
     }
@@ -42,7 +43,7 @@ class CertificateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Certificate $certificate)
+    public function destroy(Quote $quote)
     {
         //
     }

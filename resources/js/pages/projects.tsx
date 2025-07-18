@@ -198,14 +198,11 @@ export default function Projects() {
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <ProjectForm
-          onSuccess={() => table.reload()}
-          trigger={
-            <Button>
-              <Plus /> Create New Job
-            </Button>
-          }
-        />
+        <ProjectForm onSuccess={() => table.reload()}>
+          <Button>
+            <Plus /> Create New Job
+          </Button>
+        </ProjectForm>
       }
     >
       <div className="px-6">

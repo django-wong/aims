@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIv1;
 
-use App\Models\Expense;
+use App\Http\Controllers\Controller;
+use App\Models\TimesheetItem;
 use Illuminate\Http\Request;
 
-class ExpenseController extends Controller
+class TimesheetItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class ExpenseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Expense $expense)
+    public function show(TimesheetItem $timesheetItem)
     {
         //
     }
@@ -34,7 +35,7 @@ class ExpenseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Expense $expense)
+    public function update(Request $request, TimesheetItem $timesheetItem)
     {
         //
     }
@@ -42,7 +43,7 @@ class ExpenseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Expense $expense)
+    public function destroy(TimesheetItem $timesheetItem)
     {
         //
     }

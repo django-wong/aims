@@ -4,10 +4,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
+  DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useTable } from '@/hooks/use-table';
@@ -16,15 +16,19 @@ import { BreadcrumbItem, Client } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { EllipsisVertical, Plus } from 'lucide-react';
+import { Divide, EllipsisVertical, Filter, Plus } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
-import { ClientForm } from '@/pages/clients/form';
+import { ClientForm, CoordinatorSelect } from '@/pages/clients/form';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { VFormField } from '@/components/vform';
 
 const columns: ColumnDef<Client>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <>{row.original.user?.name}</>,
+    cell: ({ row }) => <a href={route('clients.edit', row.original.id)}>
+      {row.original.user?.name}
+    </a>,
     size: 200,
   },
   {
@@ -62,12 +66,12 @@ const columns: ColumnDef<Client>[] = [
         address_line_1,
         city,
         state,
-        postal_code,
+        zip,
         country
       } = row.original.address;
 
       return (
-        <span>{address_line_1}, {city}, {state} {postal_code}, {country}</span>
+        <span>{address_line_1}, {city}, {state} {zip}, {country}</span>
       );
     },
   },
@@ -185,7 +189,7 @@ export default function Clients() {
       <AppLayout
         breadcrumbs={breadcrumbs}
         pageAction={
-          <ClientForm>
+          <ClientForm onSuccess={() => {}}>
             <Button size={'sm'}>
               <Plus /> Add new client
             </Button>
@@ -194,12 +198,30 @@ export default function Clients() {
       >
         <div className={'px-6'}>
           <DataTable
-            onRowClick={(row) => {
-              // Navigate to the client details page
-              console.info(row);
-            }}
             table={table}
-            left={<Input onChange={setSearchKeywords} className={'max-w-[220px]'} placeholder={'Search by name, email'} value={keywords} />}
+            left={
+              <>
+                <Input onChange={setSearchKeywords} className={'max-w-[220px]'} placeholder={'Search by name, email'} value={keywords} />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant={'outline'}>
+                      <Filter />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align={'start'}>
+                    <div className={'flex flex-col gap-4'}>
+                      <VFormField label={'Coordinator'} for={'coordinator'}>
+                        <CoordinatorSelect/>
+                      </VFormField>
+
+                      <VFormField label={'Coordinator'} for={'coordinator'}>
+                        <CoordinatorSelect/>
+                      </VFormField>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </>
+            }
           />
         </div>
       </AppLayout>

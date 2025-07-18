@@ -12,7 +12,7 @@ export function LargeTitle(props: {
     return (
       <div className={'flex gap-6 items-end justify-between px-6'}>
         <h1 className={'text-4xl'}>{props.title}</h1>
-        <div>
+        <div className={'flex items-center gap-2'}>
           {props.pageAction}
         </div>
       </div>
