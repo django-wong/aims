@@ -25,24 +25,25 @@ const cellVariant = cva('', {
 });
 
 type TableCellWrapperProps = PropsWithChildren<React.ComponentProps<'div'> & VariantProps<typeof cellVariant>> & {
-  def: Column<any>
+
 }
 
-function computedStyle(def: Column<any>): React.CSSProperties {
+export function computedStyle(def: Column<any>): React.CSSProperties {
   const isPined = def.getIsPinned();
-  console.info([isPined, def.id]);
+  if (!isPined) {
+    return {};
+  }
   return {
     position: isPined ? 'sticky' : 'relative',
-    opacity: isPined ? 0.8 : 1,
     left: isPined ? def.getStart('left') + 'px' : 'initial',
     right: isPined ? def.getStart('right') + 'px' : 'initial',
-    // width: def.getSize() + 'px',
-    zIndex: isPined ? 1 : 0
+    width: def.getSize() + 'px',
+    zIndex: isPined ? 1 : 0,
   };
 }
 
-export default function TableCellWrapper({ def, children, last, variant, center, ...props }: TableCellWrapperProps) {
-  return <div style={computedStyle(def)} className={cn(cellVariant({ last, variant, center }))} {...props}>
+export default function TableCellWrapper({ children, last, variant, center, ...props }: TableCellWrapperProps) {
+  return <div className={cn(cellVariant({ last, variant, center }))} {...props}>
     {children}
   </div>;
 }

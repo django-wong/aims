@@ -3,13 +3,14 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import TableCellWrapper, { computedStyle } from '@/components/ui/table-cell-wrapper';
 import { BaseTableData, useTable } from '@/hooks/use-table';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LoaderCircle, TableIcon } from 'lucide-react';
 import * as React from 'react';
 import { SvgBg } from '@/components/svg-bg';
+import { cn } from '@/lib/utils';
 
 interface DataTableProps<T extends BaseTableData> {
   table: ReturnType<typeof useTable<T>>;
@@ -82,12 +83,12 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
             </>
           }
           >
-          <TableHeader className={'bg-muted/50 sticky top-0 z-10'}>
+          <TableHeader className={'sticky top-0 z-10'}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
-                  <TableHead key={header.id} style={{ width: header.getSize() + 'px' }}>
-                    <TableCellWrapper def={header.column} variant={'header'} last={index === headerGroup.headers.length - 1}>
+                  <TableHead className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted')} key={header.id} style={computedStyle(header.column)}>
+                    <TableCellWrapper variant={'header'} last={index === headerGroup.headers.length - 1}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableCellWrapper>
                   </TableHead>
@@ -100,8 +101,8 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
               table.getRowModel().rows.map((row) => (
                 <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id}>
-                      <TableCellWrapper def={cell.column} last={index === row.getVisibleCells().length - 1}>
+                    <TableCell className={cn('pin-'+(cell.column.getIsPinned() || 'none'), 'bg-background')} key={cell.id} style={computedStyle(cell.column)}>
+                      <TableCellWrapper last={index === row.getVisibleCells().length - 1}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCellWrapper>
                     </TableCell>

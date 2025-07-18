@@ -84,4 +84,11 @@
     @apply bg-background text-foreground;
     /*scrollbar-color: var(--color-border) transparent;*/
   }
+
+  th.pin-right, td.pin-right {
+    @apply before:content-[''] before:absolute before:top-0 before:left-0 before:w-px before:h-full before:bg-border;
+  }
+  th.pin-left, td.pin-left {
+    @apply before:content-[''] before:absolute before:top-0 before:right-0 before:w-px before:h-full before:bg-border;
+  }
 }
