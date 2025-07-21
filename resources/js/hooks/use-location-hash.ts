@@ -1,21 +1,22 @@
 import React from 'react';
 
-export function useLocationHash(value: string = ''): [string, (value: string) => void] {
-  const [hash, setHash] = React.useState<string>(getHash());
+function getHash(): string {
+  return window.location.hash.substring(1);
+}
 
-  function getHash(): string {
-    return window.location.hash.substring(1) || value;
-  }
+export function useLocationHash(value: string = ''): [string, (value: string) => void] {
+  const [hash, setHash] = React.useState<string>(getHash() || value);
+
 
   React.useEffect(() => {
     const handleHashChange = () => {
-      setHash(getHash());
+      setHash(getHash() || value);
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, []);
+  }, [value]);
 
   return [
     hash,

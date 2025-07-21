@@ -2,15 +2,13 @@ import Layout from '@/layouts/app-layout'
 import { Head } from '@inertiajs/react'
 import * as React from 'react';
 import { BreadcrumbItem, Client } from '@/types';
-import { FlatLinkTabs, FlatLinkTabTrigger, FlatTabList, FlatTabs, FlatTabTrigger } from '@/components/ui/flat-tabs';
+import { FlatTabList, FlatTabs, FlatTabTrigger } from '@/components/ui/flat-tabs';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { TabsContent } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
 import { PropsWithChildren } from 'react';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Car, Trash, UserRoundPen } from 'lucide-react';
+import { Trash, UserRoundPen } from 'lucide-react';
 
 interface ClientEditProps {
   client: Client;

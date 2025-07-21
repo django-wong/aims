@@ -6,8 +6,6 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon, X } from 'lucide-react';
 
 import { cn } from "@/lib/utils"
 import { createContext } from 'react';
-import { Button } from '@/components/ui/button';
-
 
 type SelectContext = Pick<React.ComponentProps<typeof SelectPrimitive.Root>, 'value' | 'onValueChange'>
 

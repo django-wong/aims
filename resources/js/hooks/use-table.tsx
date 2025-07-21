@@ -9,6 +9,7 @@ import {
 import { startTransition, useEffect, useReducer, useState } from 'react';
 import { useSearchParams } from '@/hooks/use-search-params';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PagedResponse } from '@/types';
 
 type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'getSortedRowModel' | 'columns'>
   & {
@@ -16,9 +17,9 @@ type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'ge
   columns?: TableOptions<T>['columns'];
 } & {
   // Additional props for the useTable hook
-  defaultParams?: Record<string, any>;
+  defaultParams?: Record<string, string>;
   // Since a user can easily add search params to the URL, this function exists to filter out unwanted search params.
-  filterSearchParams?: (key: string, value: any) => boolean;
+  filterSearchParams?: (key: string, value: string) => boolean;
   // Each table should have a unique alias if you intend to use multiple tables on the same page
   alias?: string;
   defaultData?: T[];
@@ -149,7 +150,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
         return response.json();
       })
       .then((response) => {
-        return new Promise<any>((resolve) => {
+        return new Promise<PagedResponse<T>>((resolve) => {
           setTimeout(() => {
             resolve(response);
           }, 1500);
@@ -177,7 +178,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
       });
 
     return () => abortController.abort();
-  }, [api, pagination, searchParams, sorting, reload, params]);
+  }, [api, pagination, searchParams, sorting, reload, params]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     initialLoaded,

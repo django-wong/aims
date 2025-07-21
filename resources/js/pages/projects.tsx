@@ -190,7 +190,7 @@ export default function Projects() {
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <ProjectForm onSuccess={() => table.reload()}>
+        <ProjectForm onSubmit={() => table.reload()}>
           <Button>
             <Plus /> Create New Job
           </Button>

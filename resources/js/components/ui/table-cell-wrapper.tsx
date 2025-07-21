@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { PropsWithChildren } from 'react';
-import { Column, ColumnDef } from '@tanstack/react-table';
+import { Column } from '@tanstack/react-table';
 
 const cellVariant = cva('', {
   variants: {
@@ -28,7 +28,7 @@ type TableCellWrapperProps = PropsWithChildren<React.ComponentProps<'div'> & Var
 
 }
 
-export function computedStyle(def: Column<any>): React.CSSProperties {
+export function computedStyle<T>(def: Column<T>): React.CSSProperties {
   const isPined = def.getIsPinned();
   if (!isPined) {
     return {};

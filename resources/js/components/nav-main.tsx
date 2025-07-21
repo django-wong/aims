@@ -5,13 +5,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { DynamicIcon } from 'lucide-react/dynamic';
+import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 import { router } from '@inertiajs/react';
 
 export interface MainNavItem {
   name: string;
   url: string;
-  icon: string;
+  icon: IconName;
   component?: string; // Optional, if you want to use a client-side visit
 }
 
@@ -43,7 +43,7 @@ export function NavMain({
                         })
                       }
                    }}>
-                  <DynamicIcon name={item.icon as any} className={'size-6'} />
+                  <DynamicIcon name={item.icon} className={'size-6'} />
                   <span>{item.name}</span>
                 </a>
               </SidebarMenuButton>

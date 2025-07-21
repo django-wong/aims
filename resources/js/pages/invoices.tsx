@@ -65,7 +65,7 @@ const columns: ColumnDef<Invoice>[] = [
     accessorKey: 'assignment_id',
     header: 'Assignment',
     cell: ({ row }) => {
-      return <>{row.original.assignment?.project?.name}</>;
+      return <>{row.original.assignment?.project?.title}</>;
     }
   },
   {

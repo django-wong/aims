@@ -50,6 +50,8 @@ export interface SharedData {
   flash: {
     [K in FlashMessageType]: string;
   };
+
+  [key: string]: unknown;
 }
 
 export interface User extends BaseModel {
@@ -152,3 +154,10 @@ interface InvoiceBase extends BaseModel {
 export type Invoice = InvoiceBase & Invoiceable;
 
 export type Literal<T> = Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
+
+export type PagedResponse<T = Record<string, unknown>> = {
+  data: T[];
+  total: number;
+  last_page: number;
+  first_page: number;
+}

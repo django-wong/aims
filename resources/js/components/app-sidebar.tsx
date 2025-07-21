@@ -1,11 +1,9 @@
 import {
   IconCamera,
-  IconDashboard,
   IconDatabase,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
   IconHelp,
   IconReport,
   IconSettings,
@@ -21,15 +19,8 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import {
-  BookUser,
-  Contact,
-  FileSpreadsheet,
   House,
-  PiggyBank,
-  Plus, PlusCircle,
-  PlusIcon,
-  Receipt,
-  UserRoundSearch
+  Plus
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 

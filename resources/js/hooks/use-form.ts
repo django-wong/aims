@@ -1,9 +1,11 @@
-import { useForm, FieldValues, UseFormProps, SubmitErrorHandler } from 'react-hook-form';
+import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath } from 'react-hook-form';
 import React, { useState } from 'react';
 import { headers } from '@/lib/utils';
 
 type Method = 'POST' | 'PUT' | 'PATCH';
-type Body = any;
+type Body = {
+  [key: string]: unknown;
+};
 
 interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   url?: URL | string;
@@ -30,7 +32,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
         const json = await res.json();
         if (json.errors) {
           for (const [key, value] of Object.entries(json.errors)) {
-            form.setError(key as any, {
+            form.setError(key as FieldPath<T>, {
               message: Array.isArray(value) ? value.join(', ') : value as string,
               type: 'manual',
             })

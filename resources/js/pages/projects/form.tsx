@@ -36,7 +36,7 @@ export function ProjectForm(props: DialogFormProps) {
     form.submit().then((response) => {
       if (response) {
         if (response.ok) {
-          props.onSuccess();
+          props.onSubmit(form.getValues());
           setOpen(false);
         }
       }
