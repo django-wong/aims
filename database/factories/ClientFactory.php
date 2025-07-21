@@ -24,9 +24,7 @@ class ClientFactory extends Factory
             'notes' => $this->faker->paragraph,
             'user_id' => User::factory(),
             'org_id' => Org::factory(),
-            'address_id' => Address::factory(),
-            'coordinator_id' => User::factory(),
-            'reviewer_id' => User::factory(),
+            'address_id' => Address::factory()
         ];
     }
 }

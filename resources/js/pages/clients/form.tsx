@@ -20,11 +20,12 @@ import {
   AddressFormProvider,
   schema as addressSchema
 } from '@/pages/projects/address-form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { Circle, LocationEdit } from 'lucide-react';
+import { StaffSelect } from '@/components/user-select';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const scheme = zod.object({
   business_name: zod.string().min(1, 'Business name is required'),
@@ -37,8 +38,10 @@ const scheme = zod.object({
     name: zod.string().min(1, 'Contact name is required'),
     email: zod.string().email('Invalid email format')
   }).optional(),
-  notes: zod.string().optional()
-})
+  notes: zod.string().optional().nullable()
+});
+
+const queryClient = new QueryClient();
 
 export function ClientForm(props: DialogFormProps<Client>) {
   const form = useReactiveForm<Client>({
@@ -125,9 +128,9 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   render={({ field, fieldState }) => {
                     return <VFormField label={'Coordinator'} for={'coordinator_id'} error={fieldState.error?.message}>
-                      <CoordinatorSelect
-                        value={String(field.value ?? '')}
-                        onValueChange={(value) => field.onChange(parseInt(value) || null)}
+                      <StaffSelect
+                        value={field.value}
+                        onValueChane={(value) => field.onChange(value)}
                       />
                     </VFormField>
                   }}
@@ -138,7 +141,10 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   render={({ field, fieldState }) => {
                     return <VFormField label={'Reviewer'} for={'reviewer_id'} error={fieldState.error?.message}>
-                      <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+                      <StaffSelect
+                        value={field.value}
+                        onValueChane={(value) => field.onChange(value)}
+                      />
                     </VFormField>
                   }}
                   name={'reviewer_id'}
@@ -206,25 +212,6 @@ export function ClientForm(props: DialogFormProps<Client>) {
     </Dialog>
   );
 }
-
-export type CoordinatorSelectProps = PropsWithChildren<React.ComponentProps<typeof Select>>;
-
-export function CoordinatorSelect(props: CoordinatorSelectProps) {
-  return (
-    <Select {...props}>
-      <SelectTrigger className={'w-full bg-white'}>
-        <SelectValue placeholder={'Select coordinator'}/>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={'1'}>
-          <span className={'size-5 rounded bg-muted flex justify-center items-center'}>C</span>
-          Coordinator 1
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  );
-}
-
 
 function AddressDialog(props: PropsWithChildren<{
   value?: Address|null;

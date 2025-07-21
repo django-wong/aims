@@ -48,7 +48,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
   return {
     setUrl,
     setMethod,
-    submitDisabled: form.formState.isSubmitting || !form.formState.isValid || form.formState.disabled,
+    submitDisabled: form.formState.isSubmitting || form.formState.disabled,
     ...form,
     submit: (event?: React.FormEvent<HTMLFormElement>) => {
       return new Promise<Response|void>((resolve) => {

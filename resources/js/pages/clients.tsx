@@ -14,13 +14,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { VFormField } from '@/components/vform';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
-import { ClientForm, CoordinatorSelect } from '@/pages/clients/form';
+import { ClientForm } from '@/pages/clients/form';
 import { BreadcrumbItem, Client } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
 import { EllipsisVertical, Filter, Plus } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
+import { StaffSelect } from '@/components/user-select';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -87,7 +88,7 @@ export default function Clients() {
     {
       accessorKey: 'actions',
       header: 'Actions',
-      cell: () => (
+      cell: ({row}) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size={'sm'}>
@@ -112,7 +113,7 @@ export default function Clients() {
                 className={'text-red-500'}
                 disabled={true}
                 onClick={() => {
-                  fetch(route('clients.destroy', { id: 1 })).then((res) => {
+                  fetch(route('clients.destroy', { id: row.original.id })).then((res) => {
                     if (res) {
                       table.reload();
                     }
@@ -164,21 +165,17 @@ export default function Clients() {
   return (
     <>
       <Head title={'Clients'} />
-      <ClientForm value={client} onSubmit={table.reload} open={open} onOpenChange={setOpen} />
       <AppLayout
         breadcrumbs={breadcrumbs}
         pageAction={
-          <Button
-            size={'sm'}
-            onClick={() => {
-              setClient(null);
-              setOpen(true);
-            }}
-          >
-            <Plus /> Add new client
-          </Button>
+          <ClientForm onSubmit={() => table.reload()}>
+            <Button size={'sm'}>
+              <Plus /> Add new client
+            </Button>
+          </ClientForm>
         }
       >
+        <ClientForm value={client} onSubmit={table.reload} open={open} onOpenChange={setOpen} />
         <div className={'px-6'}>
           <DataTable
             onRowClick={(row) => {
@@ -200,11 +197,10 @@ export default function Clients() {
                   <PopoverContent align={'start'}>
                     <div className={'flex flex-col gap-4'}>
                       <VFormField label={'Coordinator'} for={'coordinator'}>
-                        <CoordinatorSelect />
-                      </VFormField>
-
-                      <VFormField label={'Coordinator'} for={'coordinator'}>
-                        <CoordinatorSelect />
+                        {/*<StaffSelect*/}
+                        {/*  onValueChane={() => {}}*/}
+                        {/*  value={1}*/}
+                        {/*/>*/}
                       </VFormField>
                     </div>
                   </PopoverContent>

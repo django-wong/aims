@@ -54,11 +54,18 @@ export interface SharedData {
   [key: string]: unknown;
 }
 
+export interface UserRole extends BaseModel {
+  user_id: number;
+  org_id: number;
+  role: number; // 1=system, 2=org admin, 3=finance, 4=pm, 5=inspector, 6=client, 7=vendor, 8=staff
+}
+
 export interface User extends BaseModel {
   name: string;
   email: string;
   avatar?: string;
   email_verified_at: string | null;
+  user_role?: UserRole
 }
 
 export interface Contact extends BaseModel {

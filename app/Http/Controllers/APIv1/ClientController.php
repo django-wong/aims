@@ -89,11 +89,7 @@ class ClientController extends Controller
             $org = $request->user()->org->id;
 
             $client = Client::query()->create([
-                ...$request->only([
-                    'business_name',
-                    'coordinator_id',
-                    'reviewer_id'
-                ]),
+                ...$request->basic(),
                 'user_id' => $user->id,
                 'org_id' => $org,
                 'address_id' => $address->id ?? null,
@@ -135,12 +131,7 @@ class ClientController extends Controller
                 );
             }
 
-            $client->update($request->only([
-                'business_name',
-                'notes',
-                'reviewer_id',
-                'coordinator_id',
-            ]));
+            $client->update($request->basic());
 
             return $client;
         });

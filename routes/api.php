@@ -12,5 +12,6 @@ Route::middleware('auth:sanctum')->group(function () {
         'projects' => ProjectController::class,
         'clients' => ClientController::class,
         'orgs' => OrgController::class,
+        'users' => \App\Http\Controllers\APIv1\UserController::class,
     ]);
 });

@@ -22,6 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('quotes', '404')->name('quotes');
     Route::inertia('assignments', 'assignments')->name('assignments');
     Route::inertia('timesheets', 'timesheets')->name('timesheets');
+    Route::inertia('users', 'users')->name('users');
     Route::inertia('{any}', '404');
 });
 

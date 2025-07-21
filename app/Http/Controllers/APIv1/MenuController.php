@@ -59,6 +59,12 @@ class MenuController
                     'url' => route('invoices'),
                     'component' => 'invoices'
                 ],
+                'users' => [
+                    'name' => 'User & Access',
+                    'icon' => 'users',
+                    'url' => route('users'),
+                    'component' => 'users'
+                ]
             ],
         ];
     }
