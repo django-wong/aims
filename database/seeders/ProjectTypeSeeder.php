@@ -13,7 +13,6 @@ class ProjectTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            'ProjectType',
             'Drilling',
             'FPSO',
             'LNG',

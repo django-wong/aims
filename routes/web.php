@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,6 +15,10 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::inertia('setup', 'setup')->name('setup');
+    Route::controller(ProjectController::class)->group(function () {
+        Route::get('projects/{id}', 'edit')->name('projects.edit');
+        Route::get('projects', 'index')->name('projects');
+    });
     Route::inertia('projects', 'projects')->name('projects');
     Route::inertia('invoices', 'invoices')->name('invoices');
     Route::inertia('clients', 'clients')->name('clients');

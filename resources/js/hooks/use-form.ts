@@ -22,7 +22,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
   const [method, setMethod] = useState(props.method ?? 'POST' as Method);
   const [url, setUrl] = useState(props.url ?? location.href);
 
-  function send(data: Body): Promise<Response|void> {
+  function send(data: T): Promise<Response|void> {
     return fetch(url, {
       method: method,
       headers: headers(),

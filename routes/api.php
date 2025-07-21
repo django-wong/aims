@@ -13,5 +13,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'clients' => ClientController::class,
         'orgs' => OrgController::class,
         'users' => \App\Http\Controllers\APIv1\UserController::class,
+        'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
+        'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
     ]);
 });

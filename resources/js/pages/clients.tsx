@@ -21,7 +21,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
 import { EllipsisVertical, Filter, Plus } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
-import { StaffSelect } from '@/components/user-select';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -86,9 +86,20 @@ export default function Clients() {
       },
     },
     {
+      accessorKey: 'Reminder',
+      header: () => {
+        return <>
+          <span className={'cursor-help'} title={'Email reminder will be sent to the client if the invoice is approved within this days.'}>REMINDER (DAYS)</span>
+        </>;
+      },
+      cell: ({ row }) => {
+        return <>{row.original.invoice_reminder}</>;
+      },
+    },
+    {
       accessorKey: 'actions',
       header: 'Actions',
-      cell: ({row}) => (
+      cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size={'sm'}>
@@ -140,6 +151,12 @@ export default function Clients() {
       include: 'user,address,coordinator,reviewer',
     },
     columns,
+    initialState: {
+      columnPinning: {
+        // left: ['select', 'name'],
+        right: ['actions'],
+      }
+    }
   });
 
   const { searchParams, setSearchParams } = table;

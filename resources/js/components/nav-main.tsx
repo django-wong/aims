@@ -21,7 +21,8 @@ export function NavMain({
   items: MainNavItem[]
 }) {
   const isActive = (item: MainNavItem) => {
-    return window.location.pathname === (new URL(item.url)).pathname;
+    const url = new URL(item.url);
+    return window.location.href.startsWith(url.origin + url.pathname);
   };
 
   return (

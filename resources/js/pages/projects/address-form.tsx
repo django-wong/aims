@@ -17,14 +17,16 @@ export const schema = zod.object({
   full_address: zod.string().optional().nullable(),
 });
 
-export type FormProviderProps<T extends BaseModel> = {
+type ThisAddress = zod.infer<typeof schema>;
+
+export type FormProviderProps<T> = {
   value: T | null;
   children?: React.ReactNode;
 };
 
 export const AddressFormContext = React.createContext<ReturnType<typeof useReactiveForm<Address>> | null>(null);
 
-export function AddressFormProvider(props: FormProviderProps<Address>) {
+export function AddressFormProvider(props: FormProviderProps<ThisAddress>) {
   const form = useReactiveForm<Address>({
     resolver: zodResolver(schema) as any,
     defaultValues: props.value || undefined,

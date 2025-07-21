@@ -49,8 +49,8 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
   if (selectable) {
     columns.unshift({
       accessorKey: 'select',
-      minSize: 32,
-      maxSize: 32,
+      minSize: 55,
+      maxSize: 55,
       header: ({ table }) => (
         <>
           <Checkbox
@@ -80,11 +80,6 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
   });
 
   const table = useReactTable<T>({
-    initialState: {
-      columnPinning: {
-        right: ['actions']
-      }
-    },
     pageCount: totalPage,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

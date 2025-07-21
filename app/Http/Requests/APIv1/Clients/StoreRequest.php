@@ -18,6 +18,7 @@ class StoreRequest extends FormRequest
             'coordinator_id' => 'nullable|exists:users,id',
             'reviewer_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string|max:1000',
+            'invoice_reminder' => 'nullable|integer|min:0|max:30',
             'address' => 'nullable|array',
             'address.country' => 'string|max:255',
             'address.state' => 'string|max:255',
@@ -41,7 +42,7 @@ class StoreRequest extends FormRequest
 
     public function basic(): array
     {
-        return $this->only(['business_name', 'coordinator_id', 'reviewer_id', 'notes']);
+        return $this->only(['business_name', 'coordinator_id', 'reviewer_id', 'notes', 'invoice_reminder']);
     }
 
 }

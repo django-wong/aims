@@ -114,4 +114,7 @@ export const ClientSelect = createSelect<Client>({
     item.user?.email || ''
   ],
   getItemLabel: (item) => item.business_name || item.user?.name || 'Unknown Client',
+  searchParams: new URLSearchParams({
+    sort: 'business_name'
+  }),
 });

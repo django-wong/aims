@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Assignment extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
-    use HasFactory;
+    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'

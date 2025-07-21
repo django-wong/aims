@@ -30,15 +30,12 @@ type TableCellWrapperProps = PropsWithChildren<React.ComponentProps<'div'> & Var
 
 export function computedStyle<T>(def: Column<T>): React.CSSProperties {
   const isPined = def.getIsPinned();
-  if (!isPined) {
-    return {};
-  }
   return {
-    position: isPined ? 'sticky' : 'relative',
+    // position: isPined ? 'sticky' : 'relative',
     left: isPined ? def.getStart('left') + 'px' : 'initial',
     right: isPined ? def.getStart('right') + 'px' : 'initial',
     width: def.getSize() + 'px',
-    zIndex: isPined ? 1 : 0,
+    // zIndex: isPined ? 1 : 0,
   };
 }
 

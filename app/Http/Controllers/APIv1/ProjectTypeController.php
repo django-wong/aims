@@ -12,7 +12,7 @@ class ProjectTypeController extends Controller
      */
     public function index()
     {
-        //
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

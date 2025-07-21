@@ -20,7 +20,6 @@ class AssignmentSeeder extends Seeder
     {
         Assignment::factory(50)
             ->recycle(Project::query()->get())
-            ->recycle(Client::query()->get())
             ->recycle(AssignmentType::query()->get())
             ->recycle(Org::query()->get())
             ->create();

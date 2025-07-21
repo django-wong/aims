@@ -22,7 +22,6 @@ class AssignmentFactory extends Factory
     {
         return [
             'assignment_type_id' => null,
-            'client_id' => Client::factory(),
             'project_id' => Project::factory(),
             'org_id' => Org::factory(),
         ];

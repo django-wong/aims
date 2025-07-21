@@ -25,9 +25,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { Circle, LocationEdit } from 'lucide-react';
 import { StaffSelect } from '@/components/user-select';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-const scheme = zod.object({
+const schema = zod.object({
   business_name: zod.string().min(1, 'Business name is required'),
   coordinator_id: zod.number().nullable().optional(),
   reviewer_id: zod.number().nullable().optional(),
@@ -38,15 +37,18 @@ const scheme = zod.object({
     name: zod.string().min(1, 'Contact name is required'),
     email: zod.string().email('Invalid email format')
   }).optional(),
-  notes: zod.string().optional().nullable()
+  notes: zod.string().optional().nullable(),
+  invoice_reminder: zod.number().min(1).max(30).default(7).transform(
+    (value) => {
+      return value < 1 ? 1 : value > 30 ? 30 : value;
+    }
+  ),
 });
-
-const queryClient = new QueryClient();
 
 export function ClientForm(props: DialogFormProps<Client>) {
   const form = useReactiveForm<Client>({
     defaultValues: props.value || undefined,
-    resolver: zodResolver(scheme) as any
+    resolver: zodResolver(schema) as any
   });
 
   useEffect(() => {
@@ -86,7 +88,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
               <div className={'col-span-12'}>
                 <FormField
                   render={({ field, fieldState }) => {
-                    return <VFormField label={'Business Name / Group'} for={'business_name'} error={fieldState.error?.message}>
+                    return <VFormField  required label={'Business Name / Group'} for={'business_name'} error={fieldState.error?.message}>
                       <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
                     </VFormField>
                   }}
@@ -97,7 +99,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   control={form.control}
                   render={({ field, fieldState }) => {
-                    return <VFormField label={'Contact Name'} for={'contact_name'} error={fieldState.error?.message}>
+                    return <VFormField required label={'Contact Name'} for={'contact_name'} error={fieldState.error?.message}>
                       <Input
                         value={field.value} onChange={field.onChange} className={'bg-white'}
                         placeholder={'Contact Name'}
@@ -111,7 +113,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   control={form.control}
                   render={({ field, fieldState }) => {
-                    return <VFormField label={'Email'} for={'email'} error={fieldState.error?.message}>
+                    return <VFormField required label={'Email'} for={'email'} error={fieldState.error?.message}>
                       <Input
                         placeholder={'example@mail.com'}
                         type={'email'}
@@ -182,6 +184,23 @@ export function ClientForm(props: DialogFormProps<Client>) {
                       </VFormField>
                     );
                   }}
+                />
+              </div>
+              <div className={'col-span-4'}>
+                <FormField
+                  render={({ field, fieldState }) => {
+                    return <VFormField label={'Invoice Reminder'} for={'invoice_reminder'} error={fieldState.error?.message}>
+                      <Input
+                        type={'number'}
+                        min={1}
+                        max={30}
+                        value={field.value}
+                        onChange={(event) => field.onChange(parseInt(event.target.value))}
+                        className={'bg-white'} placeholder={'in Days'}
+                      />
+                    </VFormField>
+                  }}
+                  name={'invoice_reminder'}
                 />
               </div>
               <div className={'col-span-12'}>

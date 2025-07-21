@@ -107,11 +107,25 @@ interface Quote extends BaseModel {
   title: string;
 }
 
+export interface ProjectType extends BaseModel {
+  org_id: number | null;
+  name: string;
+}
+
 export interface Project extends BaseModel {
   quote_id: number | null;
   quote?: Quote;
   title: string;
-  code: string;
+  po_number: string;
+  org_id: number;
+  org?: Org;
+  project_type_id: number;
+  project_type?: ProjectType;
+  client_id: number | null;
+  client?: Client;
+  budget: number | null;
+  spent: number | null;
+  status: number;
 }
 
 export interface AssignmentType extends BaseModel {
@@ -167,4 +181,14 @@ export type PagedResponse<T = Record<string, unknown>> = {
   total: number;
   last_page: number;
   first_page: number;
+}
+
+export interface Vendor extends BaseModel {
+  org_id: number;
+  name: string;
+  org?: Org;
+  business_name: string;
+  address_id: number | null;
+  address?: Address;
+  notes: string | null
 }

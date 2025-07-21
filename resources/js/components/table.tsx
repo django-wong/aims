@@ -22,7 +22,7 @@ export function SortButton(props: PropsWithChildren<SortButtonProps>) {
     props.onSortChange(nextDirection())
   }
   return (
-    <Button variant={'ghost'} className={'flex items-center gap-2'} onClick={onClick}>
+    <Button variant={'ghost'} className={'flex items-center gap-2 p-0'} onClick={onClick}>
       {props.children}
       <div className={'flex items-center gap-1'}>
         <ChevronUp

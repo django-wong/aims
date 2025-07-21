@@ -24,7 +24,6 @@ return new class extends Migration
                 ->constrained('orgs');
 
             $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
-            $table->foreignId('client_id')->constrained();
             $table->foreignId('project_id')->constrained();
 
             $table->string('client_po')->nullable()->comment('Client Purchase Order Number');
