@@ -6,7 +6,6 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
-
     $response->assertStatus(200);
 });
 
@@ -19,7 +18,7 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('setup', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {
@@ -36,7 +35,7 @@ test('users can not authenticate with invalid password', function () {
 test('users can logout', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post('/logout');
+    $response = $this->actingAs($user)->get('/logout');
 
     $this->assertGuest();
     $response->assertRedirect('/');
