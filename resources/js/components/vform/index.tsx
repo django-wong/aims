@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react';
 import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
-  label: string;
+  label?: string;
   for: string;
   renderLabel?: (props: Pick<FormFieldProps, 'label' | 'for'>) => React.ReactNode;
   error?: string|null;
@@ -16,15 +16,15 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
       {props.renderLabel ? (
         props.renderLabel(props)
       ) : (
-        <div className="flex items-center justify-start">
+        props.label ? (<div className="flex items-center justify-start">
           <Label className={'line-clamp-1 text-foreground text-sm leading-4 font-medium'} htmlFor={props.for}>
             {props.label}
             {props.required && <span className="text-red-500">&nbsp;*</span>}
           </Label>
-        </div>
+        </div>) : null
       )}
       <div className={'grid gap-1'}>
-        <div>{props.children}</div>
+        <div className={props.error ? 'has-error' : ''}>{props.children}</div>
         {props.error && <div className="text-xs text-red-500">{props.error}</div>}
       </div>
     </div>

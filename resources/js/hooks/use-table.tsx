@@ -144,13 +144,13 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
         }
         return response.json();
       })
-      .then((response) => {
-        return new Promise<PagedResponse<T>>((resolve) => {
-          setTimeout(() => {
-            resolve(response);
-          }, 1500);
-        });
-      })
+      // .then((response) => {
+      //   return new Promise<PagedResponse<T>>((resolve) => {
+      //     setTimeout(() => {
+      //       resolve(response);
+      //     }, 1500);
+      //   });
+      // })
       .then((response) => {
         startTransition(() => {
           setTotal(response.total || 0);

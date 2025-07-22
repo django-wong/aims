@@ -16,12 +16,11 @@ import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { ClientForm } from '@/pages/clients/form';
 import { BreadcrumbItem, Client } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { EllipsisVertical, Filter, Plus } from 'lucide-react';
+import { EllipsisVertical, Filter, Mail, Plus } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -42,7 +41,11 @@ export default function Clients() {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <>{row.original.user?.name || 'N/A'}</>,
+      cell: ({ row }) => (
+        <Link href={route('clients.edit', { id: row.original.id })} className={'underline'}>
+          {row.original.user?.name || 'N/A'}
+        </Link>
+      ),
       size: 200,
     },
     {
@@ -54,7 +57,8 @@ export default function Clients() {
       accessorKey: 'email',
       header: 'Email',
       cell: ({ row }) => (
-        <a href={`mailto:${row.original.user?.email}`} className={'text-blue-500 hover:underline'}>
+        <a href={`mailto:${row.original.user?.email}`} className={'inline-flex items-center gap-1'}>
+          {/*<Mail className={'w-4'}/> */}
           {row.original.user?.email}
         </a>
       ),
@@ -116,7 +120,13 @@ export default function Clients() {
                 Duplicate
                 <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  startTransition(() => {
+                    setClient(row.original);
+                    setOpen(true);
+                  });
+                }}>
                 Edit
                 <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
               </DropdownMenuItem>
@@ -150,13 +160,7 @@ export default function Clients() {
     defaultParams: {
       include: 'user,address,coordinator,reviewer',
     },
-    columns,
-    initialState: {
-      columnPinning: {
-        // left: ['select', 'name'],
-        right: ['actions'],
-      }
-    }
+    columns
   });
 
   const { searchParams, setSearchParams } = table;
@@ -195,12 +199,6 @@ export default function Clients() {
         <ClientForm value={client} onSubmit={table.reload} open={open} onOpenChange={setOpen} />
         <div className={'px-6'}>
           <DataTable
-            onRowClick={(row) => {
-              startTransition(() => {
-                setClient(row.original);
-                setOpen(true);
-              });
-            }}
             table={table}
             left={
               <>

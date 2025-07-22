@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,5 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('timesheets', 'timesheets')->name('timesheets');
     Route::inertia('users', 'users')->name('users');
     Route::inertia('{any}', '404');
+
+    Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
 });
 

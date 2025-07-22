@@ -192,3 +192,25 @@ export interface Vendor extends BaseModel {
   address?: Address;
   notes: string | null
 }
+
+export interface Comment<T = unknown> extends BaseModel {
+  content: string;
+  private: boolean;
+  commentable_type: string;
+  commentable_id: number;
+  commentable?: T
+  user_id: number;
+  user?: User;
+  attachments?: Attachment<Comment>[];
+}
+
+export interface Attachment<T = unknown> extends BaseModel {
+  attachable_type: string;
+  attachable_id: number;
+  attachable?: T
+  name: string;
+  mime_type: string|null;
+  path: string;
+  disk: string;
+  size: number;
+}

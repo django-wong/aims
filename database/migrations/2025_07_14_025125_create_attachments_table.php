@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->morphs('attachable');
             $table->string('name')->index();
+            $table->string('mime_type')->nullable()->comment('MIME type of the file, e.g., image/jpeg, application/pdf');
             $table->string('path');
-            $table->string('size')->nullable()->comment('File size in bytes');
+            $table->string('disk')->default('local');
+            $table->unsignedBigInteger('size')->nullable()->comment('File size in bytes');
             $table->timestamps();
             $table->softDeletes();
         });

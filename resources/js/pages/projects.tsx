@@ -16,7 +16,6 @@ import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
 
 import { ClientSelect } from '@/components/client-select';
 import { DataTable } from '@/components/data-table-2';
-import { SortButton } from '@/components/table';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { ProjectForm } from '@/pages/projects/form';

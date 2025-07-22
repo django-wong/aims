@@ -4,7 +4,7 @@ import * as React from 'react';
 import { BreadcrumbItem, Client } from '@/types';
 import { FlatTabList, FlatTabs, FlatTabTrigger } from '@/components/ui/flat-tabs';
 import { useLocationHash } from '@/hooks/use-location-hash';
-import { TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PropsWithChildren } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Edit(props: ClientEditProps) {
-  const [hash, setHash] = useLocationHash('details');
+  const [hash, setHash] = useLocationHash('notes');
 
   return <>
     <Layout
@@ -41,16 +41,37 @@ export default function Edit(props: ClientEditProps) {
       breadcrumbs={[...breadcrumbs, {title: props.client.business_name, href: '#'}]}>
       <Head title="show"/>
       <div className={'px-6'}>
-        <FlatTabs value={hash} onValueChange={setHash}>
-          <FlatTabList>
-            <FlatTabTrigger value={'details'}>Details</FlatTabTrigger>
-            <FlatTabTrigger value={'contacts'}>Contacts</FlatTabTrigger>
-            <FlatTabTrigger value={'assignments'}>Assignments</FlatTabTrigger>
-          </FlatTabList>
-          <TabsContent value={'details'}>
+        <Tabs value={hash} onValueChange={setHash}>
+          <TabsList>
+            <TabsTrigger value={'notes'}>Notes</TabsTrigger>
+            <TabsTrigger value={'contacts'}>Contacts</TabsTrigger>
+            <TabsTrigger value={'assignments'}>Assignments</TabsTrigger>
+          </TabsList>
+          <div className={'mt-4'}>
             <div>
-              <div className={'flex flex-wrap'}>
+              <div className={'flex flex-wrap gap-8'}>
+                <div className={'flex-1'}>
+                  <TabsContent value={'notes'}>
+                    <div className={'flex flex-col gap-4 bg-muted/50 p-2 rounded-lg border-border/30 border'}>
+                      <Textarea className={'min-h-24 bg-background'} placeholder={'Notes...'} value={''} onChange={() => {}} />
+                      <div className={'flex justify-end'}>
+                        <Button>Save</Button>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value={'contacts'}>
+                    <Content>
+                      All contacts for client {props.client.business_name} will be shown here.
+                    </Content>
+                  </TabsContent>
+                  <TabsContent value={'assignments'}>
+                    <Content>
+                      Here will show the list of assignments for client {props.client.business_name}.
+                    </Content>
+                  </TabsContent>
+                </div>
                 <div className={'flex min-w-[400px] flex-col'}>
+                  <h1 className={'font-bold text-xl mb-4'}>Client Profile</h1>
                   <Line label={'Business Name / Group'}>
                     {props.client.business_name}
                   </Line>
@@ -67,26 +88,10 @@ export default function Edit(props: ClientEditProps) {
                     {props.client.address?.full_address ?? 'N/A'}
                   </Line>
                 </div>
-                <div className={'flex-1 flex flex-col gap-4'}>
-                  <Textarea className={'min-h-54'} placeholder={'Notes...'} value={''} onChange={() => {}} />
-                  <div className={'flex justify-end'}>
-                    <Button>Save</Button>
-                  </div>
-                </div>
               </div>
             </div>
-          </TabsContent>
-          <TabsContent value={'contacts'}>
-            <Content>
-              All contacts for client {props.client.business_name} will be shown here.
-            </Content>
-          </TabsContent>
-          <TabsContent value={'assignments'}>
-            <Content>
-              Here will show the list of assignments for client {props.client.business_name}.
-            </Content>
-          </TabsContent>
-        </FlatTabs>
+          </div>
+        </Tabs>
       </div>
     </Layout>
   </>

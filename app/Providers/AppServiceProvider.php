@@ -37,13 +37,5 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(1000)
                 ->by($request->user()?->id ?: $request->ip());
         });
-
-        // System can do anything
-        \Illuminate\Support\Facades\Gate::before(function (User $user, string $ability) {
-            if ($user->email === config('app.system_admin') || $user->id === 1) {
-                return true;
-            }
-            return null;
-        });
     }
 }

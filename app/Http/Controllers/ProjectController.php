@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -19,6 +20,10 @@ class ProjectController extends Controller
      */
     public function edit($id)
     {
+        $project = Project::query()->findOrFail($id);
+
+        Gate::authorize('view', $project);
+
         return inertia('projects/edit', ['project' => Project::query()->findOrFail($id)]);
     }
 }

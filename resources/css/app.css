@@ -101,4 +101,7 @@
   .status-2 {
     --color-primary: black
   }
+  .has-error {
+    --color-input: var(--color-destructive);
+  }
 }

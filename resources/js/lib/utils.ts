@@ -5,9 +5,8 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function headers(headers: Record<string, string> = {}): Record<string, string> {
+export function defaultHeaders(headers: Record<string, string|undefined> = {}): Record<string, string> {
   return {
-    'Content-Type': 'application/json',
     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
     'Accept': 'application/json',
     ...headers,

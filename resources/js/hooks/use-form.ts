@@ -1,6 +1,6 @@
 import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath } from 'react-hook-form';
 import React, { useState } from 'react';
-import { headers } from '@/lib/utils';
+import { defaultHeaders } from '@/lib/utils';
 
 type Method = 'POST' | 'PUT' | 'PATCH';
 type Body = {
@@ -10,6 +10,8 @@ type Body = {
 interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   url?: URL | string;
   method?: Method;
+  serialize?: (formData: T) => BodyInit | null | undefined;
+  contentType?: string;
 }
 
 /**
@@ -23,10 +25,18 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
   const [url, setUrl] = useState(props.url ?? location.href);
 
   function send(data: T): Promise<Response|void> {
+    const formData = (props.serialize || JSON.stringify)(data);
+    const headers = new Headers(
+      defaultHeaders({
+        'Content-Type': props.contentType || 'application/json'
+      })
+    );
+    if (formData instanceof FormData) {
+      headers.delete('Content-Type');
+    }
+
     return fetch(url, {
-      method: method,
-      headers: headers(),
-      body: JSON.stringify(data),
+      method: method, headers: headers, body: formData,
     }).then(async res => {
       if (!res.ok) {
         const json = await res.json();
