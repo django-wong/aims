@@ -22,12 +22,17 @@ class VendorController extends Controller
         ];
     }
 
+    protected function allowedSorts()
+    {
+        return ['name', 'business_name'];
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return $this->getQueryBuilder()->scoped()->paginate();
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

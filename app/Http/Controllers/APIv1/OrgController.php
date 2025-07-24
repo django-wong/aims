@@ -7,12 +7,17 @@ use Illuminate\Http\Request;
 
 class OrgController extends Controller
 {
+    protected function allowedSorts()
+    {
+        return ['name'];
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

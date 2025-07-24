@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             ClientSeeder::class,
             ProjectTypeSeeder::class,
             ProjectSeeder::class,
+            VendorSeeder::class,
             AssignmentSeeder::class,
             TimesheetSeeder::class,
             TimesheetItemSeeder::class

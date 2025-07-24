@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class AssignmentType extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentTypeFactory> */
-    use HasFactory;
+    use HasFactory, HasManyAssignments, BelongsToOrg, DynamicPagination;
 }

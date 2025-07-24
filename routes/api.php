@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\APIv1\AssignmentController;
 use App\Http\Controllers\APIv1\ClientController;
 use App\Http\Controllers\APIv1\CommentController;
 use App\Http\Controllers\APIv1\MenuController;
@@ -17,5 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
         'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
         'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
         'comments' => CommentController::class,
+        'assignments' => AssignmentController::class,
     ]);
 });

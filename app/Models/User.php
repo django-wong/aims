@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, DynamicPagination;
+    use HasFactory, Notifiable, DynamicPagination, HasManyAssignments;
 
     /**
      * The attributes that are mass assignable.
@@ -87,6 +87,13 @@ class User extends Authenticatable
     {
         return $this->hasOne(
             UserRole::class, 'user_id', 'id'
+        );
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(
+            Assignment::class, 'inspector_id', 'id'
         );
     }
 }

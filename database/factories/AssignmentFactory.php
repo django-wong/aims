@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\AssignmentType;
 use App\Models\Client;
 use App\Models\Org;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,9 +23,20 @@ class AssignmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'assignment_type_id' => null,
+            'assignment_type_id' => AssignmentType::factory(),
             'project_id' => Project::factory(),
             'org_id' => Org::factory(),
+
+            'operation_org_id' => $this->faker->randomElement([
+                null,
+                Org::factory()
+            ]),
+
+            'inspector_id' => User::factory(),
+            'vendor_id' => Vendor::factory(),
+            'sub_vendor_id' => Vendor::factory(),
+            'report_required' => $this->faker->boolean(),
+            'notes' => $this->faker->paragraph(),
         ];
     }
 }

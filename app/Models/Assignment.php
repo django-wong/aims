@@ -2,15 +2,53 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class Assignment extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
-    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject;
+    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
     ];
+
+    public function operation_org(): BelongsTo
+    {
+        return $this->belongsTo(Org::class, 'operation_org_id');
+    }
+
+    public function assignment_type(): BelongsTo
+    {
+        return $this->belongsTo(AssignmentType::class, 'assignment_type_id');
+    }
+
+    public function scopeVisible(Builder $query, Org|null|int $to = null)
+    {
+        return $query->where(function (Builder $query) use ($to) {
+            $id = $to instanceof Org ? $to->id : $to;
+
+            if (is_null($id)) {
+                $id = auth()->user()->org->id;
+            }
+
+            $query->whereAny(['operation_org_id', 'org_id'], $id);
+        });
+    }
+
+    public function inspector(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class, 'inspector_id'
+        );
+    }
+
+    public function sub_vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class, 'sub_vendor_id');
+    }
 }

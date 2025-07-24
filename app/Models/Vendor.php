@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Vendor extends Model
 {
     /** @use HasFactory<\Database\Factories\VendorFactory> */
-    use HasFactory, DynamicPagination;
+    use HasFactory, DynamicPagination, BelongsToOrg;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at'

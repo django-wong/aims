@@ -34,7 +34,7 @@ export function createSelect<T extends BaseModel>(options: CreateSelectProps<T>)
           ) : (
             <>
               <span className={'text-gray-500'}>
-                {props.placeholder || 'Choose'}
+                {props.placeholder || ''}
               </span>
             </>
           )}

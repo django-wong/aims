@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Org;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class AssignmentTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'org_id' => Org::factory(),
+            'name' => $this->faker->unique()->word(3)
         ];
     }
 }

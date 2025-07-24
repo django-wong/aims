@@ -144,14 +144,16 @@ export interface Assignment extends BaseModel {
   org?: Org;
   operation_org_id: number | null;
   operation_org?: Org;
-  assignment_type_id: number;
+  assignment_type_id: number | null;
   assignment_type?: AssignmentType;
-  client_id: number;
-  client?: Client;
   project_id: number;
   project?: Project;
-  purchase_order_id: number | null;
-  purchase_order?: PurchaseOrder;
+  vendor_id: number | null;
+  vendor?: Vendor;
+  sub_vendor_id: number | null;
+  sub_vendor?: Vendor;
+  report_required: boolean;
+  description: string | null;
 }
 
 export type Invoiceable = {

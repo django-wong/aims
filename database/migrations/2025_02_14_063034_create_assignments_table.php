@@ -25,16 +25,15 @@ return new class extends Migration
 
             $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
             $table->foreignId('project_id')->constrained();
-
-            $table->string('client_po')->nullable()->comment('Client Purchase Order Number');
-            $table->date('po_delivery_date')->nullable()->comment('Client Purchase Order Delivery Date');
+            $table->foreignId('inspector_id')->index()->nullable()->constrained('users');
             $table->foreignId('vendor_id')->nullable()->constrained();
             $table->foreignId('sub_vendor_id')->nullable()->constrained('vendors');
 
-            $table->boolean('report_required')->default(false)->comment('Indicates if a report is required for this assignment');
+            $table->boolean('report_required')->default(false)
+                ->comment('Indicates if a report is required for this assignment');
 
-
-            $table->longText('description')->nullable()->comment('Description of the assignment');
+            $table->longText('notes')->nullable()
+                ->comment('Notes of the assignment');
             $table->timestamps();
         });
     }

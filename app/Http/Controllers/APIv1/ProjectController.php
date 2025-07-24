@@ -30,6 +30,11 @@ class ProjectController extends Controller
         ];
     }
 
+    protected function allowedSorts()
+    {
+        return ['title'];
+    }
+
     /**
      * Display a listing of the resource.
      */

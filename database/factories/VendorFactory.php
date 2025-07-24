@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
+use App\Models\Org;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,11 @@ class VendorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'org_id' => Org::factory(),
+            'name' => $this->faker->unique()->company(),
+            'business_name' => $this->faker->company(),
+            'address_id' => Address::factory(),
+            'notes' => $this->faker->paragraph(3),
         ];
     }
 }
