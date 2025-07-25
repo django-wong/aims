@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Org extends Model
 {
     /** @use HasFactory<\Database\Factories\OrgFactory> */
-    use HasFactory;
+    use HasFactory, HasManyAssignments;
+
+    public static function current(): ?self
+    {
+        return auth()->user()->org;
+    }
 }

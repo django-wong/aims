@@ -18,6 +18,7 @@ import {
 import { AssignmentForm } from '@/pages/assignments/form';
 import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
+import { Link } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -35,7 +36,11 @@ const columns: ColumnDef<Assignment>[] = [
     accessorKey: 'project_id',
     header: 'Project',
     cell: ({ row }) => {
-      return row.original.project?.title ?? row.original.project_id;
+      return <>
+        <Link href={route('projects.edit', { id: row.original.project_id })}>
+          {row.original.project?.title ?? row.original.project_id}
+        </Link>
+      </>;
     }
   },
   {
@@ -93,7 +98,7 @@ export default function Assignments() {
   const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') ?? '');
   const debouncer = useDebouncer();
   return (
-    <AppLayout breadcrumbs={breadcrumbs} pageAction={<AssignmentForm onSubmit={() => {}}><Button>New Assignment</Button></AssignmentForm>}>
+    <AppLayout breadcrumbs={breadcrumbs} pageAction={<AssignmentForm onSubmit={() => {table.reload()}}><Button>New Assignment</Button></AssignmentForm>}>
       <div className={'px-6'}>
         <div className={'mb-4'}>
           <>

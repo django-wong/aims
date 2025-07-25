@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RoleSelect } from '@/components/role-select';
+import { useState } from 'react';
+import { defaultHeaders } from '@/lib/utils';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -67,11 +70,12 @@ const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: 'role',
-    header: 'Role',
+    header: 'User Role',
+    meta: {
+      center: true,
+    },
     cell: ({ row }) => <>
-      <Badge>
-        {describeUserRole(row.original.user_role?.role || 0)}
-      </Badge>
+      <UserRoleBadge user={row.original}/>
     </>,
   },
   {
@@ -165,5 +169,48 @@ function UserActions({ user }: { user: User }) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+  );
+}
+
+
+export const UserRoleBadge = ({ user }: { user: User }) => {
+  const [role, setRole] = useState(user.user_role?.role || null);
+  const [loading, setLoading] = useState(false);
+
+  function save(role_id: number) {
+    setLoading(true);
+    fetch(route('users.update_role', {id: user.id}), {
+      method: 'POST',
+      headers: defaultHeaders({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify({
+        role: role_id,
+      })
+    }).then((res) => {
+      if (res.ok) {
+        setRole(role_id);
+      }
+    })
+    setLoading(false);
+  }
+  return (
+    <RoleSelect
+      onValueChane={(value) => {
+        save(value);
+      }}
+      value={user.user_role?.role || null}
+      renderTrigger={() => {
+        return (
+          loading ? (
+              <>saving...</>
+            ) : (
+            <Badge variant={'secondary'} className={'cursor-pointer'}>
+              {describeUserRole(role || 0)}
+            </Badge>
+          )
+        );
+      }}
+    />
   );
 }

@@ -3,7 +3,9 @@
 namespace App\Policies;
 
 use App\Models\Assignment;
+use App\Models\Org;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class AssignmentPolicy
@@ -27,9 +29,14 @@ class AssignmentPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Org $org): bool
     {
-        return false;
+        return UserRole::query()->where('user_id', $user->id)
+            ->where('org_id', $org->id)
+            ->whereIn('role', [
+                UserRole::ADMIN, UserRole::PM, UserRole::STAFF
+            ])
+            ->exists();
     }
 
     /**

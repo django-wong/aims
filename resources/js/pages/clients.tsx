@@ -19,7 +19,7 @@ import { BreadcrumbItem, Client } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { EllipsisVertical, Filter, Mail, Plus } from 'lucide-react';
+import { EllipsisVertical, Filter, Plus } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [

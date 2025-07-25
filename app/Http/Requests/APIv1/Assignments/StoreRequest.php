@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Assignments;
+namespace App\Http\Requests\APIv1\Assignments;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,7 +15,8 @@ class StoreRequest extends FormRequest
             'vendor_id' => 'nullable|exists:vendors,id',
             'sub_vendor_id' => 'nullable|exists:vendors,id',
             'operation_org_id' => 'nullable|exists:orgs,id',
-            'notes' => 'nullable|string|max:1000'
+            'notes' => 'nullable|string|max:1000',
+            'report_required' => 'nullable|boolean',
         ];
     }
 }

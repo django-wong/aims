@@ -6,6 +6,7 @@ use App\Http\Controllers\APIv1\CommentController;
 use App\Http\Controllers\APIv1\MenuController;
 use App\Http\Controllers\APIv1\OrgController;
 use App\Http\Controllers\APIv1\ProjectController;
+use App\Http\Controllers\APIv1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -14,10 +15,14 @@ Route::middleware('auth:sanctum')->group(function () {
         'projects' => ProjectController::class,
         'clients' => ClientController::class,
         'orgs' => OrgController::class,
-        'users' => \App\Http\Controllers\APIv1\UserController::class,
+        'users' => UserController::class,
         'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
         'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
         'comments' => CommentController::class,
         'assignments' => AssignmentController::class,
+        'assignment-types' => \App\Http\Controllers\APIv1\AssignmentTypeController::class,
+        'timesheets' => \App\Http\Controllers\APIv1\TimesheetController::class,
     ]);
+
+    Route::post('users/{id}/update-role', [UserController::class, 'updateRole'])->name('users.update_role');
 });

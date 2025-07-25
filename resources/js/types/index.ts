@@ -79,11 +79,14 @@ export interface Address extends BaseModel {
   state: string;
   zip: string;
   country: string;
-  full_address?: string|null; // Optional, can be computed from other fields
+  full_address?: string|null; // Computed from other fields
 }
 
-export interface BaseModel {
+export interface Model {
   id: number;
+}
+
+export interface BaseModel extends Model {
   created_at: string;
   updated_at: string;
   deleted_at?: string | null; // Optional for soft deletes
@@ -215,4 +218,31 @@ export interface Attachment<T = unknown> extends BaseModel {
   path: string;
   disk: string;
   size: number;
+}
+
+export interface Timesheet extends BaseModel {
+  assignment_id: number;
+  assignment?: Assignment;
+  hours: number;
+  km_traveled: number;
+  timesheet_items?: TimesheetItem[];
+  timesheet_items_count?: number;
+}
+
+export interface TimesheetItem extends BaseModel {
+  timesheet_id: number;
+  timesheet?: Timesheet;
+  user_id: number;
+  user?: User;
+  item_number: string | null;
+  date: string | null;
+  week_number: number | null;
+  hours: number;
+  work_hours: number;
+  travel_hours: number;
+  report_hours: number;
+  days: number;
+  overnights: number;
+  km_traveled: number;
+  approved: boolean;
 }

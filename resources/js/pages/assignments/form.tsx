@@ -21,11 +21,12 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { StaffSelect } from '@/components/user-select';
 import { OrgSelect } from '@/components/org-select';
+import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 
 const schema = zod.object({
   'project_id': zod.number().int().positive(),
   'operation_org_id': zod.number().int().positive().nullable(),
-  'assignment_type_id': zod.number().int().positive(),
+  'assignment_type_id': zod.number().int().positive().nullable(),
   'inspector_id': zod.number().int().positive().nullable(),
   'vendor_id': zod.number().int().positive().nullable(),
   'sub_vendor_id': zod.number().int().positive().nullable(),
@@ -37,6 +38,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
   const form = useReactiveForm<zod.infer<typeof schema>>({
     defaultValues: {
       operation_org_id: null,
+      assignment_type_id: null,
       sub_vendor_id: null,
       vendor_id: null,
       notes: '',
@@ -50,7 +52,8 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
   function save() {
     form.submit().then(async (response) => {
       if (response) {
-        props.onSubmit(await response.json())
+        props.onSubmit(await response.json());
+        props.onOpenChange?.(false);
       }
     })
   }
@@ -79,6 +82,22 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         label={'Project'}
                         className={'col-span-12'}>
                         <ProjectSelect onValueChane={field.onChange} value={field.value} />
+                      </VFormField>
+                    </>
+                  )}
+                />
+                <FormField
+                  name={'assignment_type_id'}
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <VFormField
+                        required
+                        error={fieldState.error?.message}
+                        for={'assignment_type_id'}
+                        label={'Assignment Type'}
+                        className={'col-span-12'}>
+                        <AssignmentTypeSelect value={field.value} onValueChane={field.onChange}/>
                       </VFormField>
                     </>
                   )}

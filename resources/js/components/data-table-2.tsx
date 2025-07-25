@@ -25,6 +25,39 @@ export function useTableApi<T extends BaseTableData>() {
   return React.useContext(TableContext) as ReturnType<typeof useTable<T>>;
 }
 
+export function ColumnToggle() {
+  const table = useTableApi();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          <IconLayoutColumns />
+          <span className="hidden lg:inline">Customize Columns</span>
+          <span className="lg:hidden">Columns</span>
+          <IconChevronDown />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        {table
+          .getAllColumns()
+          .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
+          .map((column) => {
+            return (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className="capitalize"
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {(typeof column.columnDef.header === 'string' ? column.columnDef.header : null) || column.id}
+              </DropdownMenuCheckboxItem>
+            );
+          })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function DataTable<T extends BaseTableData>({ table, ...props }: DataTableProps<T>) {
   return (
     <TableContext value={table}>
@@ -32,33 +65,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
         <div className={'flex flex-wrap items-center justify-between gap-2'}>
           <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
           <div className={'flex flex-wrap items-center justify-start gap-2'}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <IconLayoutColumns />
-                  <span className="hidden lg:inline">Customize Columns</span>
-                  <span className="lg:hidden">Columns</span>
-                  <IconChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {table
-                  .getAllColumns()
-                  .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                      >
-                        {(typeof column.columnDef.header === 'string' ? column.columnDef.header : null) || column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+
             {props.right}
           </div>
         </div>
@@ -95,7 +102,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => (
                     <TableHead className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted')} key={header.id} style={computedStyle(header.column)}>
-                      <TableCellWrapper variant={'header'} last={index === headerGroup.headers.length - 1}>
+                      <TableCellWrapper center={(header.column.columnDef.meta as any)?.['center']} variant={'header'} last={index === headerGroup.headers.length - 1}>
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableCellWrapper>
                     </TableHead>
@@ -109,7 +116,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                   <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell, index) => (
                       <TableCell className={cn('pin-'+(cell.column.getIsPinned() || 'none'), 'bg-background')} key={cell.id} style={computedStyle(cell.column)}>
-                        <TableCellWrapper last={index === row.getVisibleCells().length - 1}>
+                        <TableCellWrapper center={(cell.column.columnDef.meta as any)?.['center']} last={index === row.getVisibleCells().length - 1}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCellWrapper>
                       </TableCell>

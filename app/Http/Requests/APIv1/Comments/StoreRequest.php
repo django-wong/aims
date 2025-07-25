@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Comments;
+namespace App\Http\Requests\APIv1\Comments;
 
 use App\Models\Commentable;
 use Illuminate\Database\Eloquent\Model;

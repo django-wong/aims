@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\APIv1;
 
-use App\Http\Requests\Assignments\StoreRequest;
+use App\Http\Requests\APIv1\Assignments\StoreRequest;
 use App\Models\Assignment;
+use App\Models\Org;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentController extends Controller
 {
@@ -37,7 +39,15 @@ class AssignmentController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        //
+        Gate::authorize('create', [Assignment::class, Org::current()]);
+
+        $assignment = Org::current()->assignments()->create($request->validated());
+
+        return response()->json([
+            'data' => $assignment->load(
+                'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org'
+            ),
+        ]);
     }
 
     /**

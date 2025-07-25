@@ -12,7 +12,7 @@ interface FormFieldProps {
 
 export function VFormField({ className, ...props }: PropsWithChildren<FormFieldProps> & React.ComponentProps<'div'>) {
   return (
-    <div className={cn('grid gap-2', className)}>
+    <div className={cn('grid gap-2 w-full', className)}>
       {props.renderLabel ? (
         props.renderLabel(props)
       ) : (
@@ -23,8 +23,10 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
           </Label>
         </div>) : null
       )}
-      <div className={'grid gap-1'}>
-        <div className={props.error ? 'has-error' : ''}>{props.children}</div>
+      <div className={cn('grid gap-1 w-full', props.error ? 'has-error' : '')}>
+        <div className={'w-full max-w-full overflow-hidden'}>
+          {props.children}
+        </div>
         {props.error && <div className="text-xs text-red-500">{props.error}</div>}
       </div>
     </div>

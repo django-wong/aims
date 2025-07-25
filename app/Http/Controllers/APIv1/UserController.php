@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
@@ -54,5 +55,22 @@ class UserController extends Controller
                 })
                 ->paginate()
         );
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        $user = User::query()->findOrFail($id);
+
+        // TOOD: Check if the authenticated user has permission to update roles
+
+        $validated = $request->validate([
+            'role' => 'required|integer|in:2,3,4,5,8'
+        ]);
+
+        $user->user_role->role = $validated['role'];
+
+        return response()->json([
+            'data' => $user->user_role->save()
+        ]);
     }
 }

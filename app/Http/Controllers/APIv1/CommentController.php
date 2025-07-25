@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\APIv1;
 
-use App\Http\Requests\Comments\IndexRequest;
-use App\Http\Requests\Comments\StoreRequest;
+use App\Http\Requests\APIv1\Comments\IndexRequest;
+use App\Http\Requests\APIv1\Comments\StoreRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Gate;
