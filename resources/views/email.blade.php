@@ -8,10 +8,11 @@
         href="{{ url('/logo.png') }}" />
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <meta name="x-apple-disable-message-reformatting" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--$-->
 </head>
 <body
-    style='background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'>
+    style='margin: 0;font-size: 16px;background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'>
 <table
     align="center"
     width="100%"
@@ -19,7 +20,7 @@
     cellpadding="0"
     cellspacing="0"
     role="presentation"
-    style='margin:0 auto;padding:48px 48px;background-image:url("{{ url('/mail-bg.png') }}");background-position:top;background-repeat:no-repeat, no-repeat;background-size: cover;'>
+    style='margin:0 auto;padding:2rem;background-image:url("{{ url('/mail-bg.png') }}");background-position:top;background-repeat:no-repeat, no-repeat;background-size: cover;'>
     <tbody>
     <tr style="width:100%">
         <td>
@@ -30,30 +31,25 @@
                 style="display:block;outline:none;border:none;text-decoration:none"
                 width="48" />
             @if(! empty($subject))
-                <h1 style="font-size:28px;font-weight:bold;margin-top:48px">
+                <h1 style="font-size:2rem;font-weight:bold;margin-top:3rem">
                     {{ $subject }}
                 </h1>
             @endif
             <x-email.block>
-                @if(! empty($greeting))
-                    <x-email.section>
-                        <x-email.line>
-                            {{ $greeting }},
-                        </x-email.line>
-                    </x-email.section>
-                @endif
-                @yield('content')
-                @if(! empty($introLines))
-                    <x-email.section>
+                <x-email.section>
+                    @if(! empty($greeting))
+                    <x-email.line>
+                        {{ $greeting }},
+                    </x-email.line>
+                    @endif
+                    @if(! empty($introLines))
                         @foreach($introLines as $line)
                             <x-email.line>
                                 {{ $line }}
                             </x-email.line>
                         @endforeach
-                    </x-email.section>
-                @endif
-                @if(! empty($actionUrl))
-                    <x-email.section>
+                    @endif
+                    @if(! empty($actionUrl))
                         <x-email.line>
                             <x-email.button :url="$actionUrl">
                                 {{ $actionText ?: $actionUrl }}
@@ -64,37 +60,32 @@
                             into your web browser. <br />
                             <a href="{{$actionUrl}}">{{$actionUrl}}</a>
                         </x-email.line>
-                    </x-email.section>
-                @endif
-
-                @if(! empty($outroLines))
-                    <x-email.section>
+                    @endif
+                    @yield('content')
+                    @if(! empty($outroLines))
                         @foreach($outroLines as $line)
                             <x-email.line>
                                 {{ $line }}
                             </x-email.line>
                         @endforeach
-                    </x-email.section>
-                @endif
+                    @endif
+                </x-email.section>
             </x-email.block>
             <p
-                style="font-size:16px;line-height:26px;margin-top:16px;margin-bottom:16px">
+                style="font-size:1rem;line-height:2;margin-top:1rem;margin-bottom:1rem">
                 Best,<br />- BIE Group
             </p>
-            <hr
-                style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#dddddd;margin-top:48px" />
+            <x-email.divider />
             <img
+                alt="BIE Group"
                 height="auto"
                 src="{{ url('/logo.png') }}"
-                style="display:block;outline:none;border:none;text-decoration:none;-webkit-filter:grayscale(100%);filter:grayscale(100%);margin:20px 0"
-                width="32"
+                style="width:2rem;display:block;outline:none;border:none;text-decoration:none;-webkit-filter:grayscale(100%);filter:grayscale(100%);margin:20px 0"
             />
             <p
-                style="font-size:12px;line-height:24px;color:#8898aa;margin-left:4px;margin-top:16px;margin-bottom:16px">
+                style="font-size:0.8rem;line-height:2;color:#8898aa;margin-left:0.25rem;margin-top:1rem;margin-bottom:1rem">
                 BIE Group, Since 1993
-            </p>
-            <p
-                style="font-size:12px;line-height:24px;color:#8898aa;margin-left:4px;margin-bottom:16px">
+                <br />
                 Integrity and Independence
             </p>
         </td>
