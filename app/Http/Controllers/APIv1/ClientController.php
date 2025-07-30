@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class ClientController extends Controller
@@ -62,6 +63,8 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Client::class);
+
         return response()->json(
             $this->getQueryBuilder()
                 ->where(function (Builder $query) use ($request) {

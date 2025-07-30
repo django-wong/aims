@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'assignments' => AssignmentController::class,
         'assignment-types' => \App\Http\Controllers\APIv1\AssignmentTypeController::class,
         'timesheets' => \App\Http\Controllers\APIv1\TimesheetController::class,
+        'timesheet-items' => \App\Http\Controllers\APIv1\TimesheetItemController::class,
     ]);
 
     Route::post('users/{id}/update-role', [UserController::class, 'updateRole'])->name('users.update_role');

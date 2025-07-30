@@ -6,6 +6,7 @@ use App\Http\Requests\APIv1\Projects\StoreRequest;
 use App\Models\Project;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class ProjectController extends Controller
@@ -40,6 +41,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Project::class);
+
         return $this->getQueryBuilder()->scoped()->paginate();
     }
 

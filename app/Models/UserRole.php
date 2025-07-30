@@ -22,4 +22,18 @@ class UserRole extends Model
     protected $guarded = [
         'id', 'created_at', 'updated_at',
     ];
+
+    static public function current(): UserRole|null
+    {
+        return auth()->user()->role ?? null;
+    }
+
+    public function isAnyOf($roles, ...$args): bool
+    {
+        if (!is_array($roles)) {
+            $roles = array_merge([$roles], $args);
+        }
+
+        return in_array($this->role ?? null, $roles, true);
+    }
 }

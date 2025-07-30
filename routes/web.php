@@ -37,5 +37,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::get('assignments/{id}/record', [AssignmentController::class, 'record'])->name('assignments.record-timesheet');
+Route::middleware(['signed', 'user'])->group(function () {
+    Route::get('assignments/{id}/record', [AssignmentController::class, 'record'])
+        ->name('assignments.record-timesheet');
+});
+
 

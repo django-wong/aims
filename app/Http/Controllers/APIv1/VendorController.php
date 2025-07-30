@@ -7,6 +7,7 @@ use App\Http\Requests\APIv1\Vendors\UpdateRequest;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class VendorController extends Controller
@@ -32,6 +33,8 @@ class VendorController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Vendor::class);
+
         return $this->getQueryBuilder()->paginate();
     }
 

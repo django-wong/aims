@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class InvoiceController extends Controller
 {
@@ -12,7 +13,9 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
+        Gate::authorize('viewAny', Invoice::class);
+
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

@@ -15,7 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RoleSelect } from '@/components/role-select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { defaultHeaders } from '@/lib/utils';
 
 function describeUserRole(role: number): string {
@@ -176,6 +176,14 @@ function UserActions({ user }: { user: User }) {
 export const UserRoleBadge = ({ user }: { user: User }) => {
   const [role, setRole] = useState(user.user_role?.role || null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user.user_role?.role) {
+      setRole(user.user_role.role);
+    } else {
+      setRole(null);
+    }
+  }, [user.user_role?.role])
 
   function save(role_id: number) {
     setLoading(true);

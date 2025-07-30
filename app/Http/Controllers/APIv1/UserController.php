@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class UserController extends Controller
@@ -29,7 +30,7 @@ class UserController extends Controller
                 $query->whereExists(function (QueryBuilder $query) use ($value) {
                     $query->selectRaw(1)
                         ->from('user_roles')
-                        ->whereColumn('user_roles.id', 'users.id')
+                        ->whereColumn('user_roles.user_id', 'users.id')
                         ->where(
                             'user_roles.role', $value
                         );
@@ -47,7 +48,8 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        // This method will return a list of users
+
+        Gate::authorize('viewAny', User::class);
         return response()->json(
             $this->getQueryBuilder()
                 ->where(function (Builder $query) use ($request) {

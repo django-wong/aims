@@ -122,7 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
                 <a href="#" className={'flex items-center gap-2'}>
                   <House className="!size-6" />
-                  <span className="text-base font-semibold">{org.name}</span>
+                  <span className="text-base font-semibold">{org?.name}</span>
                 </a>
               </SidebarMenuButton>
               <Tooltip>

@@ -58,7 +58,7 @@
                         <x-email.line>
                             If you’re having trouble clicking the button, copy and paste the URL below
                             into your web browser. <br />
-                            <a href="{{$actionUrl}}">{{$actionUrl}}</a>
+                            <a target="_blank" href="{{$actionUrl}}">{{$actionUrl}}</a>
                         </x-email.line>
                     @endif
                     @yield('content')

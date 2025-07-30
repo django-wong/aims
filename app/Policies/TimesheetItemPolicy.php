@@ -2,8 +2,10 @@
 
 namespace App\Policies;
 
+use App\Models\Assignment;
 use App\Models\TimesheetItem;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class TimesheetItemPolicy
@@ -27,8 +29,11 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Assignment|null $assignment = null): bool
     {
+        if (!empty($assignment->inspector_id)) {
+            return $assignment->inspector_id === $user->id;
+        }
         return false;
     }
 

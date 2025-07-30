@@ -14,8 +14,8 @@ export interface Org extends BaseModel {
 }
 
 export interface Auth {
-  user: User;
-  org: Org;
+  user?: User;
+  org?: Org;
 }
 
 export interface BreadcrumbItem {

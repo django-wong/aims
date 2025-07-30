@@ -46,6 +46,8 @@ class AssignmentController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', [Assignment::class]);
+
         return response()->json(
             $this->getQueryBuilder()->visible()->paginate()
         );

@@ -28,6 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->statefulApi();
         $middleware->throttleApi();
+        $middleware->alias([
+            'user' => \App\Http\Middleware\EnsureUser::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

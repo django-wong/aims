@@ -13,9 +13,14 @@ class AssignmentPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(User $user):bool
     {
-        return false;
+        return in_array($user->user_role->role, [
+            \App\Models\UserRole::PM,
+            \App\Models\UserRole::ADMIN,
+            \App\Models\UserRole::STAFF,
+            \App\Models\UserRole::FINANCE,
+        ]);
     }
 
     /**

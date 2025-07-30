@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
 
 class NewAssignmentIssued extends Notification
 {
@@ -35,6 +36,13 @@ class NewAssignmentIssued extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $link = URL::signedRoute(
+            'assignments.record-timesheet', [
+                'id' => $this->assignment->id,
+                'user' => $notifiable->id,
+            ]
+        );
+
         return (new MailMessage)
             ->view('email')
             ->subject('You have a new assignment')
@@ -42,9 +50,7 @@ class NewAssignmentIssued extends Notification
             ->line('A new assignment has been issued to you.')
             ->line('Please review the assignment details and submit your timesheet once completed.')
             ->action(
-                'View Assignment', route(
-                    'assignments.record-timesheet', $this->assignment
-                )
+                'View Assignment', $link
             );
     }
 

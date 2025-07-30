@@ -5,6 +5,7 @@ namespace App\Http\Controllers\APIv1;
 use App\Models\Timesheet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class TimesheetController extends Controller
@@ -44,6 +45,8 @@ class TimesheetController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Timesheet::class);
+
         return $this->getQueryBuilder()->defaultSort('-created_at')
             ->paginate();
     }

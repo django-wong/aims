@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table-2';
-import { Input } from '@/components/ui/input';
-import { useState } from 'react';
-import { useDebouncer } from '@/hooks/use-debounced';
+
 import {
   DropdownMenu,
   DropdownMenuContent, DropdownMenuGroup,
@@ -151,7 +149,7 @@ export function TimesheetActions(props: TimesheetActionsProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <Check/>
-            Approve
+            Approve #{props.timesheet.id}
           </DropdownMenuItem>
           <DropdownMenuItem>
             <X />

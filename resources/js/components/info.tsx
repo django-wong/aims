@@ -11,7 +11,7 @@ export function Info(props: PropsWithChildren) {
 
 export function InfoHead({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className={'font-bold text-lg'}>
+    <h3 className={'font-bold text-lg mb-2'}>
       {children}
     </h3>
   );
@@ -29,8 +29,8 @@ export function InfoLine({
   className?: string;
 }) {
   return (
-    <div className={`flex justify-between items-center gap-8 ${className}`}>
-      <h4 className={'text-muted-foreground/80 flex justify-start gap-1 items-center'}>
+    <div className={`flex flex-col sm:flex-row justify-between items-start gap-2 ${className} flex-wrap`}>
+      <h4 className={'text-muted-foreground/80 flex justify-start gap-1 items-center text-sm'}>
         { icon ? (
           <DynamicIcon name={icon} className={'w-4 h-4'} />
         ) : null}

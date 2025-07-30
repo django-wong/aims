@@ -1,11 +1,9 @@
 import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath } from 'react-hook-form';
 import React, { useState } from 'react';
 import { defaultHeaders } from '@/lib/utils';
+import { toast } from 'sonner';
 
 type Method = 'POST' | 'PUT' | 'PATCH';
-type Body = {
-  [key: string]: unknown;
-};
 
 interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   url?: URL | string;
@@ -38,8 +36,17 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
     return fetch(url, {
       method: method, headers: headers, body: formData,
     }).then(async res => {
+      const json = await res.json();
+
+      if (json.message) {
+        toast.success(json.message);
+      }
+
+      if (json.error) {
+        toast.error(json.error);
+      }
+
       if (!res.ok) {
-        const json = await res.json();
         if (json.errors) {
           for (const [key, value] of Object.entries(json.errors)) {
             form.setError(key as FieldPath<T>, {
@@ -48,6 +55,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
             })
           }
         }
+
       }
       return res;
     }).catch((error) => {
@@ -61,12 +69,13 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
     submitDisabled: form.formState.isSubmitting || form.formState.disabled,
     ...form,
     submit: (event?: React.FormEvent<HTMLFormElement>) => {
-      return new Promise<Response|void>((resolve) => {
+      return new Promise<Response|void>((resolve, reject) => {
         form.handleSubmit(async (data) => {
           const res = await send(data)
           resolve(res);
         }, (error) => {
           console.error('Form submission error:', error);
+          reject(error);
         })(event);
       });
     },

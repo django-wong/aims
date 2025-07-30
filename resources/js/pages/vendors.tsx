@@ -16,6 +16,7 @@ import { VendorForm } from '@/pages/vendors/form';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
+import { Head } from '@inertiajs/react';
 
 const columns: ColumnDef<Vendor>[] = [
   {
@@ -67,6 +68,7 @@ export default function Vendors() {
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={<VendorForm onSubmit={() => table.reload()}><Button>Add Vendor</Button></VendorForm>}>
+      <Head title={'Vendors'}/>
       <div className={'px-6'}>
         <DataTable
           left={
