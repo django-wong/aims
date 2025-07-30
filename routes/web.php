@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +33,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('{any}', '404');
 
     Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
-
-    Route::get('assignments/{id}/preview', [\App\Http\Controllers\AssignmentController::class, 'preview'])->name('assignments.preview');
+    Route::get('assignments/{id}/preview', [AssignmentController::class, 'preview'])->name('assignments.preview');
 });
+
+
+Route::get('assignments/{id}/record', [AssignmentController::class, 'record'])->name('assignments.record-timesheet');
 

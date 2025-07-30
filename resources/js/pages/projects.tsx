@@ -123,16 +123,15 @@ const columns: ColumnDef<Project>[] = [
     accessorKey: 'status',
     minSize: 100,
     maxSize: 100,
-    header: () => (
-      <TableCellWrapper variant={'header'}>
-        Status
-      </TableCellWrapper>
-    ),
+    header: 'Status',
     cell: ({ row }) => {
       return <Badge
         className={cn('capitalize', 'status-' + row.original.status)}>{describeStatus(row.original.status)}
       </Badge>
     },
+    meta: {
+      center: true,
+    }
   },
   {
     accessorKey: 'actions',

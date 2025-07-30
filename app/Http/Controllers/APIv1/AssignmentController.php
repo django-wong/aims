@@ -5,11 +5,13 @@ namespace App\Http\Controllers\APIv1;
 use App\Http\Requests\APIv1\Assignments\StoreRequest;
 use App\Models\Assignment;
 use App\Models\Org;
+use App\Notifications\NewAssignmentIssued;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class AssignmentController extends Controller
 {
+
     protected function allowedIncludes()
     {
         return [
@@ -22,6 +24,21 @@ class AssignmentController extends Controller
         return [
             'created_at'
         ];
+    }
+
+    public function notify(string $id)
+    {
+        $assignment = Assignment::query()->findOrFail($id);
+
+        Gate::allows('update', $assignment);
+
+        $assignment->inspector->notify(
+            new NewAssignmentIssued($assignment)
+        );
+
+        return response()->json([
+            'message' => 'Inspector notified successfully.',
+        ]);
     }
 
     /**

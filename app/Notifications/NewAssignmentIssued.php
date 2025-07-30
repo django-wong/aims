@@ -43,7 +43,7 @@ class NewAssignmentIssued extends Notification
             ->line('Please review the assignment details and submit your timesheet once completed.')
             ->action(
                 'View Assignment', route(
-                    'assignments.preview', $this->assignment, true
+                    'assignments.record-timesheet', $this->assignment
                 )
             );
     }

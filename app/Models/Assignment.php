@@ -2,20 +2,35 @@
 
 namespace App\Models;
 
+use App\Notifications\NewAssignmentIssued;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
+/**
+ * @property User $inspector
+ */
 class Assignment extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
-    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments;
+    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
     ];
+
+    protected static function booted()
+    {
+        static::created(function (self $assignment) {
+            if ($assignment->inspector_id) {
+                $assignment->inspector->notify(
+                    new NewAssignmentIssued($assignment)
+                );
+            }
+        });
+    }
 
     public function operation_org(): BelongsTo
     {
@@ -36,7 +51,9 @@ class Assignment extends Model
                 $id = auth()->user()->org->id;
             }
 
-            $query->whereAny(['operation_org_id', 'org_id'], $id);
+            $query->whereAny(
+                ['operation_org_id', 'org_id'], $id
+            );
         });
     }
 

@@ -5,7 +5,7 @@ import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table-2';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EllipsisVertical, Kanban, List } from 'lucide-react';
+import { EllipsisVertical, Kanban, List, Mail } from 'lucide-react';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,6 +19,8 @@ import { AssignmentForm } from '@/pages/assignments/form';
 import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
 import { Link } from '@inertiajs/react';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -152,11 +154,15 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
           <DropdownMenuGroup>
             <DropdownMenuItem>
               View Details
-              <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              Duplicate
-              <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
+            <DropdownMenuItem
+              onClick={() => {
+                axios.post('/api/v1/assignments/' + assignment.id + '/notify-inspector');
+              }}>
+              Notice Inspector
+              <DropdownMenuShortcut>
+                <Mail/>
+              </DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={'text-red-500'}
@@ -166,7 +172,6 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
                 console.log(assignment);
               }}>
               Delete
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
