@@ -31,9 +31,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
 const timesheetSchema = z.object({
-  assignment_id: z.number({
-    required_error: 'Please select an assignment.',
-  }),
+  assignment_id: z.number(),
   hours: z.number().min(0, 'Hours must be 0 or greater'),
   km_traveled: z.number().min(0, 'KM traveled must be 0 or greater'),
 });

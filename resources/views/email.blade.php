@@ -20,7 +20,7 @@
     cellpadding="0"
     cellspacing="0"
     role="presentation"
-    style='margin:0 auto;padding:2rem;background-image:url("{{ url('/mail-bg.png') }}");background-position:top;background-repeat:no-repeat, no-repeat;background-size: cover;'>
+    style='margin:0 auto;padding:2rem;background-image:url("{{ url('/mail-bg.png') }}");background-position:top;background-repeat:no-repeat, no-repeat;background-size: cover;word-break: break-word;'>
     <tbody>
     <tr style="width:100%">
         <td>
