@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Form, FormField } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Input, InputGroup, Inputs } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
 import { Loader2Icon } from 'lucide-react';
@@ -64,12 +64,14 @@ export function ProjectForm(props: DialogFormProps<Project>) {
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(value) => {
-        setOpen(value);
-        props.onOpenChange?.(value);
-      }}>
+      <Dialog
+        open={open}
+        onOpenChange={(value) => {
+          setOpen(value);
+          props.onOpenChange?.(value);
+        }}>
         <DialogTrigger asChild>{props.children}</DialogTrigger>
-        <DialogContent>
+        <DialogContent className={'sm:max-w-xl'}>
           <DialogHeader>
             <DialogTitle>Create New Project</DialogTitle>
             <DialogDescription>Fill in the details below to create a new project.</DialogDescription>
@@ -80,7 +82,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-8'}>
+                    <VFormField required label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-9'}>
                       <Input
                         placeholder={'Give your project a title'}
                         className={'bg-white col-span-12'}
@@ -96,7 +98,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-4'}>
+                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-3'}>
                       <Input
                         className={'bg-white col-span-12'}
                         placeholder={'e.g. PRJ-1234'}
@@ -136,6 +138,13 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                   }}
                   name={'budget'}
                 />
+                <VFormField label={'Alert Threshold'} for={'threshold'} className={'col-span-6'}>
+                  <Inputs>
+                    <Input placeholder={'70%'} type={'number'} min={0} max={0} className={'bg-background'}/>
+                    <Input placeholder={'90%'} type={'number'} min={0} max={0} className={'bg-background'}/>
+                    <Input placeholder={'100%'} type={'number'} min={0} max={0} className={'bg-background'}/>
+                  </Inputs>
+                </VFormField>
                 <div className={'col-span-12'}>
                   <FormField
                     control={form.control}

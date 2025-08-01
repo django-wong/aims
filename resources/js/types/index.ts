@@ -17,6 +17,7 @@ export interface Org extends BaseModel {
 export interface Auth {
   user?: User;
   org?: Org;
+  impersonating: boolean;
 }
 
 export interface BreadcrumbItem {
@@ -106,6 +107,7 @@ export interface Client extends BaseModel {
   reviewer?: User;
   address_id: number | null;
   address?: Address;
+  notes: string | null;
   invoice_reminder: number | null;
 }
 

@@ -48,7 +48,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'auth' => [
                 'user' => $request->user()?->load('user_role'),
-                'org' => $request->user()?->org
+                'org' => $request->user()?->org,
+                'impersonating' => $request->user()?->isImpersonated() ?? false
             ],
             'flash' => [
                 'message' => $request->session()->get('message'),

@@ -14,12 +14,13 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
-import { defaultHeaders } from '@/lib/utils';
 import { UserForm } from '@/pages/users/form';
 import { BreadcrumbItem, User } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { EllipsisVertical, Plus } from 'lucide-react';
+import axios from 'axios';
+import { Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from '@inertiajs/react';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -161,30 +162,39 @@ function UserActions({ user }: { user: User }) {
             <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();
-              }}>
-                Edit
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+              }}
+            >
+              Edit
+              <DropdownMenuShortcut>
+                <Edit className={'size-4'} />
+              </DropdownMenuShortcut>
             </DropdownMenuItem>
           </UserForm>
           <DropdownMenuItem
             className={'text-red-500'}
-            disabled={true}
             onClick={() => {
-              fetch(route('users.destroy', { id: user.id })).then((res) => {
+              axios.delete(route('users.destroy', { id: user.id })).then((res) => {
                 if (res) {
                   table.reload();
                 }
               });
-            }}
-          >
+            }}>
             Delete
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            <DropdownMenuShortcut>
+              <Trash2 className={'size-4'} />
+            </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>View Assignment</DropdownMenuItem>
-          <DropdownMenuItem>View Project</DropdownMenuItem>
+          <Link href={route('impersonate', { id: user.id})}>
+            <DropdownMenuItem>
+              Impersonate
+              <DropdownMenuShortcut>
+                <ScanFace className={'size-4'}/>
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -205,19 +215,15 @@ export const UserRoleBadge = ({ user }: { user: User }) => {
 
   function save(role_id: number) {
     setLoading(true);
-    fetch(route('users.update_role', { id: user.id }), {
-      method: 'POST',
-      headers: defaultHeaders({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify({
+    axios
+      .post(route('users.update_role', { id: user.id }), {
         role: role_id,
-      }),
-    }).then((res) => {
-      if (res.ok) {
-        setRole(role_id);
-      }
-    });
+      })
+      .then((res) => {
+        if (res) {
+          setRole(role_id);
+        }
+      });
     setLoading(false);
   }
 

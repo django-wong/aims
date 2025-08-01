@@ -24,6 +24,8 @@ class ProjectController extends Controller
 
         Gate::authorize('view', $project);
 
-        return inertia('projects/edit', ['project' => Project::query()->findOrFail($id)]);
+        return inertia('projects/edit', [
+            'project' => Project::query()->with(['client', 'project_type'])->findOrFail($id)
+        ]);
     }
 }

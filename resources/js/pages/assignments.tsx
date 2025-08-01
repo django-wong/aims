@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table-2';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EllipsisVertical, Kanban, List, Mail } from 'lucide-react';
-import { useLocationHash } from '@/hooks/use-location-hash';
+import { EllipsisVertical, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -19,8 +17,8 @@ import { AssignmentForm } from '@/pages/assignments/form';
 import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
 import { Link } from '@inertiajs/react';
-import { toast } from 'sonner';
 import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -35,6 +33,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns: ColumnDef<Assignment>[] = [
   {
+    accessorKey: 'assignment_type_id',
+    header: 'Assignment Type',
+    cell: ({ row }) => {
+      return <Badge>{row.original.assignment_type?.name ?? '-'}</Badge>;
+    }
+  },
+  {
     accessorKey: 'project_id',
     header: 'Project',
     cell: ({ row }) => {
@@ -43,13 +48,6 @@ const columns: ColumnDef<Assignment>[] = [
           {row.original.project?.title ?? row.original.project_id}
         </Link>
       </>;
-    }
-  },
-  {
-    accessorKey: 'assignment_type_id',
-    header: 'Assignment Type',
-    cell: ({ row }) => {
-      return row.original.assignment_type?.name ?? '-';
     }
   },
   {
@@ -95,27 +93,11 @@ export default function Assignments() {
     }
   });
 
-  const [hash, setHash] = useLocationHash('list');
-
   const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') ?? '');
   const debouncer = useDebouncer();
   return (
     <AppLayout breadcrumbs={breadcrumbs} pageAction={<AssignmentForm onSubmit={() => {table.reload()}}><Button>New Assignment</Button></AssignmentForm>}>
       <div className={'px-6'}>
-        <div className={'mb-4'}>
-          <>
-            <Tabs value={hash} onValueChange={setHash}>
-              <TabsList>
-                <TabsTrigger value={'list'}>
-                  <List/>
-                </TabsTrigger>
-                <TabsTrigger value={'kanban'}>
-                  <Kanban/>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </>
-        </div>
         <DataTable
           table={table}
           left={<>

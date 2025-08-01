@@ -26,17 +26,23 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { SharedData } from '@/types';
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { Undo2 } from 'lucide-react';
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const {
     props: {
       auth: {
-        user
+        user,
+        impersonating
       }
     }
   } = usePage<SharedData>();
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <SidebarMenu>
@@ -92,6 +98,16 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            {impersonating && (
+              <Link href={route('leave-impersonation')}>
+                <DropdownMenuItem>
+                  <Undo2 className={'stroke-red-500'}/>
+                  <span className={'text-red-500'}>
+                    Leave Impersonation
+                  </span>
+                </DropdownMenuItem>
+              </Link>
+            )}
             <DropdownMenuItem>
               <IconLogout />
               Log out

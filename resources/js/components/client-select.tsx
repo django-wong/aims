@@ -35,8 +35,8 @@ export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
 }
 
 export interface SelectProps<T> {
-  onValueChane: (value: number) => void;
-  onDataChange?: (data: T) => void;
+  onValueChane: (value: number|null) => void;
+  onDataChange?: (data: T|null) => void;
   value: number|null;
   className?: string;
   placeholder?: string;
@@ -104,9 +104,14 @@ export function SelectPopup<T extends Model>({ open, setOpen, ...props }: Select
                   value={String(item.id)}
                   keywords={props.getKeywords(item)}
                   onSelect={() => {
+                    if (item.id === props.value) {
+                      props.onValueChane(null);
+                      props.onDataChange?.(null);
+                    } else {
+                      props.onValueChane(item.id);
+                      props.onDataChange?.(item);
+                    }
                     setOpen(false);
-                    props.onValueChane(item.id);
-                    props.onDataChange?.(item);
                   }}
                 >
                   <span className={'line-clamp-1'}>{props.getItemLabel(item)}</span>

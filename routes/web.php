@@ -4,6 +4,7 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TimesheetController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -41,6 +42,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('timesheets/captured', [TimesheetController::class, 'captured'])
         ->name('timesheets.captured');
+
+    Route::get('users/{id}/impersonate', [\App\Http\Controllers\UserController::class, 'impersonate'])
+        ->name('impersonate');
+
+    Route::get('users/leave-impersonation', function () {
+        Auth::user()->leaveImpersonation();
+        return redirect()
+            ->route('dashboard');
+    })->name('leave-impersonation');
 });
 
 

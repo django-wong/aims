@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { PropsWithChildren } from 'react';
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
@@ -18,4 +19,26 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   )
 }
 
-export { Input }
+function Inputs(props: PropsWithChildren) {
+  return (
+    <div className={'input-group *:not-first:-ml-[1px] *:not-last:rounded-r-none *:not-first:rounded-l-none flex *:focus:z-10'}>
+      {props.children}
+    </div>
+  );
+}
+
+interface InputGroupProps {
+  start?: React.ReactNode;
+  end?: React.ReactNode;
+  children?: React.ReactNode;
+}
+function InputGroup(props: InputGroupProps) {
+  return (
+    <div className={'flex relative'}>
+      {props.children}
+      {props.end && <span className={'-end-0 absolute'}>{props.end}</span>}
+    </div>
+  );
+}
+
+export { Input, Inputs, InputGroup }

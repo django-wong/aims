@@ -18,7 +18,7 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
       <FlashMessage>
         {children}
       </FlashMessage>
-      <Toaster/>
     </AppLayoutTemplate>
+    <Toaster/>
   </QueryClientProvider>
 );

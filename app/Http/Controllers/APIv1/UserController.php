@@ -61,9 +61,13 @@ class UserController extends Controller
 
     public function updateRole(Request $request, $id)
     {
-        $user = User::query()->findOrFail($id);
+        if (auth()->id() === (int)$id) {
+            return response()->json([
+                'error' => 'You cannot change your own role.'
+            ], 403);
+        }
 
-        // TOOD: Check if the authenticated user has permission to update roles
+        $user = User::query()->findOrFail($id);
 
         $validated = $request->validate([
             'role' => 'required|integer|in:2,3,4,5,8'

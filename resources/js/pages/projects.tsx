@@ -10,12 +10,11 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { ColumnDef } from '@tanstack/react-table';
 import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
 
 import { ClientSelect } from '@/components/client-select';
-import { DataTable } from '@/components/data-table-2';
+import { ColumnToggle, DataTable } from '@/components/data-table-2';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { ProjectForm } from '@/pages/projects/form';
@@ -114,6 +113,9 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'budget',
     header: 'Budget',
+    meta: {
+      center: true,
+    },
     cell: ({ row }) => {
       const budget = row.original.budget;
       return budget ? `$${budget.toLocaleString()}` : 'N/A';
@@ -126,7 +128,7 @@ const columns: ColumnDef<Project>[] = [
     header: 'Status',
     cell: ({ row }) => {
       return <Badge
-        className={cn('capitalize', 'status-' + row.original.status)}>{describeStatus(row.original.status)}
+        variant={'outline'} className={cn('bg-transparent capitalize', 'project-status-' + row.original.status)}>{describeStatus(row.original.status)}
       </Badge>
     },
     meta: {
@@ -136,8 +138,6 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'actions',
     header: 'Actions',
-    minSize: 40,
-    maxSize: 40,
     cell: ({ row }) => <ProjectActions project={row.original} />,
   },
 ];
@@ -182,7 +182,11 @@ export default function Projects() {
                 className={'w-auto'}
                 onValueChane={(value) => {
                   table.setSearchParams((prev) => {
-                    prev.set('filter[client_id]', String(value));
+                    if (value) {
+                      prev.set('filter[client_id]', String(value));
+                    } else {
+                      prev.delete('filter[client_id]');
+                    }
                     return prev;
                   });
                 }}
@@ -203,10 +207,7 @@ export default function Projects() {
           }
           table={table}
           right={
-            <Button variant={'outline'}>
-              <Eye />
-              View
-            </Button>
+            <ColumnToggle/>
           }
         />
       </div>

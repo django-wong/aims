@@ -2,6 +2,10 @@
 
 @import "./theme.css";
 
+body {
+  --version: "0.0.1";
+}
+
 @plugin 'tailwindcss-animate';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -92,14 +96,17 @@
     @apply before:content-[''] before:absolute before:top-0 before:right-0 before:w-px before:h-full before:bg-border sticky;
   }
 
-  .status-0 {
-    --color-primary: gray
+  .project-status-0 {
+    --color-foreground: green;
+    --color-border: var(--color-foreground);
   }
-  .status-1 {
-    --color-primary: green
+  .project-status-1 {
+    --color-foreground: blue;
+    --color-border: var(--color-foreground);
   }
-  .status-2 {
-    --color-primary: black
+  .project-status-2 {
+    --color-foreground: purple;
+    --color-border: var(--color-foreground);
   }
   .has-error {
     --color-input: var(--color-destructive);
