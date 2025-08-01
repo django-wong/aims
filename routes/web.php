@@ -3,6 +3,7 @@
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TimesheetController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,10 +35,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
     Route::get('assignments/{id}/preview', [AssignmentController::class, 'preview'])->name('assignments.preview');
+
+    Route::post('timesheets/capture', [TimesheetController::class, 'capture'])
+        ->name('timesheets.capture');
+
+    Route::get('timesheets/captured', [TimesheetController::class, 'captured'])
+        ->name('timesheets.captured');
 });
 
 
-Route::middleware(['signed', 'user'])->group(function () {
+Route::middleware(['signed'])->group(function () {
     Route::get('assignments/{id}/record', [AssignmentController::class, 'record'])
         ->name('assignments.record-timesheet');
 });

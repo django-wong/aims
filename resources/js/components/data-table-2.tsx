@@ -65,7 +65,6 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
         <div className={'flex flex-wrap items-center justify-between gap-2'}>
           <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
           <div className={'flex flex-wrap items-center justify-start gap-2'}>
-
             {props.right}
           </div>
         </div>
@@ -101,8 +100,14 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => (
-                    <TableHead className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted')} key={header.id} style={computedStyle(header.column)}>
-                      <TableCellWrapper center={(header.column.columnDef.meta as any)?.['center']} variant={'header'} last={index === headerGroup.headers.length - 1}>
+                    <TableHead
+                      key={header.id}
+                      className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted')}
+                      style={{ ...computedStyle(header.column)}}>
+                      <TableCellWrapper
+                        center={(header.column.columnDef.meta as any)?.['center']}
+                        variant={'header'}
+                        last={index === headerGroup.headers.length - 1}>
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableCellWrapper>
                     </TableHead>
@@ -115,7 +120,10 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                 table.getRowModel().rows.map((row) => (
                   <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell, index) => (
-                      <TableCell className={cn('pin-'+(cell.column.getIsPinned() || 'none'), 'bg-background')} key={cell.id} style={computedStyle(cell.column)}>
+                      <TableCell
+                        key={cell.id}
+                        className={cn('pin-'+(cell.column.getIsPinned() || 'none'), 'bg-background')}
+                        style={computedStyle(cell.column)}>
                         <TableCellWrapper center={(cell.column.columnDef.meta as any)?.['center']} last={index === row.getVisibleCells().length - 1}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCellWrapper>

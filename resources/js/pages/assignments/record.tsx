@@ -1,11 +1,11 @@
 import { Divider } from '@/components/divider';
 import { Info, InfoHead, InfoLine } from '@/components/info';
-import { Button } from '@/components/ui/button';
+import { Button, Loading } from '@/components/ui/button';
 import { Form, FormField } from '@/components/ui/form';
 import { useReactiveForm } from '@/hooks/use-form';
 import { BaseLayout } from '@/layouts/base-layout';
 import { Assignment, SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { BookmarkCheck, House, UserCircle } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
@@ -51,13 +51,16 @@ export default function Record(props: RecordProps) {
     defaultValues,
   });
 
-  function save() {
-    form.submit().then(() => {
-      form.reset(defaultValues);
-    }).catch(() => {
-      console.info(form.getValues())
-    });
+  const submit = form.handleSubmit(async (data) => {
+    router.post(
+      route('timesheets.capture'), data
+    )
+  });
+
+  async function save() {
+    await submit();
   }
+
   return (
     <BaseLayout>
       <Head title={props.assignment.project?.title} />
@@ -201,7 +204,10 @@ export default function Record(props: RecordProps) {
                 </div>
 
                 <div className={'col-span-12'}>
-                  <Button loading={form.formState.isSubmitting} disabled={form.submitDisabled || form.formState.isSubmitting} className={'w-full'} onClick={save}>Add</Button>
+                  <Button disabled={form.submitDisabled || form.formState.isSubmitting} className={'w-full'} onClick={save}>
+                    <Loading show={form.formState.isSubmitting}/>
+                    Add
+                  </Button>
                 </div>
               </Form>
             </div>

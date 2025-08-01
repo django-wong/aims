@@ -7,6 +7,7 @@ export interface DialogFormProps<T = BaseModel> {
   value?: T | null
   open?: boolean
   onOpenChange?: (open: boolean) => void;
+  asChild?: boolean;
 }
 
 export interface Org extends BaseModel {
@@ -62,6 +63,8 @@ export interface UserRole extends BaseModel {
 
 export interface User extends BaseModel {
   name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   avatar?: string;
   email_verified_at: string | null;

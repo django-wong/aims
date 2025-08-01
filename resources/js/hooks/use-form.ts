@@ -2,8 +2,25 @@ import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath } fro
 import React, { useState } from 'react';
 import { defaultHeaders } from '@/lib/utils';
 import { toast } from 'sonner';
+import { BaseModel } from '@/types';
 
-type Method = 'POST' | 'PUT' | 'PATCH';
+export function useResource<T extends BaseModel>(url: string, value?: T | null): {
+  url: string;
+  method: Method;
+  defaultValues?: T;
+} {
+  return value ? {
+    url: url + '/' + value.id,
+    method: 'PUT',
+    defaultValues: value,
+  } : {
+    url: url,
+    method: 'POST',
+    defaultValues: undefined,
+  };
+}
+
+export type Method = 'POST' | 'PUT' | 'PATCH';
 
 interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   url?: URL | string;

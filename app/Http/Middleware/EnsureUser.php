@@ -14,15 +14,17 @@ class EnsureUser
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $absolute = 'true'): Response
     {
-        $user = $request->get('user');
-        if (isNumeric($user)) {
-            $user = \App\Models\User::query()->find($user);
-            if ($user) {
-                auth()->login($user);
+        if ($request->hasValidSignature($absolute === 'true')) {
+            if ($user = $request->get('user')) {
+                $user = \App\Models\User::query()->find($user);
+                if ($user) {
+                    auth()->login($user);
+                }
             }
         }
+
         return $next($request);
     }
 }

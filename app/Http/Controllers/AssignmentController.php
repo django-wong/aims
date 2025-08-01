@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Notifications\NewAssignmentIssued;
+use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
@@ -14,7 +15,7 @@ class AssignmentController extends Controller
         return $notification->toMail(auth()->user());
     }
 
-    public function record(string $id)
+    public function record(string $id, Request $request)
     {
         $assignment = Assignment::query()
             ->with(
@@ -22,8 +23,10 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
+        $assignment->timesheets()->firstOrCreate();
+
         return inertia('assignments/record', [
-            'assignment' => $assignment,
+            'assignment' => $assignment->load('timesheets.timesheet_items'),
         ]);
     }
 }

@@ -49,8 +49,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
   if (selectable) {
     columns.unshift({
       accessorKey: 'select',
-      minSize: 55,
-      maxSize: 55,
+      size: 28,
       header: ({ table }) => (
         <>
           <Checkbox

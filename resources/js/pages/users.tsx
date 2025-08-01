@@ -1,22 +1,25 @@
-import { BreadcrumbItem, User } from '@/types';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { EllipsisVertical, Plus } from 'lucide-react';
 import { DataTable, useTableApi } from '@/components/data-table-2';
-import { useTable } from '@/hooks/use-table';
-import { ColumnDef } from '@tanstack/react-table';
+import { RoleSelect } from '@/components/role-select';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut,
-  DropdownMenuTrigger
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RoleSelect } from '@/components/role-select';
-import { useEffect, useState } from 'react';
+import { useTable } from '@/hooks/use-table';
+import AppLayout from '@/layouts/app-layout';
 import { defaultHeaders } from '@/lib/utils';
+import { UserForm } from '@/pages/users/form';
+import { BreadcrumbItem, User } from '@/types';
+import { ColumnDef } from '@tanstack/react-table';
+import { EllipsisVertical, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -44,24 +47,33 @@ function describeUserRole(role: number): string {
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Home',
-    href: '/'
+    href: '/',
   },
   {
     title: 'User & Access',
-    href: '/users'
-  }
+    href: '/users',
+  },
 ];
+
+function UserName({ user }: { user: User }) {
+  return (
+    <UserForm onSubmit={() => {}} value={user}>
+      <span>{user.name || 'N/A'}</span>
+    </UserForm>
+  );
+}
 
 const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <>{row.original.name || 'N/A'}</>,
+    cell: ({ row }) => <UserName user={row.original} />,
     size: 200,
   },
   {
     accessorKey: 'email',
     header: 'Email',
+    size: 300,
     cell: ({ row }) => (
       <a href={`mailto:${row.original.email}`} className={'text-blue-500 hover:underline'}>
         {row.original.email}
@@ -71,19 +83,17 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'role',
     header: 'User Role',
-    meta: {
-      center: true,
-    },
-    cell: ({ row }) => <>
-      <UserRoleBadge user={row.original}/>
-    </>,
+    size: Infinity,
+    cell: ({ row }) => (
+      <>
+        <UserRoleBadge user={row.original} />
+      </>
+    ),
   },
   {
     accessorKey: 'Actions',
     header: 'Actions',
-    cell: ({row}) => (
-      <UserActions user={row.original} />
-    ),
+    cell: ({ row }) => <UserActions user={row.original} />,
   },
 ];
 
@@ -92,30 +102,43 @@ export default function Users() {
     columns: columns,
     defaultParams: {
       'filter[preset]': 'users',
-      'include': 'user_role',
-    }
+      include: 'user_role',
+    },
   });
 
   function setFilterRole(value: string) {
     table.setSearchParams((prev) => {
       prev.set('filter[role]', value);
       return prev;
-    })
+    });
   }
 
   return (
-    <AppLayout breadcrumbs={breadcrumbs} pageAction={<Button> <Plus></Plus>Add</Button>}>
+    <AppLayout
+      breadcrumbs={breadcrumbs}
+      pageAction={
+        <UserForm onSubmit={() => {}}>
+          <Button>
+            {' '}
+            <Plus />
+            Add
+          </Button>
+        </UserForm>
+      }
+    >
       <div className={'px-6'}>
         <DataTable
-          left={<>
-            <Tabs onValueChange={setFilterRole} value={table.searchParams.get('filter[role]') || ''} className="w-[400px]">
-              <TabsList>
-                <TabsTrigger value="">All</TabsTrigger>
-                <TabsTrigger value="4">PM</TabsTrigger>
-                <TabsTrigger value="5">Inspector</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </>}
+          left={
+            <>
+              <Tabs onValueChange={setFilterRole} value={table.searchParams.get('filter[role]') || ''} className="w-[400px]">
+                <TabsList>
+                  <TabsTrigger value="">All</TabsTrigger>
+                  <TabsTrigger value="4">PM</TabsTrigger>
+                  <TabsTrigger value="5">Inspector</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </>
+          }
           table={table}
         />
       </div>
@@ -123,55 +146,50 @@ export default function Users() {
   );
 }
 
-
 function UserActions({ user }: { user: User }) {
   const table = useTableApi<User>();
   return (
     <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size={'sm'}>
-            <EllipsisVertical />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              View Details
-              <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Duplicate
-              <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Edit
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size={'sm'}>
+          <EllipsisVertical />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuGroup>
+          <UserForm onSubmit={() => {}} value={user}>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+              }}>
+                Edit
               <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className={'text-red-500'}
-              disabled={true}
-              onClick={() => {
-                fetch(route('users.destroy', { id: user.id })).then((res) => {
-                  if (res) {
-                    table.reload();
-                  }
-                });
-              }}
-            >
-              Delete
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>View Assignment</DropdownMenuItem>
-            <DropdownMenuItem>View Project</DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </UserForm>
+          <DropdownMenuItem
+            className={'text-red-500'}
+            disabled={true}
+            onClick={() => {
+              fetch(route('users.destroy', { id: user.id })).then((res) => {
+                if (res) {
+                  table.reload();
+                }
+              });
+            }}
+          >
+            Delete
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>View Assignment</DropdownMenuItem>
+          <DropdownMenuItem>View Project</DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
-
 
 export const UserRoleBadge = ({ user }: { user: User }) => {
   const [role, setRole] = useState(user.user_role?.role || null);
@@ -183,25 +201,26 @@ export const UserRoleBadge = ({ user }: { user: User }) => {
     } else {
       setRole(null);
     }
-  }, [user.user_role?.role])
+  }, [user.user_role?.role]);
 
   function save(role_id: number) {
     setLoading(true);
-    fetch(route('users.update_role', {id: user.id}), {
+    fetch(route('users.update_role', { id: user.id }), {
       method: 'POST',
       headers: defaultHeaders({
         'Content-Type': 'application/json',
       }),
       body: JSON.stringify({
         role: role_id,
-      })
+      }),
     }).then((res) => {
       if (res.ok) {
         setRole(role_id);
       }
-    })
+    });
     setLoading(false);
   }
+
   return (
     <RoleSelect
       onValueChane={(value) => {
@@ -209,16 +228,14 @@ export const UserRoleBadge = ({ user }: { user: User }) => {
       }}
       value={user.user_role?.role || null}
       renderTrigger={() => {
-        return (
-          loading ? (
-              <>saving...</>
-            ) : (
-            <Badge variant={'secondary'} className={'cursor-pointer'}>
-              {describeUserRole(role || 0)}
-            </Badge>
-          )
+        return loading ? (
+          <>saving...</>
+        ) : (
+          <Badge variant={'secondary'} className={'cursor-pointer'}>
+            {describeUserRole(role || 0)}
+          </Badge>
         );
       }}
     />
   );
-}
+};

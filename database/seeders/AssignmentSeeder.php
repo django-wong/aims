@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class AssignmentSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     /**
      * Run the database seeds.
      */

@@ -56,6 +56,8 @@ export default function Clients() {
     {
       accessorKey: 'email',
       header: 'Email',
+      size: 100,
+      maxSize: 100,
       cell: ({ row }) => (
         <a href={`mailto:${row.original.user?.email}`} className={'inline-flex items-center gap-1'}>
           {/*<Mail className={'w-4'}/> */}
