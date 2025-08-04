@@ -12,12 +12,12 @@ interface FormFieldProps {
 
 export function VFormField({ className, ...props }: PropsWithChildren<FormFieldProps> & React.ComponentProps<'div'>) {
   return (
-    <div className={cn('grid gap-2 w-full', className)}>
+    <div className={cn('flex flex-col justify-start gap-2 w-full', className)}>
       {props.renderLabel ? (
         props.renderLabel(props)
       ) : (
         props.label ? (<div className="flex items-center justify-start">
-          <Label className={'line-clamp-1 text-foreground text-sm leading-4 font-medium'} htmlFor={props.for}>
+          <Label className={'line-clamp-1 text-foreground text-sm leading-4 font-medium'}>
             {props.label}
             {props.required && <span className="text-red-500">&nbsp;*</span>}
           </Label>

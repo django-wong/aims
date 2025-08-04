@@ -7,6 +7,7 @@ use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentPolicy
 {
@@ -28,7 +29,7 @@ class AssignmentPolicy
      */
     public function view(User $user, Assignment $assignment): bool
     {
-        return false;
+        return Gate::allows('view', $assignment->project);
     }
 
     /**

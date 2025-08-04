@@ -18,6 +18,7 @@ class OrgFactory extends Factory
     {
         return [
             'name' => $this->faker->company,
+            'code' => $this->faker->unique()->lexify('???'),
         ];
     }
 }

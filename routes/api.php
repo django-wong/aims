@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('menus', [MenuController::class, 'index']);
+
+    Route::get('projects/next-project-number', [ProjectController::class, 'nextProjectNumber']);
+
     Route::apiResources([
         'projects' => ProjectController::class,
         'clients' => ClientController::class,

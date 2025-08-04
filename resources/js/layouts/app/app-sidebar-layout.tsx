@@ -17,21 +17,25 @@ export function LargeTitle(props: { title?: string; pageAction?: React.ReactNode
   }
 }
 
+export interface AppSidebarLayoutProps {
+  children: React.ReactNode;
+  breadcrumbs?: BreadcrumbItem[];
+  pageAction?: React.ReactNode;
+  largeTitle?: string;
+}
+
 export default function AppSidebarLayout({
   children,
   breadcrumbs = [],
   pageAction,
-}: {
-  children: React.ReactNode;
-  breadcrumbs?: BreadcrumbItem[];
-  pageAction?: React.ReactNode;
-}) {
+  ...props
+}: AppSidebarLayoutProps) {
   return (
     <AppShell variant={'sidebar'}>
       <AppSidebar variant={'sidebar'} />
       <AppContent>
         <AppSidebarHeader breadcrumbs={breadcrumbs} />
-        <LargeTitle title={breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1].title : undefined} pageAction={pageAction} />
+        <LargeTitle title={props.largeTitle || (breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1].title : undefined)} pageAction={pageAction} />
         {children}
       </AppContent>
     </AppShell>

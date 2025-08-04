@@ -3,17 +3,13 @@ import { BreadcrumbItem, Timesheet } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '@/components/data-table-2';
+import { DataTable, useTableApi } from '@/components/data-table-2';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent, DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Check, EllipsisVertical, Trash2, X } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ProjectSelect } from '@/components/project-select';
+import { PopoverConfirm } from '@/components/popover-confirm';
+import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -76,13 +72,6 @@ const columns: ColumnDef<Timesheet>[] = [
     }
   },
   {
-    accessorKey: 'created_at',
-    header: 'Created',
-    cell: ({ row }) => {
-      return new Date(row.original.created_at).toLocaleDateString();
-    }
-  },
-  {
     accessorKey: 'actions',
     header: 'Actions',
     cell: ({ row }) => {
@@ -138,30 +127,19 @@ interface TimesheetActionsProps {
 }
 
 export function TimesheetActions(props: TimesheetActionsProps) {
+  const table = useTableApi();
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <EllipsisVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Check/>
-            Approve #{props.timesheet.id}
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <X />
-            Request Change
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-red-600">
-          <Trash2 />
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <PopoverConfirm
+      message={'Are you sure you want to delete this timesheet?'}
+      onConfirm={() => {
+        axios.delete('/api/v1/timesheets/' + props.timesheet.id).then(() => {
+          table.reload();
+        })
+      }}
+      side={'bottom'} align={'end'}>
+      <Button variant="ghost" size="sm">
+        <Trash2 />
+      </Button>
+    </PopoverConfirm>
   );
 }

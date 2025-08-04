@@ -29,4 +29,15 @@ class AssignmentController extends Controller
             'assignment' => $assignment->load('timesheets.timesheet_items'),
         ]);
     }
+
+    public function edit(string $id)
+    {
+        return inertia('assignments/edit', [
+            'assignment' => Assignment::query()
+                ->with(
+                    'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector'
+                )
+                ->findOrFail($id),
+        ]);
+    }
 }

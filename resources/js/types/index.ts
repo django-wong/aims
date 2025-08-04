@@ -124,6 +124,7 @@ export interface Project extends BaseModel {
   quote_id: number | null;
   quote?: Quote;
   title: string;
+  number: string;
   po_number: string;
   org_id: number;
   org?: Org;
@@ -154,6 +155,8 @@ export interface Assignment extends BaseModel {
   operation_org?: Org;
   assignment_type_id: number | null;
   assignment_type?: AssignmentType;
+  inspector_id: number | null;
+  inspector?: User;
   project_id: number;
   project?: Project;
   vendor_id: number | null;
@@ -162,6 +165,7 @@ export interface Assignment extends BaseModel {
   sub_vendor?: Vendor;
   report_required: boolean;
   description: string | null;
+  notes: string | null;
 }
 
 export type Invoiceable = {

@@ -1,15 +1,14 @@
 import { Comments } from '@/components/comments';
 import { Divider } from '@/components/divider';
 import { Info, InfoHead, InfoLine, InfoLineLabel, InfoLineValue } from '@/components/info';
-import { MainContent, MainContentBlock } from '@/components/main-content';
+import { MainContent, MainContentBlock, TwoColumnLayout73 } from '@/components/main-content';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Project } from '@/types';
 import { PropsWithChildren } from 'react';
-import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
 
 export default function ProjectEdit(props: { project: Project }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -31,23 +30,26 @@ export default function ProjectEdit(props: { project: Project }) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <MainContent>
-        <MainContentBlock className={'flex-1'}>
+      <TwoColumnLayout73
+        left={
           <Tabs value={hash} onValueChange={setHash}>
-            <TabsList>
+            <TabsList className={'mb-4'}>
               <TabsTrigger value={'details'}>Details</TabsTrigger>
+              <TabsTrigger value={'assignments'}>Assignments</TabsTrigger>
               <TabsTrigger value={'comments'}>Comments & Attachments</TabsTrigger>
             </TabsList>
             <TabsContent value={'details'}>
               <Content project={props.project}>TODO: Show project details</Content>
             </TabsContent>
+            <TabsContent value={'assignments'}>
+
+            </TabsContent>
             <TabsContent value={'comments'}>
               <Comments commentableType={'Project'} commentableId={props.project.id} />
             </TabsContent>
           </Tabs>
-        </MainContentBlock>
-        <Divider orientation={'vertical'} className={'h-full'} />
-        <MainContentBlock className={'w-lg'}>
+        }
+        right={
           <Info>
             <InfoHead>
               Information
@@ -81,24 +83,24 @@ export default function ProjectEdit(props: { project: Project }) {
               </InfoLineValue>
             </div>
           </Info>
-        </MainContentBlock>
-      </MainContent>
+        }
+      />
     </AppLayout>
   );
 }
 
 function Content(props: PropsWithChildren<{ project: Project }>) {
   return (
-    <div className={'mt-6'}>
+    <div>
       <div className={'grid grid-cols-2 gap-4 lg:grid-cols-4'}>
-        <div className={'bg-muted/50 min-h-[100px] rounded-lg border'}></div>
-        <div className={'bg-muted/50 min-h-[100px] rounded-lg border'}></div>
-        <div className={'bg-muted/50 min-h-[100px] rounded-lg border'}></div>
-        <div className={'bg-muted/50 min-h-[100px] rounded-lg border'}></div>
+        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
+        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
+        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
+        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
       </div>
-      <div className={'bg-muted/10 mt-6 flex min-h-[200px] items-center justify-center rounded-lg border border-2 border-dashed'}>
+      <Skeleton className={'bg-muted-foreground/10 mt-6 flex min-h-[200px] items-center justify-center rounded-lg border border-dashed'}>
         {props.children}
-      </div>
+      </Skeleton>
     </div>
   );
 }

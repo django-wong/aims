@@ -16,7 +16,7 @@ import {
 import { AssignmentForm } from '@/pages/assignments/form';
 import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
 
@@ -37,6 +37,15 @@ const columns: ColumnDef<Assignment>[] = [
     header: 'Assignment Type',
     cell: ({ row }) => {
       return <Badge>{row.original.assignment_type?.name ?? '-'}</Badge>;
+    }
+  },
+  {
+    accessorKey: 'inspector_id',
+    header: 'Inspector',
+    cell: ({ row }) => {
+      return row.original.inspector ? <>
+        {row.original.inspector.name}
+      </> : '-';
     }
   },
   {
@@ -88,7 +97,7 @@ export default function Assignments() {
   const table = useTable('/api/v1/assignments', {
     columns: columns,
     defaultParams: {
-      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org',
+      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org,inspector',
       'sort': 'created_at',
     }
   });
@@ -134,7 +143,10 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                router.visit(route('assignments.edit', { id: assignment.id }));
+              }}>
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem

@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,38 +21,48 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::inertia('setup', 'setup')->name('setup');
+
+    Route::inertia('projects', 'projects')->name('projects');
     Route::controller(ProjectController::class)->group(function () {
         Route::get('projects/{id}', 'edit')->name('projects.edit');
         Route::get('projects', 'index')->name('projects');
     });
-    Route::inertia('projects', 'projects')->name('projects');
+
     Route::inertia('invoices', 'invoices')->name('invoices');
+
     Route::inertia('clients', 'clients')->name('clients');
-    Route::get('clients/{id}', [\App\Http\Controllers\ClientController::class, 'edit'])->name('clients.edit');
+    Route::get('clients/{id}', [ClientController::class, 'edit'])
+        ->name('clients.edit');
+
     Route::inertia('vendors', 'vendors')->name('vendors');
     Route::inertia('quotes', '404')->name('quotes');
+
     Route::inertia('assignments', 'assignments')->name('assignments');
+    Route::get('assignments/{id}/preview', [AssignmentController::class, 'preview'])
+        ->name('assignments.preview');
+    Route::get('assignments/{id}', [AssignmentController::class, 'edit'])
+        ->name('assignments.edit');
+
+    Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])
+        ->name('attachments.download');
+
     Route::inertia('timesheets', 'timesheets')->name('timesheets');
-    Route::inertia('users', 'users')->name('users');
-    Route::inertia('{any}', '404');
-
-    Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
-    Route::get('assignments/{id}/preview', [AssignmentController::class, 'preview'])->name('assignments.preview');
-
     Route::post('timesheets/capture', [TimesheetController::class, 'capture'])
         ->name('timesheets.capture');
-
     Route::get('timesheets/captured', [TimesheetController::class, 'captured'])
         ->name('timesheets.captured');
 
-    Route::get('users/{id}/impersonate', [\App\Http\Controllers\UserController::class, 'impersonate'])
-        ->name('impersonate');
 
+    Route::inertia('users', 'users')->name('users');
+    Route::get('users/{id}/impersonate', [UserController::class, 'impersonate'])
+        ->name('impersonate');
     Route::get('users/leave-impersonation', function () {
         Auth::user()->leaveImpersonation();
         return redirect()
             ->route('dashboard');
     })->name('leave-impersonation');
+
+    Route::inertia('{any}', '404');
 });
 
 

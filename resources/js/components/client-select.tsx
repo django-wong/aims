@@ -28,7 +28,9 @@ export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
         getItemLabel={options.getItemLabel}
         getKeywords={options.getKeywords}
         data={table.data}
-        open={open} setOpen={setOpen} {...props}
+        open={open}
+        setOpen={setOpen}
+        {...props}
       />
     );
   }
@@ -91,7 +93,7 @@ export function SelectPopup<T extends Model>({ open, setOpen, ...props }: Select
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{renderTrigger(props.data.find((data) => data.id === props.value))}</PopoverTrigger>
+      <PopoverTrigger disabled={props.disabled} asChild>{renderTrigger(props.data.find((data) => data.id === props.value))}</PopoverTrigger>
       <PopoverContent className="w-[250px] p-0" align={'start'}>
         <Command>
           <CommandInput placeholder="Search..." className="h-9" />

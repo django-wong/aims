@@ -24,6 +24,7 @@ class ProjectFactory extends Factory
             'project_type_id' => ProjectType::factory(),
             'org_id' => Org::factory(),
             'po_number' => $this->faker->unique()->numerify('PO-#####'),
+            'number' => $this->faker->unique()->regexify('2025-[A-Z]{3}-0\d{3}'),
             'budget' => $this->faker->randomFloat(2, 1000, 100000),
             'quote_id' => null, // Assuming quotes are handled separately
             'status' => $this->faker->randomElement([0, 1, 2]), // 0: Draft, 1: Open, 2: Closed

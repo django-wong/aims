@@ -20,6 +20,9 @@ class UserSeeder extends Seeder
                 ])
             )
             ->for(Org::factory()->create())
+            ->state([
+                'role' => UserRole::ADMIN
+            ])
             ->create();
     }
 }

@@ -11,27 +11,42 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Form, FormField } from '@/components/ui/form';
-import { Input, InputGroup, Inputs } from '@/components/ui/input';
+import { Input, Inputs } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, RefreshCcw } from 'lucide-react';
 import { DialogFormProps, Project } from '@/types';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { ClientSelect } from '@/components/client-select';
 import { ProjectTypeSelect } from '@/components/project-type-select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import axios from 'axios';
+
+function asNullableNumber() {
+  return zod.preprocess((value) => {
+    if (typeof value === 'string' && value) {
+      return parseInt(value);
+    }
+    return null;
+  }, zod.number().min(0).max(100).optional().nullable())
+}
 
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
   po_number: zod.string().min(1, 'PO Number is required').default(''),
+  number: zod.string().min(1),
   project_type_id: zod.number().nullable(),
   client_id: zod.number().nullable(),
   budget: zod.number().min(0, 'Budget must be a positive number'),
   quote_id: zod.number().nullable().optional(),
-  status: zod.number().default(1)
+  status: zod.number().default(1),
+
+  first_alert_threshold: asNullableNumber(),
+  second_alert_threshold: asNullableNumber(),
+  final_alert_threshold: asNullableNumber(),
 });
 
 export function ProjectForm(props: DialogFormProps<Project>) {
@@ -82,10 +97,10 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-9'}>
+                    <VFormField required label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-12'}>
                       <Input
                         placeholder={'Give your project a title'}
-                        className={'bg-white col-span-12'}
+                        className={'bg-white'}
                         {...field}
                         onChange={(event) => {
                           field.onChange(event.target.value);
@@ -98,10 +113,10 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-3'}>
+                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-6'}>
                       <Input
-                        className={'bg-white col-span-12'}
-                        placeholder={'e.g. PRJ-1234'}
+                        className={'bg-white'}
+                        placeholder={'e.g. PO-1234'}
                         {...field}
                         onChange={(event) => {
                           field.onChange(event.target.value);
@@ -110,6 +125,15 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                     </VFormField>
                   )}
                   name={'po_number'}
+                />
+                <FormField
+                  control={form.control}
+                  render={({field, fieldState}) => (
+                    <VFormField required label={'Project Number'} for={'project_number'} error={fieldState.error?.message} className={'col-span-6'}>
+                      <ProjectNumber value={field.value} onValueChange={field.onChange} allowGenerate={!!(props.value?.id || true)}/>
+                    </VFormField>
+                  )}
+                  name={'number'}
                 />
                 <FormField
                   control={form.control}
@@ -138,11 +162,47 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                   }}
                   name={'budget'}
                 />
-                <VFormField label={'Alert Threshold'} for={'threshold'} className={'col-span-6'}>
+                <VFormField label={'Alert Threshold %'} for={'threshold'} className={'col-span-6'}>
                   <Inputs>
-                    <Input placeholder={'70%'} type={'number'} min={0} max={0} className={'bg-background'}/>
-                    <Input placeholder={'90%'} type={'number'} min={0} max={0} className={'bg-background'}/>
-                    <Input placeholder={'100%'} type={'number'} min={0} max={0} className={'bg-background'}/>
+                    <FormField
+                      control={form.control}
+                      render={({field}) => (
+                        <Input
+                          placeholder={'70'}
+                          type={'number'}
+                          className={'bg-background'}
+                          value={field.value || ''}
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                        />
+                      )}
+                      name={'first_alert_threshold'}
+                    />
+                    <FormField
+                      control={form.control}
+                      render={({field}) => (
+                        <Input
+                          placeholder={'90'}
+                          type={'number'}
+                          className={'bg-background'}
+                          value={field.value || ''}
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                        />
+                      )}
+                      name={'second_alert_threshold'}
+                    />
+                    <FormField
+                      control={form.control}
+                      render={({field}) => (
+                        <Input
+                          placeholder={'100'}
+                          type={'number'}
+                          className={'bg-background'}
+                          value={field.value || ''}
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                        />
+                      )}
+                      name={'final_alert_threshold'}
+                    />
                   </Inputs>
                 </VFormField>
                 <div className={'col-span-12'}>
@@ -160,7 +220,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                               }
                             }}
                           />
-                          <Label htmlFor="airplane-mode">Save as Draft (hide from to client)</Label>
+                          <Label>Save as Draft (hide from to client)</Label>
                         </div>
                       </>;
                     }}
@@ -184,5 +244,44 @@ export function ProjectForm(props: DialogFormProps<Project>) {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+
+interface ProjectNumberProps {
+  value: string,
+  onValueChange: (value: string) => void
+  allowGenerate?: boolean
+}
+function ProjectNumber({value, onValueChange, ...props}: ProjectNumberProps) {
+  const generate = useCallback(() => {
+    axios.get('/api/v1/projects/next-project-number').then(response => {
+      if (response.data) {
+        onValueChange(response.data.data);
+      }
+    })
+  }, [onValueChange]);
+
+  useEffect(() => {
+    console.info('use effect', value);
+    if (!value && props.allowGenerate) {
+      generate();
+    }
+  }, [props.allowGenerate, value, generate]);
+
+  return (
+    <div className={'flex items-center gap-2'}>
+      <Input
+        className={'bg-white flex-1'}
+        placeholder={'YYYY-AUS-1234'}
+        value={value}
+        onChange={(event) => {
+          onValueChange(event.target.value);
+        }}
+      />
+      <Button variant={'outline'} onClick={generate} disabled={!props.allowGenerate}>
+        <RefreshCcw/>
+      </Button>
+    </div>
   );
 }

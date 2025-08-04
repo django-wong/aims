@@ -10,7 +10,7 @@ class UserRole extends Model
     /** @use HasFactory<\Database\Factories\UserRoleFactory> */
     use HasFactory, BelongsToOrg, BelongsToUser;
 
-    const SYSTEM = 1;
+    const SYSTEM = 1; // Reserved for system admin
     const ADMIN = 2;
     const FINANCE = 3;
     const PM = 4;

@@ -4,7 +4,7 @@ import { PropsWithChildren } from 'react';
 export function Info(props: PropsWithChildren) {
   return (
     <>
-      <div className={'flex flex-col gap-4'}>{props.children}</div>
+      <div className={'flex flex-col gap-2'}>{props.children}</div>
     </>
   );
 }
@@ -50,7 +50,7 @@ export function InfoLine({
   className?: string;
 }) {
   return (
-    <div className={`flex justify-between items-center gap-2 ${className} flex-wrap`}>
+    <div className={`flex justify-between items-center gap-2 ${className} flex-wrap min-h-8`}>
       <InfoLineLabel icon={icon}>
         {label}
       </InfoLineLabel>

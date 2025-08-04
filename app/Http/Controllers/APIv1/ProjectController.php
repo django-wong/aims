@@ -36,6 +36,16 @@ class ProjectController extends Controller
         return ['title'];
     }
 
+    public function nextProjectNumber()
+    {
+        Gate::authorize('viewAny', Project::class);
+
+        return response()->json([
+            'data' => Project::nextProjectNumber(),
+            'message' => 'Next project number retrieved successfully.',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */

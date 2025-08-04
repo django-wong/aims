@@ -82,7 +82,9 @@ class AssignmentController extends Controller
      */
     public function update(Request $request, Assignment $assignment)
     {
-        //
+        return response()->json([
+            'error' => 'This endpoint is not implemented yet.',
+        ], 501);
     }
 
     /**

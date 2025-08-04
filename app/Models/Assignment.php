@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\App;
 /**
  * @property User $inspector
  */
-class Assignment extends Model
+class Assignment extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets;
@@ -21,6 +21,13 @@ class Assignment extends Model
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'report_required' => 'boolean'
+        ];
+    }
 
     protected static function booted()
     {

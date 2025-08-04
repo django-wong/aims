@@ -10,7 +10,7 @@ import { Assignment, DialogFormProps } from '@/types';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
 import zod from 'zod';
-import { useReactiveForm } from '@/hooks/use-form';
+import { useReactiveForm, useResource } from '@/hooks/use-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField } from '@/components/ui/form';
 import { VFormField } from '@/components/vform';
@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { StaffSelect } from '@/components/user-select';
 import { OrgSelect } from '@/components/org-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
+import { useEffect } from 'react';
 
 const schema = zod.object({
   'project_id': zod.number().int().positive(),
@@ -45,9 +46,17 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       report_required: false,
       inspector_id: null,
     },
-    url: '/api/v1/assignments',
+    ...useResource('/api/v1/assignments', props.value),
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    if (props.value) {
+      form.reset(props.value);
+    }
+  }, [props.value]);
+
+  const isEdit = !!props.value;
 
   function save() {
     form.submit().then(async (response) => {
@@ -64,8 +73,8 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create or update Assignment</DialogTitle>
-            <DialogDescription>Use this form to create or update an assignment. Fill in the necessary details and submit.</DialogDescription>
+            <DialogTitle>Assignment</DialogTitle>
+            <DialogDescription>Fill in the necessary details and submit.</DialogDescription>
           </DialogHeader>
           <DialogInnerContent>
             <Form {...form}>
@@ -81,7 +90,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         for={'project_id'}
                         label={'Project'}
                         className={'col-span-12'}>
-                        <ProjectSelect onValueChane={field.onChange} value={field.value} />
+                        <ProjectSelect
+                          disabled={isEdit}
+                          onValueChane={field.onChange}
+                          value={field.value}
+                        />
                       </VFormField>
                     </>
                   )}
@@ -97,7 +110,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         for={'assignment_type_id'}
                         label={'Assignment Type'}
                         className={'col-span-12'}>
-                        <AssignmentTypeSelect value={field.value} onValueChane={field.onChange}/>
+                        <AssignmentTypeSelect
+                          value={field.value}
+                          onValueChane={field.onChange}
+                          disabled={isEdit}
+                        />
                       </VFormField>
                     </>
                   )}
@@ -113,7 +130,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         for={'inspector_id'}
                         label={'Inspector'}
                         className={'col-span-12'}>
-                        <StaffSelect onValueChane={field.onChange} value={field.value} />
+                        <StaffSelect
+                          disabled={isEdit}
+                          onValueChane={field.onChange}
+                          value={field.value}
+                        />
                       </VFormField>
                     </>
                   )}
@@ -164,18 +185,6 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   )}
                 />
                 <FormField
-                  name={'report_required'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <div className={'col-span-12'}>
-                      <Label>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                        Report is required
-                      </Label>
-                    </div>
-                  )}
-                />
-                <FormField
                   name={'notes'}
                   control={form.control}
                   render={({ field, fieldState }) => (
@@ -185,7 +194,12 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         for={'notes'}
                         label={'Notes'}
                         className={'col-span-12'}>
-                        <Textarea className={'bg-background'} value={field.value ?? ''} onChange={field.onChange} />
+                        <Textarea
+                          className={'bg-background min-h-36'}
+                          value={field.value ?? ''}
+                          onChange={field.onChange}
+                          placeholder={'Describe any notes or additional information about the assignment.'}
+                        />
                       </VFormField>
                     </>
                   )}
@@ -193,7 +207,20 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
               </div>
             </Form>
           </DialogInnerContent>
-          <DialogFooter>
+          <DialogFooter className={'items-center'}>
+            <FormField
+              name={'report_required'}
+              control={form.control}
+              render={({ field }) => (
+                <div className={'col-span-12'}>
+                  <Label>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    Report is required
+                  </Label>
+                </div>
+              )}
+            />
+            <span className={'flex-grow'}></span>
             <DialogClose asChild>
               <Button variant={'outline'} type={'button'}>
                 Cancel

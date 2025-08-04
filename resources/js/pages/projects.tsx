@@ -80,10 +80,10 @@ const columns: ColumnDef<Project>[] = [
     cell: ({row}) => row.original.client?.business_name || 'Unknown',
   },
   {
-    accessorKey: 'po',
-    header: 'PO',
+    accessorKey: 'number',
+    header: 'P.N',
     cell: ({ row }) => {
-      return row.original.po_number;
+      return row.original.number || 'N/A';
     },
   },
   {
