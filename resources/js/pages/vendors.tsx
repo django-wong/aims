@@ -99,7 +99,7 @@ function VendorActions({ vendor }: { vendor: Vendor }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={'sm'}>
+        <Button variant="secondary" size={'sm'}>
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>

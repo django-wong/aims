@@ -4,10 +4,9 @@ import { Toaster } from '@/components/ui/sonner';
 export function BaseLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <FlashMessage>
-        {children}
-      </FlashMessage>
       <Toaster/>
+      <FlashMessage/>
+      {children}
     </div>
   );
 }

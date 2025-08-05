@@ -1,21 +1,30 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import { SharedData } from '@/types';
 import { toast } from 'sonner';
 
-export function FlashMessage(props: PropsWithChildren) {
+/**
+ * Display the flash message from laravel session. Make sure sonner is initialized first before using this component.
+ *
+ * @param props
+ * @constructor
+ */
+export function FlashMessage() {
   const { props: {
-    flash
+    flash: {
+      message, error
+    }
   } } = usePage<SharedData>();
 
+  useEffect(() => {
+    if (message) {
+      toast.message(message);
+    }
+    if (error) {
+      toast.error(error);
+    }
+  }, [message, error]);
 
-  if (flash.message) {
-    toast.message(flash.message);
-  }
 
-  if (flash.error) {
-    toast.error(flash.error);
-  }
-
-  return <>{props.children}</>;
+  return null;
 }

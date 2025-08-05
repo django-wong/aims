@@ -97,15 +97,18 @@ body {
   }
 
   .project-status-0 {
-    --color-foreground: green;
+    --color-foreground: oklch(0.95 0.1026 144.25);
+    --color-secondary: var(--color-foreground);
     --color-border: var(--color-foreground);
   }
   .project-status-1 {
-    --color-foreground: blue;
+    --color-foreground: oklch(0.95 0.0839 270.53);
+    --color-secondary: var(--color-foreground);
     --color-border: var(--color-foreground);
   }
   .project-status-2 {
-    --color-foreground: purple;
+    --color-foreground: oklch(0.95 0.0839 337.24);
+    --color-secondary: var(--color-foreground);
     --color-border: var(--color-foreground);
   }
   .has-error {

@@ -1,17 +1,14 @@
-import { DataTable } from '@/components/data-table-2';
+import { DataTable, useTableApi } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { VFormField } from '@/components/vform';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { ClientForm } from '@/pages/clients/form';
@@ -19,7 +16,7 @@ import { BreadcrumbItem, Client } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { EllipsisVertical, Filter, Plus } from 'lucide-react';
+import { EllipsisVertical, Plus, Trash2 } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,10 +30,43 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function Clients() {
-  const [client, setClient] = useState<Client | null>(null);
-  const [open, setOpen] = useState(false);
+function ClientAction(props: { client: Client }) {
+  const table = useTableApi();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary" size={'sm'}>
+          <EllipsisVertical />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            View Details
+            <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem variant={'destructive'}
+            disabled={true}
+            onClick={() => {
+              fetch(route('clients.destroy', { id: props.client.id })).then((res) => {
+                if (res) {
+                  table.reload();
+                }
+              });
+            }}
+          >
+            Delete
+            <DropdownMenuShortcut>
+              <Trash2/>
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
+export default function Clients() {
   const columns: ColumnDef<Client>[] = [
     {
       accessorKey: 'name',
@@ -75,28 +105,32 @@ export default function Clients() {
       header: 'Reviewer',
       cell: ({ row }) => row.original.reviewer?.name || 'N/A',
     },
-    {
-      accessorKey: 'address_id',
-      header: 'Address',
-      cell: ({ row }) => {
-        if (!row.original.address) {
-          return 'N/A';
-        }
-        const { address_line_1, city, state, zip, country } = row.original.address;
-
-        return (
-          <span>
-            {address_line_1}, {city}, {state} {zip}, {country}
-          </span>
-        );
-      },
-    },
+    // {
+    //   accessorKey: 'address_id',
+    //   header: 'Address',
+    //   cell: ({ row }) => {
+    //     if (!row.original.address) {
+    //       return 'N/A';
+    //     }
+    //     const { address_line_1, city, state, zip, country } = row.original.address;
+    //
+    //     return (
+    //       <span>
+    //         {address_line_1}, {city}, {state} {zip}, {country}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       accessorKey: 'Reminder',
       header: () => {
-        return <>
-          <span className={'cursor-help'} title={'Email reminder will be sent to the client if the invoice is approved within this days.'}>REMINDER (DAYS)</span>
-        </>;
+        return (
+          <>
+            <span className={'cursor-help'} title={'Email reminder will be sent to the client if the invoice is approved within this days.'}>
+              REMINDER (DAYS)
+            </span>
+          </>
+        );
       },
       cell: ({ row }) => {
         return <>{row.original.invoice_reminder}</>;
@@ -105,56 +139,7 @@ export default function Clients() {
     {
       accessorKey: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size={'sm'}>
-              <EllipsisVertical />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                View Details
-                <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Duplicate
-                <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  startTransition(() => {
-                    setClient(row.original);
-                    setOpen(true);
-                  });
-                }}>
-                Edit
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={'text-red-500'}
-                disabled={true}
-                onClick={() => {
-                  fetch(route('clients.destroy', { id: row.original.id })).then((res) => {
-                    if (res) {
-                      table.reload();
-                    }
-                  });
-                }}
-              >
-                Delete
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>View Assignment</DropdownMenuItem>
-              <DropdownMenuItem>View Project</DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      cell: ({ row }) => <ClientAction client={row.original} />,
     },
   ];
 
@@ -162,7 +147,7 @@ export default function Clients() {
     defaultParams: {
       include: 'user,address,coordinator,reviewer',
     },
-    columns
+    columns,
   });
 
   const { searchParams, setSearchParams } = table;
@@ -198,30 +183,12 @@ export default function Clients() {
           </ClientForm>
         }
       >
-        <ClientForm value={client} onSubmit={table.reload} open={open} onOpenChange={setOpen} />
         <div className={'px-6'}>
           <DataTable
             table={table}
             left={
               <>
                 <Input onChange={setSearchKeywords} className={'max-w-[220px]'} placeholder={'Search by name, email'} value={keywords} />
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant={'outline'}>
-                      <Filter />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align={'start'}>
-                    <div className={'flex flex-col gap-4'}>
-                      <VFormField label={'Coordinator'} for={'coordinator'}>
-                        {/*<StaffSelect*/}
-                        {/*  onValueChane={() => {}}*/}
-                        {/*  value={1}*/}
-                        {/*/>*/}
-                      </VFormField>
-                    </div>
-                  </PopoverContent>
-                </Popover>
               </>
             }
           />

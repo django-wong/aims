@@ -51,7 +51,7 @@ const breadcrumbs = [
 function ProjectActions(props: { project: Project }) {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="outline">
+      <Button variant="secondary" size={'sm'}>
         <EllipsisVertical />
       </Button>
     </DropdownMenuTrigger>
@@ -78,13 +78,6 @@ function ProjectActions(props: { project: Project }) {
 
 const columns: ColumnDef<Project>[] = [
   {
-    accessorKey: 'client',
-    header: 'Client',
-    minSize: 100,
-    maxSize: 100,
-    cell: ({row}) => row.original.client?.business_name || 'Unknown',
-  },
-  {
     accessorKey: 'number',
     header: 'P.N',
     cell: ({ row }) => {
@@ -97,8 +90,15 @@ const columns: ColumnDef<Project>[] = [
     minSize: 120,
     maxSize: 120,
     cell: ({ row }) => {
-      return row.original.project_type?.name ?? 'Unknown';
+      return <Badge variant={'secondary'}>{row.original.project_type?.name ?? 'Unknown'}</Badge>;
     },
+  },
+  {
+    accessorKey: 'client',
+    header: 'Client',
+    minSize: 100,
+    maxSize: 100,
+    cell: ({row}) => row.original.client?.business_name || 'Unknown',
   },
   {
     accessorKey: 'title',
@@ -133,7 +133,7 @@ const columns: ColumnDef<Project>[] = [
     header: 'Status',
     cell: ({ row }) => {
       return <Badge
-        variant={'outline'} className={cn('bg-transparent capitalize', 'project-status-' + row.original.status)}>{describeStatus(row.original.status)}
+        variant={'secondary'} className={cn('capitalize', 'project-status-' + row.original.status)}>{describeStatus(row.original.status)}
       </Badge>
     },
     meta: {

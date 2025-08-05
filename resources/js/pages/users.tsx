@@ -6,21 +6,21 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
+  DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { UserForm } from '@/pages/users/form';
-import { BreadcrumbItem, User } from '@/types';
+import { BreadcrumbItem, SharedData, User } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
-import { Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
+import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -149,6 +149,15 @@ export default function Users() {
 
 function UserActions({ user }: { user: User }) {
   const table = useTableApi<User>();
+
+  const {
+    props: {
+      auth
+    }
+  } = usePage<SharedData>();
+
+  const canImpersonate = user.id !== auth.user?.id;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -157,6 +166,8 @@ function UserActions({ user }: { user: User }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+        <DropdownMenuSeparator/>
         <DropdownMenuGroup>
           <UserForm onSubmit={() => {}} value={user}>
             <DropdownMenuItem
@@ -188,7 +199,7 @@ function UserActions({ user }: { user: User }) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href={route('impersonate', { id: user.id})}>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled={!canImpersonate}>
               Impersonate
               <DropdownMenuShortcut>
                 <ScanFace className={'size-4'}/>
@@ -230,7 +241,9 @@ export const UserRoleBadge = ({ user }: { user: User }) => {
   return (
     <RoleSelect
       onValueChane={(value) => {
-        save(value);
+        if (value) {
+          save(value);
+        }
       }}
       value={user.user_role?.role || null}
       renderTrigger={() => {
@@ -239,6 +252,7 @@ export const UserRoleBadge = ({ user }: { user: User }) => {
         ) : (
           <Badge variant={'secondary'} className={'cursor-pointer'}>
             {describeUserRole(role || 0)}
+            <ChevronDown className={'size-2'}/>
           </Badge>
         );
       }}

@@ -1,33 +1,30 @@
-import { headers } from '@/lib/utils';
 import { BaseModel } from '@/types';
+import axios from 'axios';
 
+/**
+ * useApi is a custom hook that provides methods to interact with a RESTful API.
+ * It allows you to perform CRUD operations (Create, Read, Update, Delete) on a specified base URL.
+ *
+ * @param base
+ */
 export function useApi<T extends BaseModel>(base: string) {
   return {
     post: (entity: T) => {
-      return fetch(new URL(base, window.location.origin), {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify(entity),
-      });
+      return axios.post(base, entity);
     },
+
     put: (entity: T) => {
-      return fetch(new URL(String(entity.id), new URL(base, window.location.origin)), {
-        method: 'PUT',
-        headers: headers(),
-        body: JSON.stringify(entity),
-      });
+      return axios.put(`${base}/${String(entity.id)}`, entity);
     },
+
     get: (params?: URLSearchParams) => {
-      return fetch(new URL('?' + (params?.toString() || ''), new URL(base, window.location.origin)), {
-        method: 'GET',
-        headers: headers(),
+      return axios.get(base, {
+        params: params,
       });
     },
+
     delete: (entity: T) => {
-      return fetch(new URL(String(entity.id), new URL(base, window.location.origin)), {
-        method: 'DELETE',
-        headers: headers(),
-      });
+      return axios.delete(`${base}/${String(entity.id)}`);
     }
   };
 }

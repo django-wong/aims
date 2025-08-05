@@ -12,11 +12,10 @@ const queryClient = new QueryClient();
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
   <QueryClientProvider client={queryClient}>
-    <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-      <FlashMessage>
-        {children}
-      </FlashMessage>
-    </AppLayoutTemplate>
     <Toaster/>
+    <FlashMessage/>
+    <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+      {children}
+    </AppLayoutTemplate> 
   </QueryClientProvider>
 );

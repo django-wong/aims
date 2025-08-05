@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table-2';
-import { ArrowRightFromLine, EllipsisVertical, Eye, Mail, MessageSquare, Trash2 } from 'lucide-react';
+import { EllipsisVertical, Eye, Mail, MessageSquare, Trash2, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -24,7 +24,6 @@ import { useDebouncer } from '@/hooks/use-debounced';
 import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
-import { PopoverConfirm } from '@/components/popover-confirm';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -39,20 +38,27 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns: ColumnDef<Assignment>[] = [
   {
-    accessorKey: 'assignment_type_id',
-    header: 'Assignment Type',
-    cell: ({ row }) => {
-      return <Badge>{row.original.assignment_type?.name ?? '-'}</Badge>;
-    }
-  },
-  {
     accessorKey: 'inspector_id',
-    header: 'Inspector',
+    header: () => (
+      <>
+        <div className={'flex items-center gap-1'}>
+          <User className={'size-4'}/>
+        </div>
+      </>
+    ),
     cell: ({ row }) => {
       return row.original.inspector ? <>
         {row.original.inspector.name}
       </> : '-';
     }
+  },
+  {
+    accessorKey: 'assignment_type_id',
+    header: 'Type',
+    cell: ({ row }) => {
+      return <Badge variant={'secondary'}>{row.original.assignment_type?.name ?? '-'}</Badge>;
+    },
+    size: 100,
   },
   {
     accessorKey: 'project_id',
@@ -79,13 +85,13 @@ const columns: ColumnDef<Assignment>[] = [
       return row.original.vendor?.name ?? '-';
     }
   },
-  {
-    accessorKey: 'sub_vendor_id',
-    header: 'Sub Vendor',
-    cell: ({ row }) => {
-      return row.original.sub_vendor?.name ?? '-';
-    }
-  },
+  // {
+  //   accessorKey: 'sub_vendor_id',
+  //   header: 'Sub Vendor',
+  //   cell: ({ row }) => {
+  //     return row.original.sub_vendor?.name ?? '-';
+  //   }
+  // },
   {
     accessorKey: 'actions',
     header: 'Actions',

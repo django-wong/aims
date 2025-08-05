@@ -12,9 +12,15 @@ class UserController
     {
         $user = User::query()->findOrFail($id);
 
-        Gate::authorize(
+        $allow = Gate::check(
             'impersonate', $user
         );
+
+        if (!$allow || true) {
+            return redirect()->back()->with(
+                'error', __('You are not allowed to impersonate this user.').time()
+            );
+        }
 
         Auth::user()->impersonate($user);
 

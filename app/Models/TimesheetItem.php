@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class TimesheetItem extends Model
 {
     /** @use HasFactory<\Database\Factories\TimesheetItemFactory> */
-    use HasFactory, BelongsToTimesheet;
+    use HasFactory, BelongsToTimesheet, BelongsToUser;
 
     protected $guarded = [
         'id',
@@ -17,4 +17,6 @@ class TimesheetItem extends Model
         'updated_at',
         'deleted_at'
     ];
+
+    // ....
 }
