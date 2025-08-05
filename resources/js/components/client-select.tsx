@@ -74,7 +74,7 @@ export function SelectPopup<T extends Model>({ open, setOpen, ...props }: Select
       return props.renderTrigger(item);
     }
     return (
-      <Button variant="outline" role="combobox" aria-expanded={open} className={cn('w-full justify-between font-normal', props.className)}>
+      <Button variant="outline" role="combobox" aria-expanded={open} className={cn('w-full justify-between font-normal overflow-hidden', props.className)}>
         <div className={'overflow-hidden'}>
           {item ? (
             props.getItemLabel(item)

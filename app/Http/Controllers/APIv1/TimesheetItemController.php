@@ -2,20 +2,38 @@
 
 namespace App\Http\Controllers\APIv1;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\APIv1\TimesheetItems\StoreRequest;
+use App\Models\Assignment;
 use App\Models\Timesheet;
 use App\Models\TimesheetItem;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class TimesheetItemController extends Controller
 {
+    public function allowedFilters()
+    {
+        return [
+            AllowedFilter::callback('assignment_id', function (Builder $query, $value) {
+                $assignment = Assignment::query()->findOrFail($value);
+                Gate::authorize('view', $assignment);
+                $query->whereIn('timesheet_id', function ($subQuery) use ($value) {
+                    $subQuery->select('id')
+                        ->from('timesheets')
+                        ->where('assignment_id', $value);
+                });
+            })->default(0),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

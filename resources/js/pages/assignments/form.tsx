@@ -207,7 +207,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
               </div>
             </Form>
           </DialogInnerContent>
-          <DialogFooter className={'items-center'}>
+          <DialogFooter className={'items-center flex-row'}>
             <FormField
               name={'report_required'}
               control={form.control}

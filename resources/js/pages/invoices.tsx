@@ -167,13 +167,13 @@ export default function Page() {
           left={<>
             <SegmentedControl value={value} onValueChange={(value) => setValue(value)}>
               <SegmentedControlList>
-                <SegmentedControlTrigger value={'received'}>
-                  <Inbox size={16}/>
-                  Received
-                </SegmentedControlTrigger>
                 <SegmentedControlTrigger value={'sent'}>
                   <Send size={16}/>
                   Sent
+                </SegmentedControlTrigger>
+                <SegmentedControlTrigger value={'received'}>
+                  <Inbox size={16}/>
+                  Received
                 </SegmentedControlTrigger>
               </SegmentedControlList>
             </SegmentedControl>

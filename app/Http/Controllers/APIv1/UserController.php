@@ -79,4 +79,9 @@ class UserController extends Controller
             'data' => $user->user_role->save()
         ]);
     }
+
+    public function store(StoreRequest $request)
+    {
+
+    }
 }

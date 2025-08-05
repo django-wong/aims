@@ -74,14 +74,12 @@ export default function ProjectEdit(props: { project: Project }) {
             <InfoLine label={'Coordinator'} icon={'user-check'}>
               {props.project.client?.coordinator?.name || 'N/A'}
             </InfoLine>
-            <div className={'flex flex-col gap-2'}>
-              <InfoLineLabel icon={'notebook'}>Notes</InfoLineLabel>
-              <InfoLineValue>
-                <p className={'break-all text-sm text-muted-foreground'}>
-                  {props.project.client?.notes || 'N/A'}
-                </p>
-              </InfoLineValue>
-            </div>
+            <InfoHead>
+              Notes
+            </InfoHead>
+            <InfoLineValue>
+              {props.project.client?.notes || 'N/A'}
+            </InfoLineValue>
           </Info>
         }
       />

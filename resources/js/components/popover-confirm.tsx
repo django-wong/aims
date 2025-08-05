@@ -3,19 +3,22 @@ import { Button } from '@/components/ui/button';
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 interface PopoverConfirmProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title?: string | React.ReactNode;
   message: string | React.ReactNode;
   onConfirm: () => void;
   confirmText?: string;
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
+  asChild?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 export function PopoverConfirm(props: PopoverConfirmProps) {
   return (
     <>
-      <Popover>
-        <PopoverTrigger asChild>{props.children}</PopoverTrigger>
+      <Popover open={props.open} onOpenChange={props.onOpenChange}>
+        <PopoverTrigger asChild={props.asChild}>{props.children}</PopoverTrigger>
         <PopoverPrimitive.Portal>
           <PopoverContent side={props.side} align={props.align} className="w-80">
             <div className={'grid gap-4'}>

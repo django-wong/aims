@@ -7,16 +7,27 @@ import TableCellWrapper, { computedStyle } from '@/components/ui/table-cell-wrap
 import { BaseTableData, useTable } from '@/hooks/use-table';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LoaderCircle, TableIcon } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  LoaderCircle,
+  PackageOpen,
+  TableIcon
+} from 'lucide-react';
 import * as React from 'react';
 import { SvgBg } from '@/components/svg-bg';
 import { cn } from '@/lib/utils';
+import { cva, VariantProps } from 'class-variance-authority';
 
 interface DataTableProps<T extends BaseTableData> {
+  className?: string;
   table: ReturnType<typeof useTable<T>>;
   left?: React.ReactNode;
   right?: React.ReactNode;
   onRowClick?: (row: Row<T>) => void;
+  pagination?: boolean;
 }
 
 const TableContext = React.createContext<null | ReturnType<typeof useTable<any>>>(null);
@@ -58,17 +69,36 @@ export function ColumnToggle() {
   );
 }
 
-export function DataTable<T extends BaseTableData>({ table, ...props }: DataTableProps<T>) {
+const tableVariants = cva(
+  "overflow-hidden rounded-md border relative",
+  {
+    variants: {
+      variant: {
+        default:
+          "",
+        clean:
+          "",
+      }
+    },
+    defaultVariants: {
+      variant: "default"
+    },
+  }
+)
+
+export function DataTable<T extends BaseTableData>({ variant, table, ...props }: DataTableProps<T> & VariantProps<typeof tableVariants>) {
+  const showPagination = props.pagination === undefined || props.pagination;
+
   return (
     <TableContext value={table}>
-      <div className={'flex flex-col gap-6'}>
+      <div className={cn('flex flex-col gap-6', props.className)}>
         <div className={'flex flex-wrap items-center justify-between gap-2'}>
           <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
           <div className={'flex flex-wrap items-center justify-start gap-2'}>
             {props.right}
           </div>
         </div>
-        <div className="overflow-hidden rounded-md border relative">
+        <div className={cn(tableVariants({ variant }))}>
           <Table
             bottom={
               <>
@@ -81,9 +111,9 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                           <SvgBg/>
                         </div>
                         <div className={'flex flex-col items-center justify-center gap-2 text-foreground text-center'}>
-                          <TableIcon/>
+                          <PackageOpen/>
                           <p className={'font-bold text-lg'}>No data founds.</p>
-                          <p className={'text-muted-foreground'}>Your search did not match any data. Please try again or create new one.</p>
+                          <p className={'text-muted-foreground'}>Your search did not match any data. Please <span className={'underline'} onClick={() => {table.reload()}}>try again</span> or create new one.</p>
                         </div>
                       </>
                     ) : (
@@ -102,7 +132,7 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
                   {headerGroup.headers.map((header, index) => (
                     <TableHead
                       key={header.id}
-                      className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted')}
+                      className={cn('pin-'+(header.column.getIsPinned() || 'none'))}
                       style={{ ...computedStyle(header.column)}}>
                       <TableCellWrapper
                         center={(header.column.columnDef.meta as any)?.['center']}
@@ -135,67 +165,69 @@ export function DataTable<T extends BaseTableData>({ table, ...props }: DataTabl
             </TableBody>
           </Table>
         </div>
-        <div className="flex items-center justify-between px-4">
-          <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+        { showPagination && (
+          <div className="flex items-center justify-between px-4">
+            <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+              {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+            </div>
+            <div className="flex w-full items-center gap-8 lg:w-fit">
+              <div className="hidden items-center gap-2 lg:flex">
+                <Label htmlFor="rows-per-page" className="text-sm font-medium">
+                  Rows per page
+                </Label>
+                <Select
+                  value={`${table.getState().pagination.pageSize}`}
+                  onValueChange={(value) => {
+                    table.setPageSize(Number(value));
+                  }}
+                >
+                  <SelectTrigger clearable={false} className="w-20" id="rows-per-page" size={'sm'}>
+                    <SelectValue placeholder={table.getState().pagination.pageSize} />
+                  </SelectTrigger>
+                  <SelectContent side="top">
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
+                      <SelectItem key={pageSize} value={`${pageSize}`}>
+                        {pageSize}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex w-fit items-center justify-center text-sm font-medium">
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              </div>
+              <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                <Button
+                  variant="outline"
+                  className="hidden h-8 w-8 p-0 lg:flex"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <span className="sr-only">Go to first page</span>
+                  <ChevronsLeft />
+                </Button>
+                <Button variant="outline" className="size-8" size="icon" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                  <span className="sr-only">Go to previous page</span>
+                  <ChevronLeft />
+                </Button>
+                <Button variant="outline" className="size-8" size="icon" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                  <span className="sr-only">Go to next page</span>
+                  <ChevronRight />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="hidden size-8 lg:flex"
+                  size="icon"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <span className="sr-only">Go to last page</span>
+                  <ChevronsRight />
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="flex w-full items-center gap-8 lg:w-fit">
-            <div className="hidden items-center gap-2 lg:flex">
-              <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                Rows per page
-              </Label>
-              <Select
-                value={`${table.getState().pagination.pageSize}`}
-                onValueChange={(value) => {
-                  table.setPageSize(Number(value));
-                }}
-              >
-                <SelectTrigger clearable={false} className="w-20" id="rows-per-page" size={'sm'}>
-                  <SelectValue placeholder={table.getState().pagination.pageSize} />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  {[10, 20, 30, 40, 50].map((pageSize) => (
-                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-            </div>
-            <div className="ml-auto flex items-center gap-2 lg:ml-0">
-              <Button
-                variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <span className="sr-only">Go to first page</span>
-                <ChevronsLeft />
-              </Button>
-              <Button variant="outline" className="size-8" size="icon" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                <span className="sr-only">Go to previous page</span>
-                <ChevronLeft />
-              </Button>
-              <Button variant="outline" className="size-8" size="icon" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                <span className="sr-only">Go to next page</span>
-                <ChevronRight />
-              </Button>
-              <Button
-                variant="outline"
-                className="hidden size-8 lg:flex"
-                size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <span className="sr-only">Go to last page</span>
-                <ChevronsRight />
-              </Button>
-            </div>
-          </div>
-        </div>
+        )}
         <div></div>
       </div>
     </TableContext>

@@ -21,6 +21,7 @@ import { ProjectForm } from '@/pages/projects/form';
 import { Project,  } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
+import { PopoverConfirm } from '@/components/popover-confirm';
 
 export function describeStatus(status: Project['status']) {
   // 0: Draft, 1: Open, 2: Closed
@@ -59,12 +60,16 @@ function ProjectActions(props: { project: Project }) {
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
         <DropdownMenuItem>
-          Duplicate
-          <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
+          View Details
+          <DropdownMenuShortcut>
+            <Eye/>
+          </DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuItem className={'text-red-500'}>
+        <DropdownMenuItem className={'text-red-500'} onSelect={(event) => {event.stopPropagation()}}>
           Delete
-          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          <DropdownMenuShortcut>
+            <Trash2/>
+          </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>

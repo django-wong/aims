@@ -75,7 +75,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: parseInt(searchParams.get(aliased('page')) ?? '1') - 1,
-    pageSize: parseInt(searchParams.get(aliased('pageSize')) ?? '10'),
+    pageSize: parseInt(searchParams.get(aliased('pageSize')) ?? String(options.initialState?.pagination?.pageSize ?? 10)),
   });
 
   const table = useReactTable<T>({
@@ -143,13 +143,6 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
         }
         return response.json();
       })
-      // .then((response) => {
-      //   return new Promise<PagedResponse<T>>((resolve) => {
-      //     setTimeout(() => {
-      //       resolve(response);
-      //     }, 1500);
-      //   });
-      // })
       .then((response) => {
         startTransition(() => {
           setTotal(response.total || 0);

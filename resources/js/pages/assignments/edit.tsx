@@ -8,8 +8,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import Layout from '@/layouts/app-layout';
 import { AssignmentForm } from '@/pages/assignments/form';
-import { Assignment, BreadcrumbItem } from '@/types';
+import { Assignment, BreadcrumbItem, TimesheetItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { DataTable, useTableApi } from '@/components/data-table-2';
+import { useTable } from '@/hooks/use-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { AssignmentActions } from '@/pages/assignments';
+import { Check, CircleAlert, Send, SendHorizonal, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface EditProps {
   assignment: Assignment;
@@ -38,9 +46,12 @@ export default function Edit(props: EditProps) {
       breadcrumbs={breadcrumbs}
       largeTitle={'View Assignment'}
       pageAction={
-        <AssignmentForm value={props.assignment} onSubmit={() => {}}>
-          <Button variant={'outline'}>Edit</Button>
-        </AssignmentForm>
+        <>
+          <AssignmentActions assignment={props.assignment}/>
+          <AssignmentForm value={props.assignment} onSubmit={() => {}}>
+            <Button variant={'outline'}>Edit</Button>
+          </AssignmentForm>
+        </>
       }
     >
       <Head title={props.assignment.project?.title || 'The Assignment'} />
@@ -52,7 +63,11 @@ export default function Edit(props: EditProps) {
               <TabsTrigger value={'inspector-report'}>Inspector Report</TabsTrigger>
               <TabsTrigger value={'comments'}>Comments & Attachments</TabsTrigger>
             </TabsList>
-            <TabsContent value={'timesheets'}>TODO: Timesheet items</TabsContent>
+            <TabsContent value={'timesheets'}>
+              <div className={'grid gap-4'}>
+                <TimesheetItems assignment={props.assignment}/>
+              </div>
+            </TabsContent>
             <TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>
             <TabsContent value={'comments'}>
               <Comments commentableType={'Assignment'} commentableId={props.assignment.id} />
@@ -93,5 +108,74 @@ export default function Edit(props: EditProps) {
         }
       />
     </Layout>
+  );
+}
+
+function TimesheetItemActions(props: { item: TimesheetItem }) {
+  const [checked, setChecked] = useState(props.item.approved);
+  return (
+    <div className={'flex items-center gap-2 justify-end'}>
+      <Tooltip>
+        <TooltipTrigger>
+          <Switch checked={checked} onCheckedChange={setChecked}/>
+        </TooltipTrigger>
+        <TooltipContent className={'flex items-center gap-1'}>
+          <CircleAlert className={'size-4'}/> Invoice will be created upon approval
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
+
+const timesheetItemColumns: ColumnDef<TimesheetItem>[] = [
+  {
+    accessorKey: 'id',
+    header: '#',
+    cell: ({ row }) => row.original.id,
+    size: 60,
+  },
+  {
+    accessorKey: 'hours',
+    header: 'Hours',
+    size: 100,
+    cell: ({ row }) => row.original.hours.toFixed(1),
+  },
+  {
+    accessorKey: 'km_traveled',
+    header: 'KM/Miles',
+    cell: ({ row }) => row.original.km_traveled,
+    size: 100,
+  },
+  {
+    accessorKey: 'days and overnights',
+    header: 'D & N',
+    cell: ({ row }) => `${row.original.days} / ${row.original.overnights}`,
+    size: 100,
+  },
+  {
+    accessorKey: 'actions',
+    header: 'Approved',
+    cell: ({ row }) => <TimesheetItemActions item={row.original} />,
+  },
+];
+
+function TimesheetItems({ assignment }: { assignment: Assignment }) {
+  const table = useTable('/api/v1/timesheet-items', {
+    columns: timesheetItemColumns,
+    selectable: false,
+    initialState: {
+      pagination: {
+        pageSize: 9999
+      }
+    },
+    defaultParams: {
+      'filter[assignment_id]': String(assignment.id),
+    }
+  });
+
+  return (
+    <div>
+      <DataTable table={table} variant={'clean'} pagination={false} className={'gap-0 bg-background'}/>
+    </div>
   );
 }

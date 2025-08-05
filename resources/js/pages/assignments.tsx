@@ -4,13 +4,18 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table-2';
-import { EllipsisVertical, Mail } from 'lucide-react';
+import { ArrowRightFromLine, EllipsisVertical, Eye, Mail, MessageSquare, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut,
+  DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub, DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { AssignmentForm } from '@/pages/assignments/form';
@@ -19,6 +24,7 @@ import { useDebouncer } from '@/hooks/use-debounced';
 import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
+import { PopoverConfirm } from '@/components/popover-confirm';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -53,7 +59,7 @@ const columns: ColumnDef<Assignment>[] = [
     header: 'Project',
     cell: ({ row }) => {
       return <>
-        <Link href={route('projects.edit', { id: row.original.project_id })}>
+        <Link href={route('projects.edit', { id: row.original.project_id })} className={'underline'}>
           {row.original.project?.title ?? row.original.project_id}
         </Link>
       </>;
@@ -131,46 +137,71 @@ export default function Assignments() {
   );
 }
 
-
-export function AssignmentActions({ assignment }: { assignment: Assignment }) {
+interface AssignmentActionsProps {
+  assignment: Assignment;
+  hideDetails?: boolean;
+}
+export function AssignmentActions({ assignment, ...props }: AssignmentActionsProps) {
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size={'sm'}>
+          <Button variant="secondary" size={'sm'}>
             <EllipsisVertical />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => {
-                router.visit(route('assignments.edit', { id: assignment.id }));
-              }}>
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                axios.post('/api/v1/assignments/' + assignment.id + '/notify-inspector');
-              }}>
-              Notice Inspector
-              <DropdownMenuShortcut>
-                <Mail/>
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={'text-red-500'}
-              disabled={true}
-              onClick={() => {
-                alert('TODO');
-                console.log(assignment);
-              }}>
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+        <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
+          <DropdownMenuLabel className={'flex items-center gap-2 justify-between'}>
+            <span>Assignment</span> <span>#{assignment.id}</span>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>View Project</DropdownMenuItem>
+            {props.hideDetails ? null : (
+              <DropdownMenuItem
+                onClick={() => {
+                  router.visit(route('assignments.edit', { id: assignment.id }));
+                }}>
+                View Details
+                <DropdownMenuShortcut>
+                  <Eye/>
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Send notification via...</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      axios.post('/api/v1/assignments/' + assignment.id + '/notify-inspector');
+                    }}>
+                    Email
+                    <DropdownMenuShortcut>
+                      <Mail/>
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    SMS
+                    <DropdownMenuShortcut>
+                      <MessageSquare/>
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Delete</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem variant={'destructive'}>
+                    Confirm
+                    <DropdownMenuShortcut>
+                      <Trash2 className={'text-red-500'}/>
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

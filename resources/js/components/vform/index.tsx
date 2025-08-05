@@ -24,9 +24,7 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
         </div>) : null
       )}
       <div className={cn('grid gap-1 w-full', props.error ? 'has-error' : '')}>
-        <div className={'w-full max-w-full'}>
-          {props.children}
-        </div>
+        {props.children}
         {props.error && <div className="text-xs text-red-500">{props.error}</div>}
       </div>
     </div>
