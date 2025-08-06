@@ -161,11 +161,11 @@ function UserActions({ user }: { user: User }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={'sm'}>
+        <Button variant="secondary" size={'sm'}>
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator/>
         <DropdownMenuGroup>

@@ -67,7 +67,7 @@ const columns: ColumnDef<Timesheet>[] = [
           <TooltipTrigger>
             <Badge variant="secondary">{row.original.timesheet_items_count || 0}</Badge>
           </TooltipTrigger>
-          <TooltipContent className={'max-h-32 overflow-y-auto'}>
+          <TooltipContent>
             <div>
               {row.original.timesheet_items?.length ? (
                 row.original.timesheet_items.map((item) => (

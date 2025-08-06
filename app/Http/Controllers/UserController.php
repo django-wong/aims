@@ -16,7 +16,7 @@ class UserController
             'impersonate', $user
         );
 
-        if (!$allow || true) {
+        if (!$allow) {
             return redirect()->back()->with(
                 'error', __('You are not allowed to impersonate this user.').time()
             );
