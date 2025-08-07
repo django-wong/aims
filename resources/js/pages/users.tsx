@@ -17,7 +17,7 @@ import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { UserForm } from '@/pages/users/form';
 import { BreadcrumbItem, SharedData, User } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
@@ -104,6 +104,7 @@ export default function Users() {
     columns: columns,
     defaultParams: {
       'filter[preset]': 'users',
+      'sort': 'name',
       include: 'user_role',
     },
   });
@@ -122,12 +123,10 @@ export default function Users() {
         <UserForm onSubmit={() => {}}>
           <Button>
             {' '}
-            <Plus />
-            Add
+            <Plus/>Add User
           </Button>
         </UserForm>
-      }
-    >
+      }>
       <div className={'px-6'}>
         <DataTable
           left={

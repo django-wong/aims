@@ -41,16 +41,14 @@ interface ApiResponse<T> {
  * Note: form instance can't be used as dependency in useEffect or useMemo hooks,
  * @param props
  */
-export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormProps<T> = {}) {
-
-  console.info(props);
+export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactiveFormProps<T> = {}) {
 
   const form = useForm<T>(props);
 
   const [method, setMethod] = useState(props.method ?? 'POST' as Method);
   const [url, setUrl] = useState(props.url ?? location.href);
 
-  function send(data: T): Promise<ApiResponse<T> | void> {
+  function send(data: T): Promise<ApiResponse<R> | void> {
     const formData = (props.serialize || JSON.stringify)(data);
     const headers = new Headers(
       defaultHeaders({
@@ -86,6 +84,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
               });
             }
           }
+          throw json;
         }
         return json;
       })
@@ -101,7 +100,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
     submitDisabled: form.formState.isSubmitting || form.formState.disabled,
     ...form,
     submit: (event?: React.FormEvent<HTMLFormElement>) => {
-      return new Promise<void | ApiResponse<T>>((resolve, reject) => {
+      return new Promise<void | ApiResponse<R>>((resolve, reject) => {
         form.handleSubmit(async (data) => {
           const res = await send(data)
           resolve(res);

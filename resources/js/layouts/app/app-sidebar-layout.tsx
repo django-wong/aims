@@ -3,14 +3,18 @@ import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
 import { type BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/react';
 
 export function LargeTitle(props: { title?: string; pageAction?: React.ReactNode }) {
   if (props.title) {
     return (
-      <div className={'flex items-end justify-between gap-6 px-6'}>
-        <h1 className={'text-4xl'}>{props.title}</h1>
-        <div className={'flex items-center gap-2'}>{props.pageAction}</div>
-      </div>
+      <>
+        <Head title={props.title} />
+        <div className={'flex items-end justify-between gap-6 px-6'}>
+          <h1 className={'text-4xl'}>{props.title}</h1>
+          <div className={'flex items-center gap-2'}>{props.pageAction}</div>
+        </div>
+      </>
     );
   } else {
     return null;

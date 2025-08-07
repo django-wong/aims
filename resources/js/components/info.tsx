@@ -9,10 +9,12 @@ export function Info(props: PropsWithChildren) {
   );
 }
 
-export function InfoHead({ children }: PropsWithChildren) {
+export function InfoHead({ children, right }: PropsWithChildren<{right?: React.ReactNode}>) {
   return (
     <h3 className={'font-bold text-lg flex justify-between items-center'}>
-      {children}
+      <span>{children}</span>
+      {/* Right side content can be added here if needed */}
+      {right}
     </h3>
   );
 }

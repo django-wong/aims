@@ -55,7 +55,7 @@ class UpdateRequest extends FormRequest
             'email'
         ]);
 
-        if ($this->filled('password')) {
+        if (!empty($this->input('password'))) {
             $data['password'] = $this->input('password');
         }
 

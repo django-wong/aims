@@ -21,7 +21,7 @@ class UserController extends Controller
                 $query->whereExists(function (QueryBuilder  $query) {
                     $query->selectRaw(1)
                         ->from('user_roles')
-                        ->whereColumn('user_roles.id', 'users.id')
+                        ->whereColumn('user_roles.user_id', 'users.id')
                         ->whereIn(
                             'user_roles.role', [
                                 1, 2, 3, 4, 5, 6, 7, 8
@@ -40,6 +40,11 @@ class UserController extends Controller
                 });
             })
         ];
+    }
+
+    protected function allowedSorts()
+    {
+        return ['name'];
     }
 
     protected function allowedIncludes()
@@ -90,9 +95,9 @@ class UserController extends Controller
     {
         $user = DB::transaction(function () use ($request) {
             $user = User::query()->create($request->userData());
-            $role = $user->user_role()->create([
+            $user->user_role()->create([
                 ...$request->roleData(),
-                'org_id' => $request->user->user_role->org_id
+                'org_id' => $request->user()->user_role->org_id
             ]);
 
             return $user;
@@ -108,11 +113,6 @@ class UserController extends Controller
     {
 
         $validated = $request->userData();
-
-        // Hash password if provided
-        if (isset($validated['password'])) {
-            $validated['password'] = bcrypt($validated['password']);
-        }
 
         $user->update($validated);
 
