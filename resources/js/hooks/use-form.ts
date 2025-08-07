@@ -4,19 +4,20 @@ import { defaultHeaders } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BaseModel } from '@/types';
 
-export function useResource<T extends BaseModel>(url: string, value?: T | null): {
+
+export function useResource<T extends Partial<BaseModel>>(url: string, value?: T | null): {
   url: string;
   method: Method;
   defaultValues?: T;
 } {
-  return value ? {
+  return value?.id ? {
     url: url + '/' + value.id,
     method: 'PUT',
     defaultValues: value,
   } : {
     url: url,
     method: 'POST',
-    defaultValues: undefined,
+    defaultValues: value || undefined,
   };
 }
 
@@ -29,55 +30,69 @@ interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   contentType?: string;
 }
 
+interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  error?: string;
+  [key: string]: any; // Allow additional properties
+}
+
 /**
  * Note: form instance can't be used as dependency in useEffect or useMemo hooks,
  * @param props
  */
 export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormProps<T> = {}) {
+
+  console.info(props);
+
   const form = useForm<T>(props);
 
   const [method, setMethod] = useState(props.method ?? 'POST' as Method);
   const [url, setUrl] = useState(props.url ?? location.href);
 
-  function send(data: T): Promise<Response|void> {
+  function send(data: T): Promise<ApiResponse<T> | void> {
     const formData = (props.serialize || JSON.stringify)(data);
     const headers = new Headers(
       defaultHeaders({
-        'Content-Type': props.contentType || 'application/json'
-      })
+        'Content-Type': props.contentType || 'application/json',
+      }),
     );
     if (formData instanceof FormData) {
       headers.delete('Content-Type');
     }
 
     return fetch(url, {
-      method: method, headers: headers, body: formData,
-    }).then(async res => {
-      const json = await res.json();
+      method: method,
+      headers: headers,
+      body: formData,
+    })
+      .then(async (res) => {
+        const json = await res.json();
 
-      if (json.message) {
-        toast.success(json.message);
-      }
-
-      if (json.error) {
-        toast.error(json.error);
-      }
-
-      if (!res.ok) {
-        if (json.errors) {
-          for (const [key, value] of Object.entries(json.errors)) {
-            form.setError(key as FieldPath<T>, {
-              message: Array.isArray(value) ? value.join(', ') : value as string,
-              type: 'manual',
-            })
-          }
+        if (json.message) {
+          toast.success(json.message);
         }
 
-      }
-      return res;
-    }).catch((error) => {
-      console.error('Error response:', error);
-    })
+        if (json.error) {
+          toast.error(json.error);
+        }
+
+        if (!res.ok) {
+          if (json.errors) {
+            for (const [key, value] of Object.entries(json.errors)) {
+              form.setError(key as FieldPath<T>, {
+                message: Array.isArray(value) ? value.join(', ') : (value as string),
+                type: 'manual',
+              });
+            }
+          }
+        }
+        return json;
+      })
+      .catch((error) => {
+        console.error('Error response:', error);
+        throw error;
+      });
   }
 
   return {
@@ -86,7 +101,7 @@ export function useReactiveForm<T extends FieldValues>(props: UseReactiveFormPro
     submitDisabled: form.formState.isSubmitting || form.formState.disabled,
     ...form,
     submit: (event?: React.FormEvent<HTMLFormElement>) => {
-      return new Promise<Response|void>((resolve, reject) => {
+      return new Promise<void | ApiResponse<T>>((resolve, reject) => {
         form.handleSubmit(async (data) => {
           const res = await send(data)
           resolve(res);

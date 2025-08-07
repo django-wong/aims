@@ -6,21 +6,22 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { UserForm } from '@/pages/users/form';
 import { BreadcrumbItem, SharedData, User } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { startTransition, useEffect, useState } from 'react';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -148,31 +149,33 @@ export default function Users() {
 }
 
 function UserActions({ user }: { user: User }) {
+  const [open, setOpen] = useState(false);
+
   const table = useTableApi<User>();
 
   const {
-    props: {
-      auth
-    }
+    props: { auth },
   } = usePage<SharedData>();
 
   const canImpersonate = user.id !== auth.user?.id;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size={'sm'}>
-          <EllipsisVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
-        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-        <DropdownMenuSeparator/>
-        <DropdownMenuGroup>
-          <UserForm onSubmit={() => {}} value={user}>
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="secondary" size={'sm'}>
+            <EllipsisVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
+          <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
             <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
+              onSelect={() => {
+                setTimeout(() => {
+                  setOpen(true);
+                }, 200)
               }}
             >
               Edit
@@ -180,35 +183,48 @@ function UserActions({ user }: { user: User }) {
                 <Edit className={'size-4'} />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
-          </UserForm>
-          <DropdownMenuItem
-            className={'text-red-500'}
-            onClick={() => {
-              axios.delete(route('users.destroy', { id: user.id })).then((res) => {
-                if (res) {
-                  table.reload();
-                }
-              });
-            }}>
-            Delete
-            <DropdownMenuShortcut>
-              <Trash2 className={'size-4'} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <Link href={route('impersonate', { id: user.id})}>
-            <DropdownMenuItem disabled={!canImpersonate}>
-              Impersonate
+            <DropdownMenuItem
+              className={'text-red-500'}
+              onClick={() => {
+                axios.delete(route('users.destroy', { id: user.id })).then((res) => {
+                  if (res) {
+                    table.reload();
+                  }
+                });
+              }}
+            >
+              Delete
               <DropdownMenuShortcut>
-                <ScanFace className={'size-4'}/>
+                <Trash2 className={'size-4'} />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
-          </Link>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <Link href={route('impersonate', { id: user.id })}>
+              <DropdownMenuItem disabled={!canImpersonate}>
+                Impersonate
+                <DropdownMenuShortcut>
+                  <ScanFace className={'size-4'} />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <UserForm
+        open={open}
+        onOpenChange={setOpen}
+        onSubmit={(data) => {
+          startTransition(() => {
+            table.reload();
+            setOpen(false);
+            console.info(data);
+          });
+        }}
+        value={user}
+      />
+    </div>
   );
 }
 
@@ -252,7 +268,7 @@ export const UserRoleBadge = ({ user }: { user: User }) => {
         ) : (
           <Badge variant={'secondary'} className={'cursor-pointer'}>
             {describeUserRole(role || 0)}
-            <ChevronDown className={'size-2'}/>
+            <ChevronDown className={'size-2'} />
           </Badge>
         );
       }}

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\APIv1;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use App\Http\Requests\APIv1\Users\StoreRequest;
+use App\Http\Requests\APIv1\Users\UpdateRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -80,8 +83,42 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function store(StoreRequest $request)
     {
+        $user = DB::transaction(function () use ($request) {
+            $user = User::query()->create($request->userData());
+            $role = $user->user_role()->create([
+                ...$request->roleData(),
+                'org_id' => $request->user->user_role->org_id
+            ]);
 
+            return $user;
+        });
+
+        return response()->json([
+            'data' => $user->load('user_role'),
+            'message' => 'User created successfully'
+        ], 201);
+    }
+
+    public function update(User $user, UpdateRequest $request)
+    {
+
+        $validated = $request->userData();
+
+        // Hash password if provided
+        if (isset($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return response()->json([
+            'data' => $user->load('user_role'),
+            'message' => 'User updated successfully'
+        ]);
     }
 }

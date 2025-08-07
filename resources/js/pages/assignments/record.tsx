@@ -37,8 +37,6 @@ type Record = zod.infer<typeof schema>;
 export default function Record(props: RecordProps) {
   const page = usePage<SharedData>();
 
-  console.info(page);
-
   const defaultValues: Record = {
     assignment_id: props.assignment.id,
     date: (new Date()).toISOString(),

@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ */
 class Org extends Model
 {
     /** @use HasFactory<\Database\Factories\OrgFactory> */

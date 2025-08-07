@@ -100,7 +100,6 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                     <VFormField required label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-12'}>
                       <Input
                         placeholder={'Give your project a title'}
-                        className={'bg-white'}
                         {...field}
                         onChange={(event) => {
                           field.onChange(event.target.value);
@@ -115,7 +114,6 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                   render={({field, fieldState}) => (
                     <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-6'}>
                       <Input
-                        className={'bg-white'}
                         placeholder={'e.g. PO-1234'}
                         {...field}
                         onChange={(event) => {
@@ -272,7 +270,7 @@ function ProjectNumber({value, onValueChange, ...props}: ProjectNumberProps) {
   return (
     <div className={'flex items-center gap-2'}>
       <Input
-        className={'bg-white flex-1'}
+        className={'flex-1'}
         placeholder={'YYYY-AUS-1234'}
         value={value}
         onChange={(event) => {

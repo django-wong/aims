@@ -59,7 +59,6 @@ export function AddressForm() {
                     field.onChange(event.target.value);
                     field.onBlur();
                   }}
-                  className={'bg-white'}
                 />
               </VFormField>
             );
@@ -71,7 +70,7 @@ export function AddressForm() {
           render={({ field, fieldState }) => {
             return (
               <VFormField label={'Address Line 2'} for={'address_line_2'} className={'col-span-12'} error={fieldState.error?.message}>
-                <Input value={field.value ?? ''} onChange={field.onChange} className={'bg-white'} />
+                <Input value={field.value ?? ''} onChange={field.onChange} />
               </VFormField>
             );
           }}
@@ -82,7 +81,7 @@ export function AddressForm() {
           render={({ field, fieldState }) => {
             return (
               <VFormField label={'City'} for={'city'} className={'col-span-4'} error={fieldState.error?.message}>
-                <Input value={field.value} onChange={field.onChange} className={'bg-white'} />
+                <Input value={field.value} onChange={field.onChange} />
               </VFormField>
             );
           }}
@@ -92,7 +91,7 @@ export function AddressForm() {
           render={({ field, fieldState }) => {
             return (
               <VFormField label={'State'} for={'state'} className={'col-span-4'} error={fieldState.error?.message}>
-                <Input value={field.value} onChange={field.onChange} className={'bg-white'} />
+                <Input value={field.value} onChange={field.onChange} />
               </VFormField>
             );
           }}
@@ -103,7 +102,7 @@ export function AddressForm() {
           render={({ field, fieldState }) => {
             return (
               <VFormField label={'Zip / Post code'} for={'zip'} className={'col-span-4'} error={fieldState.error?.message}>
-                <Input value={field.value} onChange={field.onChange} className={'bg-white'} />
+                <Input value={field.value} onChange={field.onChange} />
               </VFormField>
             );
           }}
@@ -115,7 +114,7 @@ export function AddressForm() {
           render={({ fieldState }) => {
             return (
               <VFormField label={'Country'} for={'country'} className={'col-span-12'} error={fieldState.error?.message}>
-                <Input {...form.register('country')} className={'bg-white'} />
+                <Input {...form.register('country')} />
               </VFormField>
             );
           }}

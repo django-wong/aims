@@ -89,7 +89,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   render={({ field, fieldState }) => {
                     return <VFormField  required label={'Business Name / Group'} for={'business_name'} error={fieldState.error?.message}>
-                      <Input value={field.value} onChange={field.onChange} className={'bg-white'}/>
+                      <Input value={field.value} onChange={field.onChange}/>
                     </VFormField>
                   }}
                   name={'business_name'}
@@ -101,7 +101,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
                   render={({ field, fieldState }) => {
                     return <VFormField required label={'Contact Name'} for={'contact_name'} error={fieldState.error?.message}>
                       <Input
-                        value={field.value} onChange={field.onChange} className={'bg-white'}
+                        value={field.value}
+                        onChange={field.onChange}
                         placeholder={'Contact Name'}
                       />
                     </VFormField>
@@ -119,7 +120,6 @@ export function ClientForm(props: DialogFormProps<Client>) {
                         type={'email'}
                         value={field.value}
                         onChange={field.onChange}
-                        className={'bg-white'}
                       />
                     </VFormField>
                   }}
@@ -162,7 +162,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                         label={'Address'}
                         for={'address'}
                       >
-                        <div className={'flex items-center gap-2  p-4 rounded-md border shadow-xs border-border bg-white'}>
+                        <div className={'flex items-center gap-2  p-4 rounded-md border shadow-xs border-border bg-background'}>
                           <div className={'text-sm flex-1'}>
                             {field.value?.address_line_1 ? (
                               <>
@@ -196,7 +196,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                         max={30}
                         value={field.value}
                         onChange={(event) => field.onChange(parseInt(event.target.value))}
-                        className={'bg-white'} placeholder={'in Days'}
+                        placeholder={'in Days'}
                       />
                     </VFormField>
                   }}
@@ -207,7 +207,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   render={({ field, fieldState }) => {
                     return <VFormField label={'Notes'} for={'notes'} error={fieldState.error?.message}>
-                      <Textarea value={field.value} onChange={field.onChange} className={'bg-white min-h-[150px]'} placeholder={'Notes'}/>
+                      <Textarea value={field.value} onChange={field.onChange} className={'min-h-[150px]'} placeholder={'Notes'}/>
                     </VFormField>
                   }}
                   name={'notes'}

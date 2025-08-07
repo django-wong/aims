@@ -66,6 +66,7 @@ export interface User extends BaseModel {
   name: string;
   first_name: string;
   last_name: string;
+  title: string | null;
   email: string;
   avatar?: string;
   email_verified_at: string | null;

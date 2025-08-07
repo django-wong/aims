@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
   label?: string;
-  for: string;
+  for?: string;
   renderLabel?: (props: Pick<FormFieldProps, 'label' | 'for'>) => React.ReactNode;
   error?: string|null;
   required?: boolean;
