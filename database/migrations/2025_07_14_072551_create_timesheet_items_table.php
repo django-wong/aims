@@ -24,9 +24,17 @@ return new class extends Migration
             $table->integer('work_hours')->default(0);
             $table->integer('travel_hours')->default(0);
             $table->integer('report_hours')->default(0);
+            $table->decimal('hourly_rate', 10, 2)->default(0.00)->comment('Rate per hour for work');
+            $table->decimal('cost', 10, 2)->storedAs(
+                'work_hours * hourly_rate + travel_hours * hourly_rate + report_hours * hourly_rate'
+            );
             $table->integer('days')->default(0);
             $table->integer('overnights')->default(0);
             $table->integer('km_traveled')->default(0)->comment('Kilometers traveled for this item');
+            $table->integer('travel_rate')->default(0)->comment('Rate per distance unit for travel');
+            $table->decimal('travel_cost', 10, 2)->storedAs(
+                'km_traveled * travel_rate'
+            );
             $table->boolean('approved')->default(false);
             $table->timestamps();
             $table->softDeletes();

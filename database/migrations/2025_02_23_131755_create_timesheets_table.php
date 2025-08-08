@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('assignment_id')->constrained();
             $table->integer('hours')->default(0)->comment('Total hours worked');
             $table->integer('km_traveled')->default(0)->comment('Total kilometers traveled');
+            $table->decimal('cost', 10)->default(0.00)->comment('Total amount for the timesheet, computed from the mileage, hourly rate, and any additional expenses');
             $table->timestamps();
             $table->softDeletes();
         });
