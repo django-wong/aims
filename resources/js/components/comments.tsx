@@ -10,7 +10,6 @@ import { Attachment, Comment } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { File as FileIcon, Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
-import { Divider } from '@/components/divider';
 
 const schema = z.object({
   content: z.string().min(1, 'Comment cannot be empty'),
@@ -31,7 +30,7 @@ export function Comments(props: CommentsProps) {
     searchParams: new URLSearchParams({
       commentable_type: props.commentableType,
       commentable_id: props.commentableId.toString(),
-      per_page: '1999',
+      per_page: '999',
       include: 'attachments,user',
       sort: '-created_at',
     }),
@@ -63,17 +62,15 @@ export function Comments(props: CommentsProps) {
   const attachments = form.watch('attachments');
 
   function save() {
-    form.submit().then((response) => {
-      if (response && response.ok) {
-        form.reset();
-        table.refetch();
-      }
+    form.submit().then(() => {
+      form.reset();
+      table?.refetch();
     });
   }
 
   return (
     <>
-      <div className={'flex flex-col gap-8'}>
+      <div className={'flex flex-col gap-4'}>
         <div className={''}>
           <Form {...form} watch={form.watch}>
             <div className={'flex flex-col gap-4'}>
@@ -110,9 +107,7 @@ export function Comments(props: CommentsProps) {
                           }}
                         />
                         <Paperclip />
-                        <span className={'hidden sm:inline'}>
-                          Add Attachments
-                        </span>
+                        <span className={'hidden sm:inline'}>Add Attachments</span>
                       </label>
                     </Button>
                   )}
@@ -126,7 +121,7 @@ export function Comments(props: CommentsProps) {
                     <Button asChild variant={'outline'} className={'cursor-pointer'}>
                       <Label className={'flex cursor-pointer items-center gap-2'}>
                         <Switch checked={field.value} onCheckedChange={(value) => field.onChange(!!value)} />
-                        Private Comment
+                        Private <span className={'hidden sm:inline'}>Comment</span>
                       </Label>
                     </Button>
                   )}
@@ -143,12 +138,10 @@ export function Comments(props: CommentsProps) {
 
               {(attachments ?? []).length > 0 && (
                 <div className={'flex flex-col gap-[1px]'}>
-                  {(attachments ?? []).map((file) => (
-                    <>
-                      <span className={'flex items-center gap-2 text-sm'}>
-                        <FileIcon className={'size-4'} /> {file.name}
-                      </span>
-                    </>
+                  {(attachments ?? []).map((file, index) => (
+                    <span key={`upload:${index}`} className={'flex items-center gap-2 text-sm'}>
+                      <FileIcon className={'size-4'} /> {file.name}
+                    </span>
                   ))}
                 </div>
               )}
@@ -159,7 +152,7 @@ export function Comments(props: CommentsProps) {
           <div className={'flex flex-col rounded-lg px-1'}>
             {table.data.map((comment, index) => (
               <>
-                <div key={index} className={index > 0 ? 'mt-6 border-t pt-6' : ''}>
+                <div key={`comment:${index}`} className={index > 0 ? 'mt-6 border-t pt-6' : ''}>
                   <p className={'flex w-full items-center justify-start gap-2 text-sm'}>
                     <strong>{comment.user?.name ?? 'Anonymous'}</strong>
                     <span className={'inline-flex items-center justify-end gap-2'}>
@@ -174,7 +167,7 @@ export function Comments(props: CommentsProps) {
             ))}
           </div>
         ) : (
-          <p className={'text-center text-sm text-muted-foreground py-6'}>No comments yet. Be the first to comment!</p>
+          <p className={'text-muted-foreground py-6 text-center text-sm'}>No comments yet. Be the first to comment!</p>
         )}
       </div>
     </>
@@ -191,7 +184,7 @@ function Attachments(props: { attachments?: Attachment[] }) {
     <>
       <div className={'mt-4 flex flex-wrap gap-4'}>
         {attachments.map((attachment, index) => (
-          <AttachmentDownload attachment={attachment} key={index} />
+          <AttachmentDownload attachment={attachment} key={`attachment:${index}`} />
         ))}
       </div>
     </>

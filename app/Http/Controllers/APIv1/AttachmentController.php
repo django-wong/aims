@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\Attachments\StoreRequest;
 use App\Models\Attachment;
+use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AttachmentController extends Controller
 {
@@ -18,9 +21,29 @@ class AttachmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $attachable = $request->attachable();
+
+        if (empty($attachable)) {
+            abort(404, 'Attachable resource not found.');
+        }
+
+        Gate::authorize(
+            'create', [Attachment::class, $attachable]
+        );
+
+        if (! empty($attachments = $request->file('attachments'))) {
+            foreach ($attachments as $attachment) {
+                Attachment::upload(
+                    $attachment, for: $attachable
+                );
+            }
+        }
+
+        return response()->json([
+            'message' => 'Attachment(s) uploaded successfully.'
+        ]);
     }
 
     /**

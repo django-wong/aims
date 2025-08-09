@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Timesheets\CaptureRequest;
 use App\Models\Timesheet;
 use Illuminate\Http\Request;
+use function Aws\filter;
 
 class TimesheetController extends Controller
 {
@@ -14,11 +15,17 @@ class TimesheetController extends Controller
         $timesheet = $request->assignment()->timesheets()->firstOrCreate();
 
         $timesheet->timesheet_items()->create([
-            ...$request->validated(),
+            ...filter($request->validated(), function ($value) {
+                return !is_null($value);
+            }),
             'user_id' => $request->user()->id,
         ]);
 
-        return to_route('timesheets.captured');
+        // return to_route('timesheets.captured');
+
+        return redirect()->back()->with([
+            'message' => 'Timesheet item captured successfully.',
+        ]);
     }
 
     public function captured()

@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\App;
 
 
 /**
- * @property User $inspector
+ * @property User    $inspector
+ * @property Project $project
+ * @property int   $inspector_id
  */
 class Assignment extends Model implements Commentable
 {
@@ -62,6 +64,10 @@ class Assignment extends Model implements Commentable
             $query->whereAny(
                 ['operation_org_id', 'org_id'], $id
             );
+
+            if (auth()->user()->isRole(UserRole::INSPECTOR)) {
+                $query->where('inspector_id', auth()->id());
+            }
         });
     }
 

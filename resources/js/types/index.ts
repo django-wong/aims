@@ -167,6 +167,7 @@ export interface Assignment extends BaseModel {
   report_required: boolean;
   description: string | null;
   notes: string | null;
+  timesheets?: Timesheet[];
 }
 
 export type Invoiceable = {
@@ -234,7 +235,7 @@ export interface Timesheet extends BaseModel {
   assignment_id: number;
   assignment?: Assignment;
   hours: number;
-  km_traveled: number;
+  travel_distance: number;
   timesheet_items?: TimesheetItem[];
   timesheet_items_count?: number;
 }
@@ -242,17 +243,33 @@ export interface Timesheet extends BaseModel {
 export interface TimesheetItem extends BaseModel {
   timesheet_id: number;
   timesheet?: Timesheet;
+
   user_id: number;
   user?: User;
+
   item_number: string | null;
   date: string | null;
   week_number: number | null;
+
   hours: number;
   work_hours: number;
   travel_hours: number;
   report_hours: number;
+  hourly_rate: number;
+  cost: number;
+
   days: number;
   overnights: number;
-  km_traveled: number;
-  approved: boolean;
+
+  travel_distance: number;
+  travel_rate: number;
+  travel_cost: number;
+
+  total_expense: number;
+  hotel: number;
+  meals: number;
+  rail_or_airfare: number;
+  other: number;
+
+  approved: boolean; // Reserved
 }

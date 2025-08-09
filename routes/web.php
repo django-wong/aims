@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/', function () {
-    return redirect()->route('dashboard');
-})->name('home');
+Route::get('/', fn () => redirect()->route('dashboard'))->name('home');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
@@ -38,8 +36,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('quotes', '404')->name('quotes');
 
     Route::inertia('assignments', 'assignments')->name('assignments');
-    Route::get('assignments/{id}/preview', [AssignmentController::class, 'preview'])
-        ->name('assignments.preview');
     Route::get('assignments/{id}', [AssignmentController::class, 'edit'])
         ->name('assignments.edit');
 
@@ -66,7 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['signed'])->group(function () {
+Route::middleware('signed')->group(function () {
     Route::get('assignments/{id}/record', [AssignmentController::class, 'record'])
         ->name('assignments.record-timesheet');
 });

@@ -24,12 +24,23 @@ class TimesheetItemFactory extends Factory
             'item_number' => $this->faker->unique()->numerify('ITEM-###'),
             'date' => $this->faker->date(),
             'week_number' => $this->faker->numberBetween(1, 53),
+
+            'hourly_rate' => $this->faker->randomFloat(2, 10, 100),
             'work_hours' => $this->faker->numberBetween(-8, 8),
-            'days' => $this->faker->numberBetween(0, 7),
-            'overnights' => $this->faker->numberBetween(0, 3),
             'travel_hours' => $this->faker->numberBetween(0, 4),
             'report_hours' => $this->faker->numberBetween(0, 2),
-            'km_traveled' => $this->faker->numberBetween(-100, 100),
+
+            'days' => $this->faker->numberBetween(0, 7),
+            'overnights' => $this->faker->numberBetween(0, 3),
+
+            'travel_distance' => $this->faker->numberBetween(-100, 100),
+            'travel_rate' => $this->faker->randomFloat(2, 1, 5),
+
+            'hotel' => $this->faker->randomFloat(2, 0, 500),
+            'meals' => $this->faker->randomFloat(2, 0, 200),
+            'rail_or_airfare' => $this->faker->randomFloat(2, 0, 1000),
+            'other' => $this->faker->randomFloat(2, 0, 300),
+            'approved' => $this->faker->boolean(),
         ];
     }
 }

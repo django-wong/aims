@@ -33,7 +33,7 @@ import { Loader2 } from 'lucide-react';
 const timesheetSchema = z.object({
   assignment_id: z.number(),
   hours: z.number().min(0, 'Hours must be 0 or greater'),
-  km_traveled: z.number().min(0, 'KM traveled must be 0 or greater'),
+  travel_distance: z.number().min(0, 'KM traveled must be 0 or greater'),
 });
 
 type TimesheetFormData = z.infer<typeof timesheetSchema>;
@@ -55,7 +55,7 @@ export function TimesheetForm({
     defaultValues: {
       assignment_id: value?.assignment_id || 0,
       hours: value?.hours || 0,
-      km_traveled: value?.km_traveled || 0,
+      travel_distance: value?.travel_distance || 0,
     },
   });
 
@@ -172,7 +172,7 @@ export function TimesheetForm({
 
             <FormField
               control={form.control}
-              name="km_traveled"
+              name="travel_distance"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Kilometers Traveled</FormLabel>

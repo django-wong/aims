@@ -4,6 +4,46 @@ import { defaultHeaders } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BaseModel } from '@/types';
 
+type FormDataConvertible = FormDataEntryValue | number | boolean | Date | Blob | null | undefined | Array<FormDataConvertible> | {
+  [key: string]: FormDataConvertible;
+};
+
+function composeKey(parentKey: string | null, key: string): string {
+  return parentKey ? `${parentKey}[${key}]` : key;
+}
+
+export function objectToFormData(obj: Record<string, FormDataConvertible>, formData = new FormData(), parentKey: string | null = null): FormData {
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      append(obj[key], formData, composeKey(parentKey, key));
+    }
+  }
+  return formData;
+}
+
+function append(value: FormDataConvertible, formData: FormData, key: string) {
+  if (value instanceof Date) {
+    formData.append(key, value.toISOString());
+  } else if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      append(item, formData, `${key}[${index}]`);
+    });
+  } else if (value instanceof File) {
+    formData.append(key, value, value.name);
+  } else if (value instanceof Blob) {
+    formData.append(key, value);
+  } else if (typeof value === 'boolean') {
+    formData.append(key, value ? '1' : '0');
+  } else if (typeof value === 'number') {
+    formData.append(key, `${value}`);
+  } else if (typeof value === 'string') {
+    formData.append(key, value);
+  } else if (value === null || value === undefined) {
+    formData.append(key, '');
+  } else {
+    objectToFormData(value, formData, key);
+  }
+}
 
 export function useResource<T extends Partial<BaseModel>>(url: string, value?: T | null): {
   url: string;

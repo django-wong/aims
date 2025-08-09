@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Client;
 use App\Models\User;
 use App\Models\UserRole;
 
@@ -40,5 +41,19 @@ class UserPolicy
 
         // Users can only update themselves
         return $user->id === $model->id;
+    }
+
+    public function viewDashboard(User $user): bool
+    {
+        if (Client::query()->where('user_id', $user->id)->exists()) {
+            return true; // Client is not part of the org, but they allowed to view their own dashboard
+        }
+        // Inspector is part of the org, but they can only view their own assignment
+        return in_array($user->user_role?->role, [
+            UserRole::FINANCE,
+            UserRole::PM,
+            UserRole::STAFF,
+            UserRole::ADMIN,
+        ]);
     }
 }

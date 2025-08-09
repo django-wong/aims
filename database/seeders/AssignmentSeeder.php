@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Org;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\UserRole;
 use App\Models\Vendor;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -26,7 +27,9 @@ class AssignmentSeeder extends Seeder
             ->recycle(Project::query()->get())
             ->recycle(AssignmentType::query()->get())
             ->recycle(Org::query()->get())
-            ->recycle(User::query()->get())
+            ->recycle(User::query()->whereHas('user_role', function ($query) {
+                return $query->whereIn('role', [UserRole::INSPECTOR]);
+            })->get())
             ->recycle(Vendor::query()->get())
             ->create();
     }

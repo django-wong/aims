@@ -8,6 +8,7 @@ use App\Models\Timesheet;
 use App\Models\TimesheetItem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -44,13 +45,21 @@ class TimesheetItemController extends Controller
         /* @var Timesheet $timesheet */
         $timesheet = $request->assignment()->timesheets()->firstOrCreate();
 
-        $record = $timesheet->timesheet_items()->create([
-            ...$request->validated(),
-            'user_id' => $request->user()->id,
-        ]);
+        $record = DB::transaction(function () use ($request, $timesheet) {
+            $record = $timesheet->timesheet_items()->create([
+                ...array_filter($request->validated(), function ($value) {
+                    return $value !== null;
+                }),
+                'user_id' => $request->user()->id,
+            ]);
+
+            $request->saveAttachments($record);
+
+            return $record;
+        });
 
         return response()->json([
-            'data' => $record->load('timesheet'),
+            'data' => $record->load(['timesheet', 'attachments']),
             'message' => 'Timesheet item created successfully',
         ]);
     }

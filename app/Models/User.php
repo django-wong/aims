@@ -12,8 +12,9 @@ use Illuminate\Notifications\Notifiable;
 use Lab404\Impersonate\Models\Impersonate;
 
 /**
- * @property Org   $org
+ * @property Org      $org
  * @property UserRole $user_role
+ * @property int    $id
  */
 class User extends Authenticatable
 {
@@ -100,5 +101,10 @@ class User extends Authenticatable
         return $this->hasMany(
             Assignment::class, 'inspector_id', 'id'
         );
+    }
+
+    public function isRole($role): bool
+    {
+        return $this->user_role?->role === $role;
     }
 }

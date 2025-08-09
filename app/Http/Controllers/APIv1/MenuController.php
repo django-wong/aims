@@ -16,9 +16,9 @@ class MenuController
             return $user_role && $user_role->isAnyOf($roles) ? $then : [];
         };
 
-        $menu = [
+        return [
             'main' => [
-                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF],[
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF, UserRole::INSPECTOR],[
                     'dashboard' => [
                         'name' => 'Dashboard',
                         'icon' => 'house',
@@ -42,7 +42,7 @@ class MenuController
                         'component' => 'vendors'
                     ]
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::INSPECTOR],[
                     'projects' => [
                         'name' => 'Projects',
                         'icon' => 'briefcase-business',
@@ -80,7 +80,5 @@ class MenuController
                 ])),
             ],
         ];
-
-        return $menu;
     }
 }

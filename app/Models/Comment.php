@@ -31,7 +31,13 @@ class Comment extends Model implements Attachable
                 $id = auth()->id();
             }
 
-            $query->where('private', false)->orWhere('user_id', $id);
+            if (User::query()->find($id)->isRole(UserRole::INSPECTOR)) {
+                $query->where('user_id', $id);
+            } else {
+                $query->where(function ($query) use ($id) {
+                    $query->where('private', false)->orWhere('user_id', $id);
+                });
+            }
         });
     }
 }

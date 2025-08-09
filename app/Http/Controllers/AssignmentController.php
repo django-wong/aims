@@ -5,16 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentController extends Controller
 {
-    public function preview($id)
-    {
-        $notification = new NewAssignmentIssued(Assignment::query()->findOrFail($id));
-
-        return $notification->toMail(auth()->user());
-    }
-
     public function record(string $id, Request $request)
     {
         $assignment = Assignment::query()
@@ -23,10 +17,13 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
-        $assignment->timesheets()->firstOrCreate();
+        Gate::authorize('view', $assignment);
+
+        $timesheet = $assignment->timesheets()->firstOrCreate();
 
         return inertia('assignments/record', [
-            'assignment' => $assignment->load('timesheets.timesheet_items'),
+            'assignment' => $assignment,
+            'timesheet' => $timesheet->load(['timesheet_items']),
         ]);
     }
 

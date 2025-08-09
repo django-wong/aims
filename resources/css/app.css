@@ -6,6 +6,7 @@ body {
   --version: "0.0.1";
 }
 
+@plugin "@tailwindcss/typography";
 @plugin 'tailwindcss-animate';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -116,3 +117,10 @@ body {
   }
 }
 
+.prose p {
+  @apply p-0 my-1;
+}
+
+.prose table p {
+  @apply p-0 m-0;
+}

@@ -1,10 +1,12 @@
 import { DynamicIcon, IconName } from 'lucide-react/dynamic';
-import { PropsWithChildren } from 'react';
+import { ComponentProps, PropsWithChildren } from 'react';
 
-export function Info(props: PropsWithChildren) {
+export function Info({ children, ...props }: ComponentProps<'div'>) {
   return (
     <>
-      <div className={'flex flex-col gap-2'}>{props.children}</div>
+      <div className={'flex flex-col gap-4'} {...props}>
+        {children}
+      </div>
     </>
   );
 }

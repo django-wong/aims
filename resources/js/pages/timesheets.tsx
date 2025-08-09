@@ -49,10 +49,10 @@ const columns: ColumnDef<Timesheet>[] = [
     },
   },
   {
-    accessorKey: 'km_traveled',
-    header: 'KM Traveled',
+    accessorKey: 'travel_distance',
+    header: 'Mileage',
     cell: ({ row }) => {
-      return `${row.original.km_traveled} km`;
+      return `${row.original.travel_distance} km`;
     },
     meta: {
       center: true,
@@ -75,7 +75,7 @@ const columns: ColumnDef<Timesheet>[] = [
                     <div className="font-semibold flex-grow">{item.user?.name}</div>
                     <div className="text-muted-foreground text-sm flex items-center gap-2">
                       <span>{item.hours}h</span>
-                      <span>{item.km_traveled} km</span>
+                      <span>{item.travel_distance} km</span>
                     </div>
                   </div>
                 ))

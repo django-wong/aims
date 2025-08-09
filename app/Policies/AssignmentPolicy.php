@@ -21,6 +21,7 @@ class AssignmentPolicy
             \App\Models\UserRole::ADMIN,
             \App\Models\UserRole::STAFF,
             \App\Models\UserRole::FINANCE,
+            \App\Models\UserRole::INSPECTOR,
         ]);
     }
 
@@ -29,7 +30,7 @@ class AssignmentPolicy
      */
     public function view(User $user, Assignment $assignment): bool
     {
-        return Gate::allows('view', $assignment->project);
+        return Gate::allows('view', $assignment->project) || $user->id === $assignment->inspector_id;
     }
 
     /**

@@ -108,10 +108,12 @@ export function NavUser() {
                 </DropdownMenuItem>
               </Link>
             )}
-            <DropdownMenuItem>
-              <IconLogout />
-              Log out
-            </DropdownMenuItem>
+            <Link href={route('logout')}>
+              <DropdownMenuItem>
+                <IconLogout />
+                Log out
+              </DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

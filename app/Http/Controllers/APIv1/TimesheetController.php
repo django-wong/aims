@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\TimesheetItems\StoreRequest;
+use App\Models\Attachment;
 use App\Models\Timesheet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
+use function Aws\filter;
 
 class TimesheetController extends Controller
 {
@@ -26,7 +30,7 @@ class TimesheetController extends Controller
         return [
             'assignment_id',
             'hours',
-            'km_traveled',
+            'travel_distance',
             AllowedFilter::callback('keywords', function (Builder $query, $value) {
 
             })
@@ -39,7 +43,7 @@ class TimesheetController extends Controller
             'id',
             'created_at',
             'hours',
-            'km_traveled'
+            'travel_distance',
         ];
     }
 

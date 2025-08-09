@@ -2,19 +2,24 @@
 
 namespace App\Http\Requests\APIv1\TimesheetItems;
 
+use App\Http\Requests\APIv1\HasAttachments;
 use App\Models\Assignment;
+use App\Models\Timesheet;
 use App\Models\TimesheetItem;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use PhpParser\Node\Expr\Assign;
 
 class StoreRequest extends FormRequest
 {
+    use HasAttachments;
+
     public function authorize(): bool
     {
         return Gate::check('create', [TimesheetItem::class, $this->assignment()]);
     }
 
-    public function assignment()
+    public function assignment(): Assignment
     {
         return Assignment::query()->find($this->input('assignment_id'));
     }
@@ -23,13 +28,33 @@ class StoreRequest extends FormRequest
     {
         return [
             'assignment_id' => 'required|exists:assignments,id',
-            'date' => 'required|date',
-            'work_hours' => 'required|integer|min:0',
-            'travel_hours' => 'nullable|integer|min:0',
+            'item_number' => 'nullable|string|max:255',
+            'date' => ['nullable','date', function ($attribute, $value, $fail) {
+                $exists = TimesheetItem::query()
+                    ->whereIn(
+                        'timesheet_id', Timesheet::query()
+                            ->where('assignment_id', $this->input('assignment_id'))
+                            ->select('id')
+                    )
+                    ->where('user_id', auth()->id())
+                    ->whereDate('date', $value)
+                    ->exists();
+                if ($exists) {
+                    $fail('The date has already been used for this assignment.');
+                }
+            }],
             'report_hours' => 'nullable|integer|min:0',
-            'km_traveled' => 'nullable|integer|min:0',
-            'days' => 'nullable|integer|min:0|max:31',
-            'overnights' => 'nullable|integer|min:0|max:31',
+            'work_hours' => 'nullable|integer|min:0',
+            'travel_hours' => 'nullable|integer|min:0',
+            'hourly_rate' => 'nullable|numeric|min:0',
+            'days' => 'nullable|integer|min:0',
+            'overnights' => 'nullable|integer|min:0',
+            'travel_distance' => 'nullable|integer|min:0',
+            'travel_rate' => 'nullable|integer|min:0',
+            'hotel' => 'nullable|numeric|min:0',
+            'meals' => 'nullable|numeric|min:0',
+            'rail_or_airfare' => 'nullable|numeric|min:0',
+            'other' => 'nullable|numeric|min:0',
         ];
     }
 }

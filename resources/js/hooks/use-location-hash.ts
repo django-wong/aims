@@ -22,7 +22,8 @@ export function useLocationHash(value: string = ''): [string, (value: string) =>
     hash,
     (value: string) => {
       setHash(value);
-      window.location.hash = value;
+      // update the URL hash without reloading the page
+      window.history.pushState(null, '', `#${value}`);
     }
   ];
 }

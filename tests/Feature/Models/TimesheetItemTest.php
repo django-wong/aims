@@ -5,7 +5,7 @@ test('hours stored as work_hours + travel_hours + report_hours', function () {
         'work_hours' => 5,
         'travel_hours' => 2,
         'report_hours' => 1,
-        'km_traveled' => 50,
+        'travel_distance' => 50,
     ]);
 
     $item->refresh();
@@ -16,5 +16,5 @@ test('hours stored as work_hours + travel_hours + report_hours', function () {
 
     expect($item->timesheet->hours)->toBe(8);
 
-    expect($item->timesheet->km_traveled)->toBe(50);
+    expect($item->timesheet->travel_distance)->toBe(50);
 });
