@@ -122,8 +122,7 @@ export default function Users() {
       pageAction={
         <UserForm onSubmit={() => {}}>
           <Button>
-            {' '}
-            <Plus/>Add User
+            <Plus/> New
           </Button>
         </UserForm>
       }>
