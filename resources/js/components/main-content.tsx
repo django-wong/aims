@@ -30,7 +30,7 @@ export function TwoColumnLayout73({ left, right, className }: TwoColumnLayout73P
       <MainContentBlock className={'lg:flex-grow'}>{left}</MainContentBlock>
       <Divider orientation={'vertical'} className={'hidden lg:inline-block shrink-0'}/>
       <Divider orientation={'horizontal'} className={'inline-block lg:hidden shrink-0'}/>
-      <MainContentBlock className={'shrink-0 lg:min-w-[300px] lg:max-w-[400px] bg-background'}>{right}</MainContentBlock>
+      <MainContentBlock className={'shrink-0 lg:min-w-[400px] lg:max-w-[500px] bg-background'}>{right}</MainContentBlock>
     </MainContent>
   );
 }
