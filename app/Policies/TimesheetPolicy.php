@@ -2,7 +2,9 @@
 
 namespace App\Policies;
 
+use App\Models\Timesheet;
 use App\Models\User;
+use App\Models\UserRole;
 
 class TimesheetPolicy
 {
@@ -13,5 +15,11 @@ class TimesheetPolicy
             \App\Models\UserRole::ADMIN,
             \App\Models\UserRole::FINANCE,
         ]);
+    }
+
+    public function view(User $user, Timesheet $model): bool
+    {
+        return $user->isAnyRole([UserRole::ADMIN, UserRole::PM, UserRole::STAFF]) ||
+            ($user->isRole(UserRole::INSPECTOR) && $model->assignment?->inspector_id === $user->id);
     }
 }

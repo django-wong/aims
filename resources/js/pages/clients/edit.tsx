@@ -2,7 +2,6 @@ import Layout from '@/layouts/app-layout'
 import { Head } from '@inertiajs/react'
 import * as React from 'react';
 import { BreadcrumbItem, Client } from '@/types';
-import { useLocationHash } from '@/hooks/use-location-hash';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PropsWithChildren } from 'react';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Trash, UserRoundPen } from 'lucide-react';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
+import { useQueryParam } from '@/hooks/use-query-param';
 
 interface ClientEditProps {
   client: Client;
@@ -27,7 +27,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Edit(props: ClientEditProps) {
-  const [hash, setHash] = useLocationHash('notes');
+  const [hash, setHash] = useQueryParam('tab', 'notes');
 
   return <>
     <Layout
@@ -99,16 +99,6 @@ function Content(props: PropsWithChildren) {
   return (
     <div className={'h-[40vh] flex justify-center items-center bg-muted/40 rounded-lg outline-2 outline-dashed outline-border'}>
       { props.children }
-    </div>
-  )
-}
-
-
-function Line(props: PropsWithChildren<{label: string}>) {
-  return (
-    <div className={'flex flex-col gap-1 mb-4'}>
-      <div className={'text-muted-foreground text-sm'}>{props.label}</div>
-      <div className={'text-foreground font-semibold'}>{props.children}</div>
     </div>
   )
 }

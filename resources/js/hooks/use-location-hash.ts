@@ -18,12 +18,13 @@ export function useLocationHash(value: string = ''): [string, (value: string) =>
     };
   }, [value]);
 
+  const location = window.location;
+
   return [
     hash,
     (value: string) => {
       setHash(value);
-      // update the URL hash without reloading the page
-      window.history.pushState(null, '', `#${value}`);
+      window.history.replaceState(window.history.state, '', `${location.origin}${location.pathname}${location.search}${value ? `#${value}` : ''}`);
     }
   ];
 }

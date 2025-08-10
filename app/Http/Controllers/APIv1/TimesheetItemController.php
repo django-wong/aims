@@ -25,7 +25,11 @@ class TimesheetItemController extends Controller
                         ->from('timesheets')
                         ->where('assignment_id', $value);
                 });
-            })->default(0),
+            }),
+            AllowedFilter::callback('timesheet_id', function (Builder $query, $value) {
+                Gate::authorize('view', Timesheet::query()->findOrFail($value));
+                $query->where('timesheet_id', $value);
+            }),
         ];
     }
 
@@ -34,6 +38,10 @@ class TimesheetItemController extends Controller
      */
     public function index(Request $request)
     {
+        $request->validate([
+            'filter.timesheet_id' => 'required_without:filter.assignment_id',
+            'filter.assignment_id' => 'required_without:filter.timesheet_id',
+        ]);
         return $this->getQueryBuilder()->paginate();
     }
 

@@ -21,7 +21,6 @@ import { ProjectForm } from '@/pages/projects/form';
 import { Project,  } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
-import { PopoverConfirm } from '@/components/popover-confirm';
 
 export function describeStatus(status: Project['status']) {
   // 0: Draft, 1: Open, 2: Closed
@@ -40,11 +39,11 @@ export function describeStatus(status: Project['status']) {
 const breadcrumbs = [
   {
     title: 'Home',
-    href: '/app',
+    href: '/',
   },
   {
     title: 'Projects',
-    href: '/app/projects',
+    href: '/projects',
   },
 ];
 
@@ -78,6 +77,21 @@ function ProjectActions(props: { project: Project }) {
 
 const columns: ColumnDef<Project>[] = [
   {
+    accessorKey: 'title',
+    header: 'Title',
+    enableResizing: true,
+    minSize: 100,
+    size: 300,
+    maxSize: 5000,
+    cell: ({ row }) => {
+      return (
+        <Link href={route('projects.edit', {id: row.original.id})} className={'underline'}>
+          {row.original.title}
+        </Link>
+      );
+    }
+  },
+  {
     accessorKey: 'number',
     header: 'P.N',
     cell: ({ row }) => {
@@ -99,21 +113,6 @@ const columns: ColumnDef<Project>[] = [
     minSize: 100,
     maxSize: 100,
     cell: ({row}) => row.original.client?.business_name || 'Unknown',
-  },
-  {
-    accessorKey: 'title',
-    header: 'Title',
-    enableResizing: true,
-    minSize: 100,
-    size: 300,
-    maxSize: 5000,
-    cell: ({ row }) => {
-      return (
-        <Link href={route('projects.edit', {id: row.original.id})} className={'underline'}>
-          {row.original.title}
-        </Link>
-      );
-    }
   },
   {
     accessorKey: 'budget',
@@ -161,7 +160,7 @@ export default function Projects() {
       pageAction={
         <ProjectForm onSubmit={() => table.reload()}>
           <Button>
-            <Plus /> Create New Job
+            <Plus /> New
           </Button>
         </ProjectForm>
       }

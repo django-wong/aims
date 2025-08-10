@@ -13,13 +13,13 @@ import {
   ChevronsLeft,
   ChevronsRight,
   LoaderCircle,
-  PackageOpen,
-  TableIcon
+  PackageOpen
 } from 'lucide-react';
 import * as React from 'react';
 import { SvgBg } from '@/components/svg-bg';
 import { cn } from '@/lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
+import { Empty } from '@/components/empty';
 
 interface DataTableProps<T extends BaseTableData> {
   className?: string;
@@ -92,12 +92,14 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
   return (
     <TableContext value={table}>
       <div className={cn('flex flex-col gap-6', props.className)}>
-        <div className={'flex flex-wrap items-center justify-between gap-2'}>
-          <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
-          <div className={'flex flex-wrap items-center justify-start gap-2'}>
-            {props.right}
+        {(props.left || props.right) && (
+          <div className={'flex flex-wrap items-center justify-between gap-2'}>
+            <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
+            <div className={'flex flex-wrap items-center justify-start gap-2'}>
+              {props.right}
+            </div>
           </div>
-        </div>
+        )}
         <div className={cn(tableVariants({ variant }))}>
           <Table
             bottom={
@@ -106,16 +108,12 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
                   <div
                     className={'sticky left-0 min-h-[300px] flex p-8 w-full items-center justify-center overflow-hidden'}>
                     {table.initialLoaded ? (
-                      <>
-                        <div className={'opacity-5'}>
-                          <SvgBg/>
-                        </div>
-                        <div className={'flex flex-col items-center justify-center gap-2 text-foreground text-center'}>
-                          <PackageOpen/>
-                          <p className={'font-bold text-lg'}>No data founds.</p>
-                          <p className={'text-muted-foreground'}>Your search did not match any data. Please <span className={'underline'} onClick={() => {table.reload()}}>try again</span> or create new one.</p>
-                        </div>
-                      </>
+                      <Empty>
+                        <p className={'font-bold text-lg'}>No data founds.</p>
+                        <p className={'text-muted-foreground'}>
+                          Your search did not match any data. Please <span className={'underline'} onClick={() => {table.reload()}}>try again</span> or create new one.
+                        </p>
+                      </Empty>
                     ) : (
                       <span className={'inline-flex items-center gap-2 text-muted-foreground'}>
                         <LoaderCircle className={'animate-spin'}/> Loading...
@@ -170,9 +168,9 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
             <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
               {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
             </div>
-            <div className="flex w-full items-center gap-8 lg:w-fit">
+            <div className="flex w-full items-center gap-2 lg:w-fit">
               <div className="hidden items-center gap-2 lg:flex">
-                <Label htmlFor="rows-per-page" className="text-sm font-medium">
+                <Label htmlFor="rows-per-page" className="text-sm font-medium hidden 2xl:inline">
                   Rows per page
                 </Label>
                 <Select
@@ -193,7 +191,7 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex w-fit items-center justify-center text-sm font-medium">
+              <div className="flex w-fit items-center justify-center text-sm font-medium hidden 2xl:inline">
                 Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
               </div>
               <div className="ml-auto flex items-center gap-2 lg:ml-0">
@@ -228,7 +226,6 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
             </div>
           </div>
         )}
-        <div></div>
       </div>
     </TableContext>
   );

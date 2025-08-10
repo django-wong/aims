@@ -5,7 +5,6 @@ import { TwoColumnLayout73 } from '@/components/main-content';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useLocationHash } from '@/hooks/use-location-hash';
 import Layout from '@/layouts/app-layout';
 import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem, TimesheetItem } from '@/types';
@@ -18,13 +17,14 @@ import { CircleAlert, Clock, MessagesSquare, Newspaper } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useQueryParam } from '@/hooks/use-query-param';
 
 interface EditProps {
   assignment: Assignment;
 }
 
 export default function Edit(props: EditProps) {
-  const [hash, setHash] = useLocationHash('timesheets');
+  const [hash, setHash] = useQueryParam('tab', 'timesheets');
 
   const breadcrumbs: BreadcrumbItem[] = [
     {

@@ -1,8 +1,7 @@
 import { Comments } from '@/components/comments';
+import { DataTable } from '@/components/data-table-2';
 import { DatePicker } from '@/components/date-picker';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
-import { Divider } from '@/components/divider';
-import { Empty } from '@/components/empty';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +23,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VFormField } from '@/components/vform';
 import { objectToFormData, useReactiveForm } from '@/hooks/use-form';
-import { useLocationHash } from '@/hooks/use-location-hash';
+import { useTable } from '@/hooks/use-table';
 import { BaseLayout } from '@/layouts/base-layout';
 import { Assignment, SharedData, Timesheet, TimesheetItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,11 +58,13 @@ import {
   BetweenVerticalStartIcon,
   BoldIcon,
   BookmarkCheck,
-  ClockIcon, FileBadgeIcon,
+  ClockIcon,
+  FileBadgeIcon,
   FoldHorizontalIcon,
   FoldVerticalIcon,
   HeadingIcon,
-  House, MessageCircleIcon,
+  House,
+  MessageCircleIcon,
   PaperclipIcon,
   Plus,
   Table2,
@@ -72,6 +73,7 @@ import {
 } from 'lucide-react';
 import { PropsWithChildren, startTransition, useState } from 'react';
 import zod, { z } from 'zod';
+import { useQueryParam } from '@/hooks/use-query-param';
 
 interface RecordProps {
   assignment: Assignment;
@@ -81,14 +83,12 @@ interface RecordProps {
 export default function Record(props: RecordProps) {
   const page = usePage<SharedData>();
 
-  const [hash, setHash] = useLocationHash('timesheet');
-
-  const timesheet_items: TimesheetItem[] = props.timesheet?.timesheet_items || [];
+  const [hash, setHash] = useQueryParam('tab', 'timesheet');
 
   return (
     <BaseLayout>
       <Head title={props.assignment.project?.title} />
-      <div className={'flex flex-1 flex-col'}>
+      <div className={'flex flex-1 flex-col w-full '}>
         <>
           <>
             <div className={'p-6 py-8'}>
@@ -116,91 +116,54 @@ export default function Record(props: RecordProps) {
               </div>
             </div>
             <TwoColumnLayout73
+              className={'relative'}
               right={
-                <div className={'sticky top-6'}>
-                  <Info>
-                    <InfoHead>Details</InfoHead>
-                    <div>
-                      <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
-                      <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
-                      <InfoLine label={'Assignment Type'}>
-                        <Badge>{props.assignment.assignment_type?.name}</Badge>
-                      </InfoLine>
-                    </div>
-                  </Info>
-                  <Divider className={'mt-6 hidden lg:inline-block'}/>
-                </div>
+                <Info>
+                  <InfoHead>Details</InfoHead>
+                  <div>
+                    <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
+                    <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
+                    <InfoLine label={'Assignment Type'}>
+                      <Badge>{props.assignment.assignment_type?.name}</Badge>
+                    </InfoLine>
+                  </div>
+                </Info>
               }
               left={
-                <>
-                  <Tabs value={hash} onValueChange={setHash} className={'h-full gap-4'}>
+                <Tabs value={hash} onValueChange={setHash} className={'h-full gap-4'}>
                     <TabsList>
                       <TabsTrigger value={'timesheet'}>
-                        <ClockIcon/>
+                        <ClockIcon />
                         <span className={'hidden sm:inline'}>Timesheet</span>
                       </TabsTrigger>
                       <TabsTrigger value={'report'}>
-                        <FileBadgeIcon/>
+                        <FileBadgeIcon />
                         <span className={'hidden sm:inline'}>Report</span>
                       </TabsTrigger>
                       <TabsTrigger value={'comments'}>
-                        <MessageCircleIcon/>
+                        <MessageCircleIcon />
                         <span className={'hidden sm:inline'}>Comments</span>
                       </TabsTrigger>
                       <TabsTrigger value={'attachments'}>
-                        <PaperclipIcon/>
+                        <PaperclipIcon />
                         <span className={'hidden sm:inline'}>Attachments</span>
                       </TabsTrigger>
                     </TabsList>
                     <Info className={'relative flex flex-1 flex-col'}>
                       <TabsContent value={'timesheet'} className={'relative flex flex-1 flex-col gap-4'}>
-                        {timesheet_items.length === 0 ? (
-                          <Empty>
-                            <div className={'flex flex-col items-center justify-center gap-2'}>
-                              <p className={'text-muted-foreground'}>No timesheet items found for this assignment.</p>
-                              <TimesheetItemForm onSubmit={() => {}} assignment={props.assignment}>
-                                <Button variant={'outline'}>
-                                  <Plus />
-                                  Log Timesheet
-                                </Button>
-                              </TimesheetItemForm>
-                            </div>
-                          </Empty>
-                        ) : (
-                          <>
-                            <div className={'bg-background grid gap-2 rounded-lg border p-4'}>
-                              <div className={''}>
-                                {timesheet_items.map((item, index) => (
-                                  <div key={index} className={'border-border/50 flex items-center justify-between gap-2 border-b last:border-b-0'}>
-                                    <p>{new Date(item.date || Date.now()).toLocaleDateString()}</p>
-                                    <span className={'font-bold'}>{item.hours}</span>
-                                  </div>
-                                ))}
-                              </div>
-                              <Divider />
-                              <div className={'flex items-end justify-between gap-2'} style={{ fontSize: '1.1rem' }}>
-                                <p className={''}>Total in this week</p>
-                                <span className={'font-bold'}>{props.timesheet?.hours || 0} Hour(s)</span>
-                              </div>
-                            </div>
-                            <div className={'flex items-center justify-end gap-4'}>
-                              <TimesheetItemForm onSubmit={() => {}} assignment={props.assignment}>
-                                <Button variant={'ghost'}>
-                                  <Plus />
-                                  Log another
-                                </Button>
-                              </TimesheetItemForm>
-                              <Button variant={'default'}>Submit for Approval</Button>
-                            </div>
-                          </>
-                        )}
+                        <TimesheetItems
+                          timesheet={props.timesheet}
+                          assignment={props.assignment}
+                        />
                       </TabsContent>
                       <TabsContent value={'report'}>
-                        <div className={'bg-background overflow-hidden rounded-lg border'}>
-                          <Editor />
-                        </div>
-                        <div className={'flex items-center justify-end gap-2 p-4'}>
-                          <Button>Save</Button>
+                        <div className={'grid gap-4'}>
+                          <div className={'bg-background overflow-hidden rounded-lg border'}>
+                            <Editor />
+                          </div>
+                          <div className={'flex items-center justify-end gap-2 '}>
+                            <Button>Save</Button>
+                          </div>
                         </div>
                       </TabsContent>
                       <TabsContent value={'attachments'}>
@@ -213,7 +176,6 @@ export default function Record(props: RecordProps) {
                       </TabsContent>
                     </Info>
                   </Tabs>
-                </>
               }
             />
           </>
@@ -655,11 +617,10 @@ function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProps>) {
                           <>
                             <FormItem>
                               <FormLabel>Attachments</FormLabel>
-                              <FormControl>
-                                <div
-                                  className={'bg-background dark:bg-input/30 flex flex-col items-center justify-center gap-2 rounded-lg border p-16'}
-                                >
-                                  <UploadIcon />
+                              <div
+                                className={'bg-background dark:bg-input/30 flex flex-col items-center justify-center gap-2 rounded-lg border p-16'}>
+                                <UploadIcon />
+                                <FormControl>
                                   <Button asChild variant={'outline'} className={'cursor-pointer'}>
                                     <label>
                                       <input
@@ -678,8 +639,8 @@ function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProps>) {
                                       </span>
                                     </label>
                                   </Button>
-                                </div>
-                              </FormControl>
+                                </FormControl>
+                              </div>
                             </FormItem>
                           </>
                         );
@@ -771,6 +732,97 @@ function Attachments() {
           ) : null}
         </div>
       </Form>
+    </>
+  );
+}
+
+function TimesheetItems(props: { timesheet?: Timesheet; assignment?: Assignment }) {
+  const table = useTable<TimesheetItem>('/api/v1/timesheet-items', {
+    defaultParams: {
+      'filter[timesheet_id]': String(props.timesheet?.id ?? ''),
+    },
+    initialState: {
+      pagination: {
+        pageSize: 999
+      }
+    },
+    columns: [
+      {
+        accessorKey: 'date',
+        header: 'Date',
+        size: 200,
+        cell: ({ row }) => new Date(row.original.date || Date.now()).toLocaleDateString(),
+      },
+      {
+        accessorKey: 'work_hours',
+        header: 'Work (hrs)',
+        size: 100,
+        cell: ({ row }) => row.original.work_hours,
+      },
+      {
+        accessorKey: 'travel_hours',
+        header: 'Travel (hrs)',
+        size: 100,
+        cell: ({ row }) => row.original.travel_hours,
+      },
+      {
+        accessorKey: 'report_hours',
+        header: 'Report (hrs)',
+        size: 100,
+        cell: ({ row }) => row.original.report_hours,
+      },
+      {
+        accessorKey: 'days',
+        header: 'Days & Overnights',
+        size: 100,
+        cell: ({ row }) => `${row.original.days} / ${row.original.overnights}`,
+      },
+      {
+        accessorKey: 'travel_distance',
+        header: 'Travel Distance',
+        size: 150,
+        cell: ({ row }) => row.original.travel_distance,
+      },
+      {
+        accessorKey: 'travel_rate',
+        header: 'Travel Rate',
+        size: 150,
+        cell: ({ row }) => row.original.travel_rate.toFixed(2),
+      },
+      {
+        accessorKey: 'expenses',
+        header: 'Hotel ($)',
+        size: 150,
+        cell: ({ row }) => row.original.hotel,
+      },
+      {
+        accessorKey: 'rail_or_airfare',
+        header: 'Rail/Airfare ($)',
+        size: 150,
+        cell: ({ row }) => row.original.rail_or_airfare,
+      },
+      {
+        accessorKey: 'meals',
+        header: 'Meals ($)',
+        size: 150,
+        cell: ({ row }) => row.original.meals,
+      },
+    ],
+  });
+  return (
+    <>
+      <DataTable table={table} pagination={false} variant={'clean'} className={'max-w-full overflow-hidden bg-background'}/>
+      {props.assignment && (
+        <div className={'flex items-center justify-end gap-4'}>
+          <TimesheetItemForm onSubmit={() => {table.reload()}} assignment={props.assignment}>
+            <Button variant={'outline'}>
+              <Plus />
+              Log another
+            </Button>
+          </TimesheetItemForm>
+          <Button variant={'default'}>Submit for Approval</Button>
+        </div>
+      )}
     </>
   );
 }

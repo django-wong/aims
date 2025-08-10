@@ -21,7 +21,6 @@ class AssignmentPolicy
             \App\Models\UserRole::ADMIN,
             \App\Models\UserRole::STAFF,
             \App\Models\UserRole::FINANCE,
-            \App\Models\UserRole::INSPECTOR,
         ]);
     }
 

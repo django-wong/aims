@@ -178,7 +178,7 @@ export default function Clients() {
         pageAction={
           <ClientForm onSubmit={() => table.reload()}>
             <Button size={'sm'}>
-              <Plus /> Add new client
+              <Plus /> New
             </Button>
           </ClientForm>
         }

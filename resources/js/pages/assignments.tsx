@@ -1,10 +1,10 @@
 import AppLayout from '@/layouts/app-layout';
-import { Assignment, BreadcrumbItem } from '@/types';
+import { Assignment, BreadcrumbItem, Project } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '@/components/data-table-2';
-import { EllipsisVertical, Eye, Mail, MessageSquare, Trash2, User } from 'lucide-react';
+import { ColumnToggle, DataTable } from '@/components/data-table-2';
+import { EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -24,6 +24,7 @@ import { useDebouncer } from '@/hooks/use-debounced';
 import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
+import { ProjectSelect } from '@/components/project-select';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -61,6 +62,7 @@ const columns: ColumnDef<Assignment>[] = [
     size: 100,
   },
   {
+    id: 'project_id',
     accessorKey: 'project_id',
     header: 'Project',
     cell: ({ row }) => {
@@ -85,13 +87,6 @@ const columns: ColumnDef<Assignment>[] = [
       return row.original.vendor?.name ?? '-';
     }
   },
-  // {
-  //   accessorKey: 'sub_vendor_id',
-  //   header: 'Sub Vendor',
-  //   cell: ({ row }) => {
-  //     return row.original.sub_vendor?.name ?? '-';
-  //   }
-  // },
   {
     accessorKey: 'actions',
     header: 'Actions',
@@ -105,40 +100,22 @@ const columns: ColumnDef<Assignment>[] = [
   }
 ];
 
-export default function Assignments() {
-  const table = useTable('/api/v1/assignments', {
-    columns: columns,
-    defaultParams: {
-      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org,inspector',
-      'sort': 'created_at',
-    }
-  });
+export default function AssignmentsPage() {
+  const {table, content} = useAssignmentsTable();
+  const [count, setCount] = useState(0);
 
-  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') ?? '');
-  const debouncer = useDebouncer();
   return (
-    <AppLayout breadcrumbs={breadcrumbs} pageAction={<AssignmentForm onSubmit={() => {table.reload()}}><Button>New Assignment</Button></AssignmentForm>}>
-      <div className={'px-6'}>
-        <DataTable
-          table={table}
-          left={<>
-            <Input
-              value={keywords}
-              onChange={(event) => {
-                setKeywords(event.target.value);
-                debouncer(() => {
-                  table.setSearchParams((params) => {
-                    params.set('filter[keywords]', event.target.value);
-                    return params;
-                  })
-                })
-              }}
-              className={'max-w-[250px]'}
-              placeholder={'Search...'}
-            />
-          </>}
-        />
-      </div>
+    <AppLayout
+      breadcrumbs={breadcrumbs}
+      pageAction={
+        <AssignmentForm
+          onSubmit={() => {table.reload()}}>
+          <Button onClick={() => {setCount(count + 1)}}>
+            <PlusIcon/> New
+          </Button>
+        </AssignmentForm>
+      }>
+      <div className={'px-6'}>{ content }</div>
     </AppLayout>
   );
 }
@@ -213,4 +190,87 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
       </DropdownMenu>
     </>
   );
+}
+
+interface UseAssignmentsTableOptions {
+  project?: Project
+}
+
+export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
+  const table = useTable('/api/v1/assignments', {
+    columns: columns.filter((column) => {
+      if (options.project) {
+        if (column.id === 'project_id') {
+          return false;
+        }
+      }
+      return true;
+    }),
+    defaultParams: {
+      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org,inspector',
+      'sort': 'created_at',
+      'filter[project_id]': String(options.project?.id ?? '')
+    }
+  });
+
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') ?? '');
+  const debouncer = useDebouncer();
+
+  const project_selector = (
+    options.project ? null : (
+      <ProjectSelect
+        value={Number(table.searchParams.get('filter[project_id]'))}
+        onValueChane={(value) => {
+          console.info('change value to:', value);
+          table.setSearchParams((params) => {
+            if (value) {
+              params.set('filter[project_id]', String(value));
+            } else {
+              params.delete('filter[project_id]');
+            }
+            return params;
+          })
+        }}
+        renderTrigger={(project) => {
+          return (
+            <Button variant={'outline'}>
+              Project: <Badge>{project?.title ?? 'All'}</Badge>
+            </Button>
+          );
+        }}/>
+    )
+  )
+
+  return {
+    table,
+    content: (
+      <>
+        <DataTable
+          table={table}
+          left={<>
+            <Input
+              value={keywords}
+              onChange={(event) => {
+                setKeywords(event.target.value);
+                debouncer(() => {
+                  table.setSearchParams((params) => {
+                    params.set('filter[keywords]', event.target.value);
+                    return params;
+                  })
+                })
+              }}
+              className={'max-w-[250px]'}
+              placeholder={'Search...'}
+            />
+            {project_selector}
+          </>}
+          right={
+            <>
+              <ColumnToggle/>
+            </>
+          }
+        />
+      </>
+    )
+  }
 }

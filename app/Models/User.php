@@ -107,4 +107,9 @@ class User extends Authenticatable
     {
         return $this->user_role?->role === $role;
     }
+
+    public function isAnyRole(array $roles): bool
+    {
+        return in_array($this->user_role?->role, $roles, true);
+    }
 }

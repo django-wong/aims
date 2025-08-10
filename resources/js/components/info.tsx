@@ -1,5 +1,6 @@
 import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 import { ComponentProps, PropsWithChildren } from 'react';
+import { cn } from '@/lib/utils';
 
 export function Info({ children, ...props }: ComponentProps<'div'>) {
   return (
@@ -24,7 +25,7 @@ export function InfoHead({ children, right }: PropsWithChildren<{right?: React.R
 export function InfoLineLabel({ children, icon }: PropsWithChildren<{icon?: IconName}>) {
   return (
     <>
-      <h4 className={'text-muted-foreground flex justify-start gap-1 items-center text-sm flex-shrink-0'}>
+      <h4 className={'text-muted-foreground flex justify-start gap-1 items-center text-sm flex-shrink-0 mt-[0.125rem]'}>
         { icon ? (
           <DynamicIcon name={icon} className={'w-4 h-4 mr-1'} />
         ) : null}
@@ -34,11 +35,9 @@ export function InfoLineLabel({ children, icon }: PropsWithChildren<{icon?: Icon
   );
 }
 
-export function InfoLineValue(props: PropsWithChildren) {
+export function InfoLineValue({ className, ...props }: ComponentProps<'div'>) {
   return (
-    <div className={'flex justify-end items-center gap-2 flex-1'}>
-      {props.children}
-    </div>
+    <div className={cn('flex justify-end items-center gap-2 flex-1', className)} {...props}/>
   );
 }
 
@@ -54,11 +53,11 @@ export function InfoLine({
   className?: string;
 }) {
   return (
-    <div className={`flex justify-between items-center gap-2 ${className} flex-wrap min-h-8`}>
+    <div className={`flex justify-between items-start gap-2 ${className} flex-wrap min-h-8`}>
       <InfoLineLabel icon={icon}>
         {label}
       </InfoLineLabel>
-      <InfoLineValue>
+      <InfoLineValue className={'text-right'}>
         {children}
       </InfoLineValue>
     </div>

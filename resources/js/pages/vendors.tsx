@@ -11,7 +11,7 @@ import {
   DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, PlusIcon } from 'lucide-react';
 import { VendorForm } from '@/pages/vendors/form';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
@@ -67,7 +67,15 @@ export default function Vendors() {
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
-      pageAction={<VendorForm onSubmit={() => table.reload()}><Button>Add Vendor</Button></VendorForm>}>
+      pageAction={
+        <VendorForm
+          onSubmit={() => table.reload()}>
+          <Button>
+            <PlusIcon/>
+            New
+          </Button>
+        </VendorForm>
+      }>
       <Head title={'Vendors'}/>
       <div className={'px-6'}>
         <DataTable

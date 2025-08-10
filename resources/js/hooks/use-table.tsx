@@ -7,9 +7,8 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { startTransition, useEffect, useReducer, useState } from 'react';
-import { useSearchParams } from '@/hooks/use-search-params';
+import { useQueryParamAsSearchParams } from '@/hooks/use-query-param-as-search-params';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PagedResponse } from '@/types';
 
 type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'getSortedRowModel' | 'columns'>
   & {
@@ -35,7 +34,7 @@ function reloadReducer(state: number) {
 }
 
 export function useTable<T extends BaseTableData>(api: string, { selectable = true, ...options }: UseTableOptions<T>) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useQueryParamAsSearchParams(api);
   const [data, setData] = useState<T[]>(options?.defaultData ?? []);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [total, setTotal] = useState<number>(0);
@@ -69,13 +68,9 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
     });
   }
 
-  function aliased(alias: string) {
-    return options?.alias ? `${options.alias}_${alias}` : alias;
-  }
-
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: parseInt(searchParams.get(aliased('page')) ?? '1') - 1,
-    pageSize: parseInt(searchParams.get(aliased('pageSize')) ?? String(options.initialState?.pagination?.pageSize ?? 10)),
+    pageIndex: parseInt(searchParams.get('page') ?? '1') - 1,
+    pageSize: parseInt(searchParams.get('pageSize') ?? String(options.initialState?.pagination?.pageSize ?? 10)),
   });
 
   const table = useReactTable<T>({
@@ -96,8 +91,8 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
       startTransition(() => {
         setPagination(value);
         setSearchParams((params) => {
-          params.set(aliased('page'), String(value.pageIndex + 1));
-          params.set(aliased('pageSize'), String(value.pageSize));
+          params.set('page', String(value.pageIndex + 1));
+          params.set('pageSize', String(value.pageSize));
           return params;
         });
       });

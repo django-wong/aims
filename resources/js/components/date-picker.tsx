@@ -9,22 +9,22 @@ interface DatePickerProps {
   onChange?: (date: Date | undefined) => void;
 }
 
-export function DatePicker(props: DatePickerProps) {
-  const date = props.value ? new Date(props.value) : undefined;
+export function DatePicker({value, onChange, ...props }: DatePickerProps) {
+  const date = value ? new Date(value) : undefined;
   const [open, setOpen] = useState(false);
   function setValue(value: Date | undefined) {
     setOpen(false);
-    if (props.onChange) {
-      props.onChange(value);
+    if (onChange) {
+      onChange(value);
     }
   }
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant={'outline'} className={'data-[empty=true]:text-muted-foreground w-full justify-start font-normal'}>
+          <Button variant={'outline'} {...props} className={'data-[empty=true]:text-muted-foreground w-full justify-start font-normal'}>
             <CalendarIcon />
-            { date ? (
+            {date ? (
               <span className={'ml-2'}>
                 {date.toLocaleDateString(navigator.language, {
                   year: 'numeric',
@@ -32,7 +32,9 @@ export function DatePicker(props: DatePickerProps) {
                   day: '2-digit',
                 })}
               </span>
-            ) : <span>Pick a date</span>}
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className={'w-auto p-0'}>

@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property mixed $assignment
+ */
 class Timesheet extends Model
 {
     /** @use HasFactory<\Database\Factories\TimesheetFactory> */

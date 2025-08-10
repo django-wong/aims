@@ -8,6 +8,7 @@ use App\Models\Org;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class AssignmentController extends Controller
 {
@@ -23,6 +24,15 @@ class AssignmentController extends Controller
     {
         return [
             'created_at'
+        ];
+    }
+
+    public function allowedFilters()
+    {
+        return [
+            AllowedFilter::callback('project_id', function ($query, $value) {
+                $query->where('project_id', $value);
+            }),
         ];
     }
 
