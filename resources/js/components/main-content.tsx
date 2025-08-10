@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { ComponentProps } from 'react';
 
 export function MainContent({ children, className }: ComponentProps<'div'>) {
-  return <div className={cn('flex flex-1 border-t bg-muted/50', className)}>{children}</div>;
+  return <div className={cn('flex flex-1 border-t bg-muted/20', className)}>{children}</div>;
 }
 
 export function MainContentBlock({ children, className }: ComponentProps<'div'>) {

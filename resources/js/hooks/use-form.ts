@@ -78,7 +78,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * Note: form instance can't be used as dependency in useEffect or useMemo hooks,
+ * Note: form instance can't be used as a dependency in useEffect or useMemo hooks,
  * @param props
  */
 export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactiveFormProps<T> = {}) {

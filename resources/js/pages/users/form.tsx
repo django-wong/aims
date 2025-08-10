@@ -23,30 +23,30 @@ import { RoleSelect } from '@/components/role-select';
 type UserFormProps = DialogFormProps<User>;
 
 const updateSchema = zod.object({
-  id: zod.number(),
-  password: zod.string().min(6).optional(),
-  password_confirmation: zod.string().optional(),
+  method: zod.literal('update'),
+  password: zod.string().min(6).optional().nullable(),
+  password_confirmation: zod.string().optional().nullable(),
+  first_name: zod.string('').min(1),
+  last_name: zod.string().min(1),
+  title: zod.string().optional().nullable(),
+  email: zod.email(),
 });
 
 const createSchema = zod.object({
-  id: zod.null(),
+  method: zod.literal('create'),
   role: zod.number(),
   password: zod.string().min(6),
   password_confirmation: zod.string(),
+  first_name: zod.string('').min(1),
+  last_name: zod.string().min(1),
+  title: zod.string().optional().nullable(),
+  email: zod.email(),
 });
 
-const schema = zod.union([
-  zod.object({
-    first_name: zod.string('').min(1),
-    last_name: zod.string().min(1),
-    title: zod.string().optional().nullable(),
-    email: zod.email(),
-  }),
-  zod.discriminatedUnion('id', [
-    createSchema,
-    updateSchema,
-  ])
-])
+const schema = zod.discriminatedUnion('method', [
+  createSchema,
+  updateSchema,
+]);
 
 export function UserForm(props: UserFormProps) {
   const form = useReactiveForm<zod.infer<typeof schema>, any>({
@@ -55,10 +55,11 @@ export function UserForm(props: UserFormProps) {
       last_name: '',
       title: '',
       email: '',
-      password: '',
-      password_confirmation: '',
+      password: null,
+      password_confirmation: null,
       ...props.value,
-      role: props.value?.user_role?.role
+      role: props.value?.user_role?.role,
+      method: (props.value && props.value.id) ? 'update' : 'create' as any,
     }),
     resolver: zodResolver(schema),
   });
@@ -132,7 +133,7 @@ export function UserForm(props: UserFormProps) {
                       render={({ field, fieldState }) => {
                         return (
                           <VFormField required label={'Email'} for={'email'} error={fieldState.error?.message}>
-                            <Input placeholder={'example@mail.com'} type={'email'} value={field.value} onChange={field.onChange} />
+                            <Input autoComplete={'email'} placeholder={'example@mail.com'} type={'email'} value={field.value} onChange={field.onChange} />
                           </VFormField>
                         );
                       }}
@@ -160,7 +161,7 @@ export function UserForm(props: UserFormProps) {
                       render={({ field, fieldState }) => {
                         return (
                           <VFormField required={!isUpdate} label={'Password'} for={'password'} error={fieldState.error?.message}>
-                            <Input placeholder={isUpdate ? 'Leave blank to retain existing password' : ''} type={'password'} value={field.value} onChange={field.onChange} />
+                            <Input autoComplete={'new-password'} placeholder={isUpdate ? 'Leave blank to retain existing password' : ''} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
                           </VFormField>
                         );
                       }}
@@ -173,7 +174,7 @@ export function UserForm(props: UserFormProps) {
                       render={({ field, fieldState }) => {
                         return (
                           <VFormField required={!isUpdate} label={'Confirm Password'} error={fieldState.error?.message}>
-                            <Input type={'password'} value={field.value ?? ''} onChange={field.onChange} />
+                            <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
                           </VFormField>
                         );
                       }}

@@ -154,9 +154,9 @@ export interface Assignment extends BaseModel {
   org?: Org;
   operation_org_id: number | null;
   operation_org?: Org;
-  assignment_type_id: number | null;
+  assignment_type_id: number;
   assignment_type?: AssignmentType;
-  inspector_id: number | null;
+  inspector_id: number;
   inspector?: User;
   project_id: number;
   project?: Project;

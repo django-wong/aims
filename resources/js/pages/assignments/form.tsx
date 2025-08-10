@@ -25,10 +25,10 @@ import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { useEffect } from 'react';
 
 const schema = zod.object({
-  'project_id': zod.number().int().positive(),
+  'project_id': zod.number('Project is required').int().positive(),
   'operation_org_id': zod.number().int().positive().nullable(),
-  'assignment_type_id': zod.number().int().positive().nullable(),
-  'inspector_id': zod.number().int().positive().nullable(),
+  'assignment_type_id': zod.number().int().positive(),
+  'inspector_id': zod.number().int().positive(),
   'vendor_id': zod.number().int().positive().nullable(),
   'sub_vendor_id': zod.number().int().positive().nullable(),
   'report_required': zod.boolean(),
@@ -37,16 +37,14 @@ const schema = zod.object({
 
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
   const form = useReactiveForm<zod.infer<typeof schema>>({
-    defaultValues: {
+    ...useResource('/api/v1/assignments', {
       operation_org_id: null,
-      assignment_type_id: null,
       sub_vendor_id: null,
       vendor_id: null,
       notes: '',
       report_required: false,
-      inspector_id: null,
-    },
-    ...useResource('/api/v1/assignments', props.value),
+      ...props.value
+    }),
     resolver: zodResolver(schema),
   });
 

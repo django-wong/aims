@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Form, FormField } from '@/components/ui/form';
+import { Form, FormControl, FormField } from '@/components/ui/form';
 import { Input, Inputs } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
@@ -25,13 +25,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
 
-function asNullableNumber() {
-  return zod.preprocess((value) => {
-    if (typeof value === 'string' && value) {
-      return parseInt(value);
-    }
-    return null;
-  }, zod.number().min(0).max(100).optional().nullable())
+function number() {
+  return zod.coerce.number().min(0);
 }
 
 const schema = zod.object({
@@ -44,13 +39,13 @@ const schema = zod.object({
   quote_id: zod.number().nullable().optional(),
   status: zod.number().default(1),
 
-  first_alert_threshold: asNullableNumber(),
-  second_alert_threshold: asNullableNumber(),
-  final_alert_threshold: asNullableNumber(),
+  first_alert_threshold: number(),
+  second_alert_threshold: number(),
+  final_alert_threshold: number(),
 });
 
 export function ProjectForm(props: DialogFormProps<Project>) {
-  const form = useReactiveForm<zod.infer<typeof schema>>({
+  const form = useReactiveForm<zod.infer<typeof schema>, Project>({
     url: 'api/v1/projects',
     method: 'POST',
     resolver: zodResolver(schema) as any,
@@ -61,18 +56,19 @@ export function ProjectForm(props: DialogFormProps<Project>) {
       client_id: null,
       budget: 50_000,
       status: Math.random() > 0.5 ? 1 : 0,
+      first_alert_threshold: 70,
+      second_alert_threshold: 90,
+      final_alert_threshold: 100,
     }
   });
 
   const [open, setOpen] = useState(props.open);
 
   function submit() {
-    form.submit().then(async (response) => {
+    form.submit().then((response) => {
       if (response) {
-        if (response.ok) {
-          props.onSubmit(await response.json());
-          setOpen(false);
-        }
+        props.onSubmit(response.data);
+        setOpen(false);
       }
     });
   }
@@ -112,7 +108,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-6'}>
+                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
                       <Input
                         placeholder={'e.g. PO-1234'}
                         {...field}
@@ -127,7 +123,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'Project Number'} for={'project_number'} error={fieldState.error?.message} className={'col-span-6'}>
+                    <VFormField required label={'Project Number'} for={'project_number'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
                       <ProjectNumber value={field.value} onValueChange={field.onChange} allowGenerate={!!(props.value?.id || true)}/>
                     </VFormField>
                   )}
@@ -136,7 +132,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => {
-                    return <VFormField required label={'Project Type'} for={'project_type_id'} error={fieldState.error?.message} className={'col-span-6'}>
+                    return <VFormField required label={'Project Type'} for={'project_type_id'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
                       <ProjectTypeSelect onValueChane={field.onChange} value={field.value}/>
                     </VFormField>;
                   }}
@@ -145,7 +141,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => {
-                    return <VFormField label={'Client'} for={'client_id'} error={fieldState.error?.message} className={'col-span-6'}>
+                    return <VFormField label={'Client'} for={'client_id'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
                       <ClientSelect onValueChane={field.onChange} value={field.value}/>
                     </VFormField>;
                   }}
@@ -154,30 +150,34 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => {
-                    return <VFormField label={'Budget $'} for={'budget'} error={fieldState.error?.message} className={'col-span-6'}>
-                      <Input placeholder={'e.g. 10000'} type={'number'} min={0} max={9999999999} onChange={field.onChange} value={field.value} className={'bg-background'}/>
+                    return <VFormField label={'Budget $'} for={'budget'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
+                      <Input placeholder={'e.g. 10000'} type={'number'} min={0} max={9999999999} onChange={field.onChange} value={field.value}/>
                     </VFormField>;
                   }}
                   name={'budget'}
                 />
-                <VFormField label={'Alert Threshold %'} for={'threshold'} className={'col-span-6'}>
+                <div className={'col-span-12 sm:col-span-6 grid gap-2'}>
+                  <Label>Alert Threshold (%)</Label>
                   <Inputs>
                     <FormField
                       control={form.control}
                       render={({field}) => (
-                        <Input
-                          placeholder={'70'}
-                          type={'number'}
-                          className={'bg-background'}
-                          value={field.value || ''}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
+                        <FormControl>
+                          <Input
+                            placeholder={'70'}
+                            type={'number'}
+                            className={'bg-background'}
+                            value={field.value || ''}
+                            onChange={(event) => field.onChange(Number(event.target.value))}
+                          />
+                        </FormControl>
                       )}
                       name={'first_alert_threshold'}
                     />
                     <FormField
                       control={form.control}
                       render={({field}) => (
+                        <FormControl>
                         <Input
                           placeholder={'90'}
                           type={'number'}
@@ -185,12 +185,14 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                           value={field.value || ''}
                           onChange={(event) => field.onChange(Number(event.target.value))}
                         />
+                        </FormControl>
                       )}
                       name={'second_alert_threshold'}
                     />
                     <FormField
                       control={form.control}
                       render={({field}) => (
+                        <FormControl>
                         <Input
                           placeholder={'100'}
                           type={'number'}
@@ -198,11 +200,12 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                           value={field.value || ''}
                           onChange={(event) => field.onChange(Number(event.target.value))}
                         />
+                        </FormControl>
                       )}
                       name={'final_alert_threshold'}
                     />
                   </Inputs>
-                </VFormField>
+                </div>
                 <div className={'col-span-12'}>
                   <FormField
                     control={form.control}

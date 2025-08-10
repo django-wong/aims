@@ -47,7 +47,7 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
           </>
         ) : null}
         <FormControl>
-          <div>{props.children}</div>
+          {props.children}
         </FormControl>
         {props.description && <FormDescription>{props.description}</FormDescription>}
         <FormMessage />

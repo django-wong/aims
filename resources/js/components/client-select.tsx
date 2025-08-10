@@ -68,20 +68,22 @@ export interface SelectPopupProps<T extends Model> extends SelectProps<T> {
   getKeywords: (item: T) => string[];
 }
 
-export function SelectPopup<T extends Model>({ open, setOpen, ...props }: SelectPopupProps<T>) {
+export function SelectPopup<T extends Model>({
+ getKeywords, open, setOpen, getItemLabel, placeholder, data, value, onValueChane, onDataChange, ...props
+}: SelectPopupProps<T>) {
   function renderTrigger(item?: T) {
     if (typeof props.renderTrigger === 'function') {
       return props.renderTrigger(item);
     }
     return (
-      <Button variant="outline" role="combobox" aria-expanded={open} className={cn('w-full justify-between font-normal overflow-hidden', props.className)}>
+      <Button variant="outline" role="combobox" aria-expanded={open} {...props} className={cn('w-full justify-between font-normal overflow-hidden', props.className)}>
         <div className={'overflow-hidden'}>
           {item ? (
-            props.getItemLabel(item)
+            getItemLabel(item)
           ) : (
             <>
               <span className={'text-gray-500'}>
-                {props.placeholder || ''}
+                {placeholder || ''}
               </span>
             </>
           )}
@@ -93,31 +95,31 @@ export function SelectPopup<T extends Model>({ open, setOpen, ...props }: Select
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger disabled={props.disabled} asChild>{renderTrigger(props.data.find((data) => data.id === props.value))}</PopoverTrigger>
+      <PopoverTrigger disabled={props.disabled} asChild>{renderTrigger(data.find((data) => data.id === value))}</PopoverTrigger>
       <PopoverContent className="w-[250px] p-0" align={'start'}>
         <Command>
           <CommandInput placeholder="Search..." className="h-9" />
           <CommandList>
             <CommandEmpty>No data found.</CommandEmpty>
             <CommandGroup>
-              {props.data.map((item) => (
+              {data.map((item) => (
                 <CommandItem
                   key={item.id}
                   value={String(item.id)}
-                  keywords={props.getKeywords(item)}
+                  keywords={getKeywords(item)}
                   onSelect={() => {
-                    if (item.id === props.value) {
-                      props.onValueChane(null);
-                      props.onDataChange?.(null);
+                    if (item.id === value) {
+                      onValueChane(null);
+                      onDataChange?.(null);
                     } else {
-                      props.onValueChane(item.id);
-                      props.onDataChange?.(item);
+                      onValueChane(item.id);
+                      onDataChange?.(item);
                     }
                     setOpen(false);
                   }}
                 >
-                  <span className={'line-clamp-1'}>{props.getItemLabel(item)}</span>
-                  <Check className={cn('ml-auto', props.value === item.id ? 'opacity-100' : 'opacity-0')} />
+                  <span className={'line-clamp-1'}>{getItemLabel(item)}</span>
+                  <Check className={cn('ml-auto', value === item.id ? 'opacity-100' : 'opacity-0')} />
                 </CommandItem>
               ))}
             </CommandGroup>
