@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\PurchaseOrder;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class PurchaseOrderPolicy
@@ -21,7 +22,18 @@ class PurchaseOrderPolicy
      */
     public function view(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        return false;
+        // Check if user and purchase order belong to the same organization
+        if ($user->org->id !== $purchaseOrder->org_id) {
+            return false;
+        }
+
+        // Deny access if the user is an inspector
+        if ($user->user_role && $user->user_role->role === UserRole::INSPECTOR) {
+            return false;
+        }
+
+        // Allow all other users from the same org
+        return true;
     }
 
     /**
@@ -29,7 +41,15 @@ class PurchaseOrderPolicy
      */
     public function create(User $user): bool
     {
-        // TODO: Only if the user is coordinator or admin
+        // Allow admin, finance, and staff users to create purchase orders
+        if ($user->user_role && in_array($user->user_role->role, [
+            UserRole::ADMIN,
+            UserRole::FINANCE,
+            UserRole::STAFF
+        ])) {
+            return true;
+        }
+
         return false;
     }
 
@@ -38,8 +58,7 @@ class PurchaseOrderPolicy
      */
     public function update(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // TODO: Only if the user is coordinator of the client
-        return false;
+        return $this->view($user, $purchaseOrder);
     }
 
     /**
@@ -47,23 +66,6 @@ class PurchaseOrderPolicy
      */
     public function delete(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // TODO: Only if the user is coordinator of the client or admin
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, PurchaseOrder $purchaseOrder): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, PurchaseOrder $purchaseOrder): bool
-    {
-        return false;
+        return $this->update($user, $purchaseOrder);
     }
 }
