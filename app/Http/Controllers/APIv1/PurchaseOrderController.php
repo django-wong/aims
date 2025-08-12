@@ -16,6 +16,17 @@ class PurchaseOrderController extends Controller
         ];
     }
 
+    protected function allowedSorts()
+    {
+        return [
+            'created_at',
+            'updated_at',
+            'client_id',
+            'org_id',
+            'title'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

@@ -7,11 +7,9 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from '@/lib/utils';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 
-interface CreateSelectProps<T> {
+interface CreateSelectProps<T> extends Pick<SelectPopupProps<T>, 'getItemLabel' | 'getKeywords'> {
   api: string
-  getKeywords: (item: T) => string[];
   searchParams?: URLSearchParams;
-  getItemLabel: (item: T) => string;
 }
 
 export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
@@ -60,11 +58,11 @@ export const ClientSelect = createSelect<Client>({
   }),
 });
 
-export interface SelectPopupProps<T extends Model> extends SelectProps<T> {
+export interface SelectPopupProps<T> extends SelectProps<T> {
   data: T[];
   open: boolean;
   setOpen: (open: boolean) => void;
-  getItemLabel: (item: T) => string;
+  getItemLabel: (item: T) => string | React.ReactNode;
   getKeywords: (item: T) => string[];
 }
 
@@ -118,8 +116,10 @@ export function SelectPopup<T extends Model>({
                     setOpen(false);
                   }}
                 >
-                  <span className={'line-clamp-1'}>{getItemLabel(item)}</span>
-                  <Check className={cn('ml-auto', value === item.id ? 'opacity-100' : 'opacity-0')} />
+                  <span className={'w-full line-clamp-1'}>{getItemLabel(item)}</span>
+                  { value === item.id && (
+                    <Check className={cn('ml-auto', value === item.id ? 'opacity-100' : 'opacity-0')} />
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -6,11 +6,23 @@ export const PurchaseOrderSelect = createSelect<PurchaseOrder>({
   getKeywords: (item) => [
     item.title,
     item.client?.business_name || '',
-    item.client?.user?.name || '',
   ],
-  getItemLabel: (item) => item.title || 'Unknown Purchase Order',
+  getItemLabel: (item) => {
+    // return (
+    //   <span className={'w-full flex items-center gap-2'}>
+    //     <span className={'flex-grow line-clamp-1'}>
+    //       {item.title}
+    //     </span>
+    //     <Badge variant={'outline'} className={'shrink-0'}>{item.client ? `(${item.client.business_name})` : ''}</Badge>
+    //   </span>
+    // );
+
+    return (
+      item.title + (item.client ? ` (${item.client.business_name})` : '')
+    )
+  },
   searchParams: new URLSearchParams({
     sort: 'title',
-    include: 'client,client.user'
+    include: 'client'
   }),
 });
