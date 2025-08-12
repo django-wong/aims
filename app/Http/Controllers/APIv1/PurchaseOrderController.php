@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Models\PurchaseOrder;
+use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
@@ -38,9 +39,19 @@ class PurchaseOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $purchaseOrder = PurchaseOrder::query()->create([
+            ...$request->basic(),
+            'org_id' => $request->user()->org->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Purchase order created successfully.',
+            'data' => $purchaseOrder->load([
+                'client'
+            ])
+        ], 201);
     }
 
     /**

@@ -47,7 +47,7 @@ export function VendorForm(props: DialogFormProps<Vendor>) {
         </DialogHeader>
         <DialogInnerContent>
           <Form {...form}>
-            <div className={'grid grid-cols-12 gap-4'}>
+            <div className={'grid grid-cols-12 gap-6'}>
               <div className={'col-span-12'}>
                 <FormField
                   control={form.control}

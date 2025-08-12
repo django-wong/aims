@@ -87,7 +87,7 @@ export function UserForm(props: UserFormProps) {
           </DialogHeader>
           <DialogInnerContent>
             <form>
-              <div className={'grid grid-cols-12 gap-4'}>
+              <div className={'grid grid-cols-12 gap-6'}>
                 <Form {...form}>
                   <div className={'col-span-12'}>
                     <FormField

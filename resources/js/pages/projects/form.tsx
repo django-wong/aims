@@ -10,8 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Form, FormControl, FormField } from '@/components/ui/form';
-import { Input, Inputs } from '@/components/ui/input';
+import { Form, FormField } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
 import { Loader2Icon, RefreshCcw } from 'lucide-react';
@@ -21,8 +21,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { ClientSelect } from '@/components/client-select';
 import { ProjectTypeSelect } from '@/components/project-type-select';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import axios from 'axios';
 
 function number() {
@@ -89,7 +87,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
           </DialogHeader>
           <DialogInnerContent className={'max-h-[50vh] overflow-y-auto'}>
             <Form {...form}>
-              <div className={'grid grid-cols-12 gap-4'}>
+              <div className={'grid grid-cols-12 gap-6'}>
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (

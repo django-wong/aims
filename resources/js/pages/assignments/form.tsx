@@ -91,7 +91,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
           </DialogHeader>
           <DialogInnerContent>
             <Form {...form}>
-              <div className={'grid grid-cols-12 gap-4'}>
+              <div className={'grid grid-cols-12 gap-6'}>
                 <FormField
                   name={'project_id'}
                   control={form.control}
@@ -123,7 +123,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         required
                         error={fieldState.error?.message}
                         for={'assignment_type_id'}
-                        label={'Assignment Type'}
+                        label={'Type'}
                         className={'col-span-12'}
                       >
                         <AssignmentTypeSelect value={field.value} onValueChane={field.onChange} />

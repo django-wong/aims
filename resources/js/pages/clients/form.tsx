@@ -83,7 +83,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
           <DialogDescription>Fill in the details below to create or update the client.</DialogDescription>
         </DialogHeader>
         <DialogInnerContent>
-          <div className={'grid grid-cols-12 gap-4'}>
+          <div className={'grid grid-cols-12 gap-6'}>
             <Form {...form}>
               <div className={'col-span-12'}>
                 <FormField

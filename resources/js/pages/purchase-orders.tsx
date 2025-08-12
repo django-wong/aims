@@ -1,5 +1,4 @@
 import { DataTable } from '@/components/data-table-2';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +16,8 @@ import { PurchaseOrder } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
+import { PurchaseOrderForm } from './purchase-orders/form';
+import { useState } from 'react';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   return (
@@ -123,12 +124,18 @@ const columns: ColumnDef<PurchaseOrder>[] = [
 ];
 
 export default function PurchaseOrdersPage() {
+  const [formOpen, setFormOpen] = useState(false);
+
   const table = useTable<PurchaseOrder>('/api/v1/purchase-orders', {
     columns: columns,
     defaultParams: {
       include: 'client',
     },
   });
+
+  const handleFormSubmit = (purchaseOrder: PurchaseOrder) => {
+    table.reload();
+  };
 
   return (
     <AppLayout
@@ -137,9 +144,15 @@ export default function PurchaseOrdersPage() {
         { title: 'Purchase Orders', href: '/purchase-orders' },
       ]}
       pageAction={
-        <Button>
-          <Plus /> New Purchase Order
-        </Button>
+        <PurchaseOrderForm
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          onSubmit={handleFormSubmit}
+        >
+          <Button>
+            <Plus /> New Purchase Order
+          </Button>
+        </PurchaseOrderForm>
       }
     >
       <Head title="Purchase Orders" />

@@ -45,10 +45,10 @@ function append(value: FormDataConvertible, formData: FormData, key: string) {
   }
 }
 
-export function useResource<T extends Partial<BaseModel>>(url: string, value?: T | null): {
+export function useResource<T extends BaseModel>(url: string, value?: Partial<T> | null): {
   url: string;
   method: Method;
-  defaultValues?: T;
+  defaultValues?: Partial<T>;
 } {
   return value?.id ? {
     url: url + '/' + value.id,
