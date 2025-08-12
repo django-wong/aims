@@ -6,6 +6,7 @@ use App\Models\AssignmentType;
 use App\Models\Client;
 use App\Models\Org;
 use App\Models\Project;
+use App\Models\PurchaseOrder;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -31,6 +32,8 @@ class AssignmentFactory extends Factory
                 null,
                 Org::factory()
             ]),
+
+            'purchase_order_id' => PurchaseOrder::factory(),
 
             'inspector_id' => User::factory(),
             'vendor_id' => Vendor::factory(),

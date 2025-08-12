@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreignId('inspector_id')->index()->nullable()->constrained('users');
             $table->foreignId('vendor_id')->nullable()->constrained();
             $table->foreignId('sub_vendor_id')->nullable()->constrained('vendors');
-
+            $table->foreignId('purchase_order_id')->nullable()->constrained();
             $table->boolean('report_required')->default(false)
                 ->comment('Indicates if a report is required for this assignment');
 

@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { Assignment, DialogFormProps } from '@/types';
+import { Assignment, DialogFormProps, SharedData } from '@/types';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
 import zod from 'zod';
@@ -17,19 +17,23 @@ import { VFormField } from '@/components/vform';
 import { ProjectSelect } from '@/components/project-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { StaffSelect } from '@/components/user-select';
 import { OrgSelect } from '@/components/org-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { PurchaseOrderSelect } from '@/components/purchase-order-select';
+import { usePage } from '@inertiajs/react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const schema = zod.object({
   'project_id': zod.number('Project is required').int().positive(),
-  'operation_org_id': zod.number().int().positive().nullable(),
   'assignment_type_id': zod.number().int().positive(),
-  'inspector_id': zod.number().int().positive(),
+
+  'operation_org_id': zod.number().int().positive().nullable(),
+  'inspector_id': zod.number().int().positive().nullable(),
+
   'vendor_id': zod.number().int().positive().nullable(),
+  'purchase_order_id': zod.number().int().positive().nullable(),
   'sub_vendor_id': zod.number().int().positive().nullable(),
   'report_required': zod.boolean(),
   'notes': zod.string().max(1500).nullable(),
@@ -39,6 +43,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
   const form = useReactiveForm<zod.infer<typeof schema>>({
     ...useResource('/api/v1/assignments', {
       operation_org_id: null,
+      inspector_id: null,
       sub_vendor_id: null,
       vendor_id: null,
       notes: '',
@@ -48,6 +53,14 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     resolver: zodResolver(schema),
   });
 
+  const {
+    props: {
+      auth: {
+        org
+      }
+    }
+  } = usePage<SharedData>();
+
   useEffect(() => {
     if (props.value) {
       form.reset(props.value);
@@ -55,6 +68,8 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
   }, [props.value]);
 
   const isEdit = !!props.value;
+
+  const [mode, setMode] = useState(props.value?.operation_org_id === org?.id ? 'assign' : 'delegate');
 
   function save() {
     form.submit().then(async (response) => {
@@ -82,17 +97,19 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <>
-                      <VFormField
-                        required
-                        error={fieldState.error?.message}
-                        for={'project_id'}
-                        label={'Project'}
-                        className={'col-span-12'}>
-                        <ProjectSelect
-                          disabled={isEdit}
-                          onValueChane={field.onChange}
-                          value={field.value}
-                        />
+                      <VFormField required error={fieldState.error?.message} for={'project_id'} label={'Project'} className={'col-span-12'}>
+                        <ProjectSelect onValueChane={field.onChange} value={field.value} />
+                      </VFormField>
+                    </>
+                  )}
+                />
+                <FormField
+                  name={'purchase_order_id'}
+                  control={form.control}
+                  render={({ field }) => (
+                    <>
+                      <VFormField required label={'Purchase Order'} className={'col-span-12'}>
+                        <PurchaseOrderSelect value={field.value} onValueChane={field.onChange}/>
                       </VFormField>
                     </>
                   )}
@@ -107,61 +124,57 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         error={fieldState.error?.message}
                         for={'assignment_type_id'}
                         label={'Assignment Type'}
-                        className={'col-span-12'}>
-                        <AssignmentTypeSelect
-                          value={field.value}
-                          onValueChane={field.onChange}
-                          disabled={isEdit}
-                        />
+                        className={'col-span-12'}
+                      >
+                        <AssignmentTypeSelect value={field.value} onValueChane={field.onChange} />
                       </VFormField>
                     </>
                   )}
                 />
-                <FormField
-                  name={'inspector_id'}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <VFormField
-                        required
-                        error={fieldState.error?.message}
-                        for={'inspector_id'}
-                        label={'Inspector'}
-                        className={'col-span-12'}>
-                        <StaffSelect
-                          disabled={isEdit}
-                          onValueChane={field.onChange}
-                          value={field.value}
-                        />
-                      </VFormField>
-                    </>
-                  )}
-                />
-                <FormField
-                  name={'operation_org_id'}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <VFormField
-                        error={fieldState.error?.message}
-                        for={'operation_org_id'}
-                        label={'Operation Organization'}
-                        className={'col-span-12'}>
-                        <OrgSelect onValueChane={field.onChange} value={field.value} />
-                      </VFormField>
-                    </>
-                  )}
-                />
+                <div className={'col-span-12'}>
+                  <Tabs value={mode} onValueChange={setMode}>
+                    <TabsList>
+                      <TabsTrigger value={'assign'}>Assign to inspector</TabsTrigger>
+                      <TabsTrigger value={'delegate'}>Delegate to other office</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value={'assign'}>
+                      <FormField
+                        name={'inspector_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField
+                              className={'col-span-12'}>
+                              <StaffSelect onValueChane={field.onChange} value={field.value} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+                    </TabsContent>
+                    <TabsContent value={'delegate'}>
+                      <FormField
+                        name={'operation_org_id'}
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <VFormField
+                              error={fieldState.error?.message}
+                              for={'operation_org_id'}
+                              className={'col-span-12'}>
+                              <OrgSelect onValueChane={field.onChange} value={field.value} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+                    </TabsContent>
+                  </Tabs>
+                </div>
                 <FormField
                   name={'vendor_id'}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <>
-                      <VFormField
-                        error={fieldState.error?.message}
-                        for={'vendor_id'}
-                        label={'Vendor'}
-                        className={'col-span-6'}>
+                      <VFormField error={fieldState.error?.message} for={'vendor_id'} label={'Vendor'} className={'col-span-6'}>
                         <VendorSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -172,11 +185,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <>
-                      <VFormField
-                        error={fieldState.error?.message}
-                        for={'sub_vendor_id'}
-                        label={'Sub Vendor'}
-                        className={'col-span-6'}>
+                      <VFormField error={fieldState.error?.message} for={'sub_vendor_id'} label={'Sub Vendor'} className={'col-span-6'}>
                         <VendorSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -187,11 +196,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <>
-                      <VFormField
-                        error={fieldState.error?.message}
-                        for={'notes'}
-                        label={'Notes'}
-                        className={'col-span-12'}>
+                      <VFormField error={fieldState.error?.message} for={'notes'} label={'Notes'} className={'col-span-12'}>
                         <Textarea
                           className={'bg-background min-h-36'}
                           value={field.value ?? ''}
@@ -205,26 +210,28 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
               </div>
             </Form>
           </DialogInnerContent>
-          <DialogFooter className={'items-center flex-row'}>
-            <FormField
-              name={'report_required'}
-              control={form.control}
-              render={({ field }) => (
-                <div className={'col-span-12'}>
-                  <Label>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    Report is required
-                  </Label>
-                </div>
-              )}
-            />
-            <span className={'flex-grow'}></span>
+          <DialogFooter className={'flex-row items-center'}>
+            {/*<FormField*/}
+            {/*  name={'report_required'}*/}
+            {/*  control={form.control}*/}
+            {/*  render={({ field }) => (*/}
+            {/*    <div className={'col-span-12'}>*/}
+            {/*      <Label>*/}
+            {/*        <Switch checked={field.value} onCheckedChange={field.onChange} />*/}
+            {/*        Report is required*/}
+            {/*      </Label>*/}
+            {/*    </div>*/}
+            {/*  )}*/}
+            {/*/>*/}
+            {/*<span className={'flex-grow'}></span>*/}
             <DialogClose asChild>
               <Button variant={'outline'} type={'button'}>
                 Cancel
               </Button>
             </DialogClose>
-            <Button disabled={form.formState.disabled || form.formState.isSubmitting} onClick={save}>Save</Button>
+            <Button disabled={form.formState.disabled || form.formState.isSubmitting} onClick={save}>
+              Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -74,10 +74,10 @@ const columns: ColumnDef<Assignment>[] = [
     }
   },
   {
-    accessorKey: 'client_po',
-    header: 'Client PO',
+    accessorKey: 'po',
+    header: 'PO',
     cell: ({ row }) => {
-      return row.original.project?.po_number ?? '-';
+      return row.original.purchase_order?.title
     }
   },
   {
@@ -207,7 +207,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       return true;
     }),
     defaultParams: {
-      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org,inspector',
+      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org,inspector,purchase_order',
       'sort': 'created_at',
       'filter[project_id]': String(options.project?.id ?? '')
     }

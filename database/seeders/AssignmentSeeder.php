@@ -28,7 +28,9 @@ class AssignmentSeeder extends Seeder
             ->recycle(AssignmentType::query()->get())
             ->recycle(Org::query()->get())
             ->recycle(User::query()->whereHas('user_role', function ($query) {
-                return $query->whereIn('role', [UserRole::INSPECTOR]);
+                return $query->whereIn('role', [
+                    UserRole::INSPECTOR
+                ]);
             })->get())
             ->recycle(Vendor::query()->get())
             ->create();

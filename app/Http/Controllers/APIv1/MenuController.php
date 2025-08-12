@@ -49,6 +49,12 @@ class MenuController
                         'url' => route('projects'),
                         'component' => 'projects'
                     ],
+                    'purchase-orders' => [
+                        'name' => 'Purchase Orders',
+                        'icon' => 'shopping-bag',
+                        'url' => route('purchase-orders'),
+                        'component' => 'purchase-orders'
+                    ],
                     'assignments' => [
                         'name' => 'Assignments',
                         'icon' => 'contact',

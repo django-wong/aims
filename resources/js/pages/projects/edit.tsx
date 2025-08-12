@@ -71,12 +71,6 @@ export default function ProjectEdit(props: { project: Project }) {
               <InfoLine icon={'info'} label={'Project Type'}>
                 {props.project.project_type?.name || 'N/A'}
               </InfoLine>
-              <InfoLine icon={'package'} label={'PO Number'}>
-                <Badge>{props.project.po_number || 'N/A'}</Badge>
-              </InfoLine>
-              <InfoLine icon={'wallet'} label={'Budget'}>
-                {props.project.budget ? `$${props.project.budget}` : 'N/A'}
-              </InfoLine>
             </div>
             <Divider className={'my-2'} />
             <InfoHead>Client</InfoHead>
@@ -88,7 +82,7 @@ export default function ProjectEdit(props: { project: Project }) {
                 {props.project.client?.coordinator?.name || 'N/A'}
               </InfoLine>
             </div>
-            <InfoHead>Notes</InfoHead>
+            <InfoHead>Client Notes</InfoHead>
             <InfoLineValue>{props.project.client?.notes || 'N/A'}</InfoLineValue>
           </Info>
         }

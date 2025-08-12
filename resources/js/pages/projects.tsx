@@ -20,21 +20,6 @@ import AppLayout from '@/layouts/app-layout';
 import { ProjectForm } from '@/pages/projects/form';
 import { Project,  } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { cn } from '@/lib/utils';
-
-export function describeStatus(status: Project['status']) {
-  // 0: Draft, 1: Open, 2: Closed
-  switch (status) {
-    case 0:
-      return 'Draft';
-    case 1:
-      return 'Open';
-    case 2:
-      return 'Closed';
-    default:
-      return 'Unknown';
-  }
-}
 
 const breadcrumbs = [
   {
@@ -94,6 +79,8 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'number',
     header: 'P.N',
+    maxSize: 100,
+    minSize: 80,
     cell: ({ row }) => {
       return row.original.number || 'N/A';
     },
@@ -101,7 +88,7 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'project_type',
     header: 'Type',
-    minSize: 120,
+    minSize: 100,
     maxSize: 120,
     cell: ({ row }) => {
       return <Badge variant={'secondary'}>{row.original.project_type?.name ?? 'Unknown'}</Badge>;
@@ -111,33 +98,8 @@ const columns: ColumnDef<Project>[] = [
     accessorKey: 'client',
     header: 'Client',
     minSize: 100,
-    maxSize: 100,
+    maxSize: Infinity,
     cell: ({row}) => row.original.client?.business_name || 'Unknown',
-  },
-  {
-    accessorKey: 'budget',
-    header: 'Budget',
-    meta: {
-      center: true,
-    },
-    cell: ({ row }) => {
-      const budget = row.original.budget;
-      return budget ? `$${budget.toLocaleString()}` : 'N/A';
-    },
-  },
-  {
-    accessorKey: 'status',
-    minSize: 100,
-    maxSize: 100,
-    header: 'Status',
-    cell: ({ row }) => {
-      return <Badge
-        variant={'secondary'} className={cn('capitalize', 'project-status-' + row.original.status)}>{describeStatus(row.original.status)}
-      </Badge>
-    },
-    meta: {
-      center: true,
-    }
   },
   {
     accessorKey: 'actions',

@@ -108,22 +108,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <VFormField required label={'PO'} for={'po_number'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
-                      <Input
-                        placeholder={'e.g. PO-1234'}
-                        {...field}
-                        onChange={(event) => {
-                          field.onChange(event.target.value);
-                        }}
-                      />
-                    </VFormField>
-                  )}
-                  name={'po_number'}
-                />
-                <FormField
-                  control={form.control}
-                  render={({field, fieldState}) => (
-                    <VFormField required label={'Project Number'} for={'project_number'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
+                    <VFormField required label={'Project Number'} for={'project_number'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-12'}>
                       <ProjectNumber value={field.value} onValueChange={field.onChange} allowGenerate={!!(props.value?.id || true)}/>
                     </VFormField>
                   )}
@@ -147,87 +132,6 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                   }}
                   name={'client_id'}
                 />
-                <FormField
-                  control={form.control}
-                  render={({field, fieldState}) => {
-                    return <VFormField label={'Budget $'} for={'budget'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
-                      <Input placeholder={'e.g. 10000'} type={'number'} min={0} max={9999999999} onChange={field.onChange} value={field.value}/>
-                    </VFormField>;
-                  }}
-                  name={'budget'}
-                />
-                <div className={'col-span-12 sm:col-span-6 grid gap-2'}>
-                  <Label>Alert Threshold (%)</Label>
-                  <Inputs>
-                    <FormField
-                      control={form.control}
-                      render={({field}) => (
-                        <FormControl>
-                          <Input
-                            placeholder={'70'}
-                            type={'number'}
-                            className={'bg-background'}
-                            value={field.value || ''}
-                            onChange={(event) => field.onChange(Number(event.target.value))}
-                          />
-                        </FormControl>
-                      )}
-                      name={'first_alert_threshold'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({field}) => (
-                        <FormControl>
-                        <Input
-                          placeholder={'90'}
-                          type={'number'}
-                          className={'bg-background'}
-                          value={field.value || ''}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
-                        </FormControl>
-                      )}
-                      name={'second_alert_threshold'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({field}) => (
-                        <FormControl>
-                        <Input
-                          placeholder={'100'}
-                          type={'number'}
-                          className={'bg-background'}
-                          value={field.value || ''}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
-                        </FormControl>
-                      )}
-                      name={'final_alert_threshold'}
-                    />
-                  </Inputs>
-                </div>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({field}) => {
-                      return <>
-                        <div className="flex items-center space-x-2">
-                          <Switch
-                            checked={field.value === 0}
-                            disabled={!!(props.value?.status && props.value.status > 0)}
-                            onCheckedChange={(checked) => {
-                              if (! props.value?.status) {
-                                field.onChange(checked ? 0 : 1)
-                              }
-                            }}
-                          />
-                          <Label>Save as Draft (hide from to client)</Label>
-                        </div>
-                      </>;
-                    }}
-                    name={'status'}
-                  />
-                </div>
               </div>
             </Form>
           </DialogInnerContent>

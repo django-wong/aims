@@ -8,5 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrder extends Model
 {
     /** @use HasFactory<\Database\Factories\PurchaseOrderFactory> */
-    use HasFactory;
+    use HasFactory, BelongsToClient, BelongsToOrg, DynamicPagination, HasManyAssignments;
+
+    protected $guarded = [
+        'id', 'created_at', 'updated_at'
+    ];
 }

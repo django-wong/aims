@@ -16,7 +16,7 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (UserRole::query()->where('role', 6)->cursor() as $entity) {
+        foreach (UserRole::query()->where('role', UserRole::CLIENT)->cursor() as $entity) {
             Client::factory()
                 ->state([
                     'user_id' => $entity->user_id,

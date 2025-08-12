@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('projects/next-project-number', [ProjectController::class, 'nextProjectNumber']);
 
     Route::apiResources([
+        'purchase-orders' => \App\Http\Controllers\APIv1\PurchaseOrderController::class,
         'projects' => ProjectController::class,
         'clients' => ClientController::class,
         'orgs' => OrgController::class,

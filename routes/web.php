@@ -4,6 +4,7 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -11,10 +12,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/', fn () => redirect()->route('dashboard'))->name('home');
+Route::get('/', fn() => redirect()->route('dashboard'))->name('home');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
@@ -48,6 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('timesheets/captured', [TimesheetController::class, 'captured'])
         ->name('timesheets.captured');
 
+    Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
+        ->name('purchase-orders');
 
     Route::inertia('users', 'users')->name('users');
     Route::get('users/{id}/impersonate', [UserController::class, 'impersonate'])

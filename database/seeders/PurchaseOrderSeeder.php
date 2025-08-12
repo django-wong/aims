@@ -12,6 +12,6 @@ class PurchaseOrderSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+
     }
 }

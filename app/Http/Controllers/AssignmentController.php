@@ -32,7 +32,7 @@ class AssignmentController extends Controller
         return inertia('assignments/edit', [
             'assignment' => Assignment::query()
                 ->with(
-                    'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector'
+                    'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector', 'purchase_order'
                 )
                 ->findOrFail($id),
         ]);

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\App;
 class Assignment extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
-    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets;
+    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets, BelongsToPurchaseOrder;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'

@@ -5,7 +5,7 @@ import { Divider } from '@/components/divider';
 export function MainContent({ children, className }: ComponentProps<'div'>) {
   return (
     <>
-      <div className={cn('flex flex-1 border-t', className)}>{children}</div>
+      <div className={cn('bg-secondary/20 flex flex-1 border-t', className)}>{children}</div>
     </>
   );
 }

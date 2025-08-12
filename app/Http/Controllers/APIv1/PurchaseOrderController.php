@@ -7,12 +7,21 @@ use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
 {
+
+    protected function allowedIncludes()
+    {
+        return [
+            'client',
+            'org'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

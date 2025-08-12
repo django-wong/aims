@@ -122,20 +122,14 @@ export interface ProjectType extends BaseModel {
 }
 
 export interface Project extends BaseModel {
-  quote_id: number | null;
-  quote?: Quote;
   title: string;
   number: string;
-  po_number: string;
   org_id: number;
   org?: Org;
   project_type_id: number;
   project_type?: ProjectType;
   client_id: number | null;
   client?: Client;
-  budget: number | null;
-  spent: number | null;
-  status: number;
 }
 
 export interface AssignmentType extends BaseModel {
@@ -143,10 +137,26 @@ export interface AssignmentType extends BaseModel {
   org_id: number | null;
 }
 
-export interface PurchaseOrder extends BaseModel {
+interface ThreeStageAlert {
+  first_alert_threshold: number;
+  first_alert_at: string | null;
+  second_alert_threshold: number;
+  second_alert_at: string | null;
+  final_alert_threshold: number;
+  final_alert_at: string | null;
+}
+
+export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
   org_id: number;
   org?: Org;
-  name: string;
+  title: string;
+  client_id: number;
+  client?: Client;
+  quote_id: number | null;
+  quote?: Quote;
+  budget: number;
+  hourly_rate: number;
+  budgeted_hours: number;
 }
 
 export interface Assignment extends BaseModel {
@@ -160,6 +170,8 @@ export interface Assignment extends BaseModel {
   inspector?: User;
   project_id: number;
   project?: Project;
+  purchase_order_id: number | null;
+  purchase_order?: PurchaseOrder;
   vendor_id: number | null;
   vendor?: Vendor;
   sub_vendor_id: number | null;
