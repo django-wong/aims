@@ -51,6 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
         ->name('purchase-orders');
+    Route::get('purchase-orders/{id}', [PurchaseOrderController::class, 'edit'])
+        ->name('purchase-orders.edit');
 
     Route::inertia('users', 'users')->name('users');
     Route::get('users/{id}/impersonate', [UserController::class, 'impersonate'])
