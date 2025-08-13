@@ -90,8 +90,8 @@ export function ProjectForm(props: DialogFormProps<Project>) {
               <div className={'grid grid-cols-12 gap-6'}>
                 <FormField
                   control={form.control}
-                  render={({field, fieldState}) => (
-                    <VFormField required label={'Title'} for={'title'} error={fieldState.error?.message} className={'col-span-12'}>
+                  render={({field}) => (
+                    <VFormField required label={'Title'} className={'col-span-12'}>
                       <Input
                         placeholder={'Give your project a title'}
                         {...field}
@@ -105,8 +105,8 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 />
                 <FormField
                   control={form.control}
-                  render={({field, fieldState}) => (
-                    <VFormField required label={'Project Number'} for={'project_number'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-12'}>
+                  render={({field}) => (
+                    <VFormField required label={'Project Number'} className={'col-span-12 sm:col-span-12'}>
                       <ProjectNumber value={field.value} onValueChange={field.onChange} allowGenerate={!!(props.value?.id || true)}/>
                     </VFormField>
                   )}
@@ -114,8 +114,8 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 />
                 <FormField
                   control={form.control}
-                  render={({field, fieldState}) => {
-                    return <VFormField required label={'Project Type'} for={'project_type_id'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
+                  render={({field}) => {
+                    return <VFormField required label={'Project Type'} className={'col-span-12 sm:col-span-6'}>
                       <ProjectTypeSelect onValueChane={field.onChange} value={field.value}/>
                     </VFormField>;
                   }}
@@ -123,8 +123,8 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 />
                 <FormField
                   control={form.control}
-                  render={({field, fieldState}) => {
-                    return <VFormField label={'Client'} for={'client_id'} error={fieldState.error?.message} className={'col-span-12 sm:col-span-6'}>
+                  render={({field}) => {
+                    return <VFormField label={'Client'} className={'col-span-12 sm:col-span-6'}>
                       <ClientSelect onValueChane={field.onChange} value={field.value}/>
                     </VFormField>;
                   }}

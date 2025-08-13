@@ -435,10 +435,10 @@ function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProps>) {
                 <div className={'col-span-12 md:col-span-6'}>
                   <FormField
                     control={form.control}
-                    render={({ field, fieldState }) => {
+                    render={({ field }) => {
                       return (
                         <>
-                          <VFormField required label={'Date'} for={'date'} error={fieldState.error?.message}>
+                          <VFormField required label={'Date'}>
                             <DatePicker value={field.value} onChange={(date) => field.onChange(date)} />
                           </VFormField>
                         </>

@@ -94,7 +94,7 @@ export function UserForm(props: UserFormProps) {
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <VFormField for={'title'} label={'Title'}>
+                          <VFormField label={'Title'}>
                             <Input value={field.value ?? ''} onChange={field.onChange} placeholder={'Mr, Ms, Dr, etc.'} />
                           </VFormField>
                         );
@@ -104,9 +104,9 @@ export function UserForm(props: UserFormProps) {
                   </div>
                   <div className={'col-span-6'}>
                     <FormField
-                      render={({ field, fieldState }) => {
+                      render={({ field }) => {
                         return (
-                          <VFormField required label={'First Name'} for={'first_name'} error={fieldState.error?.message}>
+                          <VFormField required label={'First Name'}>
                             <Input value={field.value} onChange={field.onChange} />
                           </VFormField>
                         );
@@ -117,9 +117,9 @@ export function UserForm(props: UserFormProps) {
                   <div className={'col-span-6'}>
                     <FormField
                       control={form.control}
-                      render={({ field, fieldState }) => {
+                      render={({ field }) => {
                         return (
-                          <VFormField required label={'Last Name'} for={'last_name'} error={fieldState.error?.message}>
+                          <VFormField required label={'Last Name'}>
                             <Input value={field.value} onChange={field.onChange} />
                           </VFormField>
                         );
@@ -130,9 +130,9 @@ export function UserForm(props: UserFormProps) {
                   <div className={'col-span-12'}>
                     <FormField
                       control={form.control}
-                      render={({ field, fieldState }) => {
+                      render={({ field }) => {
                         return (
-                          <VFormField required label={'Email'} for={'email'} error={fieldState.error?.message}>
+                          <VFormField required label={'Email'}>
                             <Input autoComplete={'email'} placeholder={'example@mail.com'} type={'email'} value={field.value} onChange={field.onChange} />
                           </VFormField>
                         );
@@ -144,9 +144,9 @@ export function UserForm(props: UserFormProps) {
                     <div className={'col-span-12'}>
                       <FormField
                         control={form.control}
-                        render={({field, fieldState}) => {
+                        render={({field}) => {
                           return (
-                            <VFormField required label={'Role'} for={'role'} error={fieldState.error?.message}>
+                            <VFormField required label={'Role'}>
                               <RoleSelect onValueChane={field.onChange} value={field.value}/>
                             </VFormField>
                           )
@@ -158,9 +158,9 @@ export function UserForm(props: UserFormProps) {
                   <div className={'col-span-12'}>
                     <FormField
                       control={form.control}
-                      render={({ field, fieldState }) => {
+                      render={({ field }) => {
                         return (
-                          <VFormField required={!isUpdate} label={'Password'} for={'password'} error={fieldState.error?.message}>
+                          <VFormField required={!isUpdate} label={'Password'}>
                             <Input autoComplete={'new-password'} placeholder={isUpdate ? 'Leave blank to retain existing password' : ''} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
                           </VFormField>
                         );
@@ -171,9 +171,9 @@ export function UserForm(props: UserFormProps) {
                   <div className={'col-span-12'}>
                     <FormField
                       control={form.control}
-                      render={({ field, fieldState }) => {
+                      render={({ field }) => {
                         return (
-                          <VFormField required={!isUpdate} label={'Confirm Password'} error={fieldState.error?.message}>
+                          <VFormField required={!isUpdate} label={'Confirm Password'}>
                             <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
                           </VFormField>
                         );

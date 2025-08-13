@@ -67,8 +67,6 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     }
   }, [props.value]);
 
-  const isEdit = !!props.value;
-
   const [mode, setMode] = useState(props.value?.operation_org_id === org?.id ? 'assign' : 'delegate');
 
   function save() {
@@ -95,9 +93,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 <FormField
                   name={'project_id'}
                   control={form.control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <>
-                      <VFormField required error={fieldState.error?.message} for={'project_id'} label={'Project'} className={'col-span-12'}>
+                      <VFormField required label={'Project'} className={'col-span-12'}>
                         <ProjectSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -117,12 +115,10 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 <FormField
                   name={'assignment_type_id'}
                   control={form.control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <>
                       <VFormField
                         required
-                        error={fieldState.error?.message}
-                        for={'assignment_type_id'}
                         label={'Type'}
                         className={'col-span-12'}
                       >
@@ -155,11 +151,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       <FormField
                         name={'operation_org_id'}
                         control={form.control}
-                        render={({ field, fieldState }) => (
+                        render={({ field }) => (
                           <>
                             <VFormField
-                              error={fieldState.error?.message}
-                              for={'operation_org_id'}
                               className={'col-span-12'}>
                               <OrgSelect onValueChane={field.onChange} value={field.value} />
                             </VFormField>
@@ -172,9 +166,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 <FormField
                   name={'vendor_id'}
                   control={form.control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <>
-                      <VFormField error={fieldState.error?.message} for={'vendor_id'} label={'Vendor'} className={'col-span-6'}>
+                      <VFormField label={'Vendor'} className={'col-span-6'}>
                         <VendorSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -183,9 +177,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 <FormField
                   name={'sub_vendor_id'}
                   control={form.control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <>
-                      <VFormField error={fieldState.error?.message} for={'sub_vendor_id'} label={'Sub Vendor'} className={'col-span-6'}>
+                      <VFormField label={'Sub Vendor'} className={'col-span-6'}>
                         <VendorSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -194,9 +188,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 <FormField
                   name={'notes'}
                   control={form.control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <>
-                      <VFormField error={fieldState.error?.message} for={'notes'} label={'Notes'} className={'col-span-12'}>
+                      <VFormField label={'Notes'} className={'col-span-12'}>
                         <Textarea
                           className={'bg-background min-h-36'}
                           value={field.value ?? ''}

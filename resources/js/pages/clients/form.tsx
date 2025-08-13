@@ -87,8 +87,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
             <Form {...form}>
               <div className={'col-span-12'}>
                 <FormField
-                  render={({ field, fieldState }) => {
-                    return <VFormField  required label={'Business Name / Group'} for={'business_name'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField required label={'Business Name / Group'}>
                       <Input value={field.value} onChange={field.onChange}/>
                     </VFormField>
                   }}
@@ -98,8 +98,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
               <div className={'col-span-6'}>
                 <FormField
                   control={form.control}
-                  render={({ field, fieldState }) => {
-                    return <VFormField required label={'Contact Name'} for={'contact_name'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField required label={'Contact Name'}>
                       <Input
                         value={field.value}
                         onChange={field.onChange}
@@ -113,8 +113,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
               <div className={'col-span-6'}>
                 <FormField
                   control={form.control}
-                  render={({ field, fieldState }) => {
-                    return <VFormField required label={'Email'} for={'email'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField required label={'Email'}>
                       <Input
                         placeholder={'example@mail.com'}
                         type={'email'}
@@ -128,8 +128,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
               </div>
               <div className={'col-span-6'}>
                 <FormField
-                  render={({ field, fieldState }) => {
-                    return <VFormField label={'Coordinator'} for={'coordinator_id'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField label={'Coordinator'}>
                       <StaffSelect
                         value={field.value}
                         onValueChane={(value) => field.onChange(value)}
@@ -141,8 +141,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
               </div>
               <div className={'col-span-6'}>
                 <FormField
-                  render={({ field, fieldState }) => {
-                    return <VFormField label={'Reviewer'} for={'reviewer_id'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField label={'Reviewer'}>
                       <StaffSelect
                         value={field.value}
                         onValueChane={(value) => field.onChange(value)}
@@ -160,7 +160,6 @@ export function ClientForm(props: DialogFormProps<Client>) {
                     return (
                       <VFormField
                         label={'Address'}
-                        for={'address'}
                       >
                         <div className={'flex items-center gap-2  p-4 rounded-md border shadow-xs border-border bg-background'}>
                           <div className={'text-sm flex-1'}>
@@ -188,8 +187,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
               </div>
               <div className={'col-span-4'}>
                 <FormField
-                  render={({ field, fieldState }) => {
-                    return <VFormField label={'Invoice Reminder'} for={'invoice_reminder'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField label={'Invoice Reminder'}>
                       <Input
                         type={'number'}
                         min={1}
@@ -205,8 +204,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
               </div>
               <div className={'col-span-12'}>
                 <FormField
-                  render={({ field, fieldState }) => {
-                    return <VFormField label={'Notes'} for={'notes'} error={fieldState.error?.message}>
+                  render={({ field }) => {
+                    return <VFormField label={'Notes'}>
                       <Textarea value={field.value} onChange={field.onChange} className={'min-h-[150px]'} placeholder={'Notes'}/>
                     </VFormField>
                   }}

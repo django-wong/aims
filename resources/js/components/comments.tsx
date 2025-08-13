@@ -78,7 +78,7 @@ export function Comments(props: CommentsProps) {
                 control={form.control}
                 render={({ field }) => (
                   <>
-                    <VFormField for={'content'} error={form.formState.errors.content?.message || form.formState.errors.attachments?.message}>
+                    <VFormField>
                       <Textarea
                         value={field.value}
                         onChange={field.onChange}

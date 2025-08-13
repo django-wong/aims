@@ -8,6 +8,7 @@ import { GalleryVerticalEnd } from 'lucide-react';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
 import { Textarea } from '@/components/ui/textarea';
+import { Form, FormField } from '@/components/ui/form';
 
 export default function Setup() {
   return (
@@ -33,7 +34,7 @@ export default function Setup() {
 }
 
 function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  const { register, formState, setValue, submit } = useReactiveForm({
+  const form = useReactiveForm({
     url: '/api/v1/businesses',
     defaultValues: {
       name: 'Goodies Company',
@@ -45,7 +46,7 @@ function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     event.stopPropagation();
-    submit().then((res) => {
+    form.submit().then((res) => {
       if (res) {
         window.location.href = route('dashboard');
       }
@@ -63,65 +64,77 @@ function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
         <div className={'mx-6 border-t'} />
 
         <CardContent>
-          <div>
+          <Form {...form}>
             <form onSubmit={onSubmit}>
               <div className="grid gap-6">
                 <div className="grid gap-6">
-                  <VFormField
-                    error={formState.errors.name?.message}
-                    label={'Business Name'}
-                    for={'name'}>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Your business name"
-                      {...register('name')}
-                    />
-                  </VFormField>
-
-                  <VFormField
-                    label={'Domain'}
-                    for={'domain'}
-                    renderLabel={(props) => (
-                      <div className="flex items-center">
-                        <Label htmlFor={props.for}>{props.label}</Label>
-                        <a href="#" className="ml-auto text-xs underline-offset-4 hover:underline">
-                          What is this?
-                        </a>
-                      </div>
+                  <FormField
+                    control={form.control}
+                    render={({field}) => (
+                      <VFormField
+                        label={'Business Name'}>
+                        <Input
+                          {...field}
+                          id="name"
+                          type="text"
+                          placeholder="Your business name"
+                        />
+                      </VFormField>
                     )}
-                    error={formState.errors.domain?.message}
-                  >
-                    <div className={'flex items-center justify-start gap-1'}>
-                      <span className={'text-gray-500'}>https://aims.com/</span>
-                      <Input
-                        id="domain"
-                        type="text"
-                        {...register('domain')}
-                        onChange={(event) => {
-                          const value = event.target.value.replace(/[^a-z0-9-]/g, '-').toLowerCase();
-                          event.target.value = value;
-                          setValue('domain', value);
-                        }}
-                      />
-                    </div>
-                  </VFormField>
+                    name={'name'}
+                  />
 
-                  <VFormField label={'Bio'} for={'business_bio'} error={formState.errors.business_bio?.message}>
-                    <Textarea
-                      id="business_bio"
-                      placeholder="A short description of your business"
-                      {...register('business_bio')}
-                    />
-                  </VFormField>
+                  <FormField
+                    control={form.control}
+                    render={({field}) => (
+                      <VFormField
+                        label={'Domain'}
+                        renderLabel={(props) => (
+                          <div className="flex items-center">
+                            <Label>{props.label}</Label>
+                            <a href="#" className="ml-auto text-xs underline-offset-4 hover:underline">
+                              What is this?
+                            </a>
+                          </div>
+                        )}
+                      >
+                        <div className={'flex items-center justify-start gap-1'}>
+                          <span className={'text-gray-500'}>https://aims.com/</span>
+                          <Input
+                            id="domain"
+                            type="text"
+                            value={field.value}
+                            onChange={(event) => {
+                              const value = event.target.value.replace(/[^a-z0-9-]/g, '-').toLowerCase();
+                              event.target.value = value;
+                              form.setValue('domain', value);
+                            }}
+                          />
+                        </div>
+                      </VFormField>
+                    )}
+                    name={'domain'}
+                  />
 
-                  <Button type="submit" className="w-full">
-                    Continue
-                  </Button>
+                  <FormField
+                    control={form.control}
+                    render={({field}) => (
+                      <VFormField label={'Bio'}>
+                        <Textarea
+                          id="business_bio"
+                          placeholder="A short description of your business"
+                          {...field}
+                        />
+                      </VFormField>
+                    )}
+                    name={'business_bio'}
+                  />
+
+                  <Button type="submit" className="w-full">Continue</Button>
                 </div>
               </div>
             </form>
-          </div>
+          </Form>
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
