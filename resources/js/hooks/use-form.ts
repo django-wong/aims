@@ -48,17 +48,20 @@ function append(value: FormDataConvertible, formData: FormData, key: string) {
 export function useResource<T extends BaseModel>(url: string, value?: Partial<T> | null): {
   url: string;
   method: Method;
+  actualMethod?: Method;
   defaultValues?: Partial<T>;
 } {
-  return value?.id ? {
-    url: url + '/' + value.id,
-    method: 'PUT',
-    defaultValues: value,
-  } : {
-    url: url,
-    method: 'POST',
-    defaultValues: value || undefined,
-  };
+  return value?.id
+    ? {
+        url: url + '/' + value.id,
+        method: 'PUT',
+        defaultValues: value,
+      }
+    : {
+        url: url,
+        method: 'POST',
+        defaultValues: value || undefined,
+      };
 }
 
 export type Method = 'POST' | 'PUT' | 'PATCH';
@@ -66,6 +69,7 @@ export type Method = 'POST' | 'PUT' | 'PATCH';
 interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   url?: URL | string;
   method?: Method;
+  actualMethod?: Method; // Used for PUT/PATCH requests
   serialize?: (formData: T) => BodyInit | null | undefined;
   contentType?: string;
 }
@@ -95,12 +99,17 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
         'Content-Type': props.contentType || 'application/json',
       }),
     );
+    let actualMethod = method;
     if (formData instanceof FormData) {
       headers.delete('Content-Type');
+      if (method === 'PUT') {
+        actualMethod = 'POST';
+        formData.append('_method', 'PUT');
+      }
     }
 
     return fetch(url, {
-      method: method,
+      method: actualMethod,
       headers: headers,
       body: formData,
     })

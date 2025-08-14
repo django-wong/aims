@@ -6,5 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends StoreRequest
 {
-
+    public function rules(): array
+    {
+        return [
+            ...parent::rules(),
+            'logo' => 'nullable|image|max:2048',
+        ];
+    }
 }

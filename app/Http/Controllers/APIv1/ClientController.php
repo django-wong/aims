@@ -80,7 +80,7 @@ class ClientController extends Controller
     public function store(StoreRequest $request)
     {
         $data = DB::transaction(function () use ($request) {
-            if ($request->has('address')) {
+            if (! empty($request->input('address'))) {
                 $address = Address::query()->create($request->validated('address'));
             }
 
@@ -128,13 +128,17 @@ class ClientController extends Controller
                 $client->user->update($request->validated('user'));
             }
 
-            if ($request->has('address')) {
-                $client->address()->update(
-                    $request->validated('address')
+            $client->update($request->basic());
+
+            if (! empty($request->input('address'))) {
+                $client->address()->associate(
+                    $client->address()->updateOrCreate(
+                        [], $request->validated(
+                            'address'
+                        )
+                    )
                 );
             }
-
-            $client->update($request->basic());
 
             return $client;
         });

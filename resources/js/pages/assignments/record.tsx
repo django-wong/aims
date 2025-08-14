@@ -5,7 +5,7 @@ import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Badge } from '@/components/ui/badge';
-import { Button, Loading } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -74,6 +74,7 @@ import {
 import { PropsWithChildren, startTransition, useState } from 'react';
 import zod, { z } from 'zod';
 import { useQueryParam } from '@/hooks/use-query-param';
+import { Loading } from '@/components/ui/loading';
 
 interface RecordProps {
   assignment: Assignment;
@@ -820,7 +821,7 @@ function TimesheetItems(props: { timesheet?: Timesheet; assignment?: Assignment 
               Log another
             </Button>
           </TimesheetItemForm>
-          <Button variant={'default'}>Submit for Approval</Button>
+          <Button>Submit for Approval</Button>
         </div>
       )}
     </>

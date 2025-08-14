@@ -102,6 +102,7 @@ export interface Client extends BaseModel {
   org_id: number;
   user_id: number;
   user?: User;
+  logo_url: string;
   coordinator_id: number | null;
   coordinator?: User;
   reviewer_id?: number | null;

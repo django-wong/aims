@@ -1,5 +1,6 @@
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage, useFormField } from '@/components/ui/form';
 import { PropsWithChildren } from 'react';
+import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
   label?: string;
@@ -31,5 +32,15 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
         <FormMessage />
       </FormItem>
     </>
+  );
+}
+
+export function ErrorState(props: React.ComponentProps<'div'>) {
+  const { error } = useFormField()
+
+  return (
+    <div className={cn('contents', !!error && 'text-destructive')}>
+      {props.children}
+    </div>
   );
 }

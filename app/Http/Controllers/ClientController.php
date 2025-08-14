@@ -11,7 +11,7 @@ class ClientController extends Controller
     public function edit($id, Request $request)
     {
         return Inertia::render('clients/edit', [
-            'client' => Client::query()->findOrFail($id),
+            'client' => Client::query()->with(['user', 'address'])->findOrFail($id),
         ]);
     }
 }

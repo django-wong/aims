@@ -10,6 +10,7 @@ import { Trash, UserRoundPen } from 'lucide-react';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { useQueryParam } from '@/hooks/use-query-param';
+import { ClientForm } from '@/pages/clients/form';
 
 interface ClientEditProps {
   client: Client;
@@ -35,9 +36,11 @@ export default function Edit(props: ClientEditProps) {
         <Button size={'sm'} variant={'secondary'}>
           <Trash/> Delete
         </Button>
-        <Button size={'sm'} variant={'secondary'}>
-          <UserRoundPen/> Edit
-        </Button>
+        <ClientForm value={props.client} onSubmit={() => {}}>
+          <Button size={'sm'} variant={'secondary'}>
+            <UserRoundPen/> Edit
+          </Button>
+        </ClientForm>
       </>}
       breadcrumbs={[...breadcrumbs, {title: props.client.business_name, href: '.'}]}>
       <Head title={props.client.business_name}/>
@@ -72,21 +75,20 @@ export default function Edit(props: ClientEditProps) {
           right={
             <Info>
               <InfoHead>Client Profile</InfoHead>
-              <InfoLine label={'Business Name / Group'} icon={'book-user'}>
-                {props.client.business_name}
-              </InfoLine>
-
-              <InfoLine label="Coordinator" icon={'user-round-cog'}>
-                {props.client.coordinator?.name ?? 'N/A'}
-              </InfoLine>
-
-              <InfoLine label={'Reviewer'} icon={'glasses'}>
-                {props.client.reviewer?.name ?? 'N/A'}
-              </InfoLine>
-
-              <InfoLine label={'Address'} icon={'map-pin-house'}>
-                {props.client.address?.full_address ?? 'N/A'}
-              </InfoLine>
+              <div>
+                <InfoLine label={'Business Name / Group'} icon={'book-user'}>
+                  {props.client.business_name}
+                </InfoLine>
+                <InfoLine label="Coordinator" icon={'user-round-cog'}>
+                  {props.client.coordinator?.name ?? 'N/A'}
+                </InfoLine>
+                <InfoLine label={'Reviewer'} icon={'glasses'}>
+                  {props.client.reviewer?.name ?? 'N/A'}
+                </InfoLine>
+                <InfoLine label={'Address'} icon={'map-pin-house'}>
+                  {props.client.address?.full_address ?? 'N/A'}
+                </InfoLine>
+              </div>
             </Info>
           }
         />

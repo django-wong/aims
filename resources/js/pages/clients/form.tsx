@@ -6,30 +6,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { PropsWithChildren, startTransition, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
-import { useReactiveForm } from '@/hooks/use-form';
-import { Address, Client, DialogFormProps } from '@/types';
+import { objectToFormData, useReactiveForm, useResource } from '@/hooks/use-form';
+import { Client, DialogFormProps } from '@/types';
 import { FormField, Form } from '@/components/ui/form';
-import { VFormField } from '@/components/vform';
+import { ErrorState, VFormField } from '@/components/vform';
 import { Input } from '@/components/ui/input';
-import {
-  AddressForm,
-  AddressFormContext,
-  AddressFormProvider,
-  schema as addressSchema
-} from '@/pages/projects/address-form';
+import { AddressDialog, schema as addressSchema } from '@/pages/projects/address-form';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { Circle, LocationEdit } from 'lucide-react';
 import { StaffSelect } from '@/components/user-select';
+import AvatarUpload from '@/components/file-upload/avatar-upload';
+import { useEffect, useState } from 'react';
 
 const schema = zod.object({
   business_name: zod.string().min(1, 'Business name is required'),
   coordinator_id: zod.number().nullable().optional(),
   reviewer_id: zod.number().nullable().optional(),
+  logo_url: zod.string().optional(),
+  logo: zod.file().optional(),
   address: zod.null().or(
     addressSchema.nullable().optional()
   ),
@@ -38,44 +36,65 @@ const schema = zod.object({
     email: zod.string().email('Invalid email format')
   }).optional(),
   notes: zod.string().optional().nullable(),
-  invoice_reminder: zod.number().min(1).max(30).default(7).transform(
-    (value) => {
-      return value < 1 ? 1 : value > 30 ? 30 : value;
-    }
-  ),
+  invoice_reminder: zod.coerce.number().min(1).max(30).nullable(),
+}).superRefine((data, context) => {
+  // Logo is required if no logo_url is provided
+  if (!data.logo_url && !data.logo) {
+    context.addIssue({
+      code: 'custom',
+      message: 'Logo is required',
+      path: ['logo'],
+    })
+  }
 });
 
 export function ClientForm(props: DialogFormProps<Client>) {
-  const form = useReactiveForm<Client>({
-    defaultValues: props.value || undefined,
-    resolver: zodResolver(schema) as any
+  const form = useReactiveForm<zod.infer<typeof schema>, Client>({
+    ...useResource('/api/v1/clients', {
+      business_name: '',
+      coordinator_id: null,
+      reviewer_id: null,
+      address: undefined,
+      user: {
+        name: '',
+        email: ''
+      },
+      notes: '',
+      invoice_reminder: 7,
+      ...props.value,
+    }),
+    resolver: zodResolver(schema) as any,
+    serialize: (data) => {
+      return objectToFormData(data);
+    }
   });
 
+  const [open, setOpen] = useState<boolean>(props.open ?? false);
+
   useEffect(() => {
-    startTransition(() => {
-      form.reset(props.value || {});
-      if (props.value) {
-        form.setUrl(route('clients.update', {client: props.value.id}))
-        form.setMethod('PATCH');
-      } else {
-        form.setUrl(route('clients.store'));
-        form.setMethod('POST');
+    if (props.open !== undefined) {
+      if (props.open !== open) {
+        setOpen(props.open);
       }
-    })
-  }, [props.value]);
+    }
+  }, [props.open]);
 
   function save() {
     form.submit().then(res => {
       if (res) {
         props.onOpenChange?.(false);
-        props.onSubmit(form.getValues());
+        setOpen(false);
+        props.onSubmit(res.data);
       }
     })
   }
 
 
   return (
-    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+    <Dialog open={open} onOpenChange={(open) => {
+      props.onOpenChange?.(open);
+      setOpen(open);
+    }}>
       {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
@@ -87,9 +106,22 @@ export function ClientForm(props: DialogFormProps<Client>) {
             <Form {...form}>
               <div className={'col-span-12'}>
                 <FormField
+                  control={form.control}
+                  render={({field}) => (
+                    <ErrorState>
+                      <AvatarUpload onFileChange={(file) => field.onChange(file?.file)} defaultAvatar={props.value?.logo_url ?? undefined}/>
+                    </ErrorState>
+                  )}
+                  name={'logo'}
+                />
+              </div>
+              <div className={'col-span-12'}>
+                <FormField
                   render={({ field }) => {
                     return <VFormField required label={'Business Name / Group'}>
-                      <Input value={field.value} onChange={field.onChange}/>
+                      <Input value={field.value} onChange={(event) => {
+                        field.onChange(event);
+                      }}/>
                     </VFormField>
                   }}
                   name={'business_name'}
@@ -231,51 +263,4 @@ export function ClientForm(props: DialogFormProps<Client>) {
   );
 }
 
-function AddressDialog(props: PropsWithChildren<{
-  value?: Address|null;
-  onChange: (value: Address | null) => void;
-}>) {
-  const [open, setOpen] = useState(false);
-  return <Dialog open={open} onOpenChange={setOpen}>
-    <DialogTrigger asChild>
-      {props.children}
-    </DialogTrigger>
-    <DialogContent>
-      <AddressFormProvider value={props.value || null}>
-        <DialogHeader>
-          <DialogTitle>Address</DialogTitle>
-          <DialogDescription>You can fill in the address manually, or use the location finder.</DialogDescription>
-        </DialogHeader>
-        <DialogInnerContent>
-          <div className={'grid grid-cols-12 gap-4 items-start'}>
-            <AddressForm/>
-          </div>
-        </DialogInnerContent>
-        <DialogFooter>
-          <DialogClose asChild>
-            <AddressFormContext.Consumer>
-              {(form) => {
-                return <>
-                  <Button
-                    type={'button'}
-                    onClick={() => {
-                      form?.validate((data) => {
-                        if (data) {
-                          props.onChange(data);
-                          setOpen(false);
-                        }
-                      }, (err) => {
-                        console.info(err);
-                      })
-                    }}>
-                    Save
-                  </Button>
-                </>
-              }}
-            </AddressFormContext.Consumer>
-          </DialogClose>
-        </DialogFooter>
-      </AddressFormProvider>
-    </DialogContent>
-  </Dialog>;
-}
+

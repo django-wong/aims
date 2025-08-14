@@ -2,10 +2,12 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
-import { Address, BaseModel } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import zod from 'zod';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DialogInnerContent } from '@/components/dialog-inner-content';
+import { Button } from '@/components/ui/button';
 
 export const schema = zod.object({
   address_line_1: zod.string().min(1, 'Address line 1 is required'),
@@ -24,15 +26,19 @@ export type FormProviderProps<T> = {
   children?: React.ReactNode;
 };
 
-export const AddressFormContext = React.createContext<ReturnType<typeof useReactiveForm<Address>> | null>(null);
+export const AddressFormContext = React.createContext<ReturnType<typeof useReactiveForm<ThisAddress>> | null>(null);
 
 export function AddressFormProvider(props: FormProviderProps<ThisAddress>) {
-  const form = useReactiveForm<Address>({
+  const form = useReactiveForm<ThisAddress>({
     resolver: zodResolver(schema) as any,
     defaultValues: props.value || undefined,
   });
 
-  return <AddressFormContext.Provider value={form}>{props.children}</AddressFormContext.Provider>;
+  return (
+    <AddressFormContext.Provider value={form}>
+      {props.children}
+    </AddressFormContext.Provider>
+  );
 }
 
 export function useAddressForm() {
@@ -123,4 +129,53 @@ export function AddressForm() {
       </Form>
     </>
   );
+}
+
+export function AddressDialog(props: PropsWithChildren<{
+  value?: ThisAddress|null;
+  onChange: (value: ThisAddress | null) => void;
+}>) {
+  const [open, setOpen] = useState(false);
+  return <Dialog open={open} onOpenChange={setOpen}>
+    <DialogTrigger asChild>
+      {props.children}
+    </DialogTrigger>
+    <DialogContent>
+      <AddressFormProvider value={props.value || null}>
+        <DialogHeader>
+          <DialogTitle>Address</DialogTitle>
+          <DialogDescription>You can fill in the address manually, or use the location finder.</DialogDescription>
+        </DialogHeader>
+        <DialogInnerContent>
+          <div className={'grid grid-cols-12 gap-4 items-start'}>
+            <AddressForm/>
+          </div>
+        </DialogInnerContent>
+        <DialogFooter>
+          <DialogClose asChild>
+            <AddressFormContext.Consumer>
+              {(form) => {
+                return <>
+                  <Button
+                    type={'button'}
+                    onClick={() => {
+                      form?.validate((data) => {
+                        if (data) {
+                          props.onChange(data);
+                          setOpen(false);
+                        }
+                      }, (err) => {
+                        console.info(err);
+                      })
+                    }}>
+                    Save
+                  </Button>
+                </>
+              }}
+            </AddressFormContext.Consumer>
+          </DialogClose>
+        </DialogFooter>
+      </AddressFormProvider>
+    </DialogContent>
+  </Dialog>;
 }

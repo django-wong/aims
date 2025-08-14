@@ -3,6 +3,8 @@
 namespace App\Http\Requests\APIv1\Clients;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class StoreRequest extends FormRequest
 {
@@ -18,6 +20,7 @@ class StoreRequest extends FormRequest
             'coordinator_id' => 'nullable|exists:users,id',
             'reviewer_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string|max:1000',
+            'logo' => 'required|image|max:2048', // 2MB max size for the logo
             'invoice_reminder' => 'nullable|integer|min:0|max:30',
             'address' => 'nullable|array',
             'address.country' => 'string|max:255',
@@ -37,12 +40,33 @@ class StoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('create', \App\Models\Client::class);
     }
 
     public function basic(): array
     {
-        return $this->only(['business_name', 'coordinator_id', 'reviewer_id', 'notes', 'invoice_reminder']);
+        $data = $this->only([
+            'business_name',
+            'coordinator_id',
+            'reviewer_id',
+            'notes',
+            'invoice_reminder'
+        ]);
+
+        if ($url = $this->upload()) {
+            $data['logo_url'] = $url;
+        }
+
+        return $data;
     }
 
+    public function upload(): bool|string
+    {
+        if ($this->hasFile('logo')) {
+            return Storage::url(
+                $this->file('logo')->storePublicly('clients/logos', 'public')
+            );
+        }
+        return false;
+    }
 }

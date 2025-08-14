@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('business_name')->index()->comment('The name of the client business or organization');
+            $table->text('logo_url')->nullable()->comment('URL to the client\'s logo image');
             $table->foreignId('org_id')->index()->constrained();
             $table->foreignId('user_id')->index()->constrained()->comment('Each client is associated with a user account, which can be used to log in to the system');
             $table->foreignId('coordinator_id')->nullable()->index()->constrained('users');

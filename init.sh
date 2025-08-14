@@ -25,6 +25,8 @@ npm install
 echo "Fix file permissions..."
 chmod -R 777 ./storage
 
+php artisan storage:link
+
 echo "Migrating database..."
 php artisan migrate --force
 
