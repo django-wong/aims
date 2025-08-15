@@ -3,14 +3,20 @@ import { Head } from '@inertiajs/react'
 import * as React from 'react';
 import { BreadcrumbItem, Client } from '@/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash, UserRoundPen } from 'lucide-react';
 import { TwoColumnLayout73 } from '@/components/main-content';
-import { Info, InfoHead, InfoLine } from '@/components/info';
+import { Info, InfoHead, InfoLine, InfoLineValue } from '@/components/info';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { ClientForm } from '@/pages/clients/form';
+import { useReactiveForm } from '@/hooks/use-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormField } from '@/components/ui/form';
+import { Loading } from '@/components/ui/loading';
+import { useContactsTable } from '@/pages/contacts';
 
 interface ClientEditProps {
   client: Client;
@@ -47,23 +53,16 @@ export default function Edit(props: ClientEditProps) {
       <TwoColumnLayout73
           left={
             <Tabs value={hash} onValueChange={setHash}>
-              <TabsList className={'mb-6'}>
+              <TabsList className={'mb-4'}>
                 <TabsTrigger value={'notes'}>Notes</TabsTrigger>
                 <TabsTrigger value={'contacts'}>Contacts</TabsTrigger>
                 <TabsTrigger value={'assignments'}>Assignments</TabsTrigger>
               </TabsList>
               <TabsContent value={'notes'}>
-                <div className={'flex flex-col gap-4'}>
-                  <Textarea className={'min-h-24 bg-background'} placeholder={'Notes...'} value={''} onChange={() => {}} />
-                  <div className={'flex justify-end'}>
-                    <Button>Save</Button>
-                  </div>
-                </div>
+                <NotesEditor client={props.client}/>
               </TabsContent>
               <TabsContent value={'contacts'}>
-                <Content>
-                  All contacts for client {props.client.business_name} will be shown here.
-                </Content>
+                <ClientContacts client={props.client}/>
               </TabsContent>
               <TabsContent value={'assignments'}>
                 <Content>
@@ -85,10 +84,11 @@ export default function Edit(props: ClientEditProps) {
                 <InfoLine label={'Reviewer'} icon={'glasses'}>
                   {props.client.reviewer?.name ?? 'N/A'}
                 </InfoLine>
-                <InfoLine label={'Address'} icon={'map-pin-house'}>
-                  {props.client.address?.full_address ?? 'N/A'}
-                </InfoLine>
               </div>
+              <InfoHead>Address</InfoHead>
+              <p>
+                {props.client.address?.full_address ?? 'N/A'}
+              </p>
             </Info>
           }
         />
@@ -103,4 +103,61 @@ function Content(props: PropsWithChildren) {
       { props.children }
     </div>
   )
+}
+
+
+interface NotesEditorProps {
+  client: Client;
+}
+
+function NotesEditor(props: NotesEditorProps) {
+  const schema = useMemo(() => {
+    return z.object({
+      notes: z.string().max(5000, 'Notes must be less than 5000 characters.'),
+    });
+  }, []);
+
+  const form = useReactiveForm<z.infer<typeof schema>>({
+    url: route('clients.update', { id: props.client.id }),
+    method: 'PUT',
+    defaultValues: {
+      notes: props.client.notes || '',
+    },
+    resolver: zodResolver(schema)
+  });
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.submit}>
+        <div className={'flex flex-col gap-4'}>
+          <FormField
+            control={form.control}
+            render={({field}) => (
+              <Textarea className={'min-h-36 bg-background'} placeholder={'Notes...'} {...field} />
+            )}
+            name={'notes'}
+          />
+          <div className={'flex justify-end'}>
+            <Button type={'submit'}>
+              <Loading show={form.formState.isSubmitting}/>
+              Save notes
+            </Button>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
+}
+
+interface ClientContactsProps {
+  client: Client;
+}
+
+function ClientContacts(props: ClientContactsProps) {
+  const { content } = useContactsTable({
+    contactable_id: props.client.id,
+    contactable_type: 'client',
+  });
+
+  return <>{content}</>;
 }

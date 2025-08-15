@@ -74,7 +74,19 @@ export interface User extends BaseModel {
 }
 
 export interface Contact extends BaseModel {
+  contactable_id: number;
+  contactable_type: string; // e.g. 'App\\Models\\Client', '
   email: string | null;
+  mobile: string | null;
+  title: string | null;
+  first_name: string;
+  last_name: string;
+  name: string; // Computed from first_name and last_name
+  phone: string | null;
+  company: string | null;
+  website: string | null;
+  business_type: string | null; // e.g. 'client', 'vendor', 'sub_vendor'
+  notes: string | null;
 }
 
 export interface Address extends BaseModel {

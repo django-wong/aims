@@ -127,7 +127,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     </>
                   )}
                 />
-                <div className={'col-span-12'}>
+                <div className={'col-span-12 p-4 bg-blue-200 rounded-lg ring-2 ring-blue-500 '}>
                   <Tabs value={mode} onValueChange={setMode}>
                     <TabsList>
                       <TabsTrigger value={'assign'}>Assign to inspector</TabsTrigger>
@@ -141,7 +141,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                           <>
                             <VFormField
                               className={'col-span-12'}>
-                              <StaffSelect onValueChane={field.onChange} value={field.value} />
+                              <StaffSelect placeholder={'Choose an inspector'} onValueChane={field.onChange} value={field.value} />
                             </VFormField>
                           </>
                         )}
@@ -155,7 +155,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                           <>
                             <VFormField
                               className={'col-span-12'}>
-                              <OrgSelect onValueChane={field.onChange} value={field.value} />
+                              <OrgSelect placeholder={'Choose an operation office'} onValueChane={field.onChange} value={field.value} />
                             </VFormField>
                           </>
                         )}

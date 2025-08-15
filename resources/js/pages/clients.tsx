@@ -41,10 +41,12 @@ function ClientAction(props: { client: Client }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            View Details
-            <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          <Link href={route('clients.edit', { id: props.client.id })}>
+            <DropdownMenuItem>
+              View Details
+              <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem variant={'destructive'}
             disabled={true}
             onClick={() => {
@@ -105,22 +107,6 @@ export default function Clients() {
       header: 'Reviewer',
       cell: ({ row }) => row.original.reviewer?.name || 'N/A',
     },
-    // {
-    //   accessorKey: 'address_id',
-    //   header: 'Address',
-    //   cell: ({ row }) => {
-    //     if (!row.original.address) {
-    //       return 'N/A';
-    //     }
-    //     const { address_line_1, city, state, zip, country } = row.original.address;
-    //
-    //     return (
-    //       <span>
-    //         {address_line_1}, {city}, {state} {zip}, {country}
-    //       </span>
-    //     );
-    //   },
-    // },
     {
       accessorKey: 'Reminder',
       header: () => {

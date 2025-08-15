@@ -127,7 +127,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuButton>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button asChild variant={'outline'} size={'xs'}>
+                  <Button asChild variant={'outline'} size={'icon'}>
                     <a href={route('setup')}>
                       <Plus size={18}/>
                     </a>

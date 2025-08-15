@@ -52,7 +52,7 @@ export default function PurchaseOrderEditPage(props: Props) {
           <div className="space-y-6">
             <Info>
               <InfoHead>Basic Information</InfoHead>
-              <div className="space-y-3">
+              <div>
                 <InfoLine label={'Title'} icon={'info'}>
                   {props.purchase_order.title}
                 </InfoLine>
@@ -70,7 +70,7 @@ export default function PurchaseOrderEditPage(props: Props) {
 
             <Info>
               <InfoHead>Budget & Rates</InfoHead>
-              <div className="space-y-3">
+              <div>
                 <InfoLine label={'Budget'} icon={'dollar-sign'}>
                   ${props.purchase_order.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </InfoLine>
@@ -85,7 +85,7 @@ export default function PurchaseOrderEditPage(props: Props) {
 
             <Info>
               <InfoHead>Alert Thresholds</InfoHead>
-              <div className="space-y-3">
+              <div>
                 <InfoLine label={'First Alert'} icon={'alert-triangle'}>
                   {props.purchase_order.first_alert_threshold}%
                   {props.purchase_order.first_alert_at && (

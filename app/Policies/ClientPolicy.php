@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Client;
 use App\Models\User;
 
 class ClientPolicy
@@ -16,6 +17,11 @@ class ClientPolicy
         ]);
     }
 
+    public function view(User $user, Client $client): bool
+    {
+        return $this->viewAny($user) && $client->org_id === $user->org->id;
+    }
+
     public function create(User $user): bool
     {
         return in_array($user->user_role->role, [
@@ -24,5 +30,10 @@ class ClientPolicy
             \App\Models\UserRole::STAFF,
             \App\Models\UserRole::FINANCE,
         ]);
+    }
+
+    public function update(User $user, Client $client): bool
+    {
+        return $this->viewAny($user) && $client->org_id === $user->org->id;
     }
 }

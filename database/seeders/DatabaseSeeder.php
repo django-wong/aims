@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             VendorSeeder::class,
             AssignmentSeeder::class,
             TimesheetSeeder::class,
-            TimesheetItemSeeder::class
+            TimesheetItemSeeder::class,
+            ContactSeeder::class,
         ]);
     }
 }

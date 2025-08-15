@@ -24,7 +24,9 @@ export function PopoverConfirm(props: PopoverConfirmProps) {
             <div className={'grid gap-4'}>
               <div className={'space-y-2'}>
                 <h4 className={'leading-none font-medium'}>{props.title || 'Are you sure'}</h4>
-                <p className={'text-muted-foreground text-sm'}>{props.message}</p>
+                <p className={'text-sm'}>
+                  {props.message}
+                </p>
               </div>
               <div className={'flex justify-end gap-2'}>
                 <PopoverPrimitive.Close asChild>

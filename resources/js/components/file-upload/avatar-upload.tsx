@@ -11,6 +11,8 @@ interface AvatarUploadProps {
   className?: string;
   onFileChange?: (file: FileWithPreview | null) => void;
   defaultAvatar?: string;
+  title?: string;
+  uploadedTitle?: string;
 }
 
 export default function AvatarUpload({
@@ -18,6 +20,7 @@ export default function AvatarUpload({
   className,
   onFileChange,
   defaultAvatar,
+  ...props
 }: AvatarUploadProps) {
   const [
     { files, isDragging, errors },
@@ -85,7 +88,12 @@ export default function AvatarUpload({
 
       {/* Upload Instructions */}
       <div className="text-center space-y-0.5">
-        <p className="text-sm font-medium">{currentFile ? 'Avatar uploaded' : 'Upload avatar'}</p>
+        <p className="text-sm font-medium">
+          {currentFile
+            ? (props.uploadedTitle || 'Avatar uploaded')
+            : (props.title || 'Upload avatar')
+          }
+        </p>
         <p className="text-xs text-muted-foreground">PNG, JPG up to {formatBytes(maxSize)}</p>
       </div>
 

@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Client extends Model
+/**
+ * @property integer $org_id
+ */
+class Client extends Model implements Contactable
 {
     /** @use HasFactory<\Database\Factories\ClientFactory> */
-    use HasFactory, DynamicPagination, BelongsToOrg, BelongsToUser, HasManyContact, BelongsToAddress;
+    use HasFactory, DynamicPagination, BelongsToOrg, BelongsToUser, HasManyContact, BelongsToAddress, HasManyContact;
 
     protected $guarded = [
         'id', 'updated_at', 'created_at'

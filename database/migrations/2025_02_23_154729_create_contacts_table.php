@@ -15,6 +15,10 @@ return new class extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             $table->morphs('contactable');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('name')->storedAs('CONCAT(first_name, " ", last_name)')->index();
+            $table->string('title')->nullable()->comment('The title of the user, e.g., "Mr.", "Ms.", "Dr."');
             $table->string('email')->nullable();
             $table->string('mobile')->nullable();
             $table->string('phone')->nullable();

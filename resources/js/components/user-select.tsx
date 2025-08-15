@@ -7,5 +7,6 @@ export const StaffSelect = createSelect<User>({
   getItemLabel: (item) => item.name || item.email || 'Unknown User',
   searchParams: new URLSearchParams({
     'filter[role]': '8',
+    'sort': 'name',
   })
 });

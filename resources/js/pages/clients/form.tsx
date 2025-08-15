@@ -109,7 +109,12 @@ export function ClientForm(props: DialogFormProps<Client>) {
                   control={form.control}
                   render={({field}) => (
                     <ErrorState>
-                      <AvatarUpload onFileChange={(file) => field.onChange(file?.file)} defaultAvatar={props.value?.logo_url ?? undefined}/>
+                      <AvatarUpload
+                        title={'Upload logo'}
+                        uploadedTitle={'Logo uploaded'}
+                        onFileChange={(file) => field.onChange(file?.file)}
+                        defaultAvatar={props.value?.logo_url ?? undefined}
+                      />
                     </ErrorState>
                   )}
                   name={'logo'}

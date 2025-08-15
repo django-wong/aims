@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'clients' => ClientController::class,
         'orgs' => OrgController::class,
         'users' => UserController::class,
+        'contacts' => \App\Http\Controllers\APIv1\ContactController::class,
         'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
         'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
         'comments' => CommentController::class,

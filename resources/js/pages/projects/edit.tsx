@@ -2,7 +2,6 @@ import { Comments } from '@/components/comments';
 import { Divider } from '@/components/divider';
 import { Info, InfoHead, InfoLine, InfoLineValue } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
