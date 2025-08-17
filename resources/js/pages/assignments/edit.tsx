@@ -7,17 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Layout from '@/layouts/app-layout';
 import { AssignmentForm } from '@/pages/assignments/form';
-import { Assignment, BreadcrumbItem, TimesheetItem } from '@/types';
+import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { DataTable } from '@/components/data-table-2';
-import { useTable } from '@/hooks/use-table';
-import { ColumnDef } from '@tanstack/react-table';
 import { AssignmentActions } from '@/pages/assignments';
-import { CircleAlert, Clock, MessagesSquare, Newspaper } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { useState } from 'react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Clock, MessagesSquare, Newspaper, PlusIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
+import { DailyUsage } from '@/pages/assignments/daily-usage';
+import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
+import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 
 interface EditProps {
   assignment: Assignment;
@@ -59,6 +56,10 @@ export default function Edit(props: EditProps) {
         left={
           <Tabs value={hash} onValueChange={setHash}>
             <TabsList className={'mb-4'}>
+              <TabsTrigger value={'overview'}>
+                <Clock/>
+                <span className={'hidden sm:inline'}>Overview</span>
+              </TabsTrigger>
               <TabsTrigger value={'timesheets'}>
                 <Clock/>
                 <span className={'hidden sm:inline'}>Timesheet</span>
@@ -72,9 +73,24 @@ export default function Edit(props: EditProps) {
                 <span className={'hidden sm:inline'}>Comments</span>
               </TabsTrigger>
             </TabsList>
+            <TabsContent value={'overview'}>
+              <DailyUsage/>
+            </TabsContent>
             <TabsContent value={'timesheets'}>
               <div className={'grid gap-4'}>
-                <TimesheetItems assignment={props.assignment}/>
+                <TimesheetItems
+                  assignment={props.assignment}
+                  datatable={{
+                    left: (
+                      <TimesheetItemForm onSubmit={() => {}}>
+                        <Button>
+                          <PlusIcon/>
+                          New timesheet item
+                        </Button>
+                      </TimesheetItemForm>
+                    )
+                  }}
+                />
               </div>
             </TabsContent>
             <TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>
@@ -135,75 +151,18 @@ export default function Edit(props: EditProps) {
   );
 }
 
-function TimesheetItemActions(props: { item: TimesheetItem }) {
-  const [checked, setChecked] = useState(props.item.approved);
-  return (
-    <div className={'flex items-center gap-2 justify-end'}>
-      <Tooltip>
-        <TooltipTrigger>
-          <Switch checked={checked} onCheckedChange={setChecked}/>
-        </TooltipTrigger>
-        <TooltipContent className={'flex items-center gap-1'}>
-          <CircleAlert className={'size-4'}/> Invoice will be created upon approval
-        </TooltipContent>
-      </Tooltip>
-    </div>
-  );
-}
-
-const timesheetItemColumns: ColumnDef<TimesheetItem>[] = [
-  {
-    accessorKey: 'hours',
-    header: 'Hours',
-    cell: ({ row }) => row.original.hours.toFixed(1),
-  },
-  {
-    accessorKey: 'cost',
-    header: 'Cost',
-    cell: ({ row }) => `${row.original.cost}`,
-  },
-  {
-    accessorKey: 'travel_distance',
-    header: 'KM/Miles',
-    cell: ({ row }) => row.original.travel_distance.toFixed(1),
-  },
-  {
-    accessorKey: 'travel_cost',
-    header: 'Travel Cost',
-    cell: ({ row }) => `${row.original.travel_cost}`,
-  },
-  {
-    accessorKey: 'days and overnights',
-    header: 'D & N',
-    cell: ({ row }) => `${row.original.days} / ${row.original.overnights}`,
-  },
-  {
-    accessorKey: 'expenses',
-    header: 'Expenses',
-    cell: ({ row }) => `${row.original.total_expense}`,
-  },
-  {
-    accessorKey: 'actions',
-    header: 'Approved',
-    cell: ({ row }) => <TimesheetItemActions item={row.original} />,
-  },
-];
-
-function TimesheetItems({ assignment }: { assignment: Assignment }) {
-  const table = useTable('/api/v1/timesheet-items', {
-    columns: timesheetItemColumns,
-    selectable: false,
-    initialState: {
-      pagination: {
-        pageSize: 9999
-      }
-    },
-    defaultParams: {
-      'filter[assignment_id]': String(assignment.id),
-    }
-  });
-
-  return (
-    <DataTable table={table} variant={'clean'} pagination={false} className={'gap-0 bg-background w-full overflow-hidden'}/>
-  );
-}
+// function TimesheetItemActions(props: { item: TimesheetItem }) {
+//   const [checked, setChecked] = useState(props.item.approved);
+//   return (
+//     <div className={'flex items-center gap-2 justify-end'}>
+//       <Tooltip>
+//         <TooltipTrigger>
+//           <Switch checked={checked} onCheckedChange={setChecked}/>
+//         </TooltipTrigger>
+//         <TooltipContent className={'flex items-center gap-1'}>
+//           <CircleAlert className={'size-4'}/> Invoice will be created upon approval
+//         </TooltipContent>
+//       </Tooltip>
+//     </div>
+//   );
+// }

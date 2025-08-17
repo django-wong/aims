@@ -19,6 +19,7 @@ class Assignment extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets, BelongsToPurchaseOrder;
+    use BelongsToAssignmentType;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
@@ -40,6 +41,17 @@ class Assignment extends Model implements Commentable
                 );
             }
         });
+
+        $no_self_delegate = function (self $assignment) {
+            if ($assignment->operation_org_id && $this->operation_org_id === $this->org_id) {
+                throw new \Exception(
+                    'You cannot delegate an assignment to the contract holder\'s own organization.'
+                );
+            }
+        };
+
+        static::updating($no_self_delegate);
+        static::creating($no_self_delegate);
     }
 
     public function operation_org(): BelongsTo
@@ -47,24 +59,16 @@ class Assignment extends Model implements Commentable
         return $this->belongsTo(Org::class, 'operation_org_id');
     }
 
-    public function assignment_type(): BelongsTo
-    {
-        return $this->belongsTo(AssignmentType::class, 'assignment_type_id');
-    }
-
     public function scopeVisible(Builder $query, Org|null|int $to = null)
     {
         return $query->where(function (Builder $query) use ($to) {
             $id = $to instanceof Org ? $to->id : $to;
-
             if (is_null($id)) {
                 $id = auth()->user()->org->id;
             }
-
             $query->whereAny(
                 ['operation_org_id', 'org_id'], $id
             );
-
             if (auth()->user()->isRole(UserRole::INSPECTOR)) {
                 $query->where('inspector_id', auth()->id());
             }

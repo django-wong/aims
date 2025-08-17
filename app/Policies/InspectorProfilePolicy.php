@@ -2,14 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Assignment;
-use App\Models\TimesheetItem;
+use App\Models\InspectorProfile;
 use App\Models\User;
-use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Gate;
 
-class TimesheetItemPolicy
+class InspectorProfilePolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -22,7 +19,7 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, TimesheetItem $timesheetItem): bool
+    public function view(User $user, InspectorProfile $inspectorProfile): bool
     {
         return false;
     }
@@ -30,18 +27,15 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Assignment|null $assignment = null): bool
+    public function create(User $user): bool
     {
-        if (!empty($assignment->inspector_id)) {
-            return $assignment->inspector_id === $user->id || Gate::allows('update', $assignment);
-        }
         return false;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, TimesheetItem $timesheetItem): bool
+    public function update(User $user, InspectorProfile $inspectorProfile): bool
     {
         return false;
     }
@@ -49,7 +43,7 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, TimesheetItem $timesheetItem): bool
+    public function delete(User $user, InspectorProfile $inspectorProfile): bool
     {
         return false;
     }
@@ -57,7 +51,7 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, TimesheetItem $timesheetItem): bool
+    public function restore(User $user, InspectorProfile $inspectorProfile): bool
     {
         return false;
     }
@@ -65,7 +59,7 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, TimesheetItem $timesheetItem): bool
+    public function forceDelete(User $user, InspectorProfile $inspectorProfile): bool
     {
         return false;
     }

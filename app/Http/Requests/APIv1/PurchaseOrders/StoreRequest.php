@@ -18,7 +18,6 @@ class StoreRequest extends FormRequest
             'client_id' => 'required|exists:clients,id',
             'quote_id' => 'nullable|exists:quotes,id',
             'budget' => 'required|numeric|min:0|max:999999999999.99',
-            'hourly_rate' => 'required|numeric|min:0|max:99999999.99',
             'first_alert_threshold' => [
                 'nullable',
                 'integer',

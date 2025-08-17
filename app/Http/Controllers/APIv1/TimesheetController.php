@@ -65,11 +65,6 @@ class TimesheetController extends Controller
         ]);
     }
 
-    public function approve()
-    {
-        // Approve the timesheet
-    }
-
     public function destroy(Timesheet $timesheet)
     {
         return response()->json([

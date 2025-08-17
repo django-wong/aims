@@ -18,8 +18,6 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('quote_id')->nullable()->constrained();
             $table->decimal('budget', 15, 2)->default(0.00);
-            $table->decimal('hourly_rate', 10, 2)->default(0.00);
-            $table->decimal('budgeted_hours', 10, 2)->storedAs('budget / hourly_rate');
 
             $table->unsignedInteger('first_alert_threshold')->default(70)
                 ->comment('The first alert threshold for the purchase order');
@@ -31,6 +29,7 @@ return new class extends Migration
                 ->comment('The final alert threshold for the purchase order');
             $table->timestamp('final_alert_at')->nullable();
 
+            $table->index(['org_id', 'client_id']);
             $table->timestamps();
             $table->softDeletes();
         });

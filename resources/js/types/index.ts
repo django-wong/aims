@@ -273,7 +273,7 @@ export interface TimesheetItem extends BaseModel {
   user?: User;
 
   item_number: string | null;
-  date: string | null;
+  date: string;
   week_number: number | null;
 
   hours: number;
@@ -297,4 +297,16 @@ export interface TimesheetItem extends BaseModel {
   other: number;
 
   approved: boolean; // Reserved
+}
+
+export interface Budget extends BaseModel {
+  rate_code: string;
+  purchase_order_id: number;
+  purchase_order?: PurchaseOrder;
+  assignment_type_id: number;
+  assignment_type?: AssignmentType;
+  hourly_rate: number;
+  budgeted_hours: number;
+  travel_rate: number;
+  budgeted_mileage: number;
 }

@@ -7,6 +7,7 @@ import { useState } from 'react';
 interface DatePickerProps {
   value?: Date | string;
   onChange?: (date: Date | undefined) => void;
+  calendar?: React.ComponentProps<typeof Calendar>
 }
 
 export function DatePicker({value, onChange, ...props }: DatePickerProps) {
@@ -38,7 +39,7 @@ export function DatePicker({value, onChange, ...props }: DatePickerProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent className={'w-auto p-0'}>
-          <Calendar mode={'single'} selected={date} onSelect={setValue} />
+          <Calendar {...props.calendar} mode={'single'} selected={date} onSelect={setValue} />
         </PopoverContent>
       </Popover>
     </>

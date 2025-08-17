@@ -14,6 +14,8 @@ class StoreRequest extends FormRequest
 {
     use HasAttachments;
 
+    protected Assignment $assignment;
+
     public function authorize(): bool
     {
         return Gate::check('create', [TimesheetItem::class, $this->assignment()]);
@@ -21,7 +23,10 @@ class StoreRequest extends FormRequest
 
     public function assignment(): Assignment
     {
-        return Assignment::query()->find($this->input('assignment_id'));
+        if (empty($this->assignment)) {
+            $this->assignment = Assignment::query()->find($this->input('assignment_id'));
+        }
+        return $this->assignment;
     }
 
     public function rules(): array
@@ -40,7 +45,7 @@ class StoreRequest extends FormRequest
                     ->whereDate('date', $value)
                     ->exists();
                 if ($exists) {
-                    $fail('The date has already been used for this assignment.');
+                    $fail('You have already submitted a timesheet for this date.');
                 }
             }],
             'report_hours' => 'nullable|integer|min:0',

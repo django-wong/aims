@@ -44,14 +44,15 @@ const columns: ColumnDef<Assignment>[] = [
       <>
         <div className={'flex items-center gap-1'}>
           <User className={'size-4'}/>
+          Assignee
         </div>
       </>
     ),
-    cell: ({ row }) => {
-      return row.original.inspector ? <>
-        {row.original.inspector.name}
-      </> : '-';
-    }
+    cell: ({ row }) => (
+      <Link href={route('assignments.edit', { id: row.original.id})} className={'underline'}>
+        {row.original.inspector?.name ?? 'N/A'}
+      </Link>
+    )
   },
   {
     accessorKey: 'assignment_type_id',
@@ -77,7 +78,11 @@ const columns: ColumnDef<Assignment>[] = [
     accessorKey: 'po',
     header: 'PO',
     cell: ({ row }) => {
-      return row.original.purchase_order?.title
+      return (
+        <Link href={route('purchase-orders.edit', { id: row.original.purchase_order?.id })} className={'underline'}>
+          {row.original.purchase_order?.title}
+        </Link>
+      );
     }
   },
   {

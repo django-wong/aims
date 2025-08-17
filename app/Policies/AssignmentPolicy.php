@@ -29,7 +29,7 @@ class AssignmentPolicy
      */
     public function view(User $user, Assignment $assignment): bool
     {
-        return Gate::allows('view', $assignment->project) || $user->id === $assignment->inspector_id;
+        return $user->id === $assignment->inspector_id || $user->can('view', $assignment->project);
     }
 
     /**
@@ -50,7 +50,14 @@ class AssignmentPolicy
      */
     public function update(User $user, Assignment $assignment): bool
     {
-        return false;
+        // If the user has the right to make changes to the operation organization or contract organization, then they
+        // can definitely update the assignment.
+        $org = $assignment->operation_org ?? $assignment->org;
+        if ($user->can('update', $org)) {
+            return true;
+        }
+
+        return $user->can('update', $assignment->project);
     }
 
     /**

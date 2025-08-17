@@ -39,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('assignments', 'assignments')->name('assignments');
     Route::get('assignments/{id}', [AssignmentController::class, 'edit'])
         ->name('assignments.edit');
+    Route::get('assignments/{id}/timesheet', [AssignmentController::class, 'timesheet'])
+        ->name('assignments.timesheet');
 
     Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])
         ->name('attachments.download');

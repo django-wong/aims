@@ -12,11 +12,9 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  LoaderCircle,
-  PackageOpen
+  LoaderCircle
 } from 'lucide-react';
 import * as React from 'react';
-import { SvgBg } from '@/components/svg-bg';
 import { cn } from '@/lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
 import { Empty } from '@/components/empty';
@@ -130,11 +128,11 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
                   {headerGroup.headers.map((header, index) => (
                     <TableHead
                       key={header.id}
-                      className={cn('pin-'+(header.column.getIsPinned() || 'none'))}
+                      className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted')}
                       style={{ ...computedStyle(header.column)}}>
                       <TableCellWrapper
                         center={(header.column.columnDef.meta as any)?.['center']}
-                        variant={'header'}
+
                         last={index === headerGroup.headers.length - 1}>
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableCellWrapper>

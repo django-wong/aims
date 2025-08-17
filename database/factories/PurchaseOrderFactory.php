@@ -22,7 +22,6 @@ class PurchaseOrderFactory extends Factory
             'client_id' => 1, // Assuming client_id 1 exists
             'quote_id' => null, // Assuming no quote is linked
             'budget' => $this->faker->randomFloat(2, 1000, 10000),
-            'hourly_rate' => $this->faker->randomFloat(2, 50, 200),
             'first_alert_threshold' => $this->faker->numberBetween(50, 80),
             'second_alert_threshold' => $this->faker->numberBetween(80, 95),
             'final_alert_threshold' => $this->faker->numberBetween(95, 100),

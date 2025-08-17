@@ -33,6 +33,13 @@ class TimesheetItemController extends Controller
         ];
     }
 
+    public function allowedSorts()
+    {
+        return [
+            'date', 'created_at', 'updated_at'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -58,7 +65,7 @@ class TimesheetItemController extends Controller
                 ...array_filter($request->validated(), function ($value) {
                     return $value !== null;
                 }),
-                'user_id' => $request->user()->id,
+                'user_id' => $request->assignment()->inspector_id,
             ]);
 
             $request->saveAttachments($record);

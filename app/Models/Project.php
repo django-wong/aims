@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property Client $client
+ * @property Org    $org
+ * @property int  $org_id
+ */
 class Project extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrder extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\PurchaseOrderFactory> */
-    use HasFactory, BelongsToClient, BelongsToOrg, DynamicPagination, HasManyAssignments, HasManyComments;
+    use HasFactory, BelongsToClient, BelongsToOrg, DynamicPagination, HasManyAssignments, HasManyComments, HasManyBudgets;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at'

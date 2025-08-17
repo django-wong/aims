@@ -5,8 +5,12 @@ import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Comments } from '@/components/comments';
-import { InfoIcon, MessagesSquareIcon } from 'lucide-react';
+import { ArrowDownToLineIcon, DollarSignIcon, InfoIcon, MessagesSquareIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
+import { DailyHoursUsage } from '@/pages/purchase-orders/daily-usage';
+import { Overview } from '@/pages/purchase-orders/overview';
+import { Button } from '@/components/ui/button';
+import { Budgets } from '@/pages/purchase-orders/budgets';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -32,6 +36,10 @@ export default function PurchaseOrderEditPage(props: Props) {
                 <InfoIcon />
                 <span className={'hidden lg:inline'}>Overview</span>
               </TabsTrigger>
+              <TabsTrigger value={'rates'}>
+                <DollarSignIcon />
+                <span className={'hidden lg:inline'}>Rates</span>
+              </TabsTrigger>
               <TabsTrigger value={'comments'}>
                 <MessagesSquareIcon />
                 <span className={'hidden lg:inline'}>Comments</span>
@@ -45,6 +53,9 @@ export default function PurchaseOrderEditPage(props: Props) {
                 commentableType={'PurchaseOrder'}
                 commentableId={props.purchase_order.id}
               />
+            </TabsContent>
+            <TabsContent value={'rates'}>
+              <Budgets purchaseOrderId={props.purchase_order.id}/>
             </TabsContent>
           </Tabs>
         }
@@ -65,20 +76,8 @@ export default function PurchaseOrderEditPage(props: Props) {
                 <InfoLine label={'Last Updated'} icon={'clock'}>
                   {new Date(props.purchase_order.updated_at).toLocaleDateString()}
                 </InfoLine>
-              </div>
-            </Info>
-
-            <Info>
-              <InfoHead>Budget & Rates</InfoHead>
-              <div>
                 <InfoLine label={'Budget'} icon={'dollar-sign'}>
                   ${props.purchase_order.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </InfoLine>
-                <InfoLine label={'Hourly Rate'} icon={'clock'}>
-                  ${props.purchase_order.hourly_rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/hr
-                </InfoLine>
-                <InfoLine label={'Budgeted Hours'} icon={'clock'}>
-                  {props.purchase_order.budgeted_hours.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} hours
                 </InfoLine>
               </div>
             </Info>
@@ -122,46 +121,15 @@ export default function PurchaseOrderEditPage(props: Props) {
 function OverviewContent(props: { purchase_order: PurchaseOrder }) {
   return (
     <div className="space-y-6">
-      <div className="p-4 bg-muted/50 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">Purchase Order Overview</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">Status</p>
-            <p className="text-sm">Active</p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">Budget Utilization</p>
-            <p className="text-sm">
-              {/* This would be calculated based on actual time entries */}
-              0% used
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">Hours Remaining</p>
-            <p className="text-sm">
-              {props.purchase_order.budgeted_hours.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })} hours
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">Budget Remaining</p>
-            <p className="text-sm">
-              ${props.purchase_order.budget.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })}
-            </p>
-          </div>
-        </div>
-      </div>
+      <Overview/>
 
-      <div className="p-4 bg-muted/50 rounded-lg">
-        <h4 className="text-md font-medium mb-2">Quick Actions</h4>
-        <p className="text-sm text-muted-foreground">
-          Edit purchase order details, manage assignments, or update budget allocations.
-        </p>
+      <DailyHoursUsage/>
+
+      <div>
+        <Button>
+          <ArrowDownToLineIcon/>
+          Export as CSV
+        </Button>
       </div>
     </div>
   );

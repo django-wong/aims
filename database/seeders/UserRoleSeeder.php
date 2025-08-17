@@ -18,5 +18,7 @@ class UserRoleSeeder extends Seeder
         UserRole::factory(200)
             ->recycle(Org::query()->get())
             ->create();
+
+        $this->call([InspectorProfileSeeder::class]);
     }
 }
