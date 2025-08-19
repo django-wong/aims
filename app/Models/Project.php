@@ -9,13 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property Client $client
  * @property Org    $org
- * @property int  $org_id
+ * @property int    $org_id
+ * @property int  $id
  */
 class Project extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
-    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToClient, HasManyComments, HasManyAssignments;
-    use SoftDeletes;
+    use HasFactory, BelongsToOrg, DynamicPagination, BelongsToClient, HasManyComments, HasManyAssignments, SoftDeletes, HasManyPurchaseOrders;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'

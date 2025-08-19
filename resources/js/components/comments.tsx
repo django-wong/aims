@@ -10,6 +10,7 @@ import { Attachment, Comment } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { File as FileIcon, Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
+import { Badge } from '@/components/ui/badge';
 
 const schema = z.object({
   content: z.string().min(1, 'Comment cannot be empty'),
@@ -39,7 +40,7 @@ export function Comments(props: CommentsProps) {
   const form = useReactiveForm<z.infer<typeof schema>>({
     contentType: 'multipart/form-data',
     defaultValues: {
-      content: 'My awesome comment',
+      content: '',
       private: false,
     },
     url: '/api/v1/comments',
@@ -148,19 +149,19 @@ export function Comments(props: CommentsProps) {
             </div>
           </Form>
         </div>
-        {table.data.length ? (
-          <div className={'flex flex-col rounded-lg px-1'}>
+        {table.data && table.data.length ? (
+          <div className={'grid gap-8 rounded-lg px-1'}>
             {table.data.map((comment, index) => (
               <>
-                <div key={`comment:${index}`} className={index > 0 ? 'mt-6 border-t pt-6' : ''}>
+                <div key={`comment:${index}`} className={'grid gap-4'}>
                   <p className={'flex w-full items-center justify-start gap-2 text-sm'}>
                     <strong>{comment.user?.name ?? 'Anonymous'}</strong>
-                    <span className={'inline-flex items-center justify-end gap-2'}>
-                      <span className={'text-muted-foreground text-xs'}>{new Date(comment.created_at).toLocaleString()}</span>
+                    <span className={'flex-grow inline-flex items-center justify-end gap-2'}>
                       {comment.private ? <Lock className={'size-4'} /> : null}
+                      <span className={'text-muted-foreground text-xs'}>{new Date(comment.created_at).toLocaleString()}</span>
                     </span>
                   </p>
-                  <p className={'pt-2'}>{comment.content}</p>
+                  <p>{comment.content}</p>
                   <Attachments attachments={comment.attachments} />
                 </div>
               </>
@@ -182,7 +183,7 @@ function Attachments(props: { attachments?: Attachment[] }) {
   }
   return (
     <>
-      <div className={'mt-4 flex flex-wrap gap-4'}>
+      <div className={'flex flex-wrap gap-4'}>
         {attachments.map((attachment, index) => (
           <AttachmentDownload attachment={attachment} key={`attachment:${index}`} />
         ))}

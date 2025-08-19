@@ -18,6 +18,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import { useState } from 'react';
+import { Progress } from '@/components/ui/progress';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   return (
@@ -51,8 +52,8 @@ function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
 
 const columns: ColumnDef<PurchaseOrder>[] = [
   {
-    accessorKey: 'title',
-    header: 'Title',
+    accessorKey: 'po_number',
+    header: 'PO#',
     enableResizing: true,
     minSize: 200,
     size: 300,
@@ -66,11 +67,18 @@ const columns: ColumnDef<PurchaseOrder>[] = [
     },
   },
   {
+    accessorKey: 'project',
+    header: 'Project',
+    minSize: 150,
+    maxSize: 300,
+    cell: ({ row }) => row.original.project?.title || 'N/A',
+  },
+  {
     accessorKey: 'client',
     header: 'Client',
     minSize: 150,
     maxSize: 300,
-    cell: ({ row }) => row.original.client?.business_name || 'N/A',
+    cell: ({ row }) => row.original.project?.client?.business_name || 'N/A',
   },
   {
     accessorKey: 'budget',
@@ -85,34 +93,15 @@ const columns: ColumnDef<PurchaseOrder>[] = [
     },
   },
   {
-    accessorKey: 'hourly_rate',
-    header: 'Hourly Rate',
+    accessorKey: 'usage',
+    header: 'Usage',
     minSize: 100,
     maxSize: 150,
     cell: ({ row }) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(row.original.hourly_rate);
-    },
-  },
-  {
-    accessorKey: 'budgeted_hours',
-    header: 'Budgeted Hours',
-    minSize: 120,
-    maxSize: 150,
-    cell: ({ row }) => {
-      return `${row.original.budgeted_hours}h`;
-    },
-  },
-  {
-    accessorKey: 'created_at',
-    header: 'Created',
-    minSize: 100,
-    maxSize: 150,
-    cell: ({ row }) => {
-      return new Date(row.original.created_at).toLocaleDateString();
-    },
+      return (
+        <Progress value={row.original.usage * 100}/>
+      );
+    }
   },
   {
     accessorKey: 'actions',
@@ -129,13 +118,9 @@ export default function PurchaseOrdersPage() {
   const table = useTable<PurchaseOrder>('/api/v1/purchase-orders', {
     columns: columns,
     defaultParams: {
-      include: 'client',
+      include: 'project.client',
     },
   });
-
-  const handleFormSubmit = (purchaseOrder: PurchaseOrder) => {
-    table.reload();
-  };
 
   return (
     <AppLayout
@@ -147,7 +132,7 @@ export default function PurchaseOrdersPage() {
         <PurchaseOrderForm
           open={formOpen}
           onOpenChange={setFormOpen}
-          onSubmit={handleFormSubmit}
+          onSubmit={() => table.reload()}
         >
           <Button>
             <Plus /> New Purchase Order

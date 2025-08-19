@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
+use App\Models\Org;
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +20,9 @@ class PurchaseOrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence(3),
-            'org_id' => 1, // Assuming org_id 1 exists
-            'client_id' => 1, // Assuming client_id 1 exists
+            'title' => $this->faker->bothify('PO-#####'),
+            'org_id' => Org::factory(),
+            'project_id' => Project::factory(),
             'quote_id' => null, // Assuming no quote is linked
             'budget' => $this->faker->randomFloat(2, 1000, 10000),
             'first_alert_threshold' => $this->faker->numberBetween(50, 80),

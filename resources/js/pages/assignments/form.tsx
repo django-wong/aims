@@ -69,6 +69,14 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
 
   const [mode, setMode] = useState(props.value?.operation_org_id === org?.id ? 'assign' : 'delegate');
 
+  useEffect(() => {
+    if (mode === 'assign') {
+      form.setValue('operation_org_id', null);
+    } else {
+      form.setValue('inspector_id', null);
+    }
+  }, [mode]);
+
   function save() {
     form.submit().then(async (response) => {
       if (response) {
@@ -96,7 +104,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   render={({ field }) => (
                     <>
                       <VFormField required label={'Project'} className={'col-span-12'}>
-                        <ProjectSelect onValueChane={field.onChange} value={field.value} />
+                        <ProjectSelect onValueChane={field.onChange} value={field.value}/>
                       </VFormField>
                     </>
                   )}
@@ -107,7 +115,13 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   render={({ field }) => (
                     <>
                       <VFormField required label={'Purchase Order'} className={'col-span-12'}>
-                        <PurchaseOrderSelect value={field.value} onValueChane={field.onChange}/>
+                        <PurchaseOrderSelect
+                          onValueChane={field.onChange}
+                          value={field.value}
+                          params={{
+                            'filter[project_id]': form.watch('project_id') || ''
+                          }}
+                        />
                       </VFormField>
                     </>
                   )}
@@ -127,7 +141,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     </>
                   )}
                 />
-                <div className={'col-span-12 p-4 bg-blue-200 rounded-lg ring-2 ring-blue-500 '}>
+                <div className={'col-span-12 p-4 bg-background rounded-sm ring-2 ring-foreground/20'}>
                   <Tabs value={mode} onValueChange={setMode}>
                     <TabsList>
                       <TabsTrigger value={'assign'}>Assign to inspector</TabsTrigger>

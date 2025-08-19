@@ -1,5 +1,4 @@
 import AppLayoutTemplate, { AppSidebarLayoutProps } from '@/layouts/app/app-sidebar-layout';
-import { type BreadcrumbItem } from '@/types';
 import { FlashMessage } from '@/components/flash-message';
 import { Toaster } from '@/components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -16,6 +15,6 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <FlashMessage/>
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
       {children}
-    </AppLayoutTemplate> 
+    </AppLayoutTemplate>
   </QueryClientProvider>
 );

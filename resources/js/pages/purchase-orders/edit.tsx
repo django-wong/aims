@@ -64,11 +64,14 @@ export default function PurchaseOrderEditPage(props: Props) {
             <Info>
               <InfoHead>Basic Information</InfoHead>
               <div>
-                <InfoLine label={'Title'} icon={'info'}>
+                <InfoLine label={'PO#'} icon={'info'}>
                   {props.purchase_order.title}
                 </InfoLine>
+                <InfoLine label={'Project'} icon={'library-big'}>
+                  {props.purchase_order.project?.title || '--'}
+                </InfoLine>
                 <InfoLine label={'Client'} icon={'user'}>
-                  {props.purchase_order.client?.business_name || 'No client assigned'}
+                  {props.purchase_order.project?.client?.business_name || 'No client assigned'}
                 </InfoLine>
                 <InfoLine label={'Created'} icon={'calendar'}>
                   {new Date(props.purchase_order.created_at).toLocaleDateString()}

@@ -13,25 +13,38 @@ interface CreateSelectProps<T> extends Pick<SelectPopupProps<T>, 'getItemLabel' 
 }
 
 export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
-  return (props: SelectProps<T>) => {
-    const table = usePagedGetApi<T>(options.api, {
+  const defaultParams = new URLSearchParams(options.searchParams || {});
+
+  return ({
+    params,
+    ...props
+  }: SelectProps<T> & {
+    params?: Record<string, any>;
+  }) => {
+    // Merge local and external params
+    const searchParams = new URLSearchParams(params);
+    defaultParams.forEach((value, key) => {
+      searchParams.set(key, value);
+    });
+
+    // Create api
+    const api = usePagedGetApi<T>(options.api, {
       pageSize: 999,
-      searchParams: options.searchParams
+      searchParams: searchParams
     });
 
     const [open, setOpen] = useState<boolean>(false);
-
     return (
       <SelectPopup
         getItemLabel={options.getItemLabel}
         getKeywords={options.getKeywords}
-        data={table.data}
+        data={api.data || []}
         open={open}
         setOpen={setOpen}
         {...props}
       />
     );
-  }
+  };
 }
 
 export interface SelectProps<T> {

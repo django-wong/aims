@@ -15,21 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('title')->index();
             $table->foreignId('org_id')->constrained();
-            $table->foreignId('client_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('quote_id')->nullable()->constrained();
             $table->decimal('budget', 15, 2)->default(0.00);
-
-            $table->unsignedInteger('first_alert_threshold')->default(70)
-                ->comment('The first alert threshold for the purchase order');
-            $table->timestamp('first_alert_at')->nullable();
-            $table->unsignedInteger('second_alert_threshold')->default(90)
-                ->comment('The second alert threshold for the purchase order');
-            $table->timestamp('second_alert_at')->nullable();
-            $table->unsignedInteger('final_alert_threshold')->default(100)
-                ->comment('The final alert threshold for the purchase order');
-            $table->timestamp('final_alert_at')->nullable();
-
-            $table->index(['org_id', 'client_id']);
+            foreach (['first', 'second', 'final'] as $stage) {
+                $table->unsignedInteger($stage.'_alert_threshold')->default(70);
+                $table->timestamp($stage.'_alert_at')->nullable();
+            }
+            $table->index(['org_id', 'project_id']);
             $table->timestamps();
             $table->softDeletes();
         });

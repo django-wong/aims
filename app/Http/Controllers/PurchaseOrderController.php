@@ -17,7 +17,7 @@ class PurchaseOrderController extends Controller
     public function edit(string $id)
     {
         return inertia('purchase-orders/edit', [
-            'purchase_order' => PurchaseOrder::query()->with('client')->findOrFail($id)
+            'purchase_order' => PurchaseOrder::query()->with('project.client')->findOrFail($id)
         ]);
     }
 }

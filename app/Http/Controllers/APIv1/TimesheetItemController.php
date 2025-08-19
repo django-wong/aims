@@ -58,7 +58,7 @@ class TimesheetItemController extends Controller
     public function store(StoreRequest $request)
     {
         /* @var Timesheet $timesheet */
-        $timesheet = $request->assignment()->timesheets()->firstOrCreate();
+        $timesheet = $request->assignment()->timesheets()->draft()->firstOrCreate();
 
         $record = DB::transaction(function () use ($request, $timesheet) {
             $record = $timesheet->timesheet_items()->create([
@@ -74,8 +74,11 @@ class TimesheetItemController extends Controller
         });
 
         return response()->json([
-            'data' => $record->load(['timesheet', 'attachments']),
             'message' => 'Timesheet item created successfully',
+            'data' => $record->load([
+                'timesheet',
+                'attachments'
+            ]),
         ]);
     }
 

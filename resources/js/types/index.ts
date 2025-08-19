@@ -163,11 +163,12 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
   org_id: number;
   org?: Org;
   title: string;
-  client_id: number;
-  client?: Client;
+  project_id: number | null;
+  project?: Project;
   quote_id: number | null;
   quote?: Quote;
   budget: number;
+  usage: number;
   hourly_rate: number;
   budgeted_hours: number;
 }

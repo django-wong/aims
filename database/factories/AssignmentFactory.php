@@ -42,4 +42,9 @@ class AssignmentFactory extends Factory
             'notes' => $this->faker->paragraph(),
         ];
     }
+
+    public function of(Project $project)
+    {
+        return $this->recycle($project, $project->org);
+    }
 }

@@ -42,9 +42,11 @@ const timesheetItemSchema = z.object({
   overnights: number,
   travel_distance: number,
   travel_rate: number,
+
   hotel: number,
   rail_or_airfare: number,
   meals: number,
+  other: number,
 
   attachments: attachments,
 });
@@ -227,51 +229,73 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                     name={'travel_rate'}
                   />
                 </div>
-                <div className={'col-span-12'}>
-                  <FormItem>
-                    <Label>Additional Expenses</Label>
-                    <div className={'grid grid-cols-12 gap-4'}>
-                      <div className={'col-span-12 md:col-span-4'}>
-                        <FormField
-                          control={form.control}
-                          render={({ field }) => {
-                            return (
-                              <VFormField label={'Hotel'}>
-                                <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                              </VFormField>
-                            );
-                          }}
-                          name={'hotel'}
-                        />
+                <div className={'col-span-12 grid grid-cols-1 gap-3 p-2 bg-muted rounded-md ring-2 ring-border'}>
+                  <Label className={'my-2'}>Expenses</Label>
+                  <div className={'bg-background rounded-md p-4 border'}>
+                    <FormItem>
+                      {/*<div className={'h-[1px] relative my-4 bg-foreground/30'}>*/}
+                      {/*  <div className={'absolute -top-[0.7rem] flex items-center justify-center w-full'}>*/}
+                      {/*    <span className={'bg-background px-2'}>*/}
+                      {/*      Additional Expenses*/}
+                      {/*    </span>*/}
+                      {/*  </div>*/}
+                      {/*</div>*/}
+                      <div className={'grid grid-cols-12 gap-4'}>
+                        <div className={'col-span-12 md:col-span-3'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => {
+                              return (
+                                <VFormField label={'Hotel'}>
+                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                </VFormField>
+                              );
+                            }}
+                            name={'hotel'}
+                          />
+                        </div>
+                        <div className={'col-span-12 md:col-span-3'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => {
+                              return (
+                                <VFormField label={'Rail/Airfare'}>
+                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                </VFormField>
+                              );
+                            }}
+                            name={'rail_or_airfare'}
+                          />
+                        </div>
+                        <div className={'col-span-12 md:col-span-3'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => {
+                              return (
+                                <VFormField label={'Meals'}>
+                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                </VFormField>
+                              );
+                            }}
+                            name={'meals'}
+                          />
+                        </div>
+                        <div className={'col-span-12 md:col-span-3'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => {
+                              return (
+                                <VFormField label={'Other'}>
+                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                </VFormField>
+                              );
+                            }}
+                            name={'other'}
+                          />
+                        </div>
                       </div>
-                      <div className={'col-span-12 md:col-span-4'}>
-                        <FormField
-                          control={form.control}
-                          render={({ field }) => {
-                            return (
-                              <VFormField label={'Rail/Airfare'}>
-                                <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                              </VFormField>
-                            );
-                          }}
-                          name={'rail_or_airfare'}
-                        />
-                      </div>
-                      <div className={'col-span-12 md:col-span-4'}>
-                        <FormField
-                          control={form.control}
-                          render={({ field }) => {
-                            return (
-                              <VFormField label={'Meals'}>
-                                <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                              </VFormField>
-                            );
-                          }}
-                          name={'meals'}
-                        />
-                      </div>
-                    </div>
-                  </FormItem>
+                    </FormItem>
+                  </div>
                 </div>
                 <div className={'col-span-12 md:col-span-12'}>
                   <div

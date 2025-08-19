@@ -102,10 +102,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
   return (
     <>
       <DataTable
-        left={props.datatable?.left}
-        right={
-          <ColumnToggle/>
-        }
+        {...props.datatable}
         table={table}
         className={'overflow-x-auto'}
       />

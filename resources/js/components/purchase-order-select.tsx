@@ -5,7 +5,8 @@ export const PurchaseOrderSelect = createSelect<PurchaseOrder>({
   api: '/api/v1/purchase-orders',
   getKeywords: (item) => [
     item.title,
-    item.client?.business_name || '',
+    item.project?.client?.business_name || '',
+    item.project?.title || '',
   ],
   getItemLabel: (item) => {
     // return (
@@ -17,12 +18,10 @@ export const PurchaseOrderSelect = createSelect<PurchaseOrder>({
     //   </span>
     // );
 
-    return (
-      item.title + (item.client ? ` (${item.client.business_name})` : '')
-    )
+    return item.title;
   },
   searchParams: new URLSearchParams({
     sort: 'title',
-    include: 'client'
+    include: 'project.client'
   }),
 });

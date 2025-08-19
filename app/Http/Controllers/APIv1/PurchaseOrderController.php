@@ -4,15 +4,32 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class PurchaseOrderController extends Controller
 {
 
+    protected function allowedFilters()
+    {
+        return [
+            AllowedFilter::callback('project_id', function (Builder $query, $value) {
+                if (empty($value)) {
+                    Gate::authorize('create', PurchaseOrder::class);
+                } else {
+                    $query->where('project_id', $value);
+                }
+            }),
+        ];
+    }
+
     protected function allowedIncludes()
     {
         return [
-            'client',
+            'project',
+            'project.client',
             'org'
         ];
     }

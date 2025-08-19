@@ -8,10 +8,11 @@ import { useQueryParam } from '@/hooks/use-query-param';
 import { BaseLayout } from '@/layouts/base-layout';
 import { Assignment, SharedData, Timesheet } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { BookmarkCheck, ClockIcon, House, MessageCircleIcon, Plus, UserCircle } from 'lucide-react';
+import { BookmarkCheck, ClockIcon, House, ListCheckIcon, MessageCircleIcon, Plus, UserCircle } from 'lucide-react';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
-import { useTableApi } from '@/components/data-table-2';
+import { ColumnToggle, useTableApi } from '@/components/data-table-2';
+import { PopoverConfirm } from '@/components/popover-confirm';
 
 interface RecordProps {
   assignment: Assignment;
@@ -85,9 +86,20 @@ export default function Record(props: RecordProps) {
                         timesheet={props.timesheet}
                         assignment={props.assignment}
                         datatable={{
-                          left: <LogYourTime
-                            assignment_id={props.assignment.id}
-                          />
+                          left: <ColumnToggle/>,
+                          right: <div className={'flex items-center justify-end gap-2'}>
+                            <LogYourTime
+                              assignment_id={props.assignment.id}
+                            />
+                            <PopoverConfirm
+                              align={'end'} side={'bottom'}
+                              message={'Are you sure to sign off this timesheet?'} onConfirm={() => {}} asChild>
+                              <Button>
+                                <ListCheckIcon/>
+                                Sign Off
+                              </Button>
+                            </PopoverConfirm>
+                          </div>
                         }}
                       />
                     </TabsContent>
@@ -118,7 +130,7 @@ function LogYourTime(props: LogYourTimeProps) {
           table.reload();
         }}
         assignment={props.assignment_id}>
-        <Button>
+        <Button variant={'outline'}>
           <Plus />
           Log your work
         </Button>

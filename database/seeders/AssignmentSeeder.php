@@ -23,16 +23,9 @@ class AssignmentSeeder extends Seeder
      */
     public function run(): void
     {
-        Assignment::factory(50)
-            ->recycle(Project::query()->get())
-            ->recycle(AssignmentType::query()->get())
-            ->recycle(Org::query()->get())
-            ->recycle(User::query()->whereHas('user_role', function ($query) {
-                return $query->whereIn('role', [
-                    UserRole::INSPECTOR
-                ]);
-            })->get())
-            ->recycle(Vendor::query()->get())
-            ->create();
+        foreach (Project::query()->cursor() as $project) {
+            Assignment::factory(3)
+                ->recycle(AssignmentType::query()->get())->of($project)->create();
+        }
     }
 }
