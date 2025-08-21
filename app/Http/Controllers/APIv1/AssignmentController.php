@@ -7,6 +7,7 @@ use App\Http\Requests\APIv1\Assignments\StoreRequest;
 use App\Models\Assignment;
 use App\Models\Org;
 use App\Notifications\NewAssignmentIssued;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -104,5 +105,10 @@ class AssignmentController extends Controller
     public function destroy(Assignment $assignment)
     {
         //
+    }
+
+    public function pdf(Assignment $assignment)
+    {
+        return Pdf::loadView('pdfs.assignment-form')->download("assignment-{$assignment->id}.pdf");
     }
 }

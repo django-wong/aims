@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ColumnToggle, DataTable } from '@/components/data-table-2';
-import { EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2, User } from 'lucide-react';
+import { ClipboardTypeIcon, EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -26,6 +26,8 @@ import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
 import { ProjectSelect } from '@/components/project-select';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import { toast } from 'sonner';
+import { download } from '@/lib/download-response-as-blob';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -145,7 +147,7 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
             <EllipsisVertical />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
+        <DropdownMenuContent className="w-64" side={'bottom'} align={'end'}>
           <DropdownMenuLabel className={'flex items-center gap-2 justify-between'}>
             <span>Assignment</span> <span>#{assignment.id}</span>
           </DropdownMenuLabel>
@@ -162,6 +164,25 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem
+              onClick={() => {
+                toast.message('Generating PDF...');
+                axios.get('/api/v1/assignments/' + assignment.id + '/pdf', { responseType: 'blob' })
+                  .then((response) => {
+                    download(response);
+                    toast.success('PDF generated successfully!');
+                  })
+                  .catch((error) => {
+                    console.error('Error generating PDF:', error);
+                    toast.error('Failed to generate PDF.');
+                  }
+                );
+              }}>
+              Assignment Form (PDF)
+              <DropdownMenuShortcut>
+                <ClipboardTypeIcon/>
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Send notification via...</DropdownMenuSubTrigger>
               <DropdownMenuPortal>

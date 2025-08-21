@@ -33,5 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('users/{id}/update-role', [UserController::class, 'updateRole'])->name('users.update_role');
     Route::post('assignments/{id}/notify-inspector', [AssignmentController::class, 'notify'])->name('assignments.notify_inspector');
+    Route::get('assignments/{assignment}/pdf', [AssignmentController::class, 'pdf']);
     Route::post('timesheet/{id}/sign-off', [\App\Http\Controllers\APIv1\TimesheetController::class, 'signOff']);
 });
