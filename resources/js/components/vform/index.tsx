@@ -12,8 +12,8 @@ interface FormFieldProps {
 
 export function VFormField({ className, ...props }: PropsWithChildren<FormFieldProps> & React.ComponentProps<'div'>) {
   return (
-    <>
-      <FormItem className={className}>
+    <div className={className}>
+      <FormItem>
         {typeof props.renderLabel === 'function' ? (
           props.renderLabel(props)
         ) : props.label ? (
@@ -32,7 +32,7 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
         {props.description && <FormDescription>{props.description}</FormDescription>}
         <FormMessage children={props.error} />
       </FormItem>
-    </>
+    </div>
   );
 }
 

@@ -25,6 +25,9 @@ import { PurchaseOrderSelect } from '@/components/purchase-order-select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ContactSelect } from '@/components/contact-select';
+import { DatePicker } from '@/components/date-picker';
 
 const schema = z.object({
   'project_id': z.number('Project is required').int().positive(),
@@ -39,14 +42,40 @@ const schema = z.object({
 
   // 'report_required': z.boolean(),
 
+  // Visit fields
+  'first_visit_date': z.string().nullable().optional(),
+  'visit_frequency': z.string().nullable().optional(),
+  'total_visits': z.number().int().positive().nullable().optional(),
+  'hours_per_visit': z.number().int().min(0).max(24).positive().nullable().optional(),
+  'visit_contact_id': z.number().int().positive().nullable().optional(),
+
+  // Scope of assignment (booleans)
+  'pre_inspection_meeting': z.boolean().optional(),
+  'final_inspection': z.boolean().optional(),
+  'dimensional': z.boolean().optional(),
+  'sample_inspection': z.boolean().optional(),
+  'witness_of_tests': z.boolean().optional(),
+  'monitoring': z.boolean().optional(),
+  'packing': z.boolean().optional(),
+  'document_review': z.boolean().optional(),
+  'expediting': z.boolean().optional(),
+  'audit': z.boolean().optional(),
+
+  // Status/flash report/exit call
+  'exit_call': z.boolean().optional(),
+  'flash_report': z.boolean().optional(),
+  'contact_details': z.string().nullable().optional(),
+  'contact_email': z.string().email().nullable().optional(),
+
   'equipment': z.string().min(14).nullable().optional(),
   'notes': z.string().max(1500).nullable().optional(),
+  'special_notes': z.string().nullable().optional(),
   'inter_office_instructions': z.string().max(1500).nullable().optional(),
   'inspector_instructions': z.string().max(1500).nullable().optional(),
 });
 
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
-  const form = useReactiveForm<z.infer<typeof schema>>({
+  const form = useReactiveForm<z.infer<typeof schema>, Assignment>({
     ...useResource('/api/v1/assignments', {
       operation_org_id: null,
       inspector_id: null,
@@ -75,18 +104,25 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     }
   }, [mode]);
 
+  const [open, _setOpen] = useState(props.open || false);
+
+  function setOpen(value: boolean) {
+    _setOpen(value);
+    props.onOpenChange?.(value);
+  }
+
   function save() {
     form.submit().then(async (response) => {
       if (response) {
-        props.onSubmit(await response.json());
-        props.onOpenChange?.(false);
+        setOpen(false);
+        props.onSubmit(response.data);
       }
     })
   }
 
   return (
     <>
-      <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -217,9 +253,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         <FormField
                           control={form.control}
                           render={({ field }) => {
-                            return <VFormField>
-                              <Input value={field.value || ''} onChange={field.onChange}></Input>
-                            </VFormField>;
+                            return (
+                              <VFormField>
+                                <Input value={field.value || ''} onChange={field.onChange}></Input>
+                              </VFormField>
+                            );
                           }}
                           name={'equipment'}
                         />
@@ -231,9 +269,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         <FormField
                           control={form.control}
                           render={({ field }) => {
-                            return <VFormField>
-                              <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
-                            </VFormField>;
+                            return (
+                              <VFormField>
+                                <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
+                              </VFormField>
+                            );
                           }}
                           name={'inter_office_instructions'}
                         />
@@ -245,12 +285,299 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         <FormField
                           control={form.control}
                           render={({ field }) => {
-                            return <VFormField>
-                              <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
-                            </VFormField>;
+                            return (
+                              <VFormField>
+                                <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
+                              </VFormField>
+                            );
                           }}
                           name={'inspector_instructions'}
                         />
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value={'visit-details'}>
+                      <AccordionTrigger>Visit Details</AccordionTrigger>
+                      <AccordionContent>
+                        <div className={'grid grid-cols-12 gap-4'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'First Visit Date'} className={'col-span-6'}>
+                                <DatePicker
+                                  value={field.value || undefined}
+                                  onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
+                                />
+                              </VFormField>
+                            )}
+                            name={'first_visit_date'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Visit Frequency'} className={'col-span-6'}>
+                                <Input value={field.value || ''} onChange={field.onChange} placeholder="e.g., weekly, monthly" />
+                              </VFormField>
+                            )}
+                            name={'visit_frequency'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Total Visits'} className={'col-span-6'}>
+                                <Input
+                                  type="number"
+                                  value={field.value || ''}
+                                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                                />
+                              </VFormField>
+                            )}
+                            name={'total_visits'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Hours Per Visit'} className={'col-span-6'}>
+                                <Input
+                                  type="number"
+                                  value={field.value || ''}
+                                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                                />
+                              </VFormField>
+                            )}
+                            name={'hours_per_visit'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Contact Person'} className={'col-span-12'}>
+                                <ContactSelect
+                                  onValueChane={field.onChange}
+                                  value={field.value || null}
+                                  params={{
+                                    contactable_type: 'client',
+                                    contactable_id: `{project.${form.watch('project_id')}.client_id}`,
+                                  }}
+                                />
+                              </VFormField>
+                            )}
+                            name={'visit_contact_id'}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value={'scope-of-assignment'}>
+                      <AccordionTrigger>Scope of Assignment</AccordionTrigger>
+                      <AccordionContent>
+                        <div className={'grid grid-cols-2 gap-4'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="pre_inspection_meeting" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="pre_inspection_meeting" className="text-sm font-medium">
+                                  Pre-inspection Meeting
+                                </label>
+                              </div>
+                            )}
+                            name={'pre_inspection_meeting'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="final_inspection" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="final_inspection" className="text-sm font-medium">
+                                  Final Inspection
+                                </label>
+                              </div>
+                            )}
+                            name={'final_inspection'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="dimensional" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="dimensional" className="text-sm font-medium">
+                                  Dimensional
+                                </label>
+                              </div>
+                            )}
+                            name={'dimensional'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="sample_inspection" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="sample_inspection" className="text-sm font-medium">
+                                  Sample Inspection
+                                </label>
+                              </div>
+                            )}
+                            name={'sample_inspection'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="witness_of_tests" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="witness_of_tests" className="text-sm font-medium">
+                                  Witness of Tests
+                                </label>
+                              </div>
+                            )}
+                            name={'witness_of_tests'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="monitoring" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="monitoring" className="text-sm font-medium">
+                                  Monitoring
+                                </label>
+                              </div>
+                            )}
+                            name={'monitoring'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="packing" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="packing" className="text-sm font-medium">
+                                  Packing
+                                </label>
+                              </div>
+                            )}
+                            name={'packing'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="document_review" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="document_review" className="text-sm font-medium">
+                                  Document Review
+                                </label>
+                              </div>
+                            )}
+                            name={'document_review'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="expediting" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="expediting" className="text-sm font-medium">
+                                  Expediting
+                                </label>
+                              </div>
+                            )}
+                            name={'expediting'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="audit" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="audit" className="text-sm font-medium">
+                                  Audit
+                                </label>
+                              </div>
+                            )}
+                            name={'audit'}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value={'status-flash-report'}>
+                      <AccordionTrigger>Status / Flash Report / Exit Call</AccordionTrigger>
+                      <AccordionContent>
+                        <div className={'grid grid-cols-12 gap-4'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Contact Name'} className={'col-span-6'}>
+                                <Input value={field.value || ''} onChange={field.onChange} placeholder="Contact person name" />
+                              </VFormField>
+                            )}
+                            name={'contact_details'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Contact Email'} className={'col-span-6'}>
+                                <Input type="email" value={field.value || ''} onChange={field.onChange} placeholder="contact@example.com" />
+                              </VFormField>
+                            )}
+                            name={'contact_email'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="col-span-6 flex items-center space-x-2">
+                                <Checkbox id="exit_call" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="exit_call" className="text-sm font-medium">
+                                  Exit Call Required
+                                </label>
+                              </div>
+                            )}
+                            name={'exit_call'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <div className="col-span-6 flex items-center space-x-2">
+                                <Checkbox id="flash_report" checked={field.value || false} onCheckedChange={field.onChange} />
+                                <label htmlFor="flash_report" className="text-sm font-medium">
+                                  Flash Report Required
+                                </label>
+                              </div>
+                            )}
+                            name={'flash_report'}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value={'notes'}>
+                      <AccordionTrigger>Notes</AccordionTrigger>
+                      <AccordionContent>
+                        <div className={'grid grid-cols-12 gap-4'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'General Notes'} className={'col-span-12'}>
+                                <Textarea
+                                  value={field.value || ''}
+                                  onChange={field.onChange}
+                                  placeholder="General notes about the assignment"
+                                  className="min-h-24"
+                                />
+                              </VFormField>
+                            )}
+                            name={'notes'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Special Notes'} className={'col-span-12'}>
+                                <Textarea
+                                  value={field.value || ''}
+                                  onChange={field.onChange}
+                                  placeholder="Special notes will be included in the assignment form."
+                                  className="min-h-24"
+                                />
+                              </VFormField>
+                            )}
+                            name={'special_notes'}
+                          />
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>

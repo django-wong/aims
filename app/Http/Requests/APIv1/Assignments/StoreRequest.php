@@ -26,6 +26,9 @@ class StoreRequest extends FormRequest
                 }
             ],
 
+            // Start from here
+
+
             'notes' => 'nullable|string|max:1000',
             'report_required' => 'nullable|boolean',
             'vendor_id' => 'nullable|exists:vendors,id',
@@ -65,6 +68,37 @@ class StoreRequest extends FormRequest
                     }
                 }
             ],
+
+            // Visit fields
+            'first_visit_date' => 'nullable|date',
+            'visit_frequency' => 'nullable|string|max:255',
+            'total_visits' => 'nullable|integer|min:1',
+            'hours_per_visit' => 'nullable|integer|min:1|max:255',
+            'visit_contact_id' => 'nullable|exists:contacts,id',
+
+            // Scope of assignment (booleans)
+            'pre_inspection_meeting' => 'nullable|boolean',
+            'final_inspection' => 'nullable|boolean',
+            'dimensional' => 'nullable|boolean',
+            'sample_inspection' => 'nullable|boolean',
+            'witness_of_tests' => 'nullable|boolean',
+            'monitoring' => 'nullable|boolean',
+            'packing' => 'nullable|boolean',
+            'document_review' => 'nullable|boolean',
+            'expediting' => 'nullable|boolean',
+            'audit' => 'nullable|boolean',
+
+            // Status/flash report/exit call
+            'exit_call' => 'nullable|boolean',
+            'flash_report' => 'nullable|boolean',
+            'contact_details' => 'nullable|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
+
+            // Equipment and additional notes
+            'equipment' => 'nullable|string',
+            'special_notes' => 'nullable|string',
+            'inter_office_instructions' => 'nullable|string|max:1500',
+            'inspector_instructions' => 'nullable|string|max:1500',
         ];
     }
 

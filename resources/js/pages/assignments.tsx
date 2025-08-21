@@ -113,12 +113,14 @@ const columns: ColumnDef<Assignment>[] = [
 export default function AssignmentsPage() {
   const {table, content} = useAssignmentsTable();
   const [count, setCount] = useState(0);
-
+  const [open, setOpen] = useState(false);
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
         <AssignmentForm
+          open={open}
+          onOpenChange={setOpen}
           onSubmit={() => {table.reload()}}>
           <Button onClick={() => {setCount(count + 1)}}>
             <PlusIcon/> New
