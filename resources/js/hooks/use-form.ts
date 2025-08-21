@@ -81,6 +81,8 @@ interface ApiResponse<T> {
   [key: string]: any; // Allow additional properties
 }
 
+export type ReactForm<T extends FieldValues, R = T> = ReturnType<typeof useReactiveForm<T, R>>;
+
 /**
  * Note: form instance can't be used as a dependency in useEffect or useMemo hooks,
  * @param props

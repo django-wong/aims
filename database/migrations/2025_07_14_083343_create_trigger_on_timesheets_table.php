@@ -23,8 +23,7 @@ return new class extends Migration
                 FROM timesheet_items
                 WHERE
                     timesheet_id = $timesheet_id
-                    AND deleted_at IS NULL
-                    AND approved = 1;
+                    AND deleted_at IS NULL;
 
                 UPDATE timesheets
                     SET

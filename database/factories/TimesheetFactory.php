@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Assignment;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,8 +18,14 @@ class TimesheetFactory extends Factory
      */
     public function definition(): array
     {
+        $seed = Carbon::make($this->faker->dateTimeBetween('-1 month', 'now'));
+        $start = $seed->startOfWeek()->format('Y-m-d');
+        $end = $seed->endOfWeek()->format('Y-m-d');
+
         return [
-            'assignment_id' => Assignment::factory()
+            'assignment_id' => Assignment::factory(),
+            'start' => $start,
+            'end' => $end,
         ];
     }
 }

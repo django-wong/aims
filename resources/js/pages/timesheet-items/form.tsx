@@ -1,24 +1,24 @@
-import { Assignment, DialogFormProps, TimesheetItem } from '@/types';
-import dayjs from 'dayjs';
-import z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { objectToFormData, useReactiveForm, useResource } from '@/hooks/use-form';
-import { PropsWithChildren, startTransition, useState } from 'react';
-import { router } from '@inertiajs/react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { DialogInnerContent } from '@/components/dialog-inner-content';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { VFormField } from '@/components/vform';
 import { DatePicker } from '@/components/date-picker';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { PlusIcon, UploadIcon } from 'lucide-react';
+import { DialogInnerContent } from '@/components/dialog-inner-content';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Loading } from '@/components/ui/loading';
+import { VFormField } from '@/components/vform';
+import { objectToFormData, ReactForm, useReactiveForm, useResource } from '@/hooks/use-form';
+import { DialogFormProps, Timesheet, TimesheetItem } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from '@inertiajs/react';
+import dayjs from 'dayjs';
+import { PlusIcon, UploadIcon } from 'lucide-react';
+import { PropsWithChildren, startTransition, useEffect, useState } from 'react';
+import z from 'zod';
 
-type TimesheetItemFormProps ={
-  assignment?: Assignment['id'];
-} & DialogFormProps<TimesheetItem>
+type TimesheetItemFormProps = {
+  timesheet?: Timesheet;
+} & DialogFormProps<TimesheetItem>;
 
 const attachments = z
   .array(z.instanceof(File).refine((file) => file.size < 524288000, 'File size must be less than 500MB'))
@@ -28,7 +28,7 @@ const attachments = z
 const number = z.coerce.number().min(0).optional();
 
 const timesheetItemSchema = z.object({
-  assignment_id: z.coerce.number(),
+  timesheet_id: z.number(),
   date: z
     .date()
     .or(z.string())
@@ -55,18 +55,20 @@ type Record = z.infer<typeof timesheetItemSchema>;
 
 export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProps>) {
   const form = useReactiveForm<Record, TimesheetItem>({
-    ...(
-      useResource('/api/v1/timesheet-items', {
-        assignment_id: props.assignment,
-        date: new Date().toISOString(),
-        ...props.value
-      })
-    ),
+    ...useResource('/api/v1/timesheet-items', {
+      timesheet_id: props.timesheet?.id,
+      date: dayjs(props.timesheet?.start || Date.now()).toISOString(),
+      ...props.value,
+    }),
     resolver: zodResolver(timesheetItemSchema) as any,
     serialize: (data) => {
       return objectToFormData(data);
     },
   });
+
+  useEffect(() => {
+    console.log(props.timesheet);
+  })
 
   const [open, setOpen] = useState(false);
 
@@ -105,8 +107,13 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                             <DatePicker
                               calendar={{
                                 disabled: (date) => {
-                                  return date > new Date();
-                                }
+                                  if (props.timesheet) {
+                                    const start = dayjs(props.timesheet.start);
+                                    const end = dayjs(props.timesheet.end);
+                                    return start.isAfter(date) || end.isBefore(date);
+                                  }
+                                  return false;
+                                },
                               }}
                               value={field.value}
                               onChange={(date) => field.onChange(date)}
@@ -229,73 +236,72 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                     name={'travel_rate'}
                   />
                 </div>
-                <div className={'col-span-12 grid grid-cols-1 gap-3 p-2 bg-muted rounded-md ring-2 ring-border'}>
-                  <Label className={'my-2'}>Expenses</Label>
-                  <div className={'bg-background rounded-md p-4 border'}>
-                    <FormItem>
-                      {/*<div className={'h-[1px] relative my-4 bg-foreground/30'}>*/}
-                      {/*  <div className={'absolute -top-[0.7rem] flex items-center justify-center w-full'}>*/}
-                      {/*    <span className={'bg-background px-2'}>*/}
-                      {/*      Additional Expenses*/}
-                      {/*    </span>*/}
-                      {/*  </div>*/}
-                      {/*</div>*/}
-                      <div className={'grid grid-cols-12 gap-4'}>
-                        <div className={'col-span-12 md:col-span-3'}>
-                          <FormField
-                            control={form.control}
-                            render={({ field }) => {
-                              return (
-                                <VFormField label={'Hotel'}>
-                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                </VFormField>
-                              );
-                            }}
-                            name={'hotel'}
-                          />
-                        </div>
-                        <div className={'col-span-12 md:col-span-3'}>
-                          <FormField
-                            control={form.control}
-                            render={({ field }) => {
-                              return (
-                                <VFormField label={'Rail/Airfare'}>
-                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                </VFormField>
-                              );
-                            }}
-                            name={'rail_or_airfare'}
-                          />
-                        </div>
-                        <div className={'col-span-12 md:col-span-3'}>
-                          <FormField
-                            control={form.control}
-                            render={({ field }) => {
-                              return (
-                                <VFormField label={'Meals'}>
-                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                </VFormField>
-                              );
-                            }}
-                            name={'meals'}
-                          />
-                        </div>
-                        <div className={'col-span-12 md:col-span-3'}>
-                          <FormField
-                            control={form.control}
-                            render={({ field }) => {
-                              return (
-                                <VFormField label={'Other'}>
-                                  <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                </VFormField>
-                              );
-                            }}
-                            name={'other'}
-                          />
-                        </div>
-                      </div>
-                    </FormItem>
-                  </div>
+                <div className={'col-span-12'}>
+                  <Accordion type={'single'} className={'w-full'} defaultValue={''} collapsible>
+                    <AccordionItem value={'expenses'}>
+                      <AccordionTrigger>
+                        Expenses (click to expand)
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <FormItem>
+                          <div className={'grid grid-cols-12 gap-4'}>
+                            <div className={'col-span-12 md:col-span-3'}>
+                              <FormField
+                                control={form.control}
+                                render={({ field }) => {
+                                  return (
+                                    <VFormField label={'Hotel'}>
+                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                    </VFormField>
+                                  );
+                                }}
+                                name={'hotel'}
+                              />
+                            </div>
+                            <div className={'col-span-12 md:col-span-3'}>
+                              <FormField
+                                control={form.control}
+                                render={({ field }) => {
+                                  return (
+                                    <VFormField label={'Rail/Airfare'}>
+                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                    </VFormField>
+                                  );
+                                }}
+                                name={'rail_or_airfare'}
+                              />
+                            </div>
+                            <div className={'col-span-12 md:col-span-3'}>
+                              <FormField
+                                control={form.control}
+                                render={({ field }) => {
+                                  return (
+                                    <VFormField label={'Meals'}>
+                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                    </VFormField>
+                                  );
+                                }}
+                                name={'meals'}
+                              />
+                            </div>
+                            <div className={'col-span-12 md:col-span-3'}>
+                              <FormField
+                                control={form.control}
+                                render={({ field }) => {
+                                  return (
+                                    <VFormField label={'Other'}>
+                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                    </VFormField>
+                                  );
+                                }}
+                                name={'other'}
+                              />
+                            </div>
+                          </div>
+                        </FormItem>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
                 <div className={'col-span-12 md:col-span-12'}>
                   <div
@@ -368,5 +374,3 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
     </>
   );
 }
-
-

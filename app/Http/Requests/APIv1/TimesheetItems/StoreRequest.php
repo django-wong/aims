@@ -6,15 +6,18 @@ use App\Http\Requests\APIv1\HasAttachments;
 use App\Models\Assignment;
 use App\Models\Timesheet;
 use App\Models\TimesheetItem;
+use App\Rules\UniqueTimesheetItemDate;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
-use PhpParser\Node\Expr\Assign;
 
 class StoreRequest extends FormRequest
 {
     use HasAttachments;
 
-    protected Assignment $assignment;
+    private Timesheet $timesheet;
+    private Assignment $assignment;
 
     public function authorize(): bool
     {
@@ -24,30 +27,25 @@ class StoreRequest extends FormRequest
     public function assignment(): Assignment
     {
         if (empty($this->assignment)) {
-            $this->assignment = Assignment::query()->find($this->input('assignment_id'));
+            $this->assignment = $this->timesheet()->assignment;
         }
         return $this->assignment;
+    }
+
+    public function timesheet(): Timesheet
+    {
+        if (empty($this->timesheet)) {
+            $this->timesheet = Timesheet::query()->findOrFail($this->input('timesheet_id'));
+        }
+        return $this->timesheet;
     }
 
     public function rules(): array
     {
         return [
-            'assignment_id' => 'required|exists:assignments,id',
+            'timesheet_id' => 'required|exists:timesheets,id',
             'item_number' => 'nullable|string|max:255',
-            'date' => ['nullable','date', function ($attribute, $value, $fail) {
-                $exists = TimesheetItem::query()
-                    ->whereIn(
-                        'timesheet_id', Timesheet::query()
-                            ->where('assignment_id', $this->input('assignment_id'))
-                            ->select('id')
-                    )
-                    ->where('user_id', auth()->id())
-                    ->whereDate('date', $value)
-                    ->exists();
-                if ($exists) {
-                    $fail('You have already submitted a timesheet for this date.');
-                }
-            }],
+            'date' => ['nullable','date', new UniqueTimesheetItemDate($this->timesheet())],
             'report_hours' => 'nullable|integer|min:0',
             'work_hours' => 'nullable|integer|min:0',
             'travel_hours' => 'nullable|integer|min:0',

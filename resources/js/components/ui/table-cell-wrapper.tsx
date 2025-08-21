@@ -31,11 +31,12 @@ type TableCellWrapperProps = PropsWithChildren<React.ComponentProps<'div'> & Var
 export function computedStyle<T>(def: Column<T>): React.CSSProperties {
   const isPined = def.getIsPinned();
   const size = def.getSize();
-
   return {
     left: isPined ? def.getStart('left') + 'px' : 'initial',
     right: isPined ? def.getStart('right') + 'px' : 'initial',
     width: size > 10000 ? undefined : `${size}px`,
+    // maxWidth: `${def.columnDef.maxSize}px`,
+    // minWidth: `${def.columnDef.minSize}px`
   };
 }
 

@@ -10,13 +10,13 @@ import { Attachment, Comment } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { File as FileIcon, Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
-import { Badge } from '@/components/ui/badge';
+import { Divider } from '@/components/divider';
 
 const schema = z.object({
   content: z.string().min(1, 'Comment cannot be empty'),
   attachments: z
     .array(z.instanceof(File).refine((file) => file.size < 524288000, 'File size must be less than 500MB'))
-    .max(5, 'You can only upload up to 5 files')
+    .max(50, 'You can only upload up to 5 files')
     .optional(),
   private: z.boolean().optional(),
 });
@@ -79,7 +79,7 @@ export function Comments(props: CommentsProps) {
                 control={form.control}
                 render={({ field }) => (
                   <>
-                    <VFormField>
+                    <VFormField error={form.formState.errors.attachments?.message}>
                       <Textarea
                         value={field.value}
                         onChange={field.onChange}
@@ -103,12 +103,17 @@ export function Comments(props: CommentsProps) {
                           accept={'*'}
                           className={'hidden'}
                           onChange={(event) => {
-                            console.info(event);
                             field.onChange(Array.from(event.target.files ?? []));
                           }}
                         />
                         <Paperclip />
-                        <span className={'hidden sm:inline'}>Add Attachments</span>
+                        <span className={'hidden sm:inline'}>
+                          {attachments && attachments.length > 0 ? (
+                            <span>{attachments.length} selected</span>
+                          ) : (
+                            'Add Attachments'
+                          )}
+                        </span>
                       </label>
                     </Button>
                   )}
@@ -119,12 +124,11 @@ export function Comments(props: CommentsProps) {
                 <FormField
                   control={form.control}
                   render={({ field }) => (
-                    <Button asChild variant={'outline'} className={'cursor-pointer'}>
-                      <Label className={'flex cursor-pointer items-center gap-2'}>
-                        <Switch checked={field.value} onCheckedChange={(value) => field.onChange(!!value)} />
-                        Private <span className={'hidden sm:inline'}>Comment</span>
-                      </Label>
-                    </Button>
+                    <Label className={'flex cursor-pointer items-center gap-2'}>
+                      <Switch checked={field.value} onCheckedChange={(value) => field.onChange(!!value)} />
+                      <span className={'hidden sm:inline'}>Private Comment</span>
+                      <span className={'inline sm:hidden'}>Private</span>
+                    </Label>
                   )}
                   name={'private'}
                 />
@@ -136,21 +140,39 @@ export function Comments(props: CommentsProps) {
                   {(attachments ?? []).length > 0 ? 'Upload and Comment' : 'Comment'}
                 </Button>
               </div>
-
-              {(attachments ?? []).length > 0 && (
-                <div className={'flex flex-col gap-[1px]'}>
-                  {(attachments ?? []).map((file, index) => (
-                    <span key={`upload:${index}`} className={'flex items-center gap-2 text-sm'}>
-                      <FileIcon className={'size-4'} /> {file.name}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </Form>
         </div>
+
+        <h1 className={'text-xl font-bold'}>Attachments</h1>
+
+        <div className={'flex gap-4 items-center justify-between overflow-x-auto pb-1'}>
+          {
+            (table.data || []).reduce<Attachment[]>((attachments, item) => {
+              if (item.attachments) {
+                attachments.push(...item.attachments);
+              }
+              return attachments;
+            }, []).map((attachment, index) => {
+              return (
+                <div key={`attachment:${index}`} className={'w-32 shrink-0 border min-h-32 rounded-md flex flex-col p-2 gap-2'}>
+                  <div className={'flex-grow flex items-center justify-center'}>
+                    <FileIcon size={32}/>
+                  </div>
+                  <Divider/>
+                  <div className={'line-clamp-1'}>
+                    { attachment.name}
+                  </div>
+                </div>
+              );
+            })
+          }
+        </div>
+
+        <h1 className={'text-xl font-bold'}>Comments</h1>
+
         {table.data && table.data.length ? (
-          <div className={'grid gap-8 rounded-lg px-1'}>
+          <div className={'grid gap-8 rounded-lg'}>
             {table.data.map((comment, index) => (
               <>
                 <div key={`comment:${index}`} className={'grid gap-4'}>

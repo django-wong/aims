@@ -25,6 +25,7 @@ import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Badge } from '@/components/ui/badge';
 import { ProjectSelect } from '@/components/project-select';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -94,12 +95,16 @@ const columns: ColumnDef<Assignment>[] = [
   },
   {
     accessorKey: 'actions',
-    header: 'Actions',
+    header: () => (
+      <TableCellWrapper last>
+        Actions
+      </TableCellWrapper>
+    ),
     cell: ({ row }) => {
       return (
-        <>
+        <TableCellWrapper last>
           <AssignmentActions assignment={row.original}/>
-        </>
+        </TableCellWrapper>
       );
     }
   }

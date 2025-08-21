@@ -3,7 +3,7 @@
 @import "./theme.css";
 
 body {
-  --version: "0.0.2";
+  --version: "0.0.3";
 }
 
 @plugin "@tailwindcss/typography";
@@ -14,7 +14,9 @@ body {
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: 'Nunito', sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: 'Consolas', 'SF Mono', monospace;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -86,15 +88,14 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground;
-    /*scrollbar-color: var(--color-border) transparent;*/
+    @apply bg-background text-foreground font-sans;
   }
 
   th.pin-right, td.pin-right {
-    @apply before:content-[''] before:absolute before:top-0 before:left-0 before:w-px before:h-full before:bg-border sticky;
+    @apply before:content-[''] before:absolute before:top-0 before:w-px before:h-full before:bg-border sticky before:left-[-1px];
   }
   th.pin-left, td.pin-left {
-    @apply before:content-[''] before:absolute before:top-0 before:right-0 before:w-px before:h-full before:bg-border sticky;
+    @apply before:content-[''] before:absolute before:top-0 before:right-[-1px] before:w-px before:h-full before:bg-border sticky;
   }
 
   .project-status-0 {
@@ -115,6 +116,24 @@ body {
   .has-error {
     --color-input: var(--color-destructive);
   }
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
 .prose p {
@@ -123,4 +142,12 @@ body {
 
 .prose table p {
   @apply p-0 m-0;
+}
+
+@utility animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+
+@utility animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
 }

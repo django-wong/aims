@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Models\Timesheet;
+
+use App\Models\Timesheet;
+
+class DraftStatus extends TimesheetStatus
+{
+    public function prev(): ?TimesheetStatus
+    {
+        // No previous status for draft, as it's the initial state
+        return null;
+    }
+
+    /**
+     * Depends on the assignment type, if it's delegated to an office, then the
+     * office will review this timesheet first. If it's not delegated, then it
+     * will be approved automatically and sent to contract holder office approval.
+     *
+     * @return TimesheetStatus|null
+     */
+    public function next(): ?TimesheetStatus
+    {
+        $operation_org_id = $this->context->assignment->operation_org_id;
+        if (! empty($operation_org_id) && $operation_org_id !== $this->context->assignment->org_id) {
+            return new ReviewingStatus(
+                $this->context
+            );
+        }
+        return new ApprovedStatus($this->context);
+    }
+
+    public function transition(Timesheet $timesheet): void
+    {
+        $timesheet->status = TimesheetStatuses::DRAFT;
+        $timesheet->save();
+        // No further actions needed for draft status
+    }
+}

@@ -83,7 +83,7 @@ const columns: ColumnDef<Contact>[] = [
   },
   {
     accessorKey: 'actions',
-    header: 'Actions',
+    header: () => <div className={'text-right'}>Actions</div>,
     cell: ({ row }) => <ContactActions contact={row.original} />,
   },
 ];

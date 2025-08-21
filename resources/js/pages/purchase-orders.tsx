@@ -19,6 +19,7 @@ import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   return (
@@ -105,10 +106,12 @@ const columns: ColumnDef<PurchaseOrder>[] = [
   },
   {
     accessorKey: 'actions',
-    header: 'Actions',
-    minSize: 80,
-    maxSize: 80,
-    cell: ({ row }) => <PurchaseOrderActions purchaseOrder={row.original} />,
+    header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
+    cell: ({ row }) => (
+      <TableCellWrapper last>
+        <PurchaseOrderActions purchaseOrder={row.original} />
+      </TableCellWrapper>
+    ),
   },
 ];
 

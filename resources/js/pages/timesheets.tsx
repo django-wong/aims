@@ -111,7 +111,7 @@ export default function Timesheets() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <div className="px-6">
+      <div className="px-6 grid grid-cols-1 gap-6">
         <DataTable
           table={table}
           left={
@@ -136,6 +136,7 @@ export default function Timesheets() {
             </>
           }
         />
+        <div></div>
       </div>
     </AppLayout>
   );

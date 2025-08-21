@@ -83,4 +83,9 @@ class AssignmentPolicy
     {
         return false;
     }
+
+    public function inspect(User $user, Assignment $assignment): bool
+    {
+        return $user->id === $assignment->inspector_id;
+    }
 }

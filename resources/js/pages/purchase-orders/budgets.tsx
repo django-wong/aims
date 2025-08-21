@@ -17,6 +17,7 @@ import { EllipsisVertical, Eye, Plus, Trash2, Edit } from 'lucide-react';
 import { BudgetForm } from './budgets/form';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 
 interface BudgetsProps {
   purchaseOrderId?: number;
@@ -26,24 +27,16 @@ function BudgetActions(props: { budget: Budget}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size={'sm'}>
+        <Button variant={'foreground'}>
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>{props.budget.rate_code}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+      <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            Edit Budget
+            Edit
             <DropdownMenuShortcut>
               <Edit />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            View Details
-            <DropdownMenuShortcut>
-              <Eye />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem className={'text-red-500'}>
@@ -124,10 +117,18 @@ export function Budgets({ purchaseOrderId }: BudgetsProps) {
     },
     {
       accessorKey: 'actions',
-      header: 'Actions',
+      header: () => (
+        <TableCellWrapper last>
+          Actions
+        </TableCellWrapper>
+      ),
       minSize: 80,
       maxSize: 80,
-      cell: ({ row }) => <BudgetActions budget={row.original} />,
+      cell: ({ row }) => (
+        <TableCellWrapper last>
+          <BudgetActions budget={row.original} />
+        </TableCellWrapper>
+      ),
     },
   ];
 

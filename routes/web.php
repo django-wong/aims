@@ -37,28 +37,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('quotes', '404')->name('quotes');
 
     Route::inertia('assignments', 'assignments')->name('assignments');
-    Route::get('assignments/{id}', [AssignmentController::class, 'edit'])
-        ->name('assignments.edit');
-    Route::get('assignments/{id}/timesheet', [AssignmentController::class, 'timesheet'])
-        ->name('assignments.timesheet');
+    Route::get('assignments/{id}', [AssignmentController::class, 'edit'])->name('assignments.edit');
+    Route::get('assignments/{id}/timesheet', [AssignmentController::class, 'timesheet'])->name('assignments.timesheet');
 
-    Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])
-        ->name('attachments.download');
+    Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
 
     Route::inertia('timesheets', 'timesheets')->name('timesheets');
-    Route::post('timesheets/capture', [TimesheetController::class, 'capture'])
-        ->name('timesheets.capture');
-    Route::get('timesheets/captured', [TimesheetController::class, 'captured'])
-        ->name('timesheets.captured');
+    Route::post('timesheets/capture', [TimesheetController::class, 'capture'])->name('timesheets.capture');
+    Route::get('timesheets/captured', [TimesheetController::class, 'captured'])->name('timesheets.captured');
 
-    Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
-        ->name('purchase-orders');
-    Route::get('purchase-orders/{id}', [PurchaseOrderController::class, 'edit'])
-        ->name('purchase-orders.edit');
+    Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders');
+    Route::get('purchase-orders/{id}', [PurchaseOrderController::class, 'edit'])->name('purchase-orders.edit');
 
     Route::inertia('users', 'users')->name('users');
-    Route::get('users/{id}/impersonate', [UserController::class, 'impersonate'])
-        ->name('impersonate');
+    Route::get('users/{id}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
     Route::get('users/leave-impersonation', function () {
         Auth::user()->leaveImpersonation();
         return redirect()

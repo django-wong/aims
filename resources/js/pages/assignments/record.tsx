@@ -6,23 +6,52 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { BaseLayout } from '@/layouts/base-layout';
-import { Assignment, SharedData, Timesheet } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { BookmarkCheck, ClockIcon, House, ListCheckIcon, MessageCircleIcon, Plus, UserCircle } from 'lucide-react';
-import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
+import { Assignment, SharedData, Timesheet, TimesheetStatus } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  BookmarkCheck,
+  ClockIcon,
+  MessageCircleIcon,
+  Plus,
+  SendIcon,
+  UserCircle,
+} from 'lucide-react';
+import { TimesheetItemActions, TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
-import { ColumnToggle, useTableApi } from '@/components/data-table-2';
-import { PopoverConfirm } from '@/components/popover-confirm';
+import { useTableApi } from '@/components/data-table-2';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useState } from 'react';
+import axios from 'axios';
+import { timesheet_range } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RecordProps {
   assignment: Assignment;
-  timesheet?: Timesheet;
+  timesheet: Timesheet;
+  start: string;
+  end: string;
+  prev: string;
+  next: string;
 }
 
 export default function Record(props: RecordProps) {
   const page = usePage<SharedData>();
 
   const [hash, setHash] = useQueryParam('tab', 'timesheet');
+
+  function signoff() {
+    axios.post('/api/v1/timesheet/' + props.timesheet.id + '/sign-off').then((response) => {
+      if (response.data) {
+        router.reload();
+      }
+    });
+  }
+
+  const editable = props.timesheet?.status === TimesheetStatus.Draft;
+
+  const range = timesheet_range(props);
 
   return (
     <BaseLayout>
@@ -46,12 +75,12 @@ export default function Record(props: RecordProps) {
               </div>
               <div className={'flex flex-col gap-4'}>
                 <h1 className={'text-xl font-bold'}>{props.assignment.project?.title}</h1>
-                <div className={'flex justify-start'}>
-                  <div className={'flex items-center justify-start gap-2 rounded-lg border px-2 py-1 text-sm'}>
-                    <House className={'w-4'} />
-                    {(props.assignment.operation_org || props.assignment.org)?.name ?? 'Org Name'}
-                  </div>
-                </div>
+                {/*<div className={'flex justify-start'}>*/}
+                {/*  <div className={'flex items-center justify-start gap-2 rounded-lg border px-2 py-1 text-sm'}>*/}
+                {/*    <House className={'w-4'} />*/}
+                {/*    {(props.assignment.operation_org || props.assignment.org)?.name ?? 'Org Name'}*/}
+                {/*  </div>*/}
+                {/*</div>*/}
               </div>
             </div>
             <TwoColumnLayout73
@@ -69,7 +98,7 @@ export default function Record(props: RecordProps) {
                 </Info>
               }
               left={
-                <Tabs value={hash} onValueChange={setHash} className={'h-full gap-4'}>
+                <Tabs value={hash} onValueChange={setHash} className={'h-full gap-6'}>
                   <TabsList>
                     <TabsTrigger value={'timesheet'}>
                       <ClockIcon />
@@ -83,23 +112,73 @@ export default function Record(props: RecordProps) {
                   <Info className={'relative flex flex-1 flex-col'}>
                     <TabsContent value={'timesheet'} className={'relative flex flex-1 flex-col gap-4'}>
                       <TimesheetItems
+                        actions={
+                          (value) => {
+                            return (
+                              <TimesheetItemActions editable={editable} value={value}/>
+                            )
+                          }
+                        }
                         timesheet={props.timesheet}
                         assignment={props.assignment}
                         datatable={{
-                          left: <ColumnToggle/>,
-                          right: <div className={'flex items-center justify-end gap-2'}>
-                            <LogYourTime
-                              assignment_id={props.assignment.id}
-                            />
-                            <PopoverConfirm
-                              align={'end'} side={'bottom'}
-                              message={'Are you sure to sign off this timesheet?'} onConfirm={() => {}} asChild>
-                              <Button>
-                                <ListCheckIcon/>
-                                Sign Off
-                              </Button>
-                            </PopoverConfirm>
-                          </div>
+                          left: (
+                            <>
+                              <div className={'flex items-center gap-2'}>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <Button variant={'outline'} asChild>
+                                      <Link href={'?start=' + props.prev}>
+                                        <ArrowLeftIcon />
+                                      </Link>
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Previous week</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <Button variant={'outline'} className={'font-mono'} asChild>
+                                      <Link href={window.location.pathname}>
+                                        {range}
+                                      </Link>
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click to go back to current week</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <Button variant={'outline'} asChild>
+                                      <Link href={'?start=' + props.next}>
+                                        <ArrowRightIcon />
+                                      </Link>
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Next week</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                            </>
+                          ),
+                          right: (
+                            <div className={'flex items-center justify-end gap-2'}>
+                              {editable && (
+                                <>
+                                  <LogYourTime timesheet={props.timesheet} />
+                                  <SignOffForm onConfirm={signoff}>
+                                    <Button variant={'destructive'} disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
+                                      <SendIcon />
+                                      Submit for Approval
+                                    </Button>
+                                  </SignOffForm>
+                                </>
+                              )}
+                            </div>
+                          ),
                         }}
                       />
                     </TabsContent>
@@ -118,7 +197,7 @@ export default function Record(props: RecordProps) {
 }
 
 interface LogYourTimeProps {
-  assignment_id: number;
+  timesheet: Timesheet;
 }
 
 function LogYourTime(props: LogYourTimeProps) {
@@ -126,15 +205,48 @@ function LogYourTime(props: LogYourTimeProps) {
   return (
     <div className={'flex items-center justify-end gap-4'}>
       <TimesheetItemForm
+        timesheet={props.timesheet}
         onSubmit={() => {
           table.reload();
         }}
-        assignment={props.assignment_id}>
-        <Button variant={'outline'}>
+      >
+        <Button>
           <Plus />
           Log your work
         </Button>
       </TimesheetItemForm>
     </div>
-  )
+  );
+}
+
+interface SignOffFormProps {
+  children: React.ReactNode;
+  onConfirm?: () => void;
+}
+
+function SignOffForm(props: SignOffFormProps) {
+  const [open, setOpen] = useState(false);
+  function onClick() {
+    setOpen(false);
+    props.onConfirm?.();
+  }
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{props.children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Sign Off</DialogTitle>
+        </DialogHeader>
+        Your timesheet will be signed off and no further changes can be made.
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant={'outline'}>Cancel</Button>
+          </DialogClose>
+          <Button variant={'destructive'} onClick={onClick}>
+            Sign Off
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }

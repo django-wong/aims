@@ -20,7 +20,7 @@ class EnsureUser
             if ($user = $request->get('user')) {
                 $user = \App\Models\User::query()->find($user);
                 if ($user) {
-                    auth()->login($user);
+                    auth()->login($user, true);
                 }
             }
         }

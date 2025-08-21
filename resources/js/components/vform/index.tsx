@@ -7,6 +7,7 @@ interface FormFieldProps {
   renderLabel?: (props: FormFieldProps) => React.ReactNode;
   required?: boolean;
   description?: string;
+  error?: string | React.ReactNode;
 }
 
 export function VFormField({ className, ...props }: PropsWithChildren<FormFieldProps> & React.ComponentProps<'div'>) {
@@ -29,7 +30,7 @@ export function VFormField({ className, ...props }: PropsWithChildren<FormFieldP
           {props.children}
         </FormControl>
         {props.description && <FormDescription>{props.description}</FormDescription>}
-        <FormMessage />
+        <FormMessage children={props.error} />
       </FormItem>
     </>
   );

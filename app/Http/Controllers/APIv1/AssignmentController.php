@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\Assignments\SignOffRequest;
 use App\Http\Requests\APIv1\Assignments\StoreRequest;
 use App\Models\Assignment;
 use App\Models\Org;

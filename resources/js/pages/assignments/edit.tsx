@@ -15,6 +15,7 @@ import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
+import { Timesheets } from '@/pages/assignments/timesheets';
 
 interface EditProps {
   assignment: Assignment;
@@ -78,19 +79,22 @@ export default function Edit(props: EditProps) {
             </TabsContent>
             <TabsContent value={'timesheets'}>
               <div className={'grid gap-4'}>
-                <TimesheetItems
-                  assignment={props.assignment}
-                  datatable={{
-                    left: (
-                      <TimesheetItemForm onSubmit={() => {}}>
-                        <Button>
-                          <PlusIcon/>
-                          New timesheet item
-                        </Button>
-                      </TimesheetItemForm>
-                    )
-                  }}
-                />
+                {/*<TimesheetItems*/}
+                {/*  assignment={props.assignment}*/}
+                {/*  // datatable={{*/}
+                {/*  //   left: (*/}
+                {/*  //     <TimesheetItemForm onSubmit={() => {}}>*/}
+                {/*  //       <Button>*/}
+                {/*  //         <PlusIcon/>*/}
+                {/*  //         New timesheet item*/}
+                {/*  //       </Button>*/}
+                {/*  //     </TimesheetItemForm>*/}
+                {/*  //   )*/}
+                {/*  // }}*/}
+                {/*/>*/}
+                <div className={'overflow-hidden'}>
+                  <Timesheets assignment={props.assignment}/>
+                </div>
               </div>
             </TabsContent>
             <TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>
@@ -150,19 +154,3 @@ export default function Edit(props: EditProps) {
     </Layout>
   );
 }
-
-// function TimesheetItemActions(props: { item: TimesheetItem }) {
-//   const [checked, setChecked] = useState(props.item.approved);
-//   return (
-//     <div className={'flex items-center gap-2 justify-end'}>
-//       <Tooltip>
-//         <TooltipTrigger>
-//           <Switch checked={checked} onCheckedChange={setChecked}/>
-//         </TooltipTrigger>
-//         <TooltipContent className={'flex items-center gap-1'}>
-//           <CircleAlert className={'size-4'}/> Invoice will be created upon approval
-//         </TooltipContent>
-//       </Tooltip>
-//     </div>
-//   );
-// }

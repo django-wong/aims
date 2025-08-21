@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Timesheet\TimesheetStatuses;
+use Database\Factories\TimesheetFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property mixed $assignment
+ * @property Assignment $assignment
+ * @property int        $status
+ * @property int        $id
+ * @property int        $start
+ * @property int      $end
  */
 class Timesheet extends Model
 {
-    /** @use HasFactory<\Database\Factories\TimesheetFactory> */
+    /** @use HasFactory<TimesheetFactory> */
     use HasFactory, BelongsToAssignment, HasManyTimesheetItems;
-
-    const STATUS_DRAFT = 0;
-    const STATUS_REVIEWING = 1;
-    const STATUS_APPROVED = 2;
-    const STATUS_CONTRACT_HOLDER_APPROVED = 3;
-    const STATUS_CLIENT_APPROVED = 4;
-    const STATUS_INVOICED = 5;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
@@ -27,6 +26,8 @@ class Timesheet extends Model
 
     public function scopeDraft(Builder $query): Builder
     {
-        return $query->where('status', self::STATUS_DRAFT);
+        return $query->where(
+            'status', TimesheetStatuses::DRAFT
+        );
     }
 }

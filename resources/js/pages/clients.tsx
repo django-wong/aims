@@ -124,8 +124,18 @@ export default function Clients() {
     },
     {
       accessorKey: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => <ClientAction client={row.original} />,
+      header: () => {
+        return (
+          <div className={'flex justify-end'}>
+            Actions
+          </div>
+        )
+      },
+      cell: ({ row }) =>
+        <div className={'flex justify-end'}>
+          <ClientAction client={row.original} />
+        </div>
+      ,
     },
   ];
 

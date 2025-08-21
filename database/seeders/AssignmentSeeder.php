@@ -25,7 +25,13 @@ class AssignmentSeeder extends Seeder
     {
         foreach (Project::query()->cursor() as $project) {
             Assignment::factory(3)
-                ->recycle(AssignmentType::query()->get())->of($project)->create();
+                ->recycle(AssignmentType::query()->get())
+                ->recycle(
+                    User::query()->whereHas(
+                        'user_role', fn ($query) => $query->where('role', UserRole::INSPECTOR)
+                    )->get()
+                )
+                ->of($project)->create();
         }
     }
 }

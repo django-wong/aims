@@ -24,22 +24,28 @@ const columns: ColumnDef<Vendor>[] = [
     header: 'Name',
     cell: ({ row }) => row.original.name
   },
-  // business_name
   {
     accessorKey: 'business_name',
     header: 'Business Name',
     cell: ({ row }) => row.original.business_name
   },
-  // {
-  //   accessorKey: 'address',
-  //   header: 'Address',
-  //   cell: ({ row }) => row.original.address?.full_address || 'N/A'
-  // },
+  {
+    accessorKey: 'address',
+    header: 'Address',
+    size: 10000,
+    cell: ({ row }) => row.original.address?.full_address || 'N/A'
+  },
   {
     accessorKey: 'actions',
-    header: 'Actions',
+    header: () => {
+      return <div className={'text-right'}>
+        Actions
+      </div>
+    },
     cell: ({ row }) => (
-      <VendorActions vendor={row.original}/>
+      <div className={'text-right'}>
+        <VendorActions vendor={row.original}/>
+      </div>
     )
   }
 ];

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 export function Empty({ children, className, ...props }: ComponentProps<'div'>) {
   return (
-    <div className={cn('min-h-[300px] w-full relative rounded-lg flex items-center justify-center', className)} {...props}>
+    <div className={cn('w-full relative rounded-lg flex items-center justify-center', className)} {...props}>
       <div className={'absolute inset-0 overflow-hidden opacity-5'}>
         <SvgBg/>
       </div>

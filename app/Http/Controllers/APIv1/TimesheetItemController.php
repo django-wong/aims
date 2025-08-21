@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\TimesheetItems\StoreRequest;
+use App\Http\Requests\APIv1\TimesheetItems\UpdateRequest;
 use App\Models\Assignment;
 use App\Models\Timesheet;
 use App\Models\TimesheetItem;
@@ -57,11 +58,8 @@ class TimesheetItemController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        /* @var Timesheet $timesheet */
-        $timesheet = $request->assignment()->timesheets()->draft()->firstOrCreate();
-
-        $record = DB::transaction(function () use ($request, $timesheet) {
-            $record = $timesheet->timesheet_items()->create([
+        $record = DB::transaction(function () use ($request) {
+            $record = $request->timesheet()->timesheet_items()->create([
                 ...array_filter($request->validated(), function ($value) {
                     return $value !== null;
                 }),
@@ -93,9 +91,16 @@ class TimesheetItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TimesheetItem $timesheetItem)
+    public function update(UpdateRequest $request, TimesheetItem $timesheet_item)
     {
-        //
+        $updated = $timesheet_item->update(
+            $request->validated()
+        );
+
+        return [
+            'message' => $updated ? 'Timesheet item updated successfully' : 'No changes made',
+            'data' => $timesheet_item->refresh()->load(['attachments'])
+        ];
     }
 
     /**

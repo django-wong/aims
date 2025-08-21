@@ -6,10 +6,10 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { Assignment, DialogFormProps, SharedData } from '@/types';
+import { Assignment, DialogFormProps } from '@/types';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
-import zod from 'zod';
+import z from 'zod';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField } from '@/components/ui/form';
@@ -22,25 +22,31 @@ import { OrgSelect } from '@/components/org-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { useEffect, useState } from 'react';
 import { PurchaseOrderSelect } from '@/components/purchase-order-select';
-import { usePage } from '@inertiajs/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Input } from '@/components/ui/input';
 
-const schema = zod.object({
-  'project_id': zod.number('Project is required').int().positive(),
-  'assignment_type_id': zod.number().int().positive(),
+const schema = z.object({
+  'project_id': z.number('Project is required').int().positive(),
+  'assignment_type_id': z.number().int().positive(),
 
-  'operation_org_id': zod.number().int().positive().nullable(),
-  'inspector_id': zod.number().int().positive().nullable(),
+  'operation_org_id': z.number().int().positive().nullable(),
+  'inspector_id': z.number().int().positive().nullable(),
 
-  'vendor_id': zod.number().int().positive().nullable(),
-  'purchase_order_id': zod.number().int().positive().nullable(),
-  'sub_vendor_id': zod.number().int().positive().nullable(),
-  'report_required': zod.boolean(),
-  'notes': zod.string().max(1500).nullable(),
+  'vendor_id': z.number().int().positive().nullable(),
+  'purchase_order_id': z.number().int().positive().nullable(),
+  'sub_vendor_id': z.number().int().positive().nullable(),
+
+  // 'report_required': z.boolean(),
+
+  'equipment': z.string().min(14).nullable().optional(),
+  'notes': z.string().max(1500).nullable().optional(),
+  'inter_office_instructions': z.string().max(1500).nullable().optional(),
+  'inspector_instructions': z.string().max(1500).nullable().optional(),
 });
 
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
-  const form = useReactiveForm<zod.infer<typeof schema>>({
+  const form = useReactiveForm<z.infer<typeof schema>>({
     ...useResource('/api/v1/assignments', {
       operation_org_id: null,
       inspector_id: null,
@@ -53,21 +59,13 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     resolver: zodResolver(schema),
   });
 
-  const {
-    props: {
-      auth: {
-        org
-      }
-    }
-  } = usePage<SharedData>();
-
   useEffect(() => {
     if (props.value) {
       form.reset(props.value);
     }
   }, [props.value]);
 
-  const [mode, setMode] = useState(props.value?.operation_org_id === org?.id ? 'assign' : 'delegate');
+  const [mode, setMode] = useState(props.value?.operation_org_id ? 'delegate' : 'assign');
 
   useEffect(() => {
     if (mode === 'assign') {
@@ -104,7 +102,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   render={({ field }) => (
                     <>
                       <VFormField required label={'Project'} className={'col-span-12'}>
-                        <ProjectSelect onValueChane={field.onChange} value={field.value}/>
+                        <ProjectSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
                   )}
@@ -119,7 +117,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                           onValueChane={field.onChange}
                           value={field.value}
                           params={{
-                            'filter[project_id]': form.watch('project_id') || ''
+                            'filter[project_id]': form.watch('project_id') || '',
                           }}
                         />
                       </VFormField>
@@ -131,21 +129,19 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <VFormField
-                        required
-                        label={'Type'}
-                        className={'col-span-12'}
-                      >
+                      <VFormField required label={'Type'} className={'col-span-12'}>
                         <AssignmentTypeSelect value={field.value} onValueChane={field.onChange} />
                       </VFormField>
                     </>
                   )}
                 />
-                <div className={'col-span-12 p-4 bg-background rounded-sm ring-2 ring-foreground/20'}>
+                <div className={'bg-background col-span-12 rounded-md border p-4 shadow-xs'}>
                   <Tabs value={mode} onValueChange={setMode}>
                     <TabsList>
                       <TabsTrigger value={'assign'}>Assign to inspector</TabsTrigger>
-                      <TabsTrigger value={'delegate'}>Delegate to other office</TabsTrigger>
+                      <TabsTrigger disabled value={'delegate'}>
+                        Delegate to other office (coming soon)
+                      </TabsTrigger>
                     </TabsList>
                     <TabsContent value={'assign'}>
                       <FormField
@@ -153,8 +149,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <>
-                            <VFormField
-                              className={'col-span-12'}>
+                            <VFormField>
                               <StaffSelect placeholder={'Choose an inspector'} onValueChane={field.onChange} value={field.value} />
                             </VFormField>
                           </>
@@ -167,8 +162,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <>
-                            <VFormField
-                              className={'col-span-12'}>
+                            <VFormField>
                               <OrgSelect placeholder={'Choose an operation office'} onValueChane={field.onChange} value={field.value} />
                             </VFormField>
                           </>
@@ -199,39 +193,72 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     </>
                   )}
                 />
-                <FormField
-                  name={'notes'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField label={'Notes'} className={'col-span-12'}>
-                        <Textarea
-                          className={'bg-background min-h-36'}
-                          value={field.value ?? ''}
-                          onChange={field.onChange}
-                          placeholder={'Describe any notes or additional information about the assignment.'}
+                {/*<FormField*/}
+                {/*  name={'notes'}*/}
+                {/*  control={form.control}*/}
+                {/*  render={({ field }) => (*/}
+                {/*    <>*/}
+                {/*      <VFormField label={'Notes'} className={'col-span-12'}>*/}
+                {/*        <Textarea*/}
+                {/*          className={'bg-background min-h-36'}*/}
+                {/*          value={field.value ?? ''}*/}
+                {/*          onChange={field.onChange}*/}
+                {/*          placeholder={'Describe any notes or additional information about the assignment.'}*/}
+                {/*        />*/}
+                {/*      </VFormField>*/}
+                {/*    </>*/}
+                {/*  )}*/}
+                {/*/>*/}
+                <div className={'col-span-12'}>
+                  <Accordion type={'multiple'}>
+                    <AccordionItem value={'equipment'}>
+                      <AccordionTrigger>Equipment</AccordionTrigger>
+                      <AccordionContent>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return <VFormField>
+                              <Input value={field.value || ''} onChange={field.onChange}></Input>
+                            </VFormField>;
+                          }}
+                          name={'equipment'}
                         />
-                      </VFormField>
-                    </>
-                  )}
-                />
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value={'inter-office-instructions'}>
+                      <AccordionTrigger>Inter-Office Instructions</AccordionTrigger>
+                      <AccordionContent>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return <VFormField>
+                              <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
+                            </VFormField>;
+                          }}
+                          name={'inter_office_instructions'}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value={'inspector-instructions'}>
+                      <AccordionTrigger>Inspector Instructions</AccordionTrigger>
+                      <AccordionContent>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return <VFormField>
+                              <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
+                            </VFormField>;
+                          }}
+                          name={'inspector_instructions'}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
               </div>
             </Form>
           </DialogInnerContent>
           <DialogFooter className={'flex-row items-center'}>
-            {/*<FormField*/}
-            {/*  name={'report_required'}*/}
-            {/*  control={form.control}*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <div className={'col-span-12'}>*/}
-            {/*      <Label>*/}
-            {/*        <Switch checked={field.value} onCheckedChange={field.onChange} />*/}
-            {/*        Report is required*/}
-            {/*      </Label>*/}
-            {/*    </div>*/}
-            {/*  )}*/}
-            {/*/>*/}
-            {/*<span className={'flex-grow'}></span>*/}
             <DialogClose asChild>
               <Button variant={'outline'} type={'button'}>
                 Cancel

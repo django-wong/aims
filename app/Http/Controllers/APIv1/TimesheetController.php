@@ -2,18 +2,32 @@
 
 namespace App\Http\Controllers\APIv1;
 
-use App\Http\Requests\APIv1\TimesheetItems\StoreRequest;
-use App\Models\Attachment;
 use App\Models\Timesheet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
-use function Aws\filter;
 
 class TimesheetController extends Controller
 {
+    public function signOff(string $id)
+    {
+        $timesheet = Timesheet::query()->with('assignment')->findOrFail($id);
+
+        Gate::authorize('inspect', $timesheet->assignment);
+
+        $status = Timesheet\TimesheetStatuses::make($timesheet);
+
+        if ($status instanceof Timesheet\DraftStatus) {
+            $status->next()->transition($timesheet);
+        }
+
+        return [
+            'message' => 'You have successfully signed off the timesheet.',
+            'data' => $timesheet
+        ];
+    }
+
     protected function allowedIncludes()
     {
         return [
@@ -28,7 +42,7 @@ class TimesheetController extends Controller
     protected function allowedFilters()
     {
         return [
-            'assignment_id',
+            AllowedFilter::exact('assignment_id'),
             'hours',
             'travel_distance',
             AllowedFilter::callback('keywords', function (Builder $query, $value) {
@@ -43,6 +57,7 @@ class TimesheetController extends Controller
             'id',
             'created_at',
             'hours',
+            'start',
             'travel_distance',
         ];
     }
@@ -51,8 +66,7 @@ class TimesheetController extends Controller
     {
         Gate::authorize('viewAny', Timesheet::class);
 
-        return $this->getQueryBuilder()->defaultSort('-created_at')
-            ->paginate();
+        return $this->getQueryBuilder()->defaultSort('-created_at')->paginate();
     }
 
 

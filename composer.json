@@ -13,7 +13,7 @@
         "aws/aws-sdk-php": "^3.351",
         "inertiajs/inertia-laravel": "^2.0",
         "lab404/laravel-impersonate": "^1.7",
-        "laravel/framework": "12.1.1.0",
+        "laravel/framework": "^12.25",
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.10",
         "laravel/tinker": "^2.10.1",

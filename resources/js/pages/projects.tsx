@@ -4,10 +4,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { ColumnDef } from '@tanstack/react-table';
@@ -15,10 +16,11 @@ import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
 
 import { ClientSelect } from '@/components/client-select';
 import { ColumnToggle, DataTable } from '@/components/data-table-2';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { ProjectForm } from '@/pages/projects/form';
-import { Project,  } from '@/types';
+import { Project } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 
 const breadcrumbs = [
@@ -33,31 +35,38 @@ const breadcrumbs = [
 ];
 
 function ProjectActions(props: { project: Project }) {
-  return <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="secondary" size={'sm'}>
-        <EllipsisVertical />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent className="w-56">
-      <DropdownMenuLabel>{props.project.title}</DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuGroup>
-        <DropdownMenuItem>
-          View Details
-          <DropdownMenuShortcut>
-            <Eye/>
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-        <DropdownMenuItem className={'text-red-500'} onSelect={(event) => {event.stopPropagation()}}>
-          Delete
-          <DropdownMenuShortcut>
-            <Trash2/>
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-    </DropdownMenuContent>
-  </DropdownMenu>;
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary" size={'sm'}>
+          <EllipsisVertical />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
+        <DropdownMenuLabel>{props.project.title}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            View Details
+            <DropdownMenuShortcut>
+              <Eye />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={'text-red-500'}
+            onSelect={(event) => {
+              event.stopPropagation();
+            }}
+          >
+            Delete
+            <DropdownMenuShortcut>
+              <Trash2 />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 const columns: ColumnDef<Project>[] = [
@@ -70,26 +79,22 @@ const columns: ColumnDef<Project>[] = [
     maxSize: 5000,
     cell: ({ row }) => {
       return (
-        <Link href={route('projects.edit', {id: row.original.id})} className={'underline'}>
+        <Link href={route('projects.edit', { id: row.original.id })} className={'underline'}>
           {row.original.title}
         </Link>
       );
-    }
+    },
   },
   {
     accessorKey: 'number',
     header: 'P.N',
-    maxSize: 100,
-    minSize: 80,
     cell: ({ row }) => {
-      return row.original.number || 'N/A';
+      return <div>{row.original.number || 'N/A'}</div>;
     },
   },
   {
     accessorKey: 'project_type',
     header: 'Type',
-    minSize: 100,
-    maxSize: 120,
     cell: ({ row }) => {
       return <Badge variant={'secondary'}>{row.original.project_type?.name ?? 'Unknown'}</Badge>;
     },
@@ -97,14 +102,21 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'client',
     header: 'Client',
-    minSize: 100,
-    maxSize: Infinity,
-    cell: ({row}) => row.original.client?.business_name || 'Unknown',
+    size: 10000,
+    cell: ({ row }) => row.original.client?.business_name || 'Unknown',
   },
   {
     accessorKey: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => <ProjectActions project={row.original} />,
+    header: () => {
+      return <TableCellWrapper last>Actions</TableCellWrapper>;
+    },
+    cell: ({ row }) => {
+      return (
+        <TableCellWrapper last>
+          <ProjectActions project={row.original} />
+        </TableCellWrapper>
+      );
+    },
   },
 ];
 
@@ -112,8 +124,8 @@ export default function Projects() {
   const table = useTable<Project>('/api/v1/projects', {
     columns: columns,
     defaultParams: {
-      'include': 'client,project_type',
-    }
+      include: 'client,project_type',
+    },
   });
 
   return (
@@ -166,15 +178,13 @@ export default function Projects() {
               {table.getSelectedRowModel().rows.length > 0 && (
                 <Button variant={'destructive'}>
                   <Trash2 />
-                  Delete
+                  Delete ({table.getSelectedRowModel().rows.length} selected)
                 </Button>
               )}
             </>
           }
           table={table}
-          right={
-            <ColumnToggle/>
-          }
+          right={<ColumnToggle />}
         />
       </div>
     </AppLayout>

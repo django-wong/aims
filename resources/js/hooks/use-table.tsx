@@ -42,15 +42,18 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
   const [reload, triggerReload] = useReducer(reloadReducer, 0);
   const [params, setParams] = useState<Record<string, string>>(options?.defaultParams ?? {});
   const [initialLoaded, setInitialLoaded] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const columns = Array.from(options?.columns ?? []);
 
   if (selectable) {
     columns.unshift({
       accessorKey: 'select',
-      size: 28,
+      minSize: 36,
+      size: 36,
+      maxSize: 36,
       header: ({ table }) => (
-        <>
+        <div className={'flex justify-center items-center'}>
           <Checkbox
             onClick={(event) => {
               table.toggleAllPageRowsSelected();
@@ -58,12 +61,12 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
             }}
             checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
           />
-        </>
+        </div>
       ),
       cell: ({ row }) => (
-        <>
+        <div className={'flex justify-center items-center'}>
           <Checkbox onClick={(event) => event.stopPropagation()} checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} />
-        </>
+        </div>
       ),
     });
   }
@@ -131,6 +134,8 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
       },
     };
 
+    setLoading(true);
+
     fetch(url, fetchOptions)
       .then((response) => {
         if (!response.ok) {
@@ -156,6 +161,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
       .finally(() => {
         startTransition(() => {
           setInitialLoaded(true);
+          setLoading(false);
         });
       });
 
@@ -166,6 +172,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
     initialLoaded,
     ...table,
     data,
+    loading,
     searchParams,
     setSearchParams,
     params,

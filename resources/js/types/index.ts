@@ -257,10 +257,24 @@ export interface Attachment<T = unknown> extends BaseModel {
   size: number;
 }
 
+export enum TimesheetStatus {
+  Draft = 0,
+  Reviewing = 1,
+  Approved = 2,
+  ContractHolderApproved = 3,
+  ClientApproved = 4,
+  Invoiced = 5
+}
+
 export interface Timesheet extends BaseModel {
   assignment_id: number;
   assignment?: Assignment;
+
+  start: string // YYYY-MM-DD
+  end: string; // YYYY-MM-DD
+
   hours: number;
+  status: TimesheetStatus;
   travel_distance: number;
   timesheet_items?: TimesheetItem[];
   timesheet_items_count?: number;

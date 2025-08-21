@@ -61,12 +61,12 @@ class MenuController
                         'url' => route('assignments'),
                         'component' => 'assignments'
                     ],
-                    'timesheets' => [
-                        'name' => 'Timesheets',
-                        'icon' => 'house',
-                        'url' => route('timesheets'),
-                        'component' => 'timesheets'
-                    ],
+                    // 'timesheets' => [
+                    //     'name' => 'Timesheets',
+                    //     'icon' => 'house',
+                    //     'url' => route('timesheets'),
+                    //     'component' => 'timesheets'
+                    // ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM], [
                     'invoices' => [

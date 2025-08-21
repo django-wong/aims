@@ -22,6 +22,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
 import { startTransition, useEffect, useState } from 'react';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -94,8 +95,16 @@ const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: 'Actions',
-    header: 'Actions',
-    cell: ({ row }) => <UserActions user={row.original} />,
+    header: () => (
+      <TableCellWrapper last>
+        Actions
+      </TableCellWrapper>
+    ),
+    cell: ({ row }) => (
+      <TableCellWrapper last>
+        <UserActions user={row.original} />
+      </TableCellWrapper>
+    ),
   },
 ];
 
