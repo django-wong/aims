@@ -28,6 +28,14 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ContactSelect } from '@/components/contact-select';
 import { DatePicker } from '@/components/date-picker';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { Editor } from '@/components/editor';
 
 const schema = z.object({
   'project_id': z.number('Project is required').int().positive(),
@@ -66,6 +74,16 @@ const schema = z.object({
   'flash_report': z.boolean().optional(),
   'contact_details': z.string().nullable().optional(),
   'contact_email': z.string().email().nullable().optional(),
+
+  // Reporting fields
+  'reporting_format': z.number().int().optional(),
+  'reporting_frequency': z.number().int().optional(),
+  'send_report_to_email': z.string().email().nullable().optional(),
+  'timesheet_format': z.number().int().optional(),
+  'ncr_format': z.number().int().optional(),
+  'punch_list_format': z.number().int().optional(),
+  'irn_format': z.number().int().optional(),
+  'document_stamp': z.number().int().optional(),
 
   'equipment': z.string().min(14).nullable().optional(),
   'notes': z.string().max(1500).nullable().optional(),
@@ -545,6 +563,168 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       </AccordionContent>
                     </AccordionItem>
 
+                    <AccordionItem value={'reporting'}>
+                      <AccordionTrigger>Reporting</AccordionTrigger>
+                      <AccordionContent>
+                        <div className={'grid grid-cols-12 gap-4'}>
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Reporting Format'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select reporting format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">BIE</SelectItem>
+                                    <SelectItem value="1">Client</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'reporting_format'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Reporting Frequency'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select reporting frequency" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">Daily</SelectItem>
+                                    <SelectItem value="1">Weekly</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'reporting_frequency'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Send Report To Email'} className={'col-span-12'}>
+                                <Input
+                                  type="email"
+                                  value={field.value || ''}
+                                  onChange={field.onChange}
+                                  placeholder="report@example.com"
+                                />
+                              </VFormField>
+                            )}
+                            name={'send_report_to_email'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Timesheet Format'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select timesheet format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">BIE</SelectItem>
+                                    <SelectItem value="1">Client</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'timesheet_format'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'NCR Format'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select NCR format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">BIE</SelectItem>
+                                    <SelectItem value="1">Client</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'ncr_format'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Punch List Format'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select punch list format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">BIE</SelectItem>
+                                    <SelectItem value="1">Client</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'punch_list_format'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'IRN Format'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select IRN format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">BIE</SelectItem>
+                                    <SelectItem value="1">Client</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'irn_format'}
+                          />
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField label={'Document Stamp'} className={'col-span-6'}>
+                                <Select
+                                  onValueChange={(value) => field.onChange(parseInt(value))}
+                                  value={field.value?.toString() || '0'}
+                                >
+                                  <SelectTrigger className={'w-full'}>
+                                    <SelectValue placeholder="Select document stamp" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">BIE Stamp</SelectItem>
+                                    <SelectItem value="1">Sign</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </VFormField>
+                            )}
+                            name={'document_stamp'}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
                     <AccordionItem value={'notes'}>
                       <AccordionTrigger>Notes</AccordionTrigger>
                       <AccordionContent>
@@ -567,12 +747,15 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                             control={form.control}
                             render={({ field }) => (
                               <VFormField label={'Special Notes'} className={'col-span-12'}>
-                                <Textarea
-                                  value={field.value || ''}
-                                  onChange={field.onChange}
-                                  placeholder="Special notes will be included in the assignment form."
-                                  className="min-h-24"
-                                />
+                                {/*<Textarea*/}
+                                {/*  value={field.value || ''}*/}
+                                {/*  onChange={field.onChange}*/}
+                                {/*  placeholder="Special notes will be included in the assignment form."*/}
+                                {/*  className="min-h-24"*/}
+                                {/*/>*/}
+                                <div className={'rounded-md border bg-background overflow-hidden'}>
+                                  <Editor value={field.value ?? ''}/>
+                                </div>
                               </VFormField>
                             )}
                             name={'special_notes'}

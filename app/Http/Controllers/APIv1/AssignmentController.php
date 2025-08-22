@@ -4,13 +4,13 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Assignments\SignOffRequest;
 use App\Http\Requests\APIv1\Assignments\StoreRequest;
+use App\Http\Requests\APIv1\Assignments\UpdateRequest;
 use App\Models\Assignment;
 use App\Models\Org;
 use App\Notifications\NewAssignmentIssued;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AssignmentController extends Controller
 {
@@ -92,11 +92,16 @@ class AssignmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Assignment $assignment)
+    public function update(UpdateRequest $request, Assignment $assignment)
     {
-        return response()->json([
-            'error' => 'This endpoint is not implemented yet.',
-        ], 501);
+        $assignment->update($request->validated());
+
+        return [
+            'message' => 'Assignment updated successfully.',
+            'data' => $assignment->load(
+                'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org'
+            ),
+        ];
     }
 
     /**
@@ -109,6 +114,6 @@ class AssignmentController extends Controller
 
     public function pdf(Assignment $assignment)
     {
-        return Pdf::loadView('pdfs.assignment-form')->download("assignment-{$assignment->id}.pdf");
+        return Pdf::loadView('pdfs.assignment-form', ['assignment' => $assignment])->download("assignment-{$assignment->id}.pdf");
     }
 }

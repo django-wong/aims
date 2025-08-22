@@ -56,6 +56,16 @@ return new class extends Migration
             $table->string('contact_details')->nullable()->comment('Contact details for the assignment');
             $table->string('contact_email')->nullable()->comment('Contact email for the assignment');
 
+            // New fields based on comments
+            $table->tinyInteger('reporting_format')->default(0)->comment('Reporting format: 0 = bie, 1 = client');
+            $table->tinyInteger('reporting_frequency')->default(0)->comment('Reporting frequency: 0 = daily, 1 = weekly');
+            $table->string('send_report_to_email')->nullable()->comment('Email address to send reports to');
+            $table->tinyInteger('timesheet_format')->default(0)->comment('Timesheet format: 0 = bie, 1 = client');
+            $table->tinyInteger('ncr_format')->default(0)->comment('NCR format: 0 = bie, 1 = client');
+            $table->tinyInteger('punch_list_format')->default(0)->comment('Punch list format: 0 = bie, 1 = client');
+            $table->tinyInteger('irn_format')->default(0)->comment('IRN format: 0 = bie, 1 = client');
+            $table->tinyInteger('document_stamp')->default(0)->comment('Document stamp: 0 = bie, 1 = sign');
+
             $table->longText('equipment')->nullable()->comment('Equipment used during the assignment');
             $table->longText('notes')->nullable()->comment('Notes of the assignment');
             $table->longText('special_notes')->nullable();

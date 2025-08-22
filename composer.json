@@ -12,6 +12,7 @@
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.351",
         "barryvdh/laravel-dompdf": "^3.1",
+        "chillerlan/php-qrcode": "^5.0",
         "inertiajs/inertia-laravel": "^2.0",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^12.25",

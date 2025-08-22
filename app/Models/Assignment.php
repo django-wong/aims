@@ -30,7 +30,19 @@ class Assignment extends Model implements Commentable
     protected function casts(): array
     {
         return [
-            'report_required' => 'boolean'
+            'report_required' => 'boolean',
+            'pre_inspection_meeting' => 'boolean',
+            'final_inspection' => 'boolean',
+            'dimensional' => 'boolean',
+            'sample_inspection' => 'boolean',
+            'witness_of_tests' => 'boolean',
+            'monitoring' => 'boolean',
+            'packing' => 'boolean',
+            'document_review' => 'boolean',
+            'expediting' => 'boolean',
+            'audit' => 'boolean',
+            'exit_call' => 'boolean',
+            'flash_report' => 'boolean',
         ];
     }
 
@@ -87,5 +99,10 @@ class Assignment extends Model implements Commentable
     public function sub_vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class, 'sub_vendor_id');
+    }
+
+    public function visit_contact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class, 'visit_contact_id');
     }
 }

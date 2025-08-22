@@ -99,6 +99,17 @@ class StoreRequest extends FormRequest
             'special_notes' => 'nullable|string',
             'inter_office_instructions' => 'nullable|string|max:1500',
             'inspector_instructions' => 'nullable|string|max:1500',
+
+            // Reporting format fields
+            'reporting_format' => 'nullable|integer|in:0,1',
+            'reporting_frequency' => 'nullable|integer|in:0,1',
+            'send_report_to_email' => 'nullable|email|max:255',
+            'timesheet_format' => 'nullable|integer|in:0,1',
+            'ncr_format' => 'nullable|integer|in:0,1',
+            'punch_list_format' => 'nullable|integer|in:0,1',
+            'irn_format' => 'nullable|integer|in:0,1',
+            'document_stamp' => 'nullable|integer|in:0,1',
+            //
         ];
     }
 

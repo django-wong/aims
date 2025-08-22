@@ -27,14 +27,7 @@ class AssignmentFactory extends Factory
             'assignment_type_id' => AssignmentType::factory(),
             'project_id' => Project::factory(),
             'org_id' => Org::factory(),
-
-            'operation_org_id' => $this->faker->randomElement([
-                null,
-                Org::factory()
-            ]),
-
             'purchase_order_id' => PurchaseOrder::factory(),
-
             'inspector_id' => User::factory(),
             'vendor_id' => Vendor::factory(),
             'sub_vendor_id' => Vendor::factory(),
