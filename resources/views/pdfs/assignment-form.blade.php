@@ -27,8 +27,8 @@
         <tr>
             <td class="title">Inspector:</td>
             <td>{{$assignment->inspector?->name ?? 'N/A'}}</td>
-            <td class="title">Assignment Date:</td>
-            <td>{{ $assignment->created_at->format('d/m/Y') }}</td>
+            <td class="title">Assignment Type:</td>
+            <td>{{ $assignment->assignment_type->name }}</td>
         </tr>
         <tr>
             <td class="title">Client:</td>
@@ -37,25 +37,15 @@
             <td>{{ $assignment->purchase_order->title }}</td>
         </tr>
         <tr>
+            <td class="title">Coordinator</td>
+            <td>{{ $assignment->project->client->coordinator?->name ?? 'N/A' }}</td>
             <td class="title">Technical Reviewer:</td>
-            <td>TODO</td>
-            <td class="title">Product:</td>
-            <td>TODO</td>
+            <td>{{ $assignment->project->client->reviewer?->name ?? 'N/A' }}</td>
         </tr>
         <tr>
-            <td class="title">Location:</td>
-            <td colspan="3">{{ $assignment->project->client->address->full_address }}</td>
-        </tr>
-        <tr>
-            <td class="title">Contracting Office:</td>
-            <td>{{ $assignment->org->name }}</td>
-            <td class="title">Operating Office:</td>
-            <td>{{ $assignment->operation_org?->name ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td class="title">Coordinator:</td>
+            <td class="title">Approved by:</td>
             <td>TODO</td>
-            <td class="title">Coordinator:</td>
+            <td class="title">Date:</td>
             <td>TODO</td>
         </tr>
         <tr>
@@ -196,6 +186,7 @@
             <td colspan="4"></td>
         </tr>
     </table>
+    <x-pdf.page-break/>
     <table class="table">
         <tr>
             <td class="head">Special Notes</td>
@@ -249,7 +240,7 @@
         <br/>
         FLASH REPORTS to be Transmitted Direct to Client - Recipients: <br/>
         Martin Shaw: martin.shaw@woodplc.com <br/>
-        cc. Hoascar, Bianca <bianca.hoascar@woodplc.com  / reports.au@biegroup.com <br/>
+        cc. Hoascar, Bianca bianca.hoascar@woodplc.com  / reports.au@biegroup.com <br/>
         <br/>
         The Flash Email Report must take the following format: <br/>
         <br/>

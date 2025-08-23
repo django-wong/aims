@@ -189,7 +189,7 @@ export default function Page() {
           table={table}
           right={
             <>
-              <Button variant={'outline'} size={'sm'}>
+              <Button variant={'outline'}>
                 <Plus />
                 New Invoice
               </Button>

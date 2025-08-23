@@ -10,11 +10,9 @@ import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { AssignmentActions } from '@/pages/assignments';
-import { Clock, MessagesSquare, Newspaper, PlusIcon } from 'lucide-react';
+import { Clock, MessagesSquare, Newspaper } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
-import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
-import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 import { Timesheets } from '@/pages/assignments/timesheets';
 
 interface EditProps {
