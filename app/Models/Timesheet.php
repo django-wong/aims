@@ -24,6 +24,16 @@ class Timesheet extends Model
         'id', 'created_at', 'updated_at', 'deleted_at'
     ];
 
+    public function casts()
+    {
+        return [
+            'date' => 'date',
+            'start' => 'date',
+            'end' => 'date',
+            'sign_off_at' => 'datetime',
+        ];
+    }
+
     public function scopeDraft(Builder $query): Builder
     {
         return $query->where(

@@ -18,12 +18,12 @@ import { describe_timesheet_status, timesheet_range } from '@/lib/utils';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { Assignment, Timesheet } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { CheckIcon, EllipsisVerticalIcon, PenIcon, PlusIcon, XIcon } from 'lucide-react';
+import { CheckIcon, EllipsisVerticalIcon, PenIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
-import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 
 interface TimesheetsProps {
   assignment: Assignment;
+  filters?: Record<string, any>
 }
 
 export function Timesheets(props: TimesheetsProps) {
@@ -67,6 +67,7 @@ export function Timesheets(props: TimesheetsProps) {
   const table = useTable<Timesheet>('/api/v1/timesheets', {
     columns,
     defaultParams: {
+      ...props.filters,
       'filter[assignment_id]': String(props.assignment.id),
       sort: '-start',
     },
@@ -121,20 +122,22 @@ function TimesheetActions(props: TimesheetActionsProps) {
               <span>#{props.timesheet.id}</span>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuGroup>
-            <DropdownMenuItem variant={'default'}>
-              Approve
-              <DropdownMenuShortcut>
-                <CheckIcon />
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem variant={'destructive'} onClick={() => {}}>
-              Request Revise
-              <DropdownMenuShortcut>
-                <XIcon />
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+          { props.timesheet.status > 0 ? (
+            <DropdownMenuGroup>
+              <DropdownMenuItem variant={'default'}>
+                Approve
+                <DropdownMenuShortcut>
+                  <CheckIcon />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem variant={'destructive'} onClick={() => {}}>
+                Request Revise
+                <DropdownMenuShortcut>
+                  <XIcon />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          ) : null }
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => props.onViewDetailsClick?.(props.timesheet)}>

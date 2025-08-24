@@ -3,6 +3,7 @@
 namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
+use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 
 class ApprovedStatus extends TimesheetStatus
 {
@@ -21,5 +22,8 @@ class ApprovedStatus extends TimesheetStatus
     {
         $timesheet->status = TimesheetStatuses::APPROVED;
         $timesheet->save();
+        $timesheet->assignment->project->client->coordinator?->notify(
+            new TimesheetIsWaitingForContractorOfficeApproval($timesheet)
+        );
     }
 }

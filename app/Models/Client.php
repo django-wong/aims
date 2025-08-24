@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $org_id
+ * @property User|null   $coordinator
  */
 class Client extends Model implements Contactable
 {
@@ -22,7 +23,7 @@ class Client extends Model implements Contactable
         return $this->belongsTo(User::class, 'reviewer_id');
     }
 
-    public function coordinator()
+    public function coordinator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'coordinator_id');
     }

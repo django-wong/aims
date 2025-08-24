@@ -3,7 +3,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import TableCellWrapper, { computedStyle } from '@/components/ui/table-cell-wrapper';
+import { computedStyle } from '@/components/ui/table-cell-wrapper';
 import { BaseTableData, useTable } from '@/hooks/use-table';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
@@ -18,7 +18,6 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
 import { Empty } from '@/components/empty';
-import { useReducer } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
 
 interface DataTableProps<T extends BaseTableData> {

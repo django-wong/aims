@@ -117,6 +117,18 @@ body {
     --color-input: var(--color-destructive);
   }
 
+  .base-table td {
+    @apply p-2 border border-black;
+  }
+
+  .prose p {
+    @apply p-0 my-1;
+  }
+
+  .prose table p {
+    @apply p-0 m-0;
+  }
+
   @keyframes accordion-down {
     from {
       height: 0;
@@ -136,13 +148,6 @@ body {
   }
 }
 
-.prose p {
-  @apply p-0 my-1;
-}
-
-.prose table p {
-  @apply p-0 m-0;
-}
 
 @utility animate-accordion-down {
   animation: accordion-down 0.2s ease-out;
@@ -151,3 +156,4 @@ body {
 @utility animate-accordion-up {
   animation: accordion-up 0.2s ease-out;
 }
+

@@ -77,21 +77,13 @@ export default function Edit(props: EditProps) {
             </TabsContent>
             <TabsContent value={'timesheets'}>
               <div className={'grid gap-4'}>
-                {/*<TimesheetItems*/}
-                {/*  assignment={props.assignment}*/}
-                {/*  // datatable={{*/}
-                {/*  //   left: (*/}
-                {/*  //     <TimesheetItemForm onSubmit={() => {}}>*/}
-                {/*  //       <Button>*/}
-                {/*  //         <PlusIcon/>*/}
-                {/*  //         New timesheet item*/}
-                {/*  //       </Button>*/}
-                {/*  //     </TimesheetItemForm>*/}
-                {/*  //   )*/}
-                {/*  // }}*/}
-                {/*/>*/}
                 <div className={'overflow-hidden'}>
-                  <Timesheets assignment={props.assignment}/>
+                  <Timesheets
+                    assignment={props.assignment}
+                    filters={{
+                      'filter[status]': '> 0'
+                    }}
+                  />
                 </div>
               </div>
             </TabsContent>

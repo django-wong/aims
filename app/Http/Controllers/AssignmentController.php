@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Notifications\NewAssignmentIssued;
+use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Vite;
 
 class AssignmentController extends Controller
 {
@@ -18,12 +20,17 @@ class AssignmentController extends Controller
 
     public function edit(string $id)
     {
+        $assignment = Assignment::query()
+            ->with(
+                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector', 'purchase_order'
+            )
+            ->findOrFail($id);
+
         return inertia('assignments/edit', [
-            'assignment' => Assignment::query()
-                ->with(
-                    'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector', 'purchase_order'
-                )
-                ->findOrFail($id),
+            'capability' => [
+                'TODO'
+            ],
+            'assignment' => $assignment,
         ]);
     }
 
@@ -39,7 +46,7 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
-        Gate::authorize('inspect', $assignment);
+        // Gate::authorize('inspect', $assignment);
 
         $start = $request->input('start', now()->startOfWeek()->format('Y-m-d'));
         $end = Carbon::parse($start)->endOfWeek()->format('Y-m-d');
@@ -48,6 +55,12 @@ class AssignmentController extends Controller
             'start' => $start,
             'end' => $end,
         ]);
+
+        if ($request->has('preview_contractor_notification')) {
+            return (
+                new TimesheetIsWaitingForContractorOfficeApproval($timesheet)
+            )->toMail(auth()->user());
+        }
 
         return inertia('assignments/record', [
             'assignment' => $assignment,

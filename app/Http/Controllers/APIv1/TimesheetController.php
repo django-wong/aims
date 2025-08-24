@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Filters\OperatorFilter;
 use App\Models\Timesheet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -45,9 +46,8 @@ class TimesheetController extends Controller
             AllowedFilter::exact('assignment_id'),
             'hours',
             'travel_distance',
-            AllowedFilter::callback('keywords', function (Builder $query, $value) {
-
-            })
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {}),
+            AllowedFilter::custom('status', new OperatorFilter())
         ];
     }
 
