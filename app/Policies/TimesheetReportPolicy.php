@@ -29,9 +29,13 @@ class TimesheetReportPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Timesheet $timesheet): bool
+    public function create(User $user, Timesheet|null $timesheet = null): bool
     {
-        return $user->can('update', $timesheet);
+        if ($timesheet) {
+            return $user->can('update', $timesheet);
+        }
+
+        return $user->can('update', $user->user_role->org);
     }
 
     /**

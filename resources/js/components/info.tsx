@@ -25,7 +25,7 @@ export function InfoHead({ children, right }: PropsWithChildren<{right?: React.R
 export function InfoLineLabel({ children, icon }: PropsWithChildren<{icon?: IconName}>) {
   return (
     <>
-      <h4 className={'text-muted-foreground flex justify-start gap-1 items-center text-sm flex-shrink-0 mt-[0.125rem]'}>
+      <h4 className={'text-muted-foreground flex justify-start gap-1 items-center text-sm flex-shrink-0'}>
         { icon ? (
           <DynamicIcon name={icon} className={'w-4 h-4 mr-1'} />
         ) : null}

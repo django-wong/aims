@@ -194,6 +194,46 @@ export interface Assignment extends BaseModel {
   description: string | null;
   notes: string | null;
   timesheets?: Timesheet[];
+
+  // Visit information
+  first_visit_date: string | null;
+  visit_frequency: string | null;
+  total_visits: number | null;
+  hours_per_visit: number | null;
+  visit_contact_id: number | null;
+  visit_contact?: Contact;
+
+  // Scope of assignment (booleans)
+  pre_inspection_meeting: boolean;
+  final_inspection: boolean;
+  dimensional: boolean;
+  sample_inspection: boolean;
+  witness_of_tests: boolean;
+  monitoring: boolean;
+  packing: boolean;
+  document_review: boolean;
+  expediting: boolean;
+  audit: boolean;
+
+  // Status/flash report/exit call
+  exit_call: boolean;
+  flash_report: boolean;
+  contact_details: string | null;
+  contact_email: string | null;
+
+  // Report formats
+  reporting_format: number;
+  reporting_frequency: number;
+  send_report_to_email: string | null;
+  timesheet_format: number;
+  ncr_format: number;
+  punch_list_format: number;
+  irn_format: number;
+  document_stamp: number;
+
+  // Additional fields
+  equipment: string | null;
+  special_notes: string | null;
 }
 
 export type Invoiceable = {

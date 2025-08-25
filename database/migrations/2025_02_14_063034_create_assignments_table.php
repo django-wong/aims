@@ -56,7 +56,6 @@ return new class extends Migration
             $table->string('contact_details')->nullable()->comment('Contact details for the assignment');
             $table->string('contact_email')->nullable()->comment('Contact email for the assignment');
 
-            // New fields based on comments
             $table->tinyInteger('reporting_format')->default(0)->comment('Reporting format: 0 = bie, 1 = client');
             $table->tinyInteger('reporting_frequency')->default(0)->comment('Reporting frequency: 0 = daily, 1 = weekly');
             $table->string('send_report_to_email')->nullable()->comment('Email address to send reports to');
