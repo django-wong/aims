@@ -11,6 +11,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { File as FileIcon, Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
 import { Divider } from '@/components/divider';
+import { AttachmentItem } from '@/pages/timesheets/timesheet-items';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const schema = z.object({
   content: z.string().min(1, 'Comment cannot be empty'),
@@ -144,32 +146,27 @@ export function Comments(props: CommentsProps) {
           </Form>
         </div>
 
-        <h1 className={'text-xl font-bold'}>Attachments</h1>
-
-        <div className={'flex gap-4 items-center justify-start overflow-x-auto pb-1'}>
-          {
-            (table.data || []).reduce<Attachment[]>((attachments, item) => {
-              if (item.attachments) {
-                attachments.push(...item.attachments);
-              }
-              return attachments;
-            }, []).map((attachment, index) => {
-              return (
-                <div key={`attachment:${index}`} className={'w-32 shrink-0 border min-h-32 rounded-md flex flex-col p-2 gap-2'}>
-                  <div className={'flex-grow flex items-center justify-center'}>
-                    <FileIcon size={32}/>
-                  </div>
-                  <Divider/>
-                  <div className={'line-clamp-1'}>
-                    { attachment.name}
-                  </div>
-                </div>
-              );
-            })
-          }
-        </div>
-
-        <h1 className={'text-xl font-bold'}>Comments</h1>
+        <Accordion type={'multiple'} defaultValue={['comments']}>
+          <AccordionItem value={'attachments'}>
+            <AccordionTrigger>All files in comments (click to expand)</AccordionTrigger>
+            <AccordionContent>
+              <div className={'flex gap-4 items-center justify-start overflow-x-auto pb-1'}>
+                {
+                  (table.data || []).reduce<Attachment[]>((attachments, item) => {
+                    if (item.attachments) {
+                      attachments.push(...item.attachments);
+                    }
+                    return attachments;
+                  }, []).map((attachment, index) => {
+                    return (
+                      <AttachmentItem attachment={attachment} key={index}/>
+                    );
+                  })
+                }
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         {table.data && table.data.length ? (
           <div className={'grid gap-8 rounded-lg'}>

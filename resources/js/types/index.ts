@@ -280,6 +280,13 @@ export interface Timesheet extends BaseModel {
   timesheet_items_count?: number;
 }
 
+export interface TimesheetReport extends BaseModel {
+  timesheet_id: number;
+  type: string;
+  is_closed: boolean;
+  attachment?: Attachment
+}
+
 export interface TimesheetItem extends BaseModel {
   timesheet_id: number;
   timesheet?: Timesheet;

@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'assignments' => AssignmentController::class,
         'assignment-types' => \App\Http\Controllers\APIv1\AssignmentTypeController::class,
         'timesheets' => \App\Http\Controllers\APIv1\TimesheetController::class,
+        'timesheet-reports' => \App\Http\Controllers\APIv1\TimesheetReportController::class,
         'timesheet-items' => \App\Http\Controllers\APIv1\TimesheetItemController::class,
         'budgets' => \App\Http\Controllers\APIv1\BudgetController::class,
     ]);

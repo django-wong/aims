@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Timesheet } from '@/types';
 import dayjs from 'dayjs';
+import { Timesheet } from '@/types';
 
 /**
  * Merges Tailwind class names, resolving any conflicts.
@@ -29,28 +29,42 @@ export function timesheet_range(timesheet: Pick<Timesheet, 'start' | 'end'>) {
 
 
 export function describe_timesheet_status(status: Timesheet['status']) {
-  /**
-   * 0 = draft
-   * 1 = reviewing
-   * 2 = approved - waiting for contract holder approval
-   * 3 = contract holder approved - waiting for client approval
-   * 4 = client approved - waiting for invoicing
-   * 5 = invoiced
-   */
   switch (status) {
     case 0:
       return 'Draft';
     case 1:
       return 'Reviewing';
     case 2:
-      return 'Initial Approved - Waiting for Contract Holder Approval';
+      return 'Waiting for Contract Holder Approval';
     case 3:
-      return 'Contract Holder Approved - Waiting for Client Approval';
+      return 'Waiting for Client Approval';
     case 4:
-      return 'Client Approved - Waiting for Invoicing';
+      return 'Client Approved';
     case 5:
       return 'Invoiced';
     default:
       return 'Unknown Status';
   }
+}
+
+export function humanFileSize(bytes: number, si=true, dp=1) {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + ' B';
+  }
+
+  const units = si
+    ? ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  let u = -1;
+  const r = 10**dp;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+
+
+  return bytes.toFixed(dp) + ' ' + units[u];
 }

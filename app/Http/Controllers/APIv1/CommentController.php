@@ -58,8 +58,8 @@ class CommentController extends Controller
 
         if (! empty($attachments = $request->file('attachments'))) {
             foreach ($attachments as $attachment) {
-                Attachment::upload(
-                    $attachment, for: $comment
+                Attachment::store(
+                    $attachment, attachable: $comment
                 );
             }
         }

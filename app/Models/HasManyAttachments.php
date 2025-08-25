@@ -15,4 +15,9 @@ trait HasManyAttachments
     {
         return strtolower(class_basename($this));
     }
+
+    public function attachment()
+    {
+        return $this->morphOne(Attachment::class, 'attachable')->latestOfMany();
+    }
 }

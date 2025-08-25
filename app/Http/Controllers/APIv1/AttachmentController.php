@@ -35,8 +35,8 @@ class AttachmentController extends Controller
 
         if (! empty($attachments = $request->file('attachments'))) {
             foreach ($attachments as $attachment) {
-                Attachment::upload(
-                    $attachment, for: $attachable
+                Attachment::store(
+                    $attachment, attachable: $attachable
                 );
             }
         }

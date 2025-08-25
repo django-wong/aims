@@ -237,7 +237,9 @@ function SignOffForm(props: SignOffFormProps) {
         <DialogHeader>
           <DialogTitle>Sign Off</DialogTitle>
         </DialogHeader>
-        Your timesheet will be signed off and no further changes can be made.
+        <p>
+          Don't forget to upload your weekly inspection report if applicable. Your timesheet will be signed off and no further changes can be made.
+        </p>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant={'outline'}>Cancel</Button>

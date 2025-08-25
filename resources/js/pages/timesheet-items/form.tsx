@@ -243,7 +243,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                         Expenses (click to expand)
                       </AccordionTrigger>
                       <AccordionContent>
-                        <FormItem>
+                        <div className={'w-full'}>
                           <div className={'grid grid-cols-12 gap-4'}>
                             <div className={'col-span-12 md:col-span-3'}>
                               <FormField
@@ -298,66 +298,32 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                               />
                             </div>
                           </div>
-                        </FormItem>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
                 </div>
                 <div className={'col-span-12 md:col-span-12'}>
-                  <div
-                  // label={'Attachments'}
-                  // for={'attachments'}
-                  // error={form.formState.errors.attachments?.message}
-                  >
+                  <div>
                     <FormField
                       control={form.control}
                       render={({ field }) => {
                         return (
                           <>
                             <FormItem>
-                              <FormLabel>Attachments</FormLabel>
-                              <div
-                                className={'bg-background dark:bg-input/30 flex flex-col items-center justify-center gap-2 rounded-lg border p-16'}
-                              >
-                                <UploadIcon />
-                                <FormControl>
-                                  <Button asChild variant={'outline'} className={'cursor-pointer'}>
-                                    <label>
-                                      <input
-                                        multiple
-                                        type={'file'}
-                                        accept={'*'}
-                                        className={'hidden'}
-                                        onChange={(event) => {
-                                          console.info(event);
-                                          field.onChange(Array.from(event.target.files ?? []));
-                                        }}
-                                      />
-                                      <span className={'flex items-center gap-2'}>
-                                        <PlusIcon />
-                                        Add Attachments
-                                      </span>
-                                    </label>
-                                  </Button>
-                                </FormControl>
-                              </div>
+                              <FormLabel>Attachments (Expense receipt, flash report etc)</FormLabel>
+                              <Input
+                                id="picture" type="file" multiple accept={'*'}
+                                  onChange={(event) => {
+                                  field.onChange(Array.from(event.target.files ?? []));
+                                }}
+                              />
                             </FormItem>
                           </>
                         );
                       }}
                       name={'attachments'}
                     />
-                    <div className={'mt-2'}>
-                      {form.watch('attachments')?.length ? (
-                        <div className={'flex flex-col gap-2'}>
-                          {(form.watch('attachments') || []).map((file, index) => (
-                            <p key={index} className={'text-muted-foreground flex-grow text-sm'}>
-                              {file.name}
-                            </p>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
                   </div>
                 </div>
               </Form>

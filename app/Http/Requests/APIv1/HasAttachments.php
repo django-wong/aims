@@ -20,7 +20,7 @@ trait HasAttachments
     {
         if ($this->hasAttachments()) {
             foreach ($this->attachments() as $attachment) {
-                Attachment::upload($attachment, $for);
+                Attachment::store($attachment, $for);
             }
         }
     }

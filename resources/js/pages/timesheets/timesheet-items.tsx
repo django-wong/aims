@@ -3,10 +3,32 @@ import { Button } from '@/components/ui/button';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { useTable } from '@/hooks/use-table';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
-import { Assignment, Timesheet, TimesheetItem } from '@/types';
+import { Assignment, Attachment, Timesheet, TimesheetItem, TimesheetReport } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { PencilIcon } from 'lucide-react';
+import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from 'lucide-react';
 import { ComponentProps } from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { usePagedGetApi } from '@/hooks/use-get-api';
+import axios from 'axios';
+import { humanFileSize } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Link } from '@inertiajs/react';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -91,7 +113,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
         right: ['actions'],
       },
       pagination: {
-        pageSize: 2,
+        pageSize: 99,
       },
     },
     columns: columns,
@@ -99,7 +121,14 @@ export function TimesheetItems(props: TimesheetItemsProps) {
 
   return (
     <>
-      <DataTable {...props.datatable} table={table} />
+      <DataTable {...props.datatable} table={table} pagination={false} />
+      <div>
+        <Accordion type={'multiple'} className={'w-full'} defaultValue={['inspection-report']}>
+          <TimesheetReports timesheet={props.timesheet!} type={'inspection-report'} label={'Inspection Report'} />
+          <TimesheetReports timesheet={props.timesheet!} type={'punch-list'} label={'Punch List'} />
+          <TimesheetReports timesheet={props.timesheet!} type={'hse-report'} label={'HSE Report'} />
+        </Accordion>
+      </div>
     </>
   );
 }
@@ -127,4 +156,114 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
       </div>
     </>
   );
+}
+
+
+interface TimesheetReportsProps {
+  timesheet: Timesheet;
+  type: string;
+  label: string;
+}
+
+function TimesheetReports(props: TimesheetReportsProps) {
+  const api = usePagedGetApi<TimesheetReport>('/api/v1/timesheet-reports', {
+    searchParams: new URLSearchParams({
+      'timesheet_id': String(props.timesheet.id),
+      'filter[type]': props.type,
+      'sort': '-created_at',
+      'include': 'attachment',
+    })
+  });
+
+  function onChange(event:  React.ChangeEvent<HTMLInputElement>) {
+    for (const file of (event.target.files || [])) {
+      const formData = new FormData();
+      formData.append('timesheet_id', String(props.timesheet.id));
+      formData.append('type', props.type);
+      formData.append('attachment', file);
+
+      axios.post('/api/v1/timesheet-reports', formData).then(() => {
+        api.refetch().then(() => {
+          console.log('refetched');
+        })
+      });
+    }
+  }
+
+  return (
+    <>
+      <AccordionItem value={props.type}>
+        <AccordionTrigger>{props.label} ({(api.data || []).length})</AccordionTrigger>
+        <AccordionContent>
+          <div className={'flex justify-start gap-4'}>
+            {(api.data || []).map((report, index) => (
+              <AttachmentItem attachment={report.attachment!} key={index}/>
+            ))}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <label className={'w-32 bg-secondary aspect-[3/3] rounded-lg border-dashed border flex flex-col items-center justify-center hover:bg-background cursor-pointer'}>
+                  <div>
+                    <PlusIcon size={32}/>
+                  </div>
+                  <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
+                </label>
+              </TooltipTrigger>
+              <TooltipContent>
+                Upload .xlsx .pdf .docs or image files.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </>
+  );
+}
+
+interface AttachmentItemProps {
+  attachment: Attachment,
+  children?: React.ReactNode;
+  actions?: React.ReactNode;
+}
+
+export function AttachmentItem(props: AttachmentItemProps) {
+  return <div className={'w-32 aspect-[3/3] rounded-lg border flex flex-col'}>
+    <div className={'flex-grow flex items-center justify-center relative'}>
+      {
+        props.children ?? (<FileTextIcon/>)
+      }
+      <div className={'top-0 right-0 absolute'}>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button size={'icon'} variant={'ghost'}>
+              <EllipsisVerticalIcon/>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className={'max-w-56'} align={'start'} side={'right'}>
+            <DropdownMenuLabel>{props.attachment.name}</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => {window.open(route('attachments.download', { id: props.attachment?.id }))}}>
+              Download
+              <DropdownMenuShortcut>
+                <DownloadIcon/>
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator></DropdownMenuSeparator>
+            <DropdownMenuItem variant={'destructive'}>
+              Delete
+              <DropdownMenuShortcut>
+                <Trash2Icon/>
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+    <div className={'flex gap-2 p-2 bg-muted/50 border-t'}>
+      <span className={'flex-grow line-clamp-1'}>
+        { props.attachment?.name ?? 'No file name' }
+      </span>
+      <span className={'shrink-0'}>
+        { humanFileSize(props.attachment?.size ?? 0) }
+      </span>
+    </div>
+  </div>;
 }

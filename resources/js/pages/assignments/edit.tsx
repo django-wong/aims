@@ -10,7 +10,7 @@ import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { AssignmentActions } from '@/pages/assignments';
-import { Clock, MessagesSquare, Newspaper } from 'lucide-react';
+import { ChartNoAxesColumn, ChartNoAxesColumnIcon, Clock, ClockFading, ClockFadingIcon, MessagesSquare, Newspaper } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { Timesheets } from '@/pages/assignments/timesheets';
@@ -56,11 +56,11 @@ export default function Edit(props: EditProps) {
           <Tabs value={hash} onValueChange={setHash}>
             <TabsList className={'mb-4'}>
               <TabsTrigger value={'overview'}>
-                <Clock/>
+                <ChartNoAxesColumnIcon/>
                 <span className={'hidden sm:inline'}>Overview</span>
               </TabsTrigger>
               <TabsTrigger value={'timesheets'}>
-                <Clock/>
+                <ClockFadingIcon/>
                 <span className={'hidden sm:inline'}>Timesheet</span>
               </TabsTrigger>
               <TabsTrigger value={'inspector-report'}>

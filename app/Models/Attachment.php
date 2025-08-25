@@ -34,15 +34,43 @@ class Attachment extends Model
         );
     }
 
-    public static function upload(UploadedFile $file, Attachable $for)
+    public static function store(UploadedFile $file, Attachable $attachable)
     {
-        return $for->attachments()->create([
+        return $attachable->attachments()->create(
+            static::upload(
+                $file, for: $attachable
+            )
+        );
+    }
+
+    public static function upload(UploadedFile $file, Attachable $for): array
+    {
+        return [
             'name' => $file->getClientOriginalName(),
             'disk' => config('filesystems.default'),
             'path' => $file->storePublicly($for->getPathPrefix() . '/' . $for->getKey() . '/attachments', config('filesystems.default')),
             'size' => $file->getSize(),
             'mime_type' => $file->getMimeType(),
-        ]);
+        ];
+    }
+
+    public function revision(UploadedFile $file)
+    {
+        $revision = $this->revisions()->create(
+            $this->only([
+                'name',
+                'disk',
+                'path',
+                'size',
+                'mime_type',
+            ])
+        );
+
+        $data = static::upload($file, for: $this->attachable);
+
+        $this->update($data);
+
+        return $revision;
     }
 
     public function download()
@@ -51,5 +79,10 @@ class Attachment extends Model
             'Content-Type' => $this->mime_type,
             'Content-Length' => $this->size,
         ]);
+    }
+
+    public function revisions()
+    {
+        return $this->hasMany(AttachmentRevision::class);
     }
 }
