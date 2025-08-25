@@ -5,30 +5,22 @@ import { useTable } from '@/hooks/use-table';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 import { Assignment, Attachment, Timesheet, TimesheetItem, TimesheetReport } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from 'lucide-react';
-import { ComponentProps } from 'react';
+import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import React, { ComponentProps } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 import axios from 'axios';
 import { humanFileSize } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link } from '@inertiajs/react';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -190,6 +182,14 @@ function TimesheetReports(props: TimesheetReportsProps) {
     }
   }
 
+  function deleteReport(item: TimesheetReport) {
+    axios.delete(`/api/v1/timesheet-reports/${item.id}`).then(() => {
+      api.refetch().then(() => {
+        console.log('refetched');
+      })
+    });
+  }
+
   return (
     <>
       <AccordionItem value={props.type}>
@@ -197,7 +197,35 @@ function TimesheetReports(props: TimesheetReportsProps) {
         <AccordionContent>
           <div className={'flex justify-start gap-4'}>
             {(api.data || []).map((report, index) => (
-              <AttachmentItem attachment={report.attachment!} key={index}/>
+              <AttachmentItem
+                attachment={report.attachment!}
+                key={index}
+                actions={(
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size={'icon'} variant={'ghost'}>
+                        <EllipsisVerticalIcon/>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className={'max-w-56'} align={'start'} side={'right'}>
+                      <DropdownMenuLabel>{report.attachment?.name}</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => {window.open(route('attachments.download', { id: report.attachment?.id }))}}>
+                        Download
+                        <DropdownMenuShortcut>
+                          <DownloadIcon/>
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator></DropdownMenuSeparator>
+                      <DropdownMenuItem variant={'destructive'} onClick={() => deleteReport(report)}>
+                        Delete
+                        <DropdownMenuShortcut>
+                          <Trash2Icon/>
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              />
             ))}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -226,35 +254,13 @@ interface AttachmentItemProps {
 }
 
 export function AttachmentItem(props: AttachmentItemProps) {
-  return <div className={'w-32 aspect-[3/3] rounded-lg border flex flex-col'}>
+  return <div className={'w-32 aspect-[3/3] rounded-lg border flex flex-col hover:bg-accent cursor-pointer'} onClick={() => {window.open(route('attachments.download', { id: props.attachment?.id }))}}>
     <div className={'flex-grow flex items-center justify-center relative'}>
       {
         props.children ?? (<FileTextIcon/>)
       }
-      <div className={'top-0 right-0 absolute'}>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button size={'icon'} variant={'ghost'}>
-              <EllipsisVerticalIcon/>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className={'max-w-56'} align={'start'} side={'right'}>
-            <DropdownMenuLabel>{props.attachment.name}</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => {window.open(route('attachments.download', { id: props.attachment?.id }))}}>
-              Download
-              <DropdownMenuShortcut>
-                <DownloadIcon/>
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator></DropdownMenuSeparator>
-            <DropdownMenuItem variant={'destructive'}>
-              Delete
-              <DropdownMenuShortcut>
-                <Trash2Icon/>
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className={'top-0 right-0 absolute'} onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
+        { props.actions }
       </div>
     </div>
     <div className={'flex gap-2 p-2 bg-muted/50 border-t'}>

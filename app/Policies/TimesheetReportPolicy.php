@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Models\Timesheet;
+use App\Models\Timesheet\TimesheetStatuses;
 use App\Models\TimesheetReport;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -27,9 +29,9 @@ class TimesheetReportPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Timesheet $timesheet): bool
     {
-        return false;
+        return $user->can('update', $timesheet);
     }
 
     /**
@@ -37,7 +39,13 @@ class TimesheetReportPolicy
      */
     public function update(User $user, TimesheetReport $timesheetReport): bool
     {
-        return false;
+        if ($user->can('inspect', $timesheetReport->timesheet->assignment)) {
+            return $timesheetReport->timesheet->status === TimesheetStatuses::DRAFT;
+        }
+
+        return $user->can(
+            'update', $timesheetReport->timesheet
+        );
     }
 
     /**
@@ -45,7 +53,7 @@ class TimesheetReportPolicy
      */
     public function delete(User $user, TimesheetReport $timesheetReport): bool
     {
-        return false;
+        return $this->update($user, $timesheetReport);
     }
 
     /**
@@ -53,7 +61,7 @@ class TimesheetReportPolicy
      */
     public function restore(User $user, TimesheetReport $timesheetReport): bool
     {
-        return false;
+        return $this->update($user, $timesheetReport);
     }
 
     /**

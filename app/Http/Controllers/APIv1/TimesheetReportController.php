@@ -7,6 +7,7 @@ use App\Http\Requests\APIv1\TimesheetReports\StoreTimesheetReportRequest;
 use App\Http\Requests\APIv1\TimesheetReports\UpdateTimesheetReportRequest;
 use App\Models\Attachment;
 use App\Models\TimesheetReport;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class TimesheetReportController extends Controller
@@ -39,7 +40,7 @@ class TimesheetReportController extends Controller
      */
     public function index(IndexRequest $request)
     {
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->where('timesheet_id', $request->input('timesheet_id'))->paginate();
     }
 
     /**
@@ -95,6 +96,12 @@ class TimesheetReportController extends Controller
      */
     public function destroy(TimesheetReport $timesheetReport)
     {
-        //
+        Gate::authorize('delete', $timesheetReport);
+
+        $timesheetReport->delete();
+
+        return [
+            'message' => 'You have successfully deleted the timesheet report.',
+        ];
     }
 }

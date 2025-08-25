@@ -3,6 +3,7 @@
 namespace App\Http\Requests\APIv1\TimesheetReports;
 
 use App\Models\Timesheet;
+use App\Models\TimesheetReport;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
@@ -19,7 +20,9 @@ class StoreTimesheetReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows('inspect', $this->timesheet()->assignment);
+        return Gate::allows(
+            'create', [TimesheetReport::class, $this->timesheet()]
+        );
     }
 
     /**

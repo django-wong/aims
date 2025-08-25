@@ -8,9 +8,8 @@ import { useReactiveForm } from '@/hooks/use-form';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 import { Attachment, Comment } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { File as FileIcon, Lock, MessageCircle, Paperclip } from 'lucide-react';
+import { Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
-import { Divider } from '@/components/divider';
 import { AttachmentItem } from '@/pages/timesheets/timesheet-items';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 

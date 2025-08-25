@@ -22,4 +22,13 @@ class TimesheetPolicy
         return $user->isAnyRole([UserRole::ADMIN, UserRole::PM, UserRole::STAFF]) ||
             ($user->isRole(UserRole::INSPECTOR) && $model->assignment?->inspector_id === $user->id);
     }
+
+    public function update(User $user, Timesheet $timesheet): bool
+    {
+        if ($user->can('inspect', $timesheet->assignment)) {
+            return $timesheet->status === \App\Models\Timesheet\TimesheetStatuses::DRAFT;
+        }
+
+        return $user->can('update', $timesheet->assignment);
+    }
 }
