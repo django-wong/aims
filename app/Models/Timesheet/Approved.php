@@ -5,22 +5,22 @@ namespace App\Models\Timesheet;
 use App\Models\Timesheet;
 use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 
-class ApprovedStatus extends TimesheetStatus
+class Approved implements Status
 {
 
-    public function next(): ?TimesheetStatus
+    public function next(Timesheet $timesheet): ?string
     {
-        return new ContractHolderApprovedStatus($this->context);
+        return ContractHolderApproved::class;
     }
 
-    public function prev(): ?TimesheetStatus
+    public function prev(Timesheet $timesheet): ?string
     {
-        return new ReviewingStatus($this->context);
+        return Reviewing::class;
     }
 
     public function transition(Timesheet $timesheet): void
     {
-        $timesheet->status = TimesheetStatuses::APPROVED;
+        $timesheet->status = Timesheet::APPROVED;
         $timesheet->save();
         $timesheet->assignment->project->client->coordinator?->notify(
             new TimesheetIsWaitingForContractorOfficeApproval($timesheet)

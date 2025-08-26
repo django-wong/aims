@@ -4,6 +4,7 @@ namespace App\Http\Requests\APIv1\TimesheetReports;
 
 use App\Models\Timesheet;
 use App\Models\TimesheetReport;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,9 +19,9 @@ class StoreTimesheetReportRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize(): bool|Response
     {
-        return Gate::allows(
+        return Gate::authorize(
             'create', [TimesheetReport::class, $this->timesheet()]
         );
     }

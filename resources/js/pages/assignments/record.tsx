@@ -239,27 +239,28 @@ export default function Record(props: RecordProps) {
                   </div>
 
                   <InfoHead>Notes</InfoHead>
-                  <Divider/>
-                  {(props.assignment.notes || props.assignment.special_notes) && (
-                    <Accordion type="multiple" className="w-full">
-                      <AccordionItem value="notes">
-                          <AccordionTrigger>Notes</AccordionTrigger>
+                  <div className={'bg-accent px-4 border rounded-lg overflow-hidden ring-6 ring-muted'}>
+                    {(props.assignment.notes || props.assignment.special_notes) && (
+                      <Accordion type="multiple" className="w-full">
+                        <AccordionItem value="notes">
+                            <AccordionTrigger>Notes</AccordionTrigger>
+                            <AccordionContent>
+                              <div className="whitespace-pre-wrap text-sm text-muted-foreground">
+                                {props.assignment.notes}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        <AccordionItem value="special-notes">
+                          <AccordionTrigger>Special Notes</AccordionTrigger>
                           <AccordionContent>
                             <div className="whitespace-pre-wrap text-sm text-muted-foreground">
-                              {props.assignment.notes}
+                              {props.assignment.special_notes ?? 'No special notes available.'}
                             </div>
                           </AccordionContent>
                         </AccordionItem>
-                      <AccordionItem value="special-notes">
-                        <AccordionTrigger>Special Notes</AccordionTrigger>
-                        <AccordionContent>
-                          <div className="whitespace-pre-wrap text-sm text-muted-foreground">
-                            {props.assignment.special_notes ?? 'No special notes available.'}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  )}
+                      </Accordion>
+                    )}
+                  </div>
                 </Info>
               }
               left={

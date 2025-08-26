@@ -12,10 +12,10 @@ axios.interceptors.request.use((config) => {
   return config;
 })
 
-function handleResponse(response: AxiosResponse) {
+function handleResponse(response: AxiosResponse, isError = false) {
   if (response.data) {
     if (typeof response.data.message === 'string') {
-      toast.success(
+      (isError ? toast.error : toast.success)(
         response.data.message
       );
     }
@@ -33,6 +33,6 @@ axios.interceptors.response.use((response) => {
   return response;
 }, (error) => {
   if (error.response) {
-    handleResponse(error.response);
+    handleResponse(error.response, true);
   }
 });

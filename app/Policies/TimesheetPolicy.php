@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Timesheet;
 use App\Models\User;
 use App\Models\UserRole;
+use Illuminate\Auth\Access\Response;
 
 class TimesheetPolicy
 {
@@ -23,10 +24,16 @@ class TimesheetPolicy
             ($user->isRole(UserRole::INSPECTOR) && $model->assignment?->inspector_id === $user->id);
     }
 
-    public function update(User $user, Timesheet $timesheet): bool
+    public function update(User $user, Timesheet $timesheet): bool|Response
     {
         if ($user->can('inspect', $timesheet->assignment)) {
-            return $timesheet->status === \App\Models\Timesheet\TimesheetStatuses::DRAFT;
+            if ($timesheet->status === \App\Models\Timesheet::DRAFT) {
+                return true;
+            } else {
+                return Response::deny(
+                    'Timesheet is submitted and cannot be modified.'
+                );
+            }
         }
 
         return $user->can('update', $timesheet->assignment);

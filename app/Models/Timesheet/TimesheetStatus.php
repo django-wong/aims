@@ -4,31 +4,69 @@ namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
 
-abstract class TimesheetStatus
+class TimesheetStatus
 {
-    protected Timesheet $context;
-
-    public function __construct(Timesheet $context)
+    static public function current(Timesheet $timesheet): Status
     {
-        $this->context = clone $context;
+        return match($timesheet->status) {
+            Timesheet::DRAFT => new Draft(),
+            Timesheet::REVIEWING => new Reviewing(),
+            Timesheet::APPROVED => new Approved(),
+            Timesheet::CONTRACT_HOLDER_APPROVED => new ContractHolderApproved(),
+            Timesheet::CLIENT_APPROVED => new ClientApproved(),
+            Timesheet::INVOICED => new Invoiced()
+        };
     }
 
-    /**
-     * Get the next status in the workflow.
-     *
-     * @return TimesheetStatus|null
-     */
-    abstract public function next(): ?TimesheetStatus;
+    static public function make(Timesheet $timesheet): TimesheetStatus
+    {
+        return new self($timesheet);
+    }
 
-    /**
-     * Get the previous status in the workflow.
-     *
-     * @return TimesheetStatus|null
-     */
-    abstract public function prev(): ?TimesheetStatus;
+    protected Status $current;
 
-    /**
-     * Transition the timesheet to this status.
-     */
-    abstract public function transition(Timesheet $timesheet): void;
+    public function __construct(private Timesheet $timesheet)
+    {
+        $this->current = static::current($timesheet);
+    }
+
+    public function prev(): ?Status
+    {
+        $class = $this->current->prev($this->timesheet);
+
+        if ($class) {
+            return new $class();
+        }
+
+        return null;
+    }
+
+    public function next(): ?Status
+    {
+        $class = $this->current->next($this->timesheet);
+
+        if ($class) {
+            return new $class();
+        }
+
+        return null;
+    }
+
+    public function is(string $status): bool
+    {
+        return $this->current instanceof $status;
+    }
+
+    public function __get(string $name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+
+        if (property_exists($this->current, $name)) {
+            return $this->current->$name;
+        }
+
+        throw new \Exception("Property {$name} does not exist on " . static::class . " or " . get_class($this->current));
+    }
 }

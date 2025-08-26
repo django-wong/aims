@@ -17,10 +17,11 @@ class TimesheetController extends Controller
 
         Gate::authorize('inspect', $timesheet->assignment);
 
-        $status = Timesheet\TimesheetStatuses::make($timesheet);
+        $status = Timesheet\TimesheetStatus::make($timesheet);
 
-        if ($status instanceof Timesheet\DraftStatus) {
-            $status->next()->transition($timesheet);
+        if ($status->is(Timesheet\Draft::class)) {
+            $status->next()
+                ?->transition($timesheet);
         }
 
         return [

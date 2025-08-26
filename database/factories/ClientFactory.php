@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Address;
 use App\Models\Org;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,6 +26,13 @@ class ClientFactory extends Factory
             'user_id' => User::factory(),
             'org_id' => Org::factory(),
             'address_id' => Address::factory(),
+            'coordinator_id' => User::factory()->has(
+                UserRole::factory()->state([
+                    'role' => UserRole::STAFF,
+                    'org_id' => Org::factory(),
+                ]),
+                'user_role'
+            ),
         ];
     }
 }

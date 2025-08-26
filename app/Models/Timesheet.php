@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Timesheet\TimesheetStatuses;
 use Database\Factories\TimesheetFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +16,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Timesheet extends Model
 {
+    const DRAFT = 0;
+    const REVIEWING = 1;
+    const APPROVED = 2;
+    const CONTRACT_HOLDER_APPROVED = 3;
+    const CLIENT_APPROVED = 4;
+    const INVOICED = 5;
+
     /** @use HasFactory<TimesheetFactory> */
     use HasFactory, BelongsToAssignment, HasManyTimesheetItems;
 
@@ -37,7 +43,7 @@ class Timesheet extends Model
     public function scopeDraft(Builder $query): Builder
     {
         return $query->where(
-            'status', TimesheetStatuses::DRAFT
+            'status', Timesheet::DRAFT
         );
     }
 }

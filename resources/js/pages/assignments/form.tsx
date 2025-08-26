@@ -747,14 +747,8 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                             control={form.control}
                             render={({ field }) => (
                               <VFormField label={'Special Notes'} className={'col-span-12'}>
-                                {/*<Textarea*/}
-                                {/*  value={field.value || ''}*/}
-                                {/*  onChange={field.onChange}*/}
-                                {/*  placeholder="Special notes will be included in the assignment form."*/}
-                                {/*  className="min-h-24"*/}
-                                {/*/>*/}
                                 <div className={'rounded-md border bg-background overflow-hidden'}>
-                                  <Editor value={field.value ?? ''}/>
+                                  <Editor value={field.value ?? DEFAULT_SPACIAL_NOTES}/>
                                 </div>
                               </VFormField>
                             )}
@@ -783,3 +777,80 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     </>
   );
 }
+
+
+const DEFAULT_SPACIAL_NOTES = `
+<p>Report (in sentence case lettering) must be submitted to the BIE office by 10:00 hrs on the day following the visit with all relevant documents attached. A flash email must be sent, and an exit call made if required. <br/></p>
+
+<p><strong>Specifications / Drawings & Data Sheets:</strong></p>
+
+<p>
+  1: xxxxx<br/>
+  2: xxxxx<br/>
+</p>
+
+<p><strong>Notes:</strong></p>
+
+<ul>
+  <li>1. With each visit an inspection report shall be sent within 48 hours. If there is more than one visit in a week on the same inspection assignment a single report at the end of the week will suffice for each assignment, provided flash report for each visit at the end of the day.</li>
+  <li>2. Problems arising from Inspection visits that require urgent resolution shall be reported immediately via telephone or e-mail to Wood from Suppliers works at each visit.</li>
+  <li>3. Inspection and test records shall be progressively signed off and following with ITP sign off (No separate visit for MDR review) prior to release.</li>
+  <li>4. The ITP should be signed off against all R, W and H points, where the inspector visited to monitor an activity these should also be signed off.</li>
+  <li>5. Inspection Release Note shall only be issued directly to Wood unless specific instruction given for the package. Inspector must report to Wood before leaving the premises if any issues have been identified which could potentially impact the release.</li>
+  <li>6. Final Inspection release certificate will only be issued to Supplier, after confirming by Wood Quality Advisor that all SDRL documents are approved.</li>
+  <li>7. The final signed off ITP should be submitted along with the release note.</li>
+</ul>
+
+<p><strong>Comments:</strong></p>
+<p>
+Weekly inspection of one day a week progressing to two days once testing starts <br/>
+Review material certificates and accept on Woods behalf <br/>
+Review test certificates and accept on Woods behalf <br/>
+Witness testing <br/>
+Inspect Modules for compliance with Woodside specifications and Australian regulations <br/>
+Progressively sign ITP <br/>
+Monitor MDR is being compiled progressively <br/>
+Inspect packaging in in compliance with Woodside specifications <br/>
+Issue weekly reports and flash reports when required <br/>
+Issue IRN to release equipment <br/>
+Attend weekly meeting with Wood/client <br/>
+</p>
+
+<p><strong>Start Date:</strong></p>
+<p>
+Pre-Inspection Meeting before start date TBC with inspector for their availability <br/>
+TBA – October <br/>
+</p>
+
+<p><strong>Client Requirements:</strong></p>
+<p>
+Subject in Emails must contain the BIE and Client inspection assignment numbers, client PO Number, Vendor Details and equipment description. example: WOOD_W97330_ABB_BIE_13146 <br/>
+Flash Report to be sent after each visit by inspector via email directly to Client CC. report.au@biegroup.com <br/>
+BIE Flash Report, BIE Template format to be used. <br/>
+Formal Client Inspection Report and Release forms are to be used and are to be sent to client by BIE. <br/>
+Report Numbering Format & File Name of report must be in accordance with client requirements: <br/>
+<br/>
+EXAMPLES for reports. flash reports / release notes: <br/>
+Flash report: WOOD_W97330_ABB_BIE_13146_FR-01… 02… etc <br/>
+Inspection Report: WOOD_W97330_ABB_BIE_13146_IR-01… 02… etc <br/>
+Release: WOOD_W97330_ABB_BIE_13146_IRC-01… 02… etc <br/>
+<br/>
+<strong>FLASH REPORTS to be Transmitted Direct to Client - Recipients:</strong> <br/>
+Martin Shaw: martin.shaw@woodplc.com <br/>
+cc. Hoascar, Bianca bianca.hoascar@woodplc.com  / reports.au@biegroup.com <br/>
+<br/>
+<strong>The Flash Email Report must take the following format:</strong><br/>
+CLIENT P.O. NO:………………………………………. <br/>
+BIE REFERENCE NO: …………………………………. <br/>
+VENDOR NAME:…………………………………… <br/>
+INSPECTION LOCATION:………………………… <br/>
+INSPECTOR NAME:……………………………… <br/>
+DATE OF INSPECTION:…………………………… <br/>
+P.O. ITEM NO. & BRIEF DESCRIPTION:……. <br/>
+ITP ACTIVITY NO.: …………………………………………. <br/>
+INSPECTION RESULT ACCEPTABLE:       YES/NO <br/>
+REASON NOT ACCEPTABLE: <br/>
+</p>
+
+<p><strong>Note: This must be in the body of the email and NOT in the form of an email attachment.</strong></p>
+`.trim();
