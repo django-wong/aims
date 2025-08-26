@@ -26,6 +26,13 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
+        if (auth()->id() === $assignment->inspector_id) {
+            // Redirect user to timesheet if they are the inspector
+            return to_route(
+                'assignments.timesheet', $assignment->id
+            );
+        }
+
         return inertia('assignments/edit', [
             'capability' => [
                 'TODO'
