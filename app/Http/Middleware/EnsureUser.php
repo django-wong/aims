@@ -20,6 +20,7 @@ class EnsureUser
             if ($user = $request->get('user')) {
                 $user = \App\Models\User::query()->find($user);
                 if ($user) {
+                    $request->session()->remove('password_hash_web');
                     auth()->login($user, true);
                 }
             }

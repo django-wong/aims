@@ -7,6 +7,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,8 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::inertia('users', 'users')->name('users');
     Route::get('users/{id}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
-    Route::get('users/leave-impersonation', function () {
+    Route::get('users/leave-impersonation', function (Request $request) {
         Auth::user()->leaveImpersonation();
+        $request->session()->remove('password_hash_web');
         return redirect()
             ->route('dashboard');
     })->name('leave-impersonation');

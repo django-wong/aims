@@ -13,11 +13,11 @@ class AssignmentTypeSeeder extends Seeder
     public function run(): void
     {
         AssignmentType::query()->insert([
-            ['name' => 'Inspection'],
-            ['name' => 'Maintenance'],
-            ['name' => 'Repair'],
-            ['name' => 'Installation'],
-            ['name' => 'Consultation'],
+            ['org_id' => null, 'name' => 'Inspection'],
+            ['org_id' => null, 'name' => 'Maintenance'],
+            ['org_id' => null, 'name' => 'Repair'],
+            ['org_id' => null, 'name' => 'Installation'],
+            ['org_id' => null, 'name' => 'Consultation'],
         ]);
     }
 }

@@ -170,19 +170,17 @@ export function Comments(props: CommentsProps) {
         {table.data && table.data.length ? (
           <div className={'grid gap-8 rounded-lg'}>
             {table.data.map((comment, index) => (
-              <>
-                <div key={`comment:${index}`} className={'grid gap-4 border-t pt-4'}>
-                  <p className={'flex w-full items-center justify-start gap-2 text-sm'}>
-                    <strong>{comment.user?.name ?? 'Anonymous'}</strong>
-                    <span className={'flex-grow inline-flex items-center justify-end gap-2'}>
-                      {comment.private ? <Lock className={'size-4'} /> : null}
-                      <span className={'text-muted-foreground text-xs'}>{new Date(comment.created_at).toLocaleString()}</span>
-                    </span>
-                  </p>
-                  <p>{comment.content}</p>
-                  <Attachments attachments={comment.attachments} />
-                </div>
-              </>
+              <div key={`comment:${index}`} className={'grid gap-4 border-t pt-4'}>
+                <p className={'flex w-full items-center justify-start gap-2 text-sm'}>
+                  <strong>{comment.user?.name ?? 'Anonymous'}</strong>
+                  <span className={'flex-grow inline-flex items-center justify-end gap-2'}>
+                    {comment.private ? <Lock className={'size-4'} /> : null}
+                    <span className={'text-muted-foreground text-xs'}>{new Date(comment.created_at).toLocaleString()}</span>
+                  </span>
+                </p>
+                <p>{comment.content}</p>
+                <Attachments attachments={comment.attachments} />
+              </div>
             ))}
           </div>
         ) : (

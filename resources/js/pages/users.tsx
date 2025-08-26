@@ -23,6 +23,8 @@ import axios from 'axios';
 import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
 import { startTransition, useEffect, useState } from 'react';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import { Input } from '@/components/ui/input';
+import { useDebouncer } from '@/hooks/use-debounced';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -125,6 +127,10 @@ export default function Users() {
     });
   }
 
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
+
+  const debouncer = useDebouncer();
+
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
@@ -139,7 +145,21 @@ export default function Users() {
         <DataTable
           left={
             <>
-              <Tabs onValueChange={setFilterRole} value={table.searchParams.get('filter[role]') || ''} className="w-[400px]">
+              <Input
+                value={keywords}
+                onChange={(event) => {
+                  setKeywords(event.target.value);
+                  debouncer(() => {
+                    table.setSearchParams((prev) => {
+                      prev.set('filter[keywords]', event.target.value);
+                      return prev;
+                    });
+                  });
+                }}
+                placeholder={'Search by name or email'}
+                className={'max-w-[250px]'}
+              />
+              <Tabs onValueChange={setFilterRole} value={table.searchParams.get('filter[role]') || ''}>
                 <TabsList>
                   <TabsTrigger value="">All</TabsTrigger>
                   <TabsTrigger value="4">PM</TabsTrigger>

@@ -19,6 +19,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Circle } from 'lucide-react';
 import zod from 'zod';
 import { RoleSelect } from '@/components/role-select';
+import { useState } from 'react';
+import { useExternalState } from '@/hooks/use-external-state';
 
 type UserFormProps = DialogFormProps<User>;
 
@@ -51,12 +53,12 @@ const schema = zod.discriminatedUnion('method', [
 export function UserForm(props: UserFormProps) {
   const form = useReactiveForm<zod.infer<typeof schema>, any>({
     ...useResource('/api/v1/users', {
-      first_name: '',
-      last_name: '',
-      title: '',
-      email: '',
-      password: null,
-      password_confirmation: null,
+      first_name: 'First',
+      last_name: 'Last',
+      title: 'Mr',
+      email: 'me@djangowong.com',
+      password: '123123123',
+      password_confirmation: '123123123',
       ...props.value,
       role: props.value?.user_role?.role,
       method: (props.value && props.value.id) ? 'update' : 'create' as any,
@@ -70,15 +72,25 @@ export function UserForm(props: UserFormProps) {
     console.info(form.getValues());
     form.submit().then(async (response) => {
       if (response) {
-        console.info('User saved successfully', response);
         props.onSubmit(response.data);
+        setOpen(false);
+        if (props.onOpenChange) {
+          props.onOpenChange(open);
+        }
       }
     });
   }
 
+  const [open, setOpen] = useExternalState(props.open || false);
+
   return (
     <>
-      <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      <Dialog open={open} onOpenChange={(open) => {
+        setOpen(open);
+        if (props.onOpenChange) {
+          props.onOpenChange(open);
+        }
+      }}>
         {props.children && <DialogTrigger asChild={props.asChild === undefined ? true : props.asChild}>{props.children}</DialogTrigger>}
         <DialogContent>
           <DialogHeader>

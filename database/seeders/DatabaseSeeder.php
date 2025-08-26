@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Assignment;
+use App\Models\AssignmentType;
 use App\Models\Project;
 use App\Models\ProjectType;
 use App\Models\Timesheet;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            AssignmentTypeSeeder::class,
             UserSeeder::class,
             UserRoleSeeder::class,
             ClientSeeder::class,

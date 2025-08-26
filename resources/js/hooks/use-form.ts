@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { defaultHeaders } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BaseModel } from '@/types';
+import axios from 'axios';
 
 type FormDataConvertible = FormDataEntryValue | number | boolean | Date | Blob | null | undefined | Array<FormDataConvertible> | {
   [key: string]: FormDataConvertible;
@@ -70,7 +71,7 @@ interface UseReactiveFormProps<T extends FieldValues> extends UseFormProps<T>{
   url?: URL | string;
   method?: Method;
   actualMethod?: Method; // Used for PUT/PATCH requests
-  serialize?: (formData: T) => BodyInit | null | undefined;
+  serialize?: (formData: T) => Record<any, any> | FormData | T | null | undefined;
   contentType?: string;
 }
 
@@ -95,7 +96,7 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
   const [url, setUrl] = useState(props.url ?? location.href);
 
   function send(data: T): Promise<ApiResponse<R> | void> {
-    const formData = (props.serialize || JSON.stringify)(data);
+    const formData = typeof props.serialize === 'function' ? props.serialize(data) :data;
     const headers = new Headers(
       defaultHeaders({
         'Content-Type': props.contentType || 'application/json',
@@ -110,37 +111,20 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
       }
     }
 
-    return fetch(url, {
-      method: actualMethod,
-      headers: headers,
-      body: formData,
-    })
+    return (actualMethod === 'POST' ? axios.post : axios.put)(url instanceof URL ? url.toString() : url, formData)
       .then(async (res) => {
-        const json = await res.json();
-
-        if (json.message) {
-          toast.success(json.message);
-        }
-
-        if (json.error) {
-          toast.error(json.error);
-        }
-
-        if (!res.ok) {
-          if (json.errors) {
-            for (const [key, value] of Object.entries(json.errors)) {
-              form.setError(key as FieldPath<T>, {
-                message: Array.isArray(value) ? value.join(', ') : (value as string),
-                type: 'manual',
-              });
-            }
-          }
-          throw json;
-        }
-        return json;
+        return res.data;
       })
       .catch((error) => {
-        console.error('Error response:', error);
+        if (error.response.data.errors) {
+          for (const [key, value] of Object.entries(error.response.data.errors)) {
+            form.setError(key as FieldPath<T>, {
+              message: Array.isArray(value) ? value[0] : (value as string),
+              type: 'manual',
+            });
+          }
+        }
+
         throw error;
       });
   }

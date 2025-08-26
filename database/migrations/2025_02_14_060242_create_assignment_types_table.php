@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('assignment_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('org_id')->constrained()->nullable();
+            $table->foreignId('org_id')->nullable()->constrained();
             $table->string('name')->index();
             $table->timestamps();
             $table->softDeletes();

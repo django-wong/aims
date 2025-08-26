@@ -9,7 +9,7 @@ use App\Http\Controllers\APIv1\ProjectController;
 use App\Http\Controllers\APIv1\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('menus', [MenuController::class, 'index']);
 
     Route::get('projects/next-project-number', [ProjectController::class, 'nextProjectNumber']);

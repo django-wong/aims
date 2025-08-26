@@ -29,6 +29,7 @@ class UserController extends Controller
                         );
                 });
             })->default('users'),
+
             AllowedFilter::callback('role', function (Builder $query, $value) {
                 $query->whereExists(function (QueryBuilder $query) use ($value) {
                     $query->selectRaw(1)
@@ -37,6 +38,13 @@ class UserController extends Controller
                         ->where(
                             'user_roles.role', $value
                         );
+                });
+            }),
+
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                $query->where(function (Builder $query) use ($value) {
+                    $query->where('name', 'like', "%$value%")
+                        ->orWhere('email', 'like', "%$value%");
                 });
             })
         ];

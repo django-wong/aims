@@ -35,4 +35,5 @@ axios.interceptors.response.use((response) => {
   if (error.response) {
     handleResponse(error.response, true);
   }
+  throw error;
 });

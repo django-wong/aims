@@ -17,7 +17,7 @@ import { VFormField } from '@/components/vform';
 import { ProjectSelect } from '@/components/project-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { Textarea } from '@/components/ui/textarea';
-import { StaffSelect } from '@/components/user-select';
+import { InspectorSelect, StaffSelect } from '@/components/user-select';
 import { OrgSelect } from '@/components/org-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { useEffect, useState } from 'react';
@@ -204,7 +204,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         render={({ field }) => (
                           <>
                             <VFormField>
-                              <StaffSelect placeholder={'Choose an inspector'} onValueChane={field.onChange} value={field.value} />
+                              <InspectorSelect placeholder={'Choose an inspector'} onValueChane={field.onChange} value={field.value} />
                             </VFormField>
                           </>
                         )}
