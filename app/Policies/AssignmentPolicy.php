@@ -53,7 +53,7 @@ class AssignmentPolicy
     {
         // If the user has the right to make changes to the operation organization or contract organization, then they
         // can definitely update the assignment.
-        $org = $assignment->operation_org ?? $assignment->org;
+        $org = ($assignment->operation_org ?? $assignment->org);
         if ($user->can('update', $org)) {
             return true;
         }

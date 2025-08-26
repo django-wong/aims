@@ -11,11 +11,13 @@ use Illuminate\Support\Facades\App;
 
 
 /**
- * @property User    $inspector
- * @property Project $project
- * @property int     $inspector_id
- * @property int     $operation_org_id
- * @property int     $org_id
+ * @property User     $inspector
+ * @property Project  $project
+ * @property int      $inspector_id
+ * @property int|null $operation_org_id
+ * @property int      $org_id
+ * @property Org      $org
+ * @property Org|null $operation_org
  */
 class Assignment extends Model implements Commentable
 {

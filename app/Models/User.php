@@ -15,6 +15,7 @@ use Lab404\Impersonate\Models\Impersonate;
  * @property Org      $org
  * @property UserRole $user_role
  * @property int      $id
+ * @property string    $email
  */
 class User extends Authenticatable
 {

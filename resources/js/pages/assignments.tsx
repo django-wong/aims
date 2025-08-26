@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ColumnToggle, DataTable } from '@/components/data-table-2';
-import { ClipboardTypeIcon, EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2, User } from 'lucide-react';
+import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -183,8 +183,22 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
                 <ClipboardTypeIcon/>
               </DropdownMenuShortcut>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                axios.get('/api/v1/assignments/' + assignment.id + '/link').then(
+                  (response) => {
+                    navigator.clipboard.writeText(response.data['data']);
+                    toast.success('Link copied to clipboard!');
+                  }
+                );
+              }}>
+              Copy Link for Inspector
+              <DropdownMenuShortcut>
+                <CopyIcon/>
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Send notification via...</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger>Notify Inspector</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem

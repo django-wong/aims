@@ -9,11 +9,26 @@ use App\Models\Assignment;
 use App\Models\Org;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Spatie\QueryBuilder\AllowedFilter;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class AssignmentController extends Controller
 {
+
+    public function link(Assignment $assignment)
+    {
+        Gate::authorize('update', $assignment);
+
+        return [
+            'data' => URL::signedRoute(
+                'assignments.record-timesheet', [
+                    'id' => $assignment->id,
+                    'user' => $assignment->inspector_id,
+                ]
+            )
+        ];
+    }
 
     protected function allowedIncludes()
     {
