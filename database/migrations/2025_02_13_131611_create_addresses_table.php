@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('address_line_1')->nullable()->comment('Apartment, suite, unit, building, floor, etc.');
             $table->string('address_line_2')->nullable()->comment('Street address, P.O. box, company name, c/o');
+            $table->string('address_line_3')->nullable()->comment('Street address, P.O. box, company name, c/o');
             $table->string('suburb')->nullable()->comment('Suburb, district, or neighborhood like Brooklyn, Soho, 金水区 etc.');
             $table->string('city')->nullable()->comment('City like New York, London, 成都市 etc.');
             $table->string('state')->nullable()->comment('State, province, or region like California, Ontario, Henan etc.');

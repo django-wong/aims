@@ -1,16 +1,16 @@
 import Layout from '@/layouts/app-layout'
 import { Head, router } from '@inertiajs/react';
 import * as React from 'react';
-import { BreadcrumbItem, Client } from '@/types';
+import { BreadcrumbItem, Vendor } from '@/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PropsWithChildren, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash, UserRoundPen } from 'lucide-react';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { useQueryParam } from '@/hooks/use-query-param';
-import { ClientForm } from '@/pages/clients/form';
+import { VendorForm } from '@/pages/vendors/form';
 import { useReactiveForm } from '@/hooks/use-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,9 +19,10 @@ import { Loading } from '@/components/ui/loading';
 import { useContactsTable } from '@/pages/contacts';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
+import { useRoute } from 'ziggy-js';
 
-interface ClientEditProps {
-  client: Client;
+interface VendorEditProps {
+  vendor: Vendor;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -30,41 +31,36 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: '/',
   },
   {
-    title: 'Clients',
-    href: route('clients'),
+    title: 'Vendors',
+    href: route('vendors'),
   }
 ];
 
-export default function Edit(props: ClientEditProps) {
+export default function Edit(props: VendorEditProps) {
   const [hash, setHash] = useQueryParam('tab', 'notes');
 
   return <>
     <Layout
       pageAction={<>
-        <PopoverConfirm
-          asChild
-          message={'Are you sure to delete this client? THis action cannot be undone.'}
-          onConfirm={
-            () => {
-              axios.delete(route('clients.destroy', { id: props.client.id }))
-                .then(() => {
-                  router.visit(route('clients'));
-                })
-            }
-          }
+        <PopoverConfirm message={'Are you sure to delete this vendor?'}
+          onConfirm={() => {
+            axios.delete('/api/v1/vendors/' + props.vendor.id).then(() => {
+              router.visit(route('vendors'))
+            })
+          }}
         >
           <Button size={'sm'} variant={'secondary'}>
             <Trash/> Delete
           </Button>
         </PopoverConfirm>
-        <ClientForm value={props.client} onSubmit={() => {window.location.reload()}}>
+        <VendorForm value={props.vendor} onSubmit={() => {}}>
           <Button size={'sm'} variant={'secondary'}>
             <UserRoundPen/> Edit
           </Button>
-        </ClientForm>
+        </VendorForm>
       </>}
-      breadcrumbs={[...breadcrumbs, {title: props.client.business_name, href: '.'}]}>
-      <Head title={props.client.business_name}/>
+      breadcrumbs={[...breadcrumbs, {title: props.vendor.business_name, href: '.'}]}>
+      <Head title={props.vendor.business_name}/>
       <TwoColumnLayout73
           left={
             <Tabs value={hash} onValueChange={setHash}>
@@ -73,30 +69,24 @@ export default function Edit(props: ClientEditProps) {
                 <TabsTrigger value={'contacts'}>Contacts</TabsTrigger>
               </TabsList>
               <TabsContent value={'notes'}>
-                <NotesEditor client={props.client}/>
+                <NotesEditor vendor={props.vendor}/>
               </TabsContent>
               <TabsContent value={'contacts'}>
-                <ClientContacts client={props.client}/>
+                <VendorContacts vendor={props.vendor}/>
               </TabsContent>
             </Tabs>
           }
           right={
             <Info>
-              <InfoHead>Client Profile</InfoHead>
+              <InfoHead>About</InfoHead>
               <div>
                 <InfoLine label={'Business Name / Group'} icon={'book-user'}>
-                  {props.client.business_name}
-                </InfoLine>
-                <InfoLine label="Coordinator" icon={'user-round-cog'}>
-                  {props.client.coordinator?.name ?? 'N/A'}
-                </InfoLine>
-                <InfoLine label={'Reviewer'} icon={'glasses'}>
-                  {props.client.reviewer?.name ?? 'N/A'}
+                  {props.vendor.business_name}
                 </InfoLine>
               </div>
               <InfoHead>Address</InfoHead>
               <p>
-                {props.client.address?.full_address ?? 'N/A'}
+                {props.vendor.address?.full_address ?? 'N/A'}
               </p>
             </Info>
           }
@@ -105,18 +95,8 @@ export default function Edit(props: ClientEditProps) {
   </>
 }
 
-
-function Content(props: PropsWithChildren) {
-  return (
-    <div className={'h-[40vh] flex justify-center items-center bg-muted/40 rounded-lg outline-2 outline-dashed outline-border'}>
-      { props.children }
-    </div>
-  )
-}
-
-
 interface NotesEditorProps {
-  client: Client;
+  vendor: Vendor;
 }
 
 function NotesEditor(props: NotesEditorProps) {
@@ -127,10 +107,10 @@ function NotesEditor(props: NotesEditorProps) {
   }, []);
 
   const form = useReactiveForm<z.infer<typeof schema>>({
-    url: route('clients.update', { id: props.client.id }),
+    url: route('vendors.update', { id: props.vendor.id }),
     method: 'PUT',
     defaultValues: {
-      notes: props.client.notes || '',
+      notes: props.vendor.notes || '',
     },
     resolver: zodResolver(schema)
   });
@@ -158,14 +138,14 @@ function NotesEditor(props: NotesEditorProps) {
   );
 }
 
-interface ClientContactsProps {
-  client: Client;
+interface VendorContactsProps {
+  vendor: Vendor;
 }
 
-function ClientContacts(props: ClientContactsProps) {
+function VendorContacts(props: VendorContactsProps) {
   const { content } = useContactsTable({
-    contactable_id: props.client.id,
-    contactable_type: 'client',
+    contactable_id: props.vendor.id,
+    contactable_type: 'vendor',
   });
 
   return <>{content}</>;

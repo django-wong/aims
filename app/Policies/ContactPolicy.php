@@ -11,4 +11,9 @@ class ContactPolicy {
     {
         return $user->can('update', $contact->contactable);
     }
+
+    public function delete(User $user, Contact $contact): bool
+    {
+        return $this->update($user, $contact);
+    }
 }

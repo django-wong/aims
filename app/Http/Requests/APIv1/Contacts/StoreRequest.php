@@ -3,6 +3,7 @@
 namespace App\Http\Requests\APIv1\Contacts;
 
 use App\Models\Contactable;
+use App\Support\ModelResolver;
 use Illuminate\Support\Facades\Gate;
 use function App\Support\useModel;
 
@@ -11,7 +12,7 @@ class StoreRequest extends \Illuminate\Foundation\Http\FormRequest
     public function contactable(): Contactable|null
     {
         $id = $this->input('contactable_id');
-        $model = useModel($this->input('contactable_type'));
+        $model = ModelResolver::for($this->input('contactable_type'));
         return $model::query()->find($id);
     }
 

@@ -28,6 +28,7 @@ import { ProjectSelect } from '@/components/project-select';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { toast } from 'sonner';
 import { download } from '@/lib/download-response-as-blob';
+import { ClientSelect } from '@/components/client-select';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -64,6 +65,18 @@ const columns: ColumnDef<Assignment>[] = [
       return <Badge variant={'secondary'}>{row.original.assignment_type?.name ?? '-'}</Badge>;
     },
     size: 100,
+  },
+  {
+    id: 'client_id',
+    accessorKey: 'client_id',
+    header: 'Client',
+    cell: ({ row }) => {
+      return <>
+        <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
+          {row.original.project?.client?.business_name}
+        </Link>
+      </>;
+    }
   },
   {
     id: 'project_id',
@@ -247,14 +260,14 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
   const table = useTable('/api/v1/assignments', {
     columns: columns.filter((column) => {
       if (options.project) {
-        if (column.id === 'project_id') {
+        if (['project_id', 'client_id'].indexOf(column.id || '') !== -1) {
           return false;
         }
       }
       return true;
     }),
     defaultParams: {
-      'include': 'project,assignment_type,vendor,sub_vendor,operation_org,org,inspector,purchase_order',
+      'include': 'project.client,assignment_type,vendor,sub_vendor,operation_org,org,inspector,purchase_order',
       'sort': 'created_at',
       'filter[project_id]': String(options.project?.id ?? '')
     }
@@ -268,7 +281,6 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       <ProjectSelect
         value={Number(table.searchParams.get('filter[project_id]'))}
         onValueChane={(value) => {
-          console.info('change value to:', value);
           table.setSearchParams((params) => {
             if (value) {
               params.set('filter[project_id]', String(value));
@@ -281,7 +293,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
         renderTrigger={(project) => {
           return (
             <Button variant={'outline'}>
-              Project: <Badge>{project?.title ?? 'All'}</Badge>
+              Project: <Badge variant={'secondary'}>{project?.title ?? 'All'}</Badge>
             </Button>
           );
         }}/>
@@ -310,6 +322,30 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
               placeholder={'Search...'}
             />
             {project_selector}
+            <>
+              {options.project ? null : (
+                <ClientSelect
+                  onValueChane={(value) => {
+                    table.setSearchParams((params) => {
+                      if (value) {
+                        params.set('filter[client_id]', String(value));
+                      } else {
+                        params.delete('filter[client_id]');
+                      }
+                      return params;
+                    })
+                  }}
+                  value={Number(table.searchParams.get('filter[client_id]')) || null}
+                  renderTrigger={(client) => {
+                    return (
+                      <Button variant={'outline'}>
+                        Client: <Badge variant={'secondary'}>{client?.business_name ?? 'All'}</Badge>
+                      </Button>
+                    );
+                  }}
+                />
+              )}
+            </>
           </>}
           right={
             <>

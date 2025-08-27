@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name')->unique()->index();
             $table->string('business_name')->nullable();
             $table->foreignId('address_id')->nullable()->constrained();
-            $table->longText('notes');
+            $table->longText('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

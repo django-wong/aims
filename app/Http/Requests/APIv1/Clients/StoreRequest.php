@@ -29,6 +29,7 @@ class StoreRequest extends FormRequest
             'address.zip' => 'string|max:255',
             'address.address_line_1' => 'string|max:255',
             'address.address_line_2' => 'nullable|string|max:255',
+            'address.address_line_3' => 'nullable|string|max:255',
             'user' => 'nullable|array',
             'user.name' => 'required|string|max:255',
             'user.email' => 'required|email|max:255',

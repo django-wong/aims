@@ -7,6 +7,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('clients.edit');
 
     Route::inertia('vendors', 'vendors')->name('vendors');
+    Route::get('vendors/{vendor}', [VendorController::class, 'edit'])
+        ->name('vendors.edit');
     Route::inertia('quotes', '404')->name('quotes');
 
     Route::inertia('assignments', 'assignments')->name('assignments');

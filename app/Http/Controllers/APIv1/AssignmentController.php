@@ -33,7 +33,7 @@ class AssignmentController extends Controller
     protected function allowedIncludes()
     {
         return [
-            'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order'
+            'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client'
         ];
     }
 
@@ -47,8 +47,11 @@ class AssignmentController extends Controller
     public function allowedFilters()
     {
         return [
-            AllowedFilter::callback('project_id', function ($query, $value) {
-                $query->where('project_id', $value);
+            AllowedFilter::exact('project_id'),
+            AllowedFilter::callback('client_id', function ($query, $value) {
+                $query->whereHas('project', function ($query) use ($value) {
+                    $query->where('client_id', $value);
+                });
             }),
         ];
     }

@@ -36,4 +36,9 @@ class ClientPolicy
     {
         return $this->viewAny($user) && $client->org_id === $user->org->id;
     }
+
+    public function delete(User $user, Client $client): bool
+    {
+        return $user->can('update', $client->org);
+    }
 }

@@ -8,7 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut,
+  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { EllipsisVertical, PlusIcon } from 'lucide-react';
@@ -16,13 +16,16 @@ import { VendorForm } from '@/pages/vendors/form';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import axios from 'axios';
 
 const columns: ColumnDef<Vendor>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => row.original.name
+    cell: ({ row }) => {
+      return <Link href={route('vendors.edit', {id: row.original.id})} className={'underline'}>{row.original.name}</Link>;
+    }
   },
   {
     accessorKey: 'business_name',
@@ -63,7 +66,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Vendors() {
   const table = useTable('/api/v1/vendors', {
-    columns
+    columns,
+    defaultParams: {
+      'include': 'address'
+    }
   });
 
   const [keywords, setKeywords] = useState<string>(table.searchParams.get('filter[keywords]') || '');
@@ -117,12 +123,13 @@ function VendorActions({ vendor }: { vendor: Vendor }) {
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56" align={'end'} side={'bottom'}>
+        <DropdownMenuLabel>{vendor.name}</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem
             className={'text-red-500'}
             onClick={() => {
-              fetch(route('users.destroy', { id: vendor.id })).then((res) => {
+              axios.delete(route('vendors.destroy', { id: vendor.id })).then((res) => {
                 if (res) {
                   table.reload();
                 }
@@ -132,10 +139,6 @@ function VendorActions({ vendor }: { vendor: Vendor }) {
             Delete
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>TODOS</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

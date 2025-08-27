@@ -131,17 +131,18 @@ class ClientController extends Controller
             $client->update($request->basic());
 
             if (! empty($request->input('address'))) {
-                $client->address()->associate(
-                    $client->address()->updateOrCreate(
-                        [], $request->validated(
-                            'address'
-                        )
+                $address = $client->address()->updateOrCreate(
+                    [], $request->validated(
+                        'address'
                     )
                 );
+                $client->address_id = $address->id;
+                $client->save();
             }
 
             return $client;
         });
+
 
         return response()->json([
             'data' => $client->load(['user', 'address', 'org'])
@@ -153,6 +154,12 @@ class ClientController extends Controller
      */
     public function destroy(Client $client)
     {
-        //
+        Gate::authorize('delete', $client);
+
+        $client->delete();
+
+        return [
+            'message' => 'Client deleted successfully'
+        ];
     }
 }

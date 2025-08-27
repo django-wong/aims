@@ -28,6 +28,11 @@ class VendorController extends Controller
         return ['name', 'business_name'];
     }
 
+    protected function allowedIncludes()
+    {
+        return ['address'];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +40,7 @@ class VendorController extends Controller
     {
         Gate::authorize('viewAny', Vendor::class);
 
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->visiable()->paginate();
     }
 
     /**
@@ -47,6 +52,12 @@ class VendorController extends Controller
             ...$request->validated(),
             'org_id' => $request->user()->org->id,
         ]);
+
+        if (! empty($request->validated('address'))) {
+            $address = $vendor->address()->create($request->input('address'));
+            $vendor->address_id = $address->id;
+            $vendor->save();
+        }
 
         return response()->json([
             'data' => $vendor->refresh(),
@@ -78,6 +89,12 @@ class VendorController extends Controller
      */
     public function destroy(Vendor $vendor)
     {
-        //
+        Gate::authorize('delete', $vendor);
+
+        $vendor->delete();
+
+        return response()->json([
+            'message' => __('Vendor deleted successfully.'),
+        ]);
     }
 }

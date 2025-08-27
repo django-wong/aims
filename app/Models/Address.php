@@ -25,6 +25,7 @@ class Address extends Model
         $addressParts = [
             $this->address_line_1,
             $this->address_line_2,
+            $this->address_line_3,
             $this->city,
             $this->state,
             $this->zip,

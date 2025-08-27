@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { PencilIcon, Trash2Icon } from 'lucide-react';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { ContactForm } from '@/pages/contacts/form';
+import axios from 'axios';
 
 interface UseContactsTableOptions {
   contactable_id: number;
@@ -26,7 +27,7 @@ function ContactActions(props: { contact: Contact }) {
         message={'Are you sure to delete this contact person?'}
         onConfirm={
           () => {
-            fetch(route('contacts.destroy', { id: props.contact.id })).then((res) => {
+            axios.delete(route('contacts.destroy', { id: props.contact.id })).then((res) => {
               if (res) {
                 table.reload();
               }
@@ -70,16 +71,26 @@ const columns: ColumnDef<Contact>[] = [
   {
     accessorKey: 'email',
     header: 'Email',
-    cell: ({ row }) => (
-      <a href={`mailto:${row.original.email}`} className={'inline-flex items-center gap-1'}>
-        {row.original.email}
-      </a>
-    ),
+    cell: ({ row }) => {
+      if (row.original.email) {
+        return (
+          <a href={`mailto:${row.original.email}`} className={'inline-flex items-center gap-1'}>
+            {row.original.email}
+          </a>
+        );
+      }
+      return 'N/A';
+    },
   },
   {
     accessorKey: 'phone',
     header: 'Phone',
     cell: ({ row }) => row.original.phone || 'N/A',
+  },
+  {
+    accessorKey: 'mobile',
+    header: 'Mobile',
+    cell: ({ row }) => row.original.mobile || 'N/A',
   },
   {
     accessorKey: 'actions',
@@ -126,6 +137,12 @@ export function useContactsTable(props: UseContactsTableOptions) {
           right={
             <>
               <ColumnToggle/>
+              <ContactForm
+                contactable_id={props.contactable_id}
+                contactable_type={props.contactable_type}
+                onSubmit={() => {table.reload()}}>
+                <Button>Add New</Button>
+              </ContactForm>
             </>
           }
         />

@@ -88,6 +88,12 @@ class ContactController extends Controller
      */
     public function destroy(Contact $contact)
     {
-        //
+        Gate::authorize('delete', $contact);
+
+        $contact->delete();
+
+        return [
+            'message' => 'Contact deleted successfully',
+        ];
     }
 }

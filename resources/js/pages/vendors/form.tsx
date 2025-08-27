@@ -9,23 +9,29 @@ import {
 import { DialogFormProps, Vendor } from '@/types';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
-import { Circle } from 'lucide-react';
-import { useReactiveForm } from '@/hooks/use-form';
+import { Circle, LocationEdit } from 'lucide-react';
+import { useReactiveForm, useResource } from '@/hooks/use-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { Textarea } from '@/components/ui/textarea';
+import { AddressDialog, schema as addressSchema } from '@/pages/projects/address-form';
 const schema = zod.object({
   name: zod.string().min(1, 'Name is required'),
   business_name: zod.string().min(1, 'Business name is required'),
-  notes: zod.string().optional(),
+  notes: zod.string().optional().nullable(),
+  address: zod.null().or(
+    addressSchema.nullable().optional()
+  ),
 });
 
 export function VendorForm(props: DialogFormProps<Vendor>) {
   const form = useReactiveForm<zod.infer<typeof schema>, Vendor>({
-    url: '/api/v1/vendors',
+    ...useResource('/api/v1/vendors', {
+      ...props.value
+    }),
     resolver: zodResolver(schema)
   });
 
@@ -73,10 +79,43 @@ export function VendorForm(props: DialogFormProps<Vendor>) {
               <div className={'col-span-12'}>
                 <FormField
                   control={form.control}
+                  name={'address'}
+                  render={({field}) => {
+                    return (
+                      <VFormField
+                        label={'Address'}
+                      >
+                        <div className={'flex items-center gap-2  p-4 rounded-md border shadow-xs border-border bg-background'}>
+                          <div className={'text-sm flex-1'}>
+                            {field.value?.address_line_1 ? (
+                              <>
+                                <p>{field.value?.address_line_1}</p>
+                                <p>
+                                  {field.value?.city}, {field.value?.state}, {field.value?.zip}, {field.value?.country}
+                                </p>
+                              </>
+                            ) : (
+                              <p className={'text-muted-foreground'}>No address provided</p>
+                            )}
+                          </div>
+                          <AddressDialog value={field.value} onChange={field.onChange}>
+                            <Button variant={'secondary'} size={'sm'}>
+                              <LocationEdit/> Edit Address
+                            </Button>
+                          </AddressDialog>
+                        </div>
+                      </VFormField>
+                    );
+                  }}
+                />
+              </div>
+              <div className={'col-span-12'}>
+                <FormField
+                  control={form.control}
                   name={'notes'}
                   render={({field}) => (
                     <VFormField label={'Notes'}>
-                      <Textarea className={'bg-background min-h-[200px]'} {...field}/>
+                      <Textarea className={'bg-background min-h-[200px]'} {...field} value={field.value || ''}/>
                     </VFormField>
                   )}
                 />

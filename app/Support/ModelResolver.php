@@ -18,7 +18,7 @@ class ModelResolver
             $name = Str::singular($name);
         }
 
-        if ($name instanceof Model) {
+        if (class_exists($name) && is_subclass_of($name, Model::class)) {
             return $name;
         }
 
