@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class InspectorProfile extends Model
 {
     /** @use HasFactory<\Database\Factories\InspectorProfileFactory> */
-    use HasFactory, BelongsToUser;
+    use HasFactory, BelongsToUser, BelongsToAddress;
 
     protected $guarded = [
         'id', 'user_id'

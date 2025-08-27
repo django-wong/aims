@@ -17,15 +17,18 @@ class UserController extends Controller
     protected function allowedFilters()
     {
         return [
-            AllowedFilter::callback('preset', function (Builder $query) {
-                $query->whereExists(function (QueryBuilder  $query) {
+            AllowedFilter::callback('preset', function (Builder $query, $value) {
+                $roles = match ($value) {
+                    'inspectors' => [5],
+                    default => [2, 3, 4, 8]
+                };
+
+                $query->whereExists(function (QueryBuilder  $query) use ($roles) {
                     $query->selectRaw(1)
                         ->from('user_roles')
                         ->whereColumn('user_roles.user_id', 'users.id')
                         ->whereIn(
-                            'user_roles.role', [
-                                1, 2, 3, 4, 5, 6, 7, 8
-                            ]
+                            'user_roles.role', $roles
                         );
                 });
             })->default('users'),
@@ -58,7 +61,7 @@ class UserController extends Controller
     protected function allowedIncludes()
     {
         return [
-            'user_role'
+            'user_role', 'inspector_profile', 'address'
         ];
     }
 
@@ -127,6 +130,23 @@ class UserController extends Controller
         return response()->json([
             'data' => $user->load('user_role'),
             'message' => 'User updated successfully'
+        ]);
+    }
+
+    public function destroy(User $user)
+    {
+        if (auth()->id() === $user->id) {
+            return response()->json([
+                'error' => 'You cannot delete your own account.'
+            ], 403);
+        }
+
+        Gate::authorize('delete', $user);
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User deleted successfully'
         ]);
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\APIv1\AssignmentController;
 use App\Http\Controllers\APIv1\ClientController;
 use App\Http\Controllers\APIv1\CommentController;
+use App\Http\Controllers\APIv1\InspectorController;
 use App\Http\Controllers\APIv1\MenuController;
 use App\Http\Controllers\APIv1\OrgController;
 use App\Http\Controllers\APIv1\ProjectController;
@@ -24,6 +25,7 @@ Route::middleware('auth')->group(function () {
         'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
         'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
         'comments' => CommentController::class,
+        'inspectors' => InspectorController::class,
         'assignments' => AssignmentController::class,
         'assignment-types' => \App\Http\Controllers\APIv1\AssignmentTypeController::class,
         'timesheets' => \App\Http\Controllers\APIv1\TimesheetController::class,

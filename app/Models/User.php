@@ -20,7 +20,7 @@ use Lab404\Impersonate\Models\Impersonate;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, DynamicPagination, HasManyAssignments, Impersonate;
+    use HasFactory, Notifiable, DynamicPagination, HasManyAssignments, Impersonate, BelongsToAddress;
 
     /**
      * The attributes that are mass assignable.
@@ -112,5 +112,12 @@ class User extends Authenticatable
     public function isAnyRole(array $roles): bool
     {
         return in_array($this->user_role?->role, $roles, true);
+    }
+
+    public function inspector_profile()
+    {
+        return $this->hasOne(
+            InspectorProfile::class, 'user_id', 'id'
+        );
     }
 }

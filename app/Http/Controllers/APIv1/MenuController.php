@@ -61,12 +61,6 @@ class MenuController
                         'url' => route('assignments'),
                         'component' => 'assignments'
                     ],
-                    // 'timesheets' => [
-                    //     'name' => 'Timesheets',
-                    //     'icon' => 'house',
-                    //     'url' => route('timesheets'),
-                    //     'component' => 'timesheets'
-                    // ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM], [
                     'invoices' => [
@@ -77,6 +71,12 @@ class MenuController
                     ],
                 ])),
                 ...($when([UserRole::ADMIN], [
+                    'inspector' => [
+                        'name' => 'Inspector (FieldOps)',
+                        'icon' => 'users',
+                        'url' => route('inspectors'),
+                        'component' => 'inspectors'
+                    ],
                     'users' => [
                         'name' => 'User & Access',
                         'icon' => 'users',

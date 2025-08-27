@@ -17,7 +17,7 @@ import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { UserForm } from '@/pages/users/form';
 import { BreadcrumbItem, SharedData, User } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
@@ -31,7 +31,7 @@ function describeUserRole(role: number): string {
     case 1:
       return 'System';
     case 2:
-      return 'Organization Admin';
+      return 'Admin';
     case 3:
       return 'Finance';
     case 4:
@@ -60,7 +60,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-function UserName({ user }: { user: User }) {
+export function UserName({ user }: { user: User }) {
   return (
     <UserForm onSubmit={() => {}} value={user}>
       <span>{user.name || 'N/A'}</span>
@@ -162,8 +162,11 @@ export default function Users() {
               <Tabs onValueChange={setFilterRole} value={table.searchParams.get('filter[role]') || ''}>
                 <TabsList>
                   <TabsTrigger value="">All</TabsTrigger>
+                  {/* 2, 3, 4, 7, 8 */}
+                  <TabsTrigger value="2">Admin</TabsTrigger>
+                  <TabsTrigger value="3">Finance</TabsTrigger>
                   <TabsTrigger value="4">PM</TabsTrigger>
-                  <TabsTrigger value="5">Inspector</TabsTrigger>
+                  <TabsTrigger value="8">Staff</TabsTrigger>
                 </TabsList>
               </Tabs>
             </>

@@ -1,4 +1,4 @@
-import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath } from 'react-hook-form';
+import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath, DeepPartial } from 'react-hook-form';
 import React, { useState } from 'react';
 import { defaultHeaders } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -46,11 +46,11 @@ function append(value: FormDataConvertible, formData: FormData, key: string) {
   }
 }
 
-export function useResource<T extends BaseModel>(url: string, value?: Partial<T> | null): {
+export function useResource<T extends Partial<BaseModel>>(url: string, value?: DeepPartial<T> | null): {
   url: string;
   method: Method;
   actualMethod?: Method;
-  defaultValues?: Partial<T>;
+  defaultValues?: any;
 } {
   return value?.id
     ? {

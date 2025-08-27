@@ -56,4 +56,12 @@ class UserPolicy
             UserRole::ADMIN,
         ]);
     }
+
+    public function delete(User $user, User $model): bool
+    {
+        if ($user->user_role->role == UserRole::ADMIN) {
+            return $model->user_role->org_id === $user->user_role->org_id;
+        }
+        return false;
+    }
 }

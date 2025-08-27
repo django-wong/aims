@@ -3,6 +3,7 @@
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\InspectorController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\TimesheetController;
@@ -63,6 +64,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return redirect()
             ->route('dashboard');
     })->name('leave-impersonation');
+
+    Route::get('inspectors', [InspectorController::class, 'index'])->name('inspectors');
+    Route::get('inspectors/{id}/edit', [InspectorController::class, 'edit']);
 
     Route::inertia('{any}', '404');
 });

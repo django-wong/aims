@@ -62,6 +62,21 @@ export interface UserRole extends BaseModel {
   role: number; // 1=system, 2=org admin, 3=finance, 4=pm, 5=inspector, 6=client, 7=vendor, 8=staff
 }
 
+export interface InspectorProfile extends BaseModel {
+  user_id: number;
+  address_id: number | null;
+  address?: Address;
+  initials: string | null;
+  hourly_rate: number;
+  travel_rate: number;
+  new_hourly_rate: number | null;
+  new_travel_rate: number | null;
+  new_rate_effective_date: string | null; // date string in YYYY-MM-DD format
+  assigned_identifier: string | null;
+  include_on_skills_matrix: boolean;
+  notes: string | null;
+}
+
 export interface User extends BaseModel {
   name: string;
   first_name: string;
@@ -71,6 +86,9 @@ export interface User extends BaseModel {
   avatar?: string;
   email_verified_at: string | null;
   user_role?: UserRole
+  inspector_profile?: InspectorProfile
+  address_id: number | null;
+  address?: Address;
 }
 
 export interface Contact extends BaseModel {
@@ -104,6 +122,7 @@ export interface Model {
 }
 
 export interface BaseModel extends Model {
+  [key: string]: any; // Allow additional properties
   created_at: string;
   updated_at: string;
   deleted_at?: string | null; // Optional for soft deletes

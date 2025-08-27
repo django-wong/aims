@@ -19,7 +19,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Circle } from 'lucide-react';
 import zod from 'zod';
 import { RoleSelect } from '@/components/role-select';
-import { useState } from 'react';
 import { useExternalState } from '@/hooks/use-external-state';
 
 type UserFormProps = DialogFormProps<User>;
@@ -37,7 +36,7 @@ const updateSchema = zod.object({
 const createSchema = zod.object({
   method: zod.literal('create'),
   role: zod.number(),
-  password: zod.string().min(6),
+  password: zod.string().min(8),
   password_confirmation: zod.string(),
   first_name: zod.string('').min(1),
   last_name: zod.string().min(1),
@@ -152,21 +151,19 @@ export function UserForm(props: UserFormProps) {
                       name={'email'}
                     />
                   </div>
-                  {isUpdate ? null : (
-                    <div className={'col-span-12'}>
-                      <FormField
-                        control={form.control}
-                        render={({field}) => {
-                          return (
-                            <VFormField required label={'Role'}>
-                              <RoleSelect onValueChane={field.onChange} value={field.value}/>
-                            </VFormField>
-                          )
-                        }}
-                        name={'role'}
-                      />
-                    </div>
-                  )}
+                  <div className={'col-span-12'}>
+                    <FormField
+                      control={form.control}
+                      render={({field}) => {
+                        return (
+                          <VFormField required label={'Role'}>
+                            <RoleSelect disabled={isUpdate} onValueChane={field.onChange} value={field.value}/>
+                          </VFormField>
+                        )
+                      }}
+                      name={'role'}
+                    />
+                  </div>
                   <div className={'col-span-12'}>
                     <FormField
                       control={form.control}

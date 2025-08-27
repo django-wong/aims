@@ -17,7 +17,7 @@ import { VFormField } from '@/components/vform';
 import { ProjectSelect } from '@/components/project-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { Textarea } from '@/components/ui/textarea';
-import { InspectorSelect, StaffSelect } from '@/components/user-select';
+import { InspectorSelect } from '@/components/user-select';
 import { OrgSelect } from '@/components/org-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { useEffect, useState } from 'react';

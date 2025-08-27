@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('title')->nullable()->comment('The title of the user, e.g., "Mr.", "Ms.", "Dr."');
             $table->string('email')->nullable()->index();
             $table->timestamp('email_verified_at')->nullable();
+            $table->foreignId('address_id')->nullable()->constrained('addresses')->onDelete('set null');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
