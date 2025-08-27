@@ -1,9 +1,9 @@
 import { LucideIcon } from 'lucide-react';
 import { MainNavItem } from '@/components/nav-main';
 
-export interface DialogFormProps<T = BaseModel> {
+export interface DialogFormProps<T = BaseModel, R = T> {
   children?: React.ReactNode;
-  onSubmit: (data: T) => void;
+  onSubmit: (data: R) => void;
   value?: T | null
   open?: boolean
   onOpenChange?: (open: boolean) => void;
@@ -89,6 +89,7 @@ export interface User extends BaseModel {
   inspector_profile?: InspectorProfile
   address_id: number | null;
   address?: Address;
+  skills?: Skill[];
 }
 
 export interface Contact extends BaseModel {
@@ -390,4 +391,20 @@ export interface Budget extends BaseModel {
   budgeted_hours: number;
   travel_rate: number;
   budgeted_mileage: number;
+}
+
+export interface Skill extends BaseModel {
+  org_id: number | null;
+  code: string;
+  report_code: string | null;
+  i_e_a: string; // 'i' for internal, 'e' for external, 'a' for all
+  description: string | null;
+  sort: number;
+}
+
+export interface UserSkill extends BaseModel {
+  user_id: number;
+  skill_id: number;
+  skill?: Skill;
+  user?: User
 }

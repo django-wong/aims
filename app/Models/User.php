@@ -120,4 +120,11 @@ class User extends Authenticatable
             InspectorProfile::class, 'user_id', 'id'
         );
     }
+
+    public function skills()
+    {
+        return $this->belongsToMany(
+            Skill::class, 'user_skills', 'user_id', 'skill_id'
+        );
+    }
 }

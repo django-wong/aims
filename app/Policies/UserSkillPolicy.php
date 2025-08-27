@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\UserRole;
 use App\Models\UserSkill;
 use Illuminate\Auth\Access\Response;
 
@@ -27,9 +28,13 @@ class UserSkillPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, User $inspector): bool
     {
-        return false;
+        return in_array($user->user_role->role, [
+            UserRole::ADMIN,
+            UserRole::STAFF,
+            UserRole::PM,
+        ]) && $inspector->user_role->role === UserRole::INSPECTOR && $user->org->id === $inspector->org->id;
     }
 
     /**
@@ -45,7 +50,7 @@ class UserSkillPolicy
      */
     public function delete(User $user, UserSkill $userSkills): bool
     {
-        return false;
+        return $this->create($user, $userSkills->user);
     }
 
     /**

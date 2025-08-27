@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
         'timesheet-reports' => \App\Http\Controllers\APIv1\TimesheetReportController::class,
         'timesheet-items' => \App\Http\Controllers\APIv1\TimesheetItemController::class,
         'budgets' => \App\Http\Controllers\APIv1\BudgetController::class,
+        'skills' => \App\Http\Controllers\APIv1\SkillController::class,
+        'user-skills' => \App\Http\Controllers\APIv1\UserSkillController::class,
     ]);
 
     Route::post('users/{id}/update-role', [UserController::class, 'updateRole'])->name('users.update_role');
@@ -40,3 +42,4 @@ Route::middleware('auth')->group(function () {
     Route::get('assignments/{assignment}/link', [AssignmentController::class, 'link']);
     Route::post('timesheet/{id}/sign-off', [\App\Http\Controllers\APIv1\TimesheetController::class, 'signOff']);
 });
+

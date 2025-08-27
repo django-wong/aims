@@ -1,17 +1,33 @@
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { Button } from '@/components/ui/button';
 import Layout from '@/layouts/app-layout';
-import { BreadcrumbItem, User } from '@/types';
+import { BreadcrumbItem, User, Skill, DialogFormProps, UserSkill } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Trash, UserRoundPen } from 'lucide-react';
+import { Trash, UserRoundPen, Plus, MoreHorizontal, Trash2Icon } from 'lucide-react';
 import { InspectorForm } from '@/pages/inspectors';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import * as React from 'react';
+import { useState } from 'react';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { useTable } from '@/hooks/use-table';
+import { DataTable, useTableApi } from '@/components/data-table-2';
+import { Input } from '@/components/ui/input';
+import { useDebouncer } from '@/hooks/use-debounced';
+import { ColumnDef } from '@tanstack/react-table';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DialogInnerContent } from '@/components/dialog-inner-content';
+import { useReactiveForm } from '@/hooks/use-form';
+import { Form, FormField } from '@/components/ui/form';
+import { VFormField } from '@/components/vform';
+import { SkillSelect } from '@/components/skill-select';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface InspectorEditProps {
   inspector: User;
@@ -27,6 +43,123 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: route('inspectors'),
   },
 ];
+
+const user_skills_columns: ColumnDef<UserSkill>[] = [
+  {
+    accessorKey: 'code',
+    header: 'Code',
+    cell: ({ row }) => <span>{row.original.skill?.code}</span>,
+  },
+  {
+    accessorKey: 'description',
+    header: 'Description',
+    cell: ({ row }) => <span>{row.original.skill?.description || 'N/A'}</span>,
+  },
+  {
+    accessorKey: 'report_code',
+    header: 'Report Code',
+    cell: ({ row }) => <span>{row.original.skill?.report_code || 'N/A'}</span>,
+  },
+  {
+    accessorKey: 'i_e_a',
+    header: 'I/E/A',
+    cell: ({ row }) => {
+      return <span className="capitalize">{row.original.skill?.i_e_a}</span>;
+    },
+  },
+  {
+    accessorKey: 'Actions',
+    header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
+    cell: ({ row }) => (
+      <TableCellWrapper last>
+        <UserSkillActions user_skill={row.original} />
+      </TableCellWrapper>
+    ),
+  },
+];
+
+function UserSkillActions({ user_skill }: { user_skill: UserSkill }) {
+  const table = useTableApi();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button variant="ghost" size="icon">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align={'end'} side={'bottom'} className={'w-56'}>
+        <DropdownMenuLabel>{user_skill.skill?.code}</DropdownMenuLabel>
+        <DropdownMenuItem className="text-destructive" onClick={() => {
+          if (confirm(`Are you sure you want to remove ${user_skill.skill?.code} from this inspector?`)) {
+            axios.delete(`/api/v1/user-skills/${user_skill.id}`).then(() => {
+              table.reload();
+            });
+          }
+        }}>
+          Remove
+          <DropdownMenuShortcut>
+            <Trash2Icon />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+const schema = z.object({
+  skill_id: z.number().min(1, 'Skill is required'),
+  user_id: z.number().min(1),
+});
+
+function UserSkillForm(props: DialogFormProps<User, UserSkill>) {
+  const form = useReactiveForm<z.infer<typeof schema>, UserSkill>({
+    url: '/api/v1/user-skills',
+    defaultValues: {
+      user_id: props.value?.id
+    },
+    resolver: zodResolver(schema)
+  });
+
+  function submit() {
+    form.submit().then((res) => {
+      if (res) {
+        props.onSubmit(res.data)
+      }
+    })
+  }
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{props.children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Skill to Inspector</DialogTitle>
+          <DialogDescription>No description available</DialogDescription>
+        </DialogHeader>
+        <DialogInnerContent>
+          <Form {...form}>
+            <FormField
+              render={({field}) => {
+                return (
+                  <VFormField label={'Skills'}>
+                    <SkillSelect {...field} onValueChane={(value) => {field.onChange(value)}} placeholder={'Choose skills'} />
+                  </VFormField>
+                );
+              }}
+              name={'skill_id'}
+              control={form.control}
+            />
+          </Form>
+        </DialogInnerContent>
+        <DialogFooter>
+          <Button onClick={submit}>
+            Add Skill
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function EditPage(props: InspectorEditProps) {
   const [hash, setHash] = useLocationHash('skills');
@@ -147,7 +280,48 @@ interface UserSkillsProps {
 }
 
 function UserSkills(props: UserSkillsProps) {
-  return <div>TODO</div>;
+  const table = useTable(`/api/v1/user-skills`, {
+    columns: user_skills_columns,
+    defaultParams: {
+      'user_id': String(props.inspector.id),
+      'include': 'skill',
+      'sort': 'code',
+    },
+  });
+
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
+  const debouncer = useDebouncer();
+
+  return (
+    <div>
+      <DataTable
+        left={
+          <Input
+            value={keywords}
+            onChange={(event) => {
+              setKeywords(event.target.value);
+              debouncer(() => {
+                table.setSearchParams((prev) => {
+                  prev.set('filter[keywords]', event.target.value);
+                  return prev;
+                });
+              });
+            }}
+            placeholder={'Search skills...'}
+            className={'max-w-[250px]'}
+          />
+        }
+        table={table}
+        right={
+          <UserSkillForm value={props.inspector} onSubmit={() => table.reload()}>
+            <Button>
+              <Plus/> Add Skill
+            </Button>
+          </UserSkillForm>
+        }
+      />
+    </div>
+  );
 }
 
 
