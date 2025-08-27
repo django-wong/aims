@@ -80,14 +80,60 @@ export default function EditPage(props: InspectorEditProps) {
           }
           right={
             <Info>
-              <InfoHead>Info</InfoHead>
+              <InfoHead>Inspector Profile</InfoHead>
               <div>
-                <InfoLine label={'Business Name / Group'} icon={'book-user'}>
+                <InfoLine label={'Name'} icon={'user'}>
                   {props.inspector.name}
+                </InfoLine>
+                <InfoLine label={'Email'} icon={'mail'}>
+                  {props.inspector.email}
+                </InfoLine>
+                <InfoLine label={'Initials'} icon={'type'}>
+                  {props.inspector.inspector_profile?.initials ?? 'N/A'}
+                </InfoLine>
+                <InfoLine label={'Assigned ID'} icon={'id-card'}>
+                  {props.inspector.inspector_profile?.assigned_identifier ?? 'N/A'}
                 </InfoLine>
                 <InfoLine label={'Address'} icon={'map-pin'}>
                   {props.inspector.address?.full_address ?? 'N/A'}
                 </InfoLine>
+                <InfoLine label={'Hourly Rate'} icon={'dollar-sign'}>
+                  {props.inspector.inspector_profile?.hourly_rate != null
+                    ? `$${props.inspector.inspector_profile.hourly_rate}`
+                    : 'N/A'}
+                </InfoLine>
+                <InfoLine label={'Travel Rate'} icon={'car'}>
+                  {props.inspector.inspector_profile?.travel_rate != null
+                    ? `$${props.inspector.inspector_profile.travel_rate}`
+                    : 'N/A'}
+                </InfoLine>
+                {(props.inspector.inspector_profile?.new_hourly_rate != null ||
+                  props.inspector.inspector_profile?.new_travel_rate != null ||
+                  props.inspector.inspector_profile?.new_rate_effective_date != null) && (
+                  <>
+                    <InfoLine label={'New Hourly Rate'} icon={'trending-up'}>
+                      {props.inspector.inspector_profile?.new_hourly_rate != null
+                        ? `$${props.inspector.inspector_profile.new_hourly_rate}`
+                        : 'N/A'}
+                    </InfoLine>
+                    <InfoLine label={'New Travel Rate'} icon={'trending-up'}>
+                      {props.inspector.inspector_profile?.new_travel_rate != null
+                        ? `$${props.inspector.inspector_profile.new_travel_rate}`
+                        : 'N/A'}
+                    </InfoLine>
+                    <InfoLine label={'Effective Date'} icon={'calendar'}>
+                      {props.inspector.inspector_profile?.new_rate_effective_date ?? 'N/A'}
+                    </InfoLine>
+                  </>
+                )}
+                <InfoLine label={'On Skills Matrix'} icon={'check-circle'}>
+                  {props.inspector.inspector_profile?.include_on_skills_matrix ? 'Yes' : 'No'}
+                </InfoLine>
+                {props.inspector.inspector_profile?.notes && (
+                  <InfoLine label={'Notes'} icon={'sticky-note'}>
+                    {props.inspector.inspector_profile.notes}
+                  </InfoLine>
+                )}
               </div>
             </Info>
           }
