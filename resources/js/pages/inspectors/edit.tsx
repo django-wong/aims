@@ -11,6 +11,7 @@ import { Info, InfoHead, InfoLine } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import * as React from 'react';
 import { useLocationHash } from '@/hooks/use-location-hash';
+import { useTable } from '@/hooks/use-table';
 
 interface InspectorEditProps {
   inspector: User;
@@ -70,10 +71,10 @@ export default function EditPage(props: InspectorEditProps) {
                 <TabsTrigger value={'certificates'}>Certificates</TabsTrigger>
               </TabsList>
               <TabsContent value={'skills'}>
-
+                <UserSkills inspector={props.inspector} />
               </TabsContent>
               <TabsContent value={'certificates'}>
-
+                <UserCertificates inspector={props.inspector}/>
               </TabsContent>
             </Tabs>
           }
@@ -93,4 +94,21 @@ export default function EditPage(props: InspectorEditProps) {
         />
     </Layout>
   );
+}
+
+interface UserSkillsProps {
+  inspector: User;
+}
+
+function UserSkills(props: UserSkillsProps) {
+  return <div>TODO</div>;
+}
+
+
+interface UserCertificatesProps {
+  inspector: User;
+}
+
+function UserCertificates(props: UserCertificatesProps) {
+  return <div>TODO</div>;
 }
