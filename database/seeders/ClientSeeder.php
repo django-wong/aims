@@ -18,10 +18,8 @@ class ClientSeeder extends Seeder
     {
         foreach (UserRole::query()->where('role', UserRole::CLIENT)->cursor() as $entity) {
             Client::factory()
-                ->state([
-                    'user_id' => $entity->user_id,
-                    'org_id' => $entity->org_id
-                ])
+                ->recycle($entity->org)
+                ->recycle($entity->user)
                 ->create();
         }
     }

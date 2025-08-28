@@ -38,6 +38,6 @@ class AssignmentFactory extends Factory
 
     public function of(Project $project)
     {
-        return $this->recycle($project, $project->org);
+        return $this->recycle($project)->recycle($project->org);
     }
 }

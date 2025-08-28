@@ -10,7 +10,7 @@ import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { AssignmentActions } from '@/pages/assignments';
-import { ChartNoAxesColumn, ChartNoAxesColumnIcon, Clock, ClockFading, ClockFadingIcon, MessagesSquare, Newspaper } from 'lucide-react';
+import { ChartNoAxesColumnIcon, ClockFadingIcon, MessagesSquare, Newspaper } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { Timesheets } from '@/pages/assignments/timesheets';

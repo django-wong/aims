@@ -1,4 +1,4 @@
-import { AddressDialog, schema as addressSchema } from '@/pages/projects/address-form';
+import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/address-form';
 import { BreadcrumbItem, DialogFormProps, User } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';

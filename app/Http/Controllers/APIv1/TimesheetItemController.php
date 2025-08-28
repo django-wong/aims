@@ -58,12 +58,23 @@ class TimesheetItemController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $record = DB::transaction(function () use ($request) {
+        $po = $request->timesheet()->assignment->purchase_order;
+        $budget = $po->budgets()->where('assignment_type_id', $request->timesheet()->assignment->assignment_type_id)->first();
+
+        if (empty($budget)) {
+            return response()->json([
+                'message' => 'No budget found for this assignment type in the associated purchase order. Contact the coordinator to fix this issue.'
+            ], 422);
+        }
+
+        $record = DB::transaction(function () use ($request, $budget) {
             $record = $request->timesheet()->timesheet_items()->create([
                 ...array_filter($request->validated(), function ($value) {
                     return $value !== null;
                 }),
                 'user_id' => $request->assignment()->inspector_id,
+                'hourly_rate' => $budget->hourly_rate,
+                'travel_rate' => $budget->travel_rate,
             ]);
 
             $request->saveAttachments($record);

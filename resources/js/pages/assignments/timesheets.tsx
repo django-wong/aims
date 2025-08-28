@@ -1,4 +1,4 @@
-import { ColumnToggle, DataTable, TableRefresher } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, TableRefresher, useTableApi } from '@/components/data-table-2';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,17 +18,18 @@ import { describe_timesheet_status, timesheet_range } from '@/lib/utils';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { Assignment, Timesheet } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { CheckIcon, EllipsisVerticalIcon, PenIcon, XIcon } from 'lucide-react';
-import { useState } from 'react';
+import { CheckIcon, EllipsisVerticalIcon, PenIcon } from 'lucide-react';
+import { useDeferredValue, useState } from 'react';
+import axios from 'axios';
 
 interface TimesheetsProps {
-  assignment: Assignment;
+  assignment?: Assignment;
   filters?: Record<string, any>
 }
 
 export function Timesheets(props: TimesheetsProps) {
   const [timesheet, setTimesheet] = useState<Timesheet | null>();
-
+  const deferred_timesheet = useDeferredValue(timesheet);
   const columns: ColumnDef<Timesheet>[] = [
     // range, hours, travel_distance, cost, status
     {
@@ -68,7 +69,11 @@ export function Timesheets(props: TimesheetsProps) {
     columns,
     defaultParams: {
       ...props.filters,
-      'filter[assignment_id]': String(props.assignment.id),
+      ...(
+        props.assignment ? {
+          'filter[assignment_id]': String(props.assignment?.id),
+        } : null
+      ),
       sort: '-start',
     },
   });
@@ -90,10 +95,20 @@ export function Timesheets(props: TimesheetsProps) {
             <DialogTitle>Timesheet Items</DialogTitle>
             <DialogDescription>Reviewing timesheet items for the period of {timesheet ? timesheet_range(timesheet) : 'N/A'}.</DialogDescription>
           </DialogHeader>
-          <TimesheetItems
-            timesheet={timesheet!}
-          />
-          <div className={'h-1'}></div>
+          <DialogInnerContent>
+            {
+              timesheet ? (
+                <TimesheetItems
+                  timesheet={timesheet || deferred_timesheet!}
+                />
+              ) : null
+            }
+          </DialogInnerContent>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant={'outline'}>Close</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
@@ -106,6 +121,20 @@ interface TimesheetActionsProps {
 }
 
 function TimesheetActions(props: TimesheetActionsProps) {
+  const table = useTableApi();
+
+  function approve() {
+    axios.post(`/api/v1/timesheets/${props.timesheet.id}/approve`).then(() => {
+      table.reload();
+    });
+  }
+
+  function request_revise() {
+    axios.post(`/api/v1/timesheets/${props.timesheet.id}/request-revise`).then(() => {
+      table.reload();
+    });
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -124,18 +153,18 @@ function TimesheetActions(props: TimesheetActionsProps) {
           </DropdownMenuLabel>
           { props.timesheet.status > 0 ? (
             <DropdownMenuGroup>
-              <DropdownMenuItem variant={'default'}>
+              <DropdownMenuItem variant={'default'} onClick={approve}>
                 Approve
                 <DropdownMenuShortcut>
                   <CheckIcon />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem variant={'destructive'} onClick={() => {}}>
-                Request Revise
-                <DropdownMenuShortcut>
-                  <XIcon />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
+              {/*<DropdownMenuItem variant={'destructive'} onClick={request_revise}>*/}
+              {/*  Request Revise*/}
+              {/*  <DropdownMenuShortcut>*/}
+              {/*    <XIcon />*/}
+              {/*  </DropdownMenuShortcut>*/}
+              {/*</DropdownMenuItem>*/}
             </DropdownMenuGroup>
           ) : null }
           <DropdownMenuSeparator />

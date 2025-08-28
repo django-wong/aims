@@ -23,15 +23,22 @@ class AssignmentSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (Project::query()->cursor() as $project) {
-            Assignment::factory(3)
+        /**
+         * @var Project $project
+         */
+        foreach (Project::query()->get() as $project) {
+            Assignment::factory(1)
                 ->recycle(AssignmentType::query()->get())
-                ->recycle(
-                    User::query()->whereHas(
-                        'user_role', fn ($query) => $query->where('role', UserRole::INSPECTOR)
-                    )->get()
-                )
-                ->of($project)->create();
+                ->recycle($project)
+                ->recycle($project->org)
+                ->recycle($project->purchase_orders)
+                ->state([
+                    'inspector_id' => User::query()->whereHas('user_role', function ($query) use ($project) {
+                        $query->where('role', UserRole::INSPECTOR)
+                            ->where('org_id', $project->org_id);
+                    })->inRandomOrder()->first()->id,
+                ])
+                ->create();
         }
     }
 }

@@ -4,6 +4,9 @@ namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
 
+/**
+ * Initial status of a timesheet, when it's created by a user but not yet submitted for review.
+ */
 class Draft implements Status
 {
     public function prev(Timesheet $timesheet): ?string

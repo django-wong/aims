@@ -17,7 +17,7 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { Textarea } from '@/components/ui/textarea';
-import { AddressDialog, schema as addressSchema } from '@/pages/projects/address-form';
+import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/address-form';
 const schema = zod.object({
   name: zod.string().min(1, 'Name is required'),
   business_name: zod.string().min(1, 'Business name is required'),

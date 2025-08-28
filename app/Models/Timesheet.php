@@ -2,17 +2,23 @@
 
 namespace App\Models;
 
+use Carbon\Traits\Timestamp;
 use Database\Factories\TimesheetFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
- * @property Assignment $assignment
- * @property int        $status
- * @property int        $id
- * @property int        $start
- * @property int      $end
+ * @property Assignment                                                  $assignment
+ * @property int                                                         $status
+ * @property int                                                         $id
+ * @property int                                                         $start
+ * @property int                                                         $end
+ * @property Carbon|\Illuminate\Support\HigherOrderCollectionProxy|mixed $signed_off_at
+ * @property \Illuminate\Support\Carbon|mixed                            $contract_holder_approved_at
+ * @property \Illuminate\Support\Carbon|mixed                            $client_approved_at
  */
 class Timesheet extends Model
 {
@@ -37,6 +43,10 @@ class Timesheet extends Model
             'start' => 'date',
             'end' => 'date',
             'sign_off_at' => 'datetime',
+            'approved_at' => 'datetime',
+            'contract_holder_approved_at' => 'datetime',
+            'client_approved_at' => 'datetime',
+            'invoiced_at' => 'datetime',
         ];
     }
 

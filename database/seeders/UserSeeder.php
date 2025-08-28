@@ -19,7 +19,6 @@ class UserSeeder extends Seeder
                     'password' => 'Ijd8l@9'
                 ])
             )
-            ->for(Org::factory()->create())
             ->state([
                 'role' => UserRole::ADMIN
             ])

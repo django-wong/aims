@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Http\Requests\APIv1\Users\StoreRequest;
@@ -20,7 +21,7 @@ class UserController extends Controller
             AllowedFilter::callback('preset', function (Builder $query, $value) {
                 $roles = match ($value) {
                     'inspectors' => [5],
-                    default => [2, 3, 4, 8]
+                    default => [2, 3, 4, 6, 8]
                 };
 
                 $query->whereExists(function (QueryBuilder  $query) use ($roles) {
@@ -87,6 +88,12 @@ class UserController extends Controller
         }
 
         $user = User::query()->findOrFail($id);
+
+        if ($user->user_role->role === UserRole::CLIENT) {
+            return response()->json([
+                'error' => 'You cannot change role of a client user.'
+            ], 403);
+        }
 
         $validated = $request->validate([
             'role' => 'required|integer|in:2,3,4,5,8'

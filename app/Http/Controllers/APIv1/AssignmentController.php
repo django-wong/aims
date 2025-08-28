@@ -134,4 +134,26 @@ class AssignmentController extends Controller
     {
         return Pdf::loadView('pdfs.assignment-form', ['assignment' => $assignment])->download("assignment-{$assignment->id}.pdf");
     }
+
+    public function daily_usage()
+    {
+        // TODO: Return the hours logged by type in last 60 days
+        $start = (new \DateTime())->modify('-60 days');
+        $end = new \DateTime();
+
+        $data_by_date = [];
+
+        while ($start <= $end) {
+            $data_by_date[$start->format('Y-m-d')] = [
+                'work' => 0,
+                'travel' => 0,
+                'remote' => 0,
+            ];
+            $start->modify('+1 day');
+        }
+
+        return [
+            'data' => $data_by_date
+        ];
+    }
 }

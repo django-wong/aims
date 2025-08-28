@@ -3,16 +3,15 @@ import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Loading } from '@/components/ui/loading';
 import { VFormField } from '@/components/vform';
-import { objectToFormData, ReactForm, useReactiveForm, useResource } from '@/hooks/use-form';
+import { objectToFormData, useReactiveForm, useResource } from '@/hooks/use-form';
 import { DialogFormProps, Timesheet, TimesheetItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { PlusIcon, UploadIcon } from 'lucide-react';
 import { PropsWithChildren, startTransition, useEffect, useState } from 'react';
 import z from 'zod';
 

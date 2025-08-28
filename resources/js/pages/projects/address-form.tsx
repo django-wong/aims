@@ -9,7 +9,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
 
-export const schema = zod.object({
+export const addressSchema = zod.object({
   address_line_1: zod.string().min(1, 'Address line 1 is required'),
   address_line_2: zod.string().optional().nullable(),
   city: zod.string().min(1, 'City is required'),
@@ -19,7 +19,7 @@ export const schema = zod.object({
   full_address: zod.string().optional().nullable(),
 });
 
-type ThisAddress = zod.infer<typeof schema>;
+type ThisAddress = zod.infer<typeof addressSchema>;
 
 export type FormProviderProps<T> = {
   value: T | null;
@@ -30,7 +30,7 @@ export const AddressFormContext = React.createContext<ReturnType<typeof useReact
 
 export function AddressFormProvider(props: FormProviderProps<ThisAddress>) {
   const form = useReactiveForm<ThisAddress>({
-    resolver: zodResolver(schema) as any,
+    resolver: zodResolver(addressSchema) as any,
     defaultValues: props.value || undefined,
   });
 

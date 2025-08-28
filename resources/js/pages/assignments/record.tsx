@@ -44,7 +44,7 @@ export default function Record(props: RecordProps) {
   const [hash, setHash] = useQueryParam('tab', 'timesheet');
 
   function signoff() {
-    axios.post('/api/v1/timesheet/' + props.timesheet.id + '/sign-off').then((response) => {
+    axios.post('/api/v1/timesheets/' + props.timesheet.id + '/sign-off').then((response) => {
       if (response.data) {
         router.reload();
       }
@@ -327,6 +327,7 @@ export default function Record(props: RecordProps) {
                                     <p>Next week</p>
                                   </TooltipContent>
                                 </Tooltip>
+                                #{props.timesheet.id}
                               </div>
                             </>
                           ),
@@ -403,7 +404,7 @@ function SignOffForm(props: SignOffFormProps) {
         <DialogHeader>
           <DialogTitle>Sign Off</DialogTitle>
         </DialogHeader>
-        <p>
+        <p className={'text-sm'}>
           Don't forget to upload your weekly inspection report if applicable. Your timesheet will be signed off and no further changes can be made.
         </p>
         <DialogFooter>

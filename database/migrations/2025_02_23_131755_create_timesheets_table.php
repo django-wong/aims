@@ -28,7 +28,13 @@ return new class extends Migration
                  4 = client approved - waiting for invoicing,
                  5 = invoiced'
             );
-            $table->timestamp('sign_off_at')->nullable()->comment('Timestamp when the timesheet was signed off by the user');
+
+            $table->timestamp('signed_off_at')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('contract_holder_approved_at')->nullable();
+            $table->timestamp('client_approved_at')->nullable();
+            $table->timestamp('invoiced_at')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
             $table->index(['assignment_id', 'status']);

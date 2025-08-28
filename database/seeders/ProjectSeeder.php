@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Client;
 use App\Models\Org;
 use App\Models\Project;
 use App\Models\ProjectType;
@@ -15,9 +16,10 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        Project::factory(100)
+        Project::factory(5)
             ->recycle(ProjectType::query()->get())
             ->recycle(Org::query()->get())
+            ->recycle(Client::query()->get())
             ->create();
     }
 }

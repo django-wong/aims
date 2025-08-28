@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\App;
  * @property int      $org_id
  * @property Org      $org
  * @property Org|null $operation_org
+ * @property PurchaseOrder    $purchase_order
  */
 class Assignment extends Model implements Commentable
 {

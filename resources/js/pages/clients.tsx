@@ -72,7 +72,7 @@ export default function Clients() {
   const columns: ColumnDef<Client>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: 'Login Name',
       cell: ({ row }) => (
         <Link href={route('clients.edit', { id: row.original.id })} className={'underline'}>
           {row.original.user?.name || 'N/A'}

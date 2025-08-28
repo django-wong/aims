@@ -27,12 +27,13 @@ class DatabaseSeeder extends Seeder
             ClientSeeder::class,
             ProjectTypeSeeder::class,
             ProjectSeeder::class,
+            PurchaseOrderSeeder::class,
+            BudgetSeeder::class,
             VendorSeeder::class,
             AssignmentSeeder::class,
             TimesheetSeeder::class,
             TimesheetItemSeeder::class,
             ContactSeeder::class,
-            BudgetSeeder::class,
             SkillSeeder::class
         ]);
     }

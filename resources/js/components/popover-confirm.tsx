@@ -23,10 +23,10 @@ export function PopoverConfirm(props: PopoverConfirmProps) {
           <PopoverContent side={props.side} align={props.align} className="w-80">
             <div className={'grid gap-4'}>
               <div className={'grid gap-2'}>
-                <h4 className={'leading-none font-semibold'}>
-                  {props.title || 'Are you sure'}
+                <h4 className={'leading-none font-bold'}>
+                  {props.title || 'Confirm'}
                 </h4>
-                <p className={'text'}>
+                <p className={'text-sm'}>
                   {props.message}
                 </p>
               </div>
@@ -35,7 +35,7 @@ export function PopoverConfirm(props: PopoverConfirmProps) {
                   <Button variant={'outline'}>Cancel</Button>
                 </PopoverPrimitive.Close>
                 <PopoverPrimitive.Close asChild>
-                  <Button onClick={props.onConfirm}>{props.confirmText || 'Confirm'}</Button>
+                  <Button variant={'destructive'} onClick={props.onConfirm}>{props.confirmText || 'Confirm'}</Button>
                 </PopoverPrimitive.Close>
               </div>
             </div>

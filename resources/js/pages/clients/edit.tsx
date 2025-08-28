@@ -87,6 +87,9 @@ export default function Edit(props: ClientEditProps) {
                 <InfoLine label={'Business Name / Group'} icon={'book-user'}>
                   {props.client.business_name}
                 </InfoLine>
+                <InfoLine label={'Login '} icon={'book-user'}>
+                  {props.client.user?.name ?? 'N/A'}
+                </InfoLine>
                 <InfoLine label="Coordinator" icon={'user-round-cog'}>
                   {props.client.coordinator?.name ?? 'N/A'}
                 </InfoLine>

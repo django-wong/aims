@@ -82,28 +82,17 @@ function UserSkillActions({ user_skill }: { user_skill: UserSkill }) {
   const table = useTableApi();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align={'end'} side={'bottom'} className={'w-56'}>
-        <DropdownMenuLabel>{user_skill.skill?.code}</DropdownMenuLabel>
-        <DropdownMenuItem className="text-destructive" onClick={() => {
-          if (confirm(`Are you sure you want to remove ${user_skill.skill?.code} from this inspector?`)) {
-            axios.delete(`/api/v1/user-skills/${user_skill.id}`).then(() => {
-              table.reload();
-            });
-          }
-        }}>
-          Remove
-          <DropdownMenuShortcut>
-            <Trash2Icon />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <PopoverConfirm side={'bottom'} align={'end'} message={'Are you sure to delete this skill? This can not be undone.'} onConfirm={() => {
+        if (confirm(`Are you sure you want to remove ${user_skill.skill?.code} from this inspector?`)) {
+          axios.delete(`/api/v1/user-skills/${user_skill.id}`).then(() => {
+            table.reload();
+          });
+        }
+      }} asChild>
+      <Button size={'icon'} variant={'ghost'}>
+        <Trash2Icon className={'stroke-destructive'}/>
+      </Button>
+    </PopoverConfirm>
   );
 }
 

@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property integer   $org_id
  * @property User|null $coordinator
- * @property int|null     $address_id
+ * @property int|null  $address_id
+ * @property User     $user
  */
 class Client extends Model implements Contactable
 {

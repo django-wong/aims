@@ -15,8 +15,40 @@ class UserRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        UserRole::factory(200)
+        UserRole::factory(2)
             ->recycle(Org::query()->get())
+            ->state([
+                'role' => UserRole::ADMIN
+            ])
+            ->create();
+
+        UserRole::factory(2)
+            ->recycle(Org::query()->get())
+            ->state([
+                'role' => UserRole::PM
+            ])
+            ->create();
+
+        UserRole::factory(2)
+            ->recycle(Org::query()->get())
+            ->state([
+                'role' => UserRole::INSPECTOR
+            ])
+            ->create();
+
+        UserRole::factory(10)
+            ->recycle(Org::query()->get())
+            ->state([
+                'role' => UserRole::STAFF
+            ])
+            ->create();
+
+
+        UserRole::factory(10)
+            ->recycle(Org::query()->get())
+            ->state([
+                'role' => UserRole::CLIENT
+            ])
             ->create();
 
         $this->call([InspectorProfileSeeder::class]);

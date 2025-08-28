@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Models\Org;
+use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class OrgController extends Controller
 {
@@ -23,9 +26,31 @@ class OrgController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateOrgRequest $request)
     {
-        //
+        $org = Org::query()->create(Arr::only($request->validated(), ['name', 'code']));
+
+        if (! empty($request->validated('address'))) {
+            $org->address()->associate(
+                \App\Models\Address::query()->create($request->validated('address'))
+            );
+            $org->save();
+        }
+
+        if (! empty($request->validated('admin'))) {
+            $admin = User::query()->create(
+                $request->validated('admin')
+            );
+
+            $admin->user_role()->create([
+                'role' => UserRole::ADMIN,
+                'org_id' => $org->id,
+            ]);
+        }
+
+        return [
+            'message' => 'Org created successfully',
+        ];
     }
 
     /**

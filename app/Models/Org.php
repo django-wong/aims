@@ -11,7 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 class Org extends Model
 {
     /** @use HasFactory<\Database\Factories\OrgFactory> */
-    use HasFactory, HasManyAssignments;
+    use HasFactory, HasManyAssignments, BelongsToAddress;
+
+    protected $guarded = [
+        'id'
+    ];
 
     public static function current(): ?self
     {

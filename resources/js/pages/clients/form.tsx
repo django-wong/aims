@@ -13,7 +13,7 @@ import { Client, DialogFormProps } from '@/types';
 import { FormField, Form } from '@/components/ui/form';
 import { ErrorState, VFormField } from '@/components/vform';
 import { Input } from '@/components/ui/input';
-import { AddressDialog, schema as addressSchema } from '@/pages/projects/address-form';
+import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/address-form';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';

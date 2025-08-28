@@ -63,19 +63,24 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     },
     {
       accessorKey: 'expenses',
-      header: 'Hotel ($)',
-      cell: ({ row }) => row.original.hotel,
+      header: 'Hotel',
+      cell: ({ row }) => `$${row.original.hotel}`,
     },
     {
       accessorKey: 'rail_or_airfare',
-      header: 'Rail/Airfare ($)',
-      cell: ({ row }) => row.original.rail_or_airfare,
+      header: 'Rail/Airfare',
+      cell: ({ row }) => `$${row.original.rail_or_airfare}`,
     },
     {
       accessorKey: 'meals',
-      header: 'Meals ($)',
-      cell: ({ row }) => row.original.meals,
+      header: 'Meals',
+      cell: ({ row }) => `$${row.original.meals}`,
     },
+    {
+      accessorKey: 'other_expenses',
+      header: 'Other',
+      cell: ({ row }) => `$${row.original.other}`,
+    }
   ];
 
   if (typeof props.actions === 'function') {

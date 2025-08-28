@@ -4,6 +4,8 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Filters\OperatorFilter;
 use App\Models\Timesheet;
+use App\Models\UserRole;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +22,7 @@ class TimesheetController extends Controller
         $status = Timesheet\TimesheetStatus::make($timesheet);
 
         if ($status->is(Timesheet\Draft::class)) {
+            $timesheet->signed_off_at = Carbon::now();
             $status->next()
                 ?->transition($timesheet);
         }
@@ -66,8 +69,19 @@ class TimesheetController extends Controller
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Timesheet::class);
-
-        return $this->getQueryBuilder()->defaultSort('-created_at')->paginate();
+        return $this->getQueryBuilder()->tap(function (Builder $query) {
+            if (auth()->user()->isRole(UserRole::CLIENT)) {
+                $query->whereIn(
+                    'id', function ($q) {
+                        $q->select('timesheets.id')
+                            ->from('timesheets')
+                            ->join('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
+                            ->join('projects', 'assignments.project_id', '=', 'projects.id')
+                            ->where('projects.client_id', auth()->user()->client->id);
+                    }
+                );
+            }
+        })->defaultSort('-created_at')->paginate();
     }
 
 
@@ -84,6 +98,22 @@ class TimesheetController extends Controller
     {
         return response()->json([
             'data' => $timesheet->delete()
+        ]);
+    }
+
+    public function approve(Timesheet $timesheet)
+    {
+        Gate::authorize('approve', $timesheet);
+
+        $status = Timesheet\TimesheetStatus::make($timesheet);
+
+        $next = $status->next();
+
+        $next?->transition($timesheet);
+
+        return response()->json([
+            'message' => 'You have approved the timesheet.',
+            'data' => $timesheet
         ]);
     }
 }

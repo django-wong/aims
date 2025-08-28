@@ -20,6 +20,11 @@ class InspectorProfileFactory extends Factory
         return [
             'user_id' => User::factory(),
             'hourly_rate' => $this->faker->randomFloat(2, 20, 100),
+            'initials' => $this->faker->word,
+            'travel_rate' => $this->faker->randomFloat(2, 10, 30),
+            'assigned_identifier' => $this->faker->unique()->bothify('ID###'),
+            'include_on_skills_matrix' => $this->faker->boolean(),
+            'notes' => $this->faker->paragraph(),
         ];
     }
 }
