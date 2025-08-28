@@ -57,7 +57,7 @@ export default function Edit(props: EditProps) {
             </VisibleToClient>
             <HideFromClient>
               <AssignmentForm value={props.assignment} onSubmit={() => {}}>
-                <Button variant={'outline'}>Edit</Button>
+                <Button>Edit</Button>
               </AssignmentForm>
             </HideFromClient>
           </>
@@ -75,10 +75,6 @@ export default function Edit(props: EditProps) {
                 <TabsTrigger value={'timesheets'}>
                   <ClockFadingIcon/>
                   <span className={'hidden sm:inline'}>Timesheet</span>
-                </TabsTrigger>
-                <TabsTrigger value={'inspector-report'}>
-                  <Newspaper/>
-                  <span className={'hidden sm:inline'}>Inspector Report</span>
                 </TabsTrigger>
                 <HideFromClient>
                   <TabsTrigger value={'comments'}>
@@ -102,7 +98,7 @@ export default function Edit(props: EditProps) {
                   </div>
                 </div>
               </TabsContent>
-              <TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>
+              {/*<TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>*/}
               <HideFromClient>
                 <TabsContent value={'comments'}>
                   <Comments

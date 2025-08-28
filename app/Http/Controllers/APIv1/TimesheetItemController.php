@@ -34,6 +34,13 @@ class TimesheetItemController extends Controller
         ];
     }
 
+    protected function allowedIncludes()
+    {
+        return [
+            'attachments', 'attachments_count'
+        ];
+    }
+
     public function allowedSorts()
     {
         return [

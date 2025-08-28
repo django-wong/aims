@@ -42,15 +42,17 @@ class MenuController
                         'component' => 'vendors'
                     ]
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::INSPECTOR],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::INSPECTOR, UserRole::CLIENT],[
                     'projects' => [
                         'name' => 'Projects',
                         'icon' => 'briefcase-business',
                         'url' => route('projects'),
                         'component' => 'projects'
                     ],
+                ])),
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::INSPECTOR],[
                     'purchase-orders' => [
-                        'name' => 'Purchase Orders',
+                        'name' => 'Purchase Orders (WO)',
                         'icon' => 'shopping-bag',
                         'url' => route('purchase-orders'),
                         'component' => 'purchase-orders'

@@ -17,6 +17,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'business_name' => 'required|string|max:255',
+            'group' => 'nullable|string|max:255',
             'coordinator_id' => 'nullable|exists:users,id',
             'reviewer_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string|max:1000',

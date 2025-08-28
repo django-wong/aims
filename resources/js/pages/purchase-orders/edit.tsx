@@ -11,6 +11,7 @@ import { DailyHoursUsage } from '@/pages/purchase-orders/daily-usage';
 import { Overview } from '@/pages/purchase-orders/overview';
 import { Button } from '@/components/ui/button';
 import { Budgets } from '@/pages/purchase-orders/budgets';
+import { PurchaseOrderProvider } from '@/providers/purchasr-order-provider';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -55,7 +56,9 @@ export default function PurchaseOrderEditPage(props: Props) {
               />
             </TabsContent>
             <TabsContent value={'rates'}>
-              <Budgets purchaseOrderId={props.purchase_order.id}/>
+              <PurchaseOrderProvider value={props.purchase_order}>
+                <Budgets/>
+              </PurchaseOrderProvider>
             </TabsContent>
           </Tabs>
         }

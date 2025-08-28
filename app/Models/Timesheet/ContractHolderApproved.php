@@ -4,6 +4,7 @@ namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
 use App\Models\User;
+use App\Models\UserRole;
 use App\Notifications\TimesheetIsWaitingForClientApproval;
 use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,12 @@ class ContractHolderApproved implements Status
     public function transition(Timesheet $timesheet): void
     {
         Gate::allowIf(
-            auth()->user()->user_role->org_id === $timesheet->assignment->org_id, 'Only contract holder can approve the timesheet'
+            auth()->user()->user_role->org_id === $timesheet->assignment->org_id && auth()->user()->isAnyRole([
+                UserRole::ADMIN,
+                UserRole::STAFF,
+                UserRole::PM
+            ]),
+            'Only contract holder can approve the timesheet'
         );
 
         $timesheet->contract_holder_approved_at = now();

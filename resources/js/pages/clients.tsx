@@ -82,8 +82,13 @@ export default function Clients() {
     },
     {
       accessorKey: 'business_name',
-      header: 'Business Name / Group',
+      header: 'Business Name',
       cell: ({ row }) => row.original.business_name || 'N/A',
+    },
+    {
+      accessorKey: 'group',
+      header: 'Group',
+      cell: ({ row }) => row.original.group || '',
     },
     {
       accessorKey: 'email',

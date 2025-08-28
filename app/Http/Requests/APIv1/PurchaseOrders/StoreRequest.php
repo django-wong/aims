@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\APIv1\PurchaseOrders;
 
+use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'client_id' => 'required|exists:clients,id',
+            'project_id' => 'required|exists:projects,id',
             'quote_id' => 'nullable|exists:quotes,id',
             'budget' => 'required|numeric|min:0|max:999999999999.99',
             'first_alert_threshold' => [
@@ -52,8 +54,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'title.required' => 'Purchase order title is required.',
-            'client_id.required' => 'Client selection is required.',
-            'client_id.exists' => 'Selected client does not exist.',
+            'project_id.required' => 'Project is required.',
             'budget.required' => 'Budget is required.',
             'budget.numeric' => 'Budget must be a valid number.',
             'budget.min' => 'Budget must be positive.',
@@ -79,9 +80,9 @@ class StoreRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
+        return Gate::authorize('create', [\App\Models\PurchaseOrder::class, Project::query()->find($this->input('project_id'))]);
     }
 
     /**
@@ -90,8 +91,8 @@ class StoreRequest extends FormRequest
     public function basic(): array
     {
         return $this->only([
+            'project_id',
             'title',
-            'client_id',
             'quote_id',
             'budget',
             'hourly_rate',

@@ -131,6 +131,7 @@ export interface BaseModel extends Model {
 
 export interface Client extends BaseModel {
   business_name: string;
+  group: string | null;
   org_id: number;
   user_id: number;
   user?: User;
@@ -191,6 +192,7 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
   usage: number;
   hourly_rate: number;
   budgeted_hours: number;
+  budgeted_mileage: number;
 }
 
 export interface Assignment extends BaseModel {
@@ -379,6 +381,9 @@ export interface TimesheetItem extends BaseModel {
   other: number;
 
   approved: boolean; // Reserved
+
+  attachments_count?: number;
+  attachments?: Attachment<TimesheetItem>[];
 }
 
 export interface Budget extends BaseModel {

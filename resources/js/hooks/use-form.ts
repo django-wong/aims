@@ -135,6 +135,7 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
     submitDisabled: form.formState.isSubmitting || form.formState.disabled,
     ...form,
     submit: (event?: React.FormEvent<HTMLFormElement>) => {
+      console.info(form.getValues());
       return new Promise<void | ApiResponse<R>>((resolve, reject) => {
         form.handleSubmit(async (data) => {
           const res = await send(data)

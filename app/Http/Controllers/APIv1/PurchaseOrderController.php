@@ -66,7 +66,7 @@ class PurchaseOrderController extends Controller
         return response()->json([
             'message' => 'Purchase order created successfully.',
             'data' => $purchaseOrder->load([
-                'client'
+                'project'
             ])
         ], 201);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\User;
 use App\Models\UserRole;
@@ -39,7 +40,7 @@ class PurchaseOrderPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Project|null $project = null): bool
     {
         // Allow admin, finance, and staff users to create purchase orders
         if ($user->user_role && in_array($user->user_role->role, [
@@ -47,6 +48,9 @@ class PurchaseOrderPolicy
             UserRole::FINANCE,
             UserRole::STAFF
         ])) {
+            if ($project) {
+                return $user->user_role->org()->is($project->org);
+            }
             return true;
         }
 

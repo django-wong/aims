@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string $role
- * @property int  $org_id
+ * @property int    $org_id
+ * @property Org  $org
  */
 class UserRole extends Model
 {

@@ -53,18 +53,22 @@ export default function ProjectEdit(props: { project: Project }) {
                   <span className={'hidden lg:inline'}>NOIs</span>
                 </TabsTrigger>
               </HideFromClient>
-              <TabsTrigger value={'comments'}>
-                <MessagesSquareIcon/>
-                <span className={'hidden lg:inline'}>Comments & Attachments</span>
-              </TabsTrigger>
+              <HideFromClient>
+                <TabsTrigger value={'comments'}>
+                  <MessagesSquareIcon/>
+                  <span className={'hidden lg:inline'}>Comments & Attachments</span>
+                </TabsTrigger>
+              </HideFromClient>
             </TabsList>
             <TabsContent value={'details'}>
               <Content project={props.project}>TODO: Show project details</Content>
             </TabsContent>
             <TabsContent value={'assignments'}>{content}</TabsContent>
-            <TabsContent value={'comments'}>
-              <Comments commentableType={'Project'} commentableId={props.project.id} />
-            </TabsContent>
+            <HideFromClient>
+              <TabsContent value={'comments'}>
+                <Comments commentableType={'Project'} commentableId={props.project.id} />
+              </TabsContent>
+            </HideFromClient>
             <HideFromClient>
               <TabsContent value={'nois'}>
                 TODO: Notification of inspections

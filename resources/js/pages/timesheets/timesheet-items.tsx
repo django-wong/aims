@@ -21,6 +21,11 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTimesheet } from '@/providers/timesheet-provider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tab } from '@headlessui/react';
+import { useQueryParam } from '@/hooks/use-query-param';
+import { has } from 'lodash';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -30,6 +35,8 @@ interface TimesheetItemsProps {
 }
 
 export function TimesheetItems(props: TimesheetItemsProps) {
+  const [hash, setHash] = useQueryParam('timesheet-items-tab', 'timesheet-items');
+
   const columns: ColumnDef<TimesheetItem>[] = [
     {
       accessorKey: 'date',
@@ -80,6 +87,15 @@ export function TimesheetItems(props: TimesheetItemsProps) {
       accessorKey: 'other_expenses',
       header: 'Other',
       cell: ({ row }) => `$${row.original.other}`,
+    },
+    {
+      accessorKey: 'attachments',
+      header: 'Attachments',
+      cell: ({ row }) => (
+        <>
+          {row.original.attachments_count}
+        </>
+      ),
     }
   ];
 
@@ -102,6 +118,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     defaultParams: {
       'filter[timesheet_id]': String(props.timesheet?.id ?? ''),
       'filter[assignment_id]': String(props.assignment?.id ?? ''),
+      'include': 'attachments_count',
       sort: '-date',
     },
     initialState: {
@@ -118,6 +135,16 @@ export function TimesheetItems(props: TimesheetItemsProps) {
 
   return (
     <>
+      {/*<Tabs value={hash} onValueChange={setHash}>*/}
+      {/*  <TabsList>*/}
+      {/*    <TabsTrigger value={'timesheet-items'}>Timesheet Items</TabsTrigger>*/}
+      {/*    <TabsTrigger value={'reports'}>Report</TabsTrigger>*/}
+      {/*  </TabsList>*/}
+      {/*  <TabsContent value={'timesheet-items'}>*/}
+      {/*  </TabsContent>*/}
+      {/*  <TabsContent value={'reports'}>*/}
+      {/*  </TabsContent>*/}
+      {/*</Tabs>*/}
       <DataTable {...props.datatable} table={table} pagination={false} />
       <div>
         <Accordion type={'multiple'} className={'w-full'} defaultValue={['inspection-report']}>
@@ -163,6 +190,8 @@ interface TimesheetReportsProps {
 }
 
 function TimesheetReports(props: TimesheetReportsProps) {
+  const timesheet = useTimesheet();
+
   const api = usePagedGetApi<TimesheetReport>('/api/v1/timesheet-reports', {
     searchParams: new URLSearchParams({
       'timesheet_id': String(props.timesheet.id),
@@ -232,19 +261,23 @@ function TimesheetReports(props: TimesheetReportsProps) {
                 )}
               />
             ))}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <label className={'w-32 bg-secondary aspect-[3/3] rounded-lg border-dashed border flex flex-col items-center justify-center hover:bg-background cursor-pointer'}>
-                  <div>
-                    <PlusIcon size={32}/>
-                  </div>
-                  <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
-                </label>
-              </TooltipTrigger>
-              <TooltipContent>
-                Upload .xlsx .pdf .docs or image files.
-              </TooltipContent>
-            </Tooltip>
+            {
+              timesheet?.status > 0 ? null : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <label className={'w-32 bg-secondary aspect-[3/3] rounded-lg border-dashed border flex flex-col items-center justify-center hover:bg-background cursor-pointer'}>
+                      <div>
+                        <PlusIcon size={32}/>
+                      </div>
+                      <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
+                    </label>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Upload .xlsx .pdf .docs or image files.
+                  </TooltipContent>
+                </Tooltip>
+              )
+            }
           </div>
         </AccordionContent>
       </AccordionItem>

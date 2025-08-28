@@ -13,19 +13,33 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
+            $table->string('reference_number')->nullable();
+            $table->string('previous_reference_number')->nullable();
 
-            $table->foreignId('org_id')
-                ->index()
-                ->constrained();
+            $table->foreignId('org_id')->index()->constrained();
 
-            $table->foreignId('operation_org_id')
-                ->nullable()
-                ->index()
-                ->constrained('orgs');
+            $table->foreignId('operation_org_id')->nullable()->index()->constrained('orgs');
+            $table->foreignId('operation_coordinator_id')->nullable()->index()->constrained('users');
 
             $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
             $table->foreignId('project_id')->constrained();
-            $table->foreignId('inspector_id')->index()->nullable()->constrained('users');
+            $table->string('client_po')->nullable();
+            $table->string('client_po_rev')->nullable();
+            $table->date('po_delivery_date')->nullable();
+            $table->date('close_date')->nullable();
+            $table->date('final_invoice_date')->nullable();
+
+            $table->unsignedTinyInteger('i_e_a')->default(0)->comment('0 = inspection, 1 = expediting, 2 = audit');
+
+            // budget
+            $table->decimal('budgeted_hours', 8, 2)->nullable()->comment('Total budgeted hours for the assignment, can not beyond the purchase order');
+            $table->decimal('budgeted_travel', 10, 2)->nullable()->comment('Hourly rate for the assignment');
+
+            // status
+            $table->boolean('status')->default(true)->comment('true for open, false for closed');
+
+            $table->foreignId('skill_id')->nullable()->constrained()->nullOnDelete();
+
             $table->foreignId('vendor_id')->nullable()->constrained();
             $table->foreignId('sub_vendor_id')->nullable()->constrained('vendors');
             $table->foreignId('purchase_order_id')->nullable()->constrained();

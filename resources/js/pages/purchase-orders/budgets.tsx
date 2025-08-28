@@ -1,71 +1,59 @@
-import { DataTable } from '@/components/data-table-2';
+import { DataTable, useTableApi } from '@/components/data-table-2';
+import { PopoverConfirm } from '@/components/popover-confirm';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { useTable } from '@/hooks/use-table';
+import { usePurchaseOrder } from '@/providers/purchasr-order-provider';
 import { Budget } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { EllipsisVertical, Eye, Plus, Trash2, Edit } from 'lucide-react';
+import axios from 'axios';
+import { PencilIcon, Plus, TrashIcon } from 'lucide-react';
 import { BudgetForm } from './budgets/form';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 
-interface BudgetsProps {
-  purchaseOrderId?: number;
-}
-
-function BudgetActions(props: { budget: Budget}) {
+function BudgetActions(props: { budget: Budget }) {
+  const table = useTableApi();
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={'foreground'}>
-          <EllipsisVertical />
+    <div className={'flex items-center space-x-2'}>
+      <PopoverConfirm
+        side={'bottom'}
+        align={'end'}
+        message={'Are you sure to delete this budget?'}
+        onConfirm={() => {
+          axios.delete('/api/v1/budgets/' + props.budget.id).then(() => {
+            table.reload();
+          });
+        }}
+        asChild
+      >
+        <Button variant={'secondary'} size={'sm'}>
+          <TrashIcon />
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            Edit
-            <DropdownMenuShortcut>
-              <Edit />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem className={'text-red-500'}>
-            Delete
-            <DropdownMenuShortcut>
-              <Trash2 />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PopoverConfirm>
+      <BudgetForm onSubmit={() => {table.reload()}} value={props.budget}>
+        <Button variant={'secondary'} size={'sm'}>
+          <PencilIcon />
+        </Button>
+      </BudgetForm>
+    </div>
   );
 }
 
-export function Budgets({ purchaseOrderId }: BudgetsProps) {
+export function Budgets() {
+  const po = usePurchaseOrder();
   const columns: ColumnDef<Budget>[] = [
-    // {
-    //   accessorKey: 'rate_code',
-    //   header: 'Rate Code',
-    //   enableResizing: true,
-    //   minSize: 150,
-    //   size: 200,
-    //   maxSize: 300,
-    //   cell: ({ row }) => {
-    //     return (
-    //       <span className="font-medium">{row.original.rate_code}</span>
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: 'rate_code',
+      header: 'Rate Code',
+      enableResizing: true,
+      minSize: 150,
+      size: 200,
+      maxSize: 300,
+      cell: ({ row }) => {
+        return <span className="font-medium">{row.original.rate_code}</span>;
+      },
+    },
     {
       accessorKey: 'discipline',
       header: 'Discipline',
@@ -117,11 +105,7 @@ export function Budgets({ purchaseOrderId }: BudgetsProps) {
     },
     {
       accessorKey: 'actions',
-      header: () => (
-        <TableCellWrapper last>
-          Actions
-        </TableCellWrapper>
-      ),
+      header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
       minSize: 80,
       maxSize: 80,
       cell: ({ row }) => (
@@ -136,8 +120,8 @@ export function Budgets({ purchaseOrderId }: BudgetsProps) {
     columns: columns,
     defaultParams: {
       include: 'assignment_type',
-      purchase_order_id: String(purchaseOrderId),
-      sort: 'rate_code'
+      purchase_order_id: String(po?.id),
+      sort: 'rate_code',
     },
   });
 
@@ -147,9 +131,7 @@ export function Budgets({ purchaseOrderId }: BudgetsProps) {
 
   return (
     <DataTable
-      left={
-        <Input placeholder={'Search'} className={'max-w-[200px]'}/>
-      }
+      left={<Input placeholder={'Search'} className={'max-w-[200px]'} />}
       right={
         <BudgetForm onSubmit={onSubmit}>
           <Button>

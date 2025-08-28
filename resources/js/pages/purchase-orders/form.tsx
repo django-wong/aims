@@ -16,12 +16,12 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { ClientSelect } from '@/components/client-select';
+import { ProjectSelect } from '@/components/project-select';
 
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
-  client_id: zod.number().min(1, 'Client is required'),
+  project_id: zod.number(),
   budget: zod.number().min(1, 'Budget must be positive'),
-  hourly_rate: zod.number().min(1, 'Hourly rate must be positive'),
   first_alert_threshold: zod.number().min(1).max(100).default(70),
   second_alert_threshold: zod.number().min(1).max(100).default(90),
   final_alert_threshold: zod.number().min(1).max(100).default(100),
@@ -76,21 +76,21 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
                 <FormField
                   control={form.control}
                   render={({ field }) => {
-                    return <VFormField required label={'Client'}>
-                      <ClientSelect onValueChane={field.onChange} value={field.value}/>
+                    return <VFormField required label={'Project'}>
+                      <ProjectSelect onValueChane={field.onChange} value={field.value}/>
                     </VFormField>
                   }}
-                  name={'client_id'}
+                  name={'project_id'}
                 />
               </div>
 
-              <div className={'col-span-6'}>
+              <div className={'col-span-12'}>
                 <FormField
                   render={({ field }) => {
                     return <VFormField required label={'Budget ($)'}>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="100"
                         min="0"
                         value={field.value || ''}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -98,23 +98,6 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
                     </VFormField>
                   }}
                   name={'budget'}
-                />
-              </div>
-
-              <div className={'col-span-6'}>
-                <FormField
-                  render={({ field }) => {
-                    return <VFormField required label={'Hourly Rate ($)'}>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={field.value || ''}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </VFormField>
-                  }}
-                  name={'hourly_rate'}
                 />
               </div>
 

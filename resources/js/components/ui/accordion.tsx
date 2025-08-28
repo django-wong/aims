@@ -3,6 +3,7 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { PropsWithChildren } from 'react';
 
 function Accordion({
   ...props
@@ -53,7 +54,7 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down text-sm overflow-hidden py-2"
+      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down text-sm overflow-hidden"
       {...props}
     >
       <div className={cn("pt-0 pb-4", className)}>{children}</div>
@@ -61,4 +62,12 @@ function AccordionContent({
   )
 }
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+function AccordionInnerContent({className, children, ...props}: React.ComponentProps<'div'>) {
+  return <div {...props} className={cn("p-6 bg-muted rounded-lg", className)}>
+    { children }
+  </div>
+}
+
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent, AccordionInnerContent }
+
+

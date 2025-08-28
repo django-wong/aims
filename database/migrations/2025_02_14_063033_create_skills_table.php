@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('skills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('org_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('code')->unique();
             $table->string('report_code')->nullable();
             $table->string('i_e_a')->default('i');

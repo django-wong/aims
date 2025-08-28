@@ -21,6 +21,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CheckIcon, EllipsisVerticalIcon, PenIcon } from 'lucide-react';
 import { useDeferredValue, useState } from 'react';
 import axios from 'axios';
+import { TimesheetProvider } from '@/providers/timesheet-provider';
 
 interface TimesheetsProps {
   assignment?: Assignment;
@@ -62,7 +63,7 @@ export function Timesheets(props: TimesheetsProps) {
       )
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'actions',
       header: () => {
         return <div className={'flex items-center justify-end'}>Actions</div>;
       },
@@ -107,9 +108,11 @@ export function Timesheets(props: TimesheetsProps) {
           <DialogInnerContent>
             {
               timesheet ? (
-                <TimesheetItems
-                  timesheet={timesheet || deferred_timesheet!}
-                />
+                <TimesheetProvider value={timesheet}>
+                  <TimesheetItems
+                    timesheet={timesheet || deferred_timesheet!}
+                  />
+                </TimesheetProvider>
               ) : null
             }
           </DialogInnerContent>

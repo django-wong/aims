@@ -22,6 +22,7 @@ import AppLayout from '@/layouts/app-layout';
 import { ProjectForm } from '@/pages/projects/form';
 import { Project } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { HideFromClient } from '@/components/hide-from-client';
 
 const breadcrumbs = [
   {
@@ -46,23 +47,27 @@ function ProjectActions(props: { project: Project }) {
         <DropdownMenuLabel>{props.project.title}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            View Details
-            <DropdownMenuShortcut>
-              <Eye />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={'text-red-500'}
-            onSelect={(event) => {
-              event.stopPropagation();
-            }}
-          >
-            Delete
-            <DropdownMenuShortcut>
-              <Trash2 />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          <Link href={route('projects.edit', { id: props.project.id })}>
+            <DropdownMenuItem>
+              View Details
+              <DropdownMenuShortcut>
+                <Eye />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </Link>
+          <HideFromClient>
+            <DropdownMenuItem
+              className={'text-red-500'}
+              onSelect={(event) => {
+                event.stopPropagation();
+              }}
+            >
+              Delete
+              <DropdownMenuShortcut>
+                <Trash2 />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </HideFromClient>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -169,9 +174,11 @@ export default function Projects() {
                   });
                 }}
                 renderTrigger={(client) => (
-                  <Button variant={'outline'}>
-                    Client: <Badge variant={'secondary'}>{client?.business_name ?? client?.user?.name ?? 'All'}</Badge>
-                  </Button>
+                  <HideFromClient>
+                    <Button variant={'outline'}>
+                      Client: <Badge variant={'secondary'}>{client?.business_name ?? client?.user?.name ?? 'All'}</Badge>
+                    </Button>
+                  </HideFromClient>
                 )}
                 value={parseInt(table.searchParams.get('filter[client_id]') || '')}
               />

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\APIv1;
 use App\Http\Requests\APIv1\Budgets\IndexRequest;
 use App\Models\Budget;
 use App\Models\PurchaseOrder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class BudgetController extends Controller
@@ -28,15 +29,21 @@ class BudgetController extends Controller
      */
     public function index(IndexRequest $request)
     {
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->tap(function (Builder  $query) use ($request) {
+            $query->where('purchase_order_id', $request->input('purchase_order_id'));
+        })->paginate();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreBudgetRequest $request)
     {
-        //
+        $budget = Budget::query()->create($request->validated());
+
+        return [
+            'data' => $budget
+        ];
     }
 
     /**
@@ -50,16 +57,25 @@ class BudgetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Budget $rate)
+    public function update(UpdateBudgetRequest $request, Budget $budget)
     {
-        //
+        $budget->update($request->validated());
+
+        return [
+            'data' => $budget,
+            'message' => 'Budget updated successfully'
+        ];
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Budget $rate)
+    public function destroy(DestroyBudgetRequest $request, Budget $budget)
     {
-        //
+        $budget->delete();
+
+        return [
+            'message' => 'Budget deleted successfully'
+        ];
     }
 }

@@ -3,9 +3,9 @@ import { Timesheet } from '@/types';
 
 export const TimesheetContext = createContext<Timesheet|null>(null);
 
-export function useTimesheet() {
+export function useTimesheet(): Timesheet {
   const context = useContext(TimesheetContext);
-  if (context === undefined) {
+  if (! context) {
     throw new Error('useTimesheet must be used within a TimesheetProvider');
   }
   return context;

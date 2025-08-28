@@ -79,7 +79,7 @@ class TimesheetController extends Controller
                             ->join('projects', 'assignments.project_id', '=', 'projects.id')
                             ->where('projects.client_id', auth()->user()->client->id);
                     }
-                );
+                )->where('status', '>', Timesheet::APPROVED);
             }
         })->defaultSort('-created_at')->paginate();
     }

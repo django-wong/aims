@@ -16,27 +16,28 @@ import { Input } from '@/components/ui/input';
 import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/address-form';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
-import zod from 'zod';
+import z from 'zod';
 import { Circle, LocationEdit } from 'lucide-react';
 import { StaffSelect } from '@/components/user-select';
 import AvatarUpload from '@/components/file-upload/avatar-upload';
 import { useEffect, useState } from 'react';
 
-const schema = zod.object({
-  business_name: zod.string().min(1, 'Business name is required'),
-  coordinator_id: zod.number().nullable().optional(),
-  reviewer_id: zod.number().nullable().optional(),
-  logo_url: zod.string().optional(),
-  logo: zod.file().optional(),
-  address: zod.null().or(
+const schema = z.object({
+  business_name: z.string().min(1, 'Business name is required'),
+  group: z.string().optional().nullable(),
+  coordinator_id: z.number().nullable().optional(),
+  reviewer_id: z.number().nullable().optional(),
+  logo_url: z.string().optional(),
+  logo: z.file().optional(),
+  address: z.null().or(
     addressSchema.nullable().optional()
   ),
-  user: zod.object({
-    name: zod.string().min(1, 'Contact name is required'),
-    email: zod.string().email('Invalid email format')
+  user: z.object({
+    name: z.string().min(1, 'Contact name is required'),
+    email: z.string().email('Invalid email format')
   }).optional(),
-  notes: zod.string().optional().nullable(),
-  invoice_reminder: zod.coerce.number().min(1).max(30).nullable(),
+  notes: z.string().optional().nullable(),
+  invoice_reminder: z.coerce.number().min(1).max(30).nullable(),
 }).superRefine((data, context) => {
   // Logo is required if no logo_url is provided
   if (!data.logo_url && !data.logo) {
@@ -49,7 +50,7 @@ const schema = zod.object({
 });
 
 export function ClientForm(props: DialogFormProps<Client>) {
-  const form = useReactiveForm<zod.infer<typeof schema>, Client>({
+  const form = useReactiveForm<z.infer<typeof schema>, Client>({
     ...useResource('/api/v1/clients', {
       business_name: '',
       coordinator_id: null,
@@ -123,13 +124,25 @@ export function ClientForm(props: DialogFormProps<Client>) {
               <div className={'col-span-12'}>
                 <FormField
                   render={({ field }) => {
-                    return <VFormField required label={'Business Name / Group'}>
+                    return <VFormField required label={'Business Name'}>
                       <Input value={field.value} onChange={(event) => {
                         field.onChange(event);
                       }}/>
                     </VFormField>
                   }}
                   name={'business_name'}
+                />
+              </div>
+              <div className={'col-span-12'}>
+                <FormField
+                  render={({ field }) => {
+                    return <VFormField required label={'Group'}>
+                      <Input value={field.value} onChange={(event) => {
+                        field.onChange(event);
+                      }}/>
+                    </VFormField>
+                  }}
+                  name={'group'}
                 />
               </div>
               <div className={'col-span-6'}>

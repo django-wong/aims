@@ -38,7 +38,7 @@ class TimesheetIsApprovedByClient extends Notification
     {
         return (new MailMessage)
             ->view('email')
-            ->subject('Timesheet is waiting for your approval')
+            ->subject('Timesheet has approved by client')
             ->greeting('Hi ' . $notifiable->name)
             ->line('The timesheet has been approved by the client. Please review the timesheet in assignment details and make further action from there.')
             ->line(

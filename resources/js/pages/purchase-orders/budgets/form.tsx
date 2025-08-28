@@ -12,52 +12,31 @@ import {
 } from '@/components/ui/dialog';
 import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
-import { DialogFormProps, Budget, AssignmentType, PurchaseOrder } from '@/types';
+import { DialogFormProps, Budget } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Circle } from 'lucide-react';
 import zod from 'zod';
+import { AssignmentTypeSelect } from '@/components/assignment-type-select';
+import { usePurchaseOrder } from '@/providers/purchasr-order-provider';
 
-type BudgetFormProps = DialogFormProps<Budget> & {
-  purchaseOrderId?: number;
-  assignmentTypes?: AssignmentType[];
-  purchaseOrders?: PurchaseOrder[];
-};
-
-const updateSchema = zod.object({
-  method: zod.literal('update'),
+const schema = zod.object({
+  purchase_order_id: zod.coerce.number().optional(),
+  assignment_type_id: zod.coerce.number().min(1, 'Assignment Type is required'),
   rate_code: zod.string().min(1),
-  purchase_order_id: zod.number(),
-  assignment_type_id: zod.number(),
-  hourly_rate: zod.number().min(0),
-  budgeted_hours: zod.number().min(0),
-  travel_rate: zod.number().min(0),
-  budgeted_mileage: zod.number().min(0),
+  hourly_rate: zod.coerce.number().min(1),
+  budgeted_hours: zod.coerce.number().min(1),
+  travel_rate: zod.coerce.number().min(1),
+  budgeted_mileage: zod.coerce.number().min(1),
 });
 
-const createSchema = zod.object({
-  method: zod.literal('create'),
-  rate_code: zod.string().min(1),
-  purchase_order_id: zod.number(),
-  assignment_type_id: zod.number(),
-  hourly_rate: zod.number().min(0),
-  budgeted_hours: zod.number().min(0),
-  travel_rate: zod.number().min(0),
-  budgeted_mileage: zod.number().min(0),
-});
-
-const schema = zod.discriminatedUnion('method', [
-  createSchema,
-  updateSchema,
-]);
-
-export function BudgetForm(props: BudgetFormProps) {
+export function BudgetForm(props: DialogFormProps<Budget>) {
+  const po = usePurchaseOrder();
   const form = useReactiveForm<zod.infer<typeof schema>, any>({
     ...useResource('/api/v1/budgets', {
       rate_code: '',
-      purchase_order_id: props.purchaseOrderId || 0,
+      purchase_order_id: po?.id,
       assignment_type_id: 0,
       hourly_rate: 0,
       budgeted_hours: 0,
@@ -66,7 +45,7 @@ export function BudgetForm(props: BudgetFormProps) {
       ...props.value,
       method: (props.value && props.value.id) ? 'update' : 'create' as any,
     }),
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
   });
 
   const isUpdate = !!(props.value && props.value.id);
@@ -86,7 +65,9 @@ export function BudgetForm(props: BudgetFormProps) {
         {props.children && <DialogTrigger asChild={props.asChild === undefined ? true : props.asChild}>{props.children}</DialogTrigger>}
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{isUpdate ? 'Edit Budget' : 'New Budget'}</DialogTitle>
+            <DialogTitle>
+              {isUpdate ? 'Edit Budget' : 'New Budget'}
+            </DialogTitle>
             <DialogDescription>Fill in the details below to create or update the budget.</DialogDescription>
           </DialogHeader>
           <DialogInnerContent>
@@ -106,50 +87,13 @@ export function BudgetForm(props: BudgetFormProps) {
                       name={'rate_code'}
                     />
                   </div>
-                  {!props.purchaseOrderId && (
-                    <div className={'col-span-12'}>
-                      <FormField
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <VFormField required label={'Purchase Order'}>
-                              <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a purchase order" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {props.purchaseOrders?.map((po) => (
-                                    <SelectItem key={po.id} value={po.id.toString()}>
-                                      {po.title}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </VFormField>
-                          );
-                        }}
-                        name={'purchase_order_id'}
-                      />
-                    </div>
-                  )}
                   <div className={'col-span-12'}>
                     <FormField
                       control={form.control}
                       render={({ field }) => {
                         return (
                           <VFormField required label={'Assignment Type'}>
-                            <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select an assignment type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {props.assignmentTypes?.map((type) => (
-                                  <SelectItem key={type.id} value={type.id.toString()}>
-                                    {type.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <AssignmentTypeSelect disabled={!!props.value} onValueChane={(value) => field.onChange(value)} value={field.value}/>
                           </VFormField>
                         );
                       }}
@@ -164,7 +108,7 @@ export function BudgetForm(props: BudgetFormProps) {
                           <VFormField required label={'Hourly Rate'}>
                             <Input
                               type="number"
-                              step="0.01"
+                              step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -184,7 +128,7 @@ export function BudgetForm(props: BudgetFormProps) {
                           <VFormField required label={'Budgeted Hours'}>
                             <Input
                               type="number"
-                              step="0.01"
+                              step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -204,7 +148,7 @@ export function BudgetForm(props: BudgetFormProps) {
                           <VFormField required label={'Travel Rate'}>
                             <Input
                               type="number"
-                              step="0.01"
+                              step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -224,7 +168,7 @@ export function BudgetForm(props: BudgetFormProps) {
                           <VFormField required label={'Budgeted Mileage'}>
                             <Input
                               type="number"
-                              step="0.01"
+                              step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
@@ -240,7 +184,10 @@ export function BudgetForm(props: BudgetFormProps) {
               </div>
             </form>
           </DialogInnerContent>
-          <DialogFooter>
+          <DialogFooter className={'flex items-center'}>
+            <span className={'flex-grow text-sm text-gray-500 flex items-center gap-1'}>
+              Purchasr Order #{po?.id}
+            </span>
             <DialogClose asChild>
               <Button variant={'outline'} type={'button'}>
                 Cancel
