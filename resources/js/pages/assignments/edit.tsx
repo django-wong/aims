@@ -10,13 +10,14 @@ import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { AssignmentActions } from '@/pages/assignments';
-import { ChartNoAxesColumnIcon, ClockFadingIcon, MessagesSquare, Newspaper } from 'lucide-react';
+import { ChartNoAxesColumnIcon, ClockFadingIcon, MessagesSquare, Newspaper, UserRoundSearch, UserRoundSearchIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { Timesheets } from '@/pages/assignments/timesheets';
 import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
 import { NotificationOfInspection } from '@/pages/assignments/notification-of-inspection';
 import { AssignmentProvider } from '@/providers/assignment-provider';
+import { AssignmentInspectors } from '@/pages/assignments/assignment-inspectors';
 
 interface EditProps {
   assignment: Assignment;
@@ -56,7 +57,7 @@ export default function Edit(props: EditProps) {
               </NotificationOfInspection>
             </VisibleToClient>
             <HideFromClient>
-              <AssignmentForm value={props.assignment} onSubmit={() => {}}>
+              <AssignmentForm open={true} value={props.assignment} onSubmit={() => {location.reload()}}>
                 <Button>Edit</Button>
               </AssignmentForm>
             </HideFromClient>
@@ -72,6 +73,10 @@ export default function Edit(props: EditProps) {
                   <ChartNoAxesColumnIcon/>
                   <span className={'hidden sm:inline'}>Overview</span>
                 </TabsTrigger>
+                <TabsTrigger value={'inspectors'}>
+                  <UserRoundSearchIcon/>
+                  <span className={'hidden sm:inline'}>Inspectors</span>
+                </TabsTrigger>
                 <TabsTrigger value={'timesheets'}>
                   <ClockFadingIcon/>
                   <span className={'hidden sm:inline'}>Timesheet</span>
@@ -85,6 +90,9 @@ export default function Edit(props: EditProps) {
               </TabsList>
               <TabsContent value={'overview'}>
                 <DailyUsage/>
+              </TabsContent>
+              <TabsContent value={'inspectors'}>
+                <AssignmentInspectors/>
               </TabsContent>
               <TabsContent value={'timesheets'}>
                 <div className={'grid gap-4'}>
@@ -145,22 +153,10 @@ export default function Edit(props: EditProps) {
                   {props.assignment.sub_vendor?.business_name || 'N/A'}
                 </InfoLine>
               </div>
-              <Divider className={'my-2'} />
-              <InfoHead>Assignee</InfoHead>
-              <div>
-                <InfoLine label={'Name'} icon={'square-user-round'}>
-                  <Badge variant={'outline'}>{props.assignment.inspector?.name || 'N/A'}</Badge>
-                </InfoLine>
-                <InfoLine label={'Email Address'} icon={'at-sign'}>
-                  <a href={`mailto:${props.assignment.inspector?.email || ''}`} className={'underline'}>
-                    {props.assignment.inspector?.email || 'N/A'}
-                  </a>
-                </InfoLine>
-              </div>
               <HideFromClient>
                 <Divider className={'my-2'} />
                 <InfoHead>Notes</InfoHead>
-                <InfoLineValue>{props.assignment.notes || 'N/A'}</InfoLineValue>
+                <InfoLineValue className={'justify-start'}>{props.assignment.notes || 'N/A'}</InfoLineValue>
               </HideFromClient>
             </Info>
           }

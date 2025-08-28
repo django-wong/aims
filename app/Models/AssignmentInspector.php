@@ -8,5 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class AssignmentInspector extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentInspectorFactory> */
-    use HasFactory, BelongsToUser, BelongsToAssignment;
+    use HasFactory, BelongsToUser, BelongsToAssignment, BelongsToAssignmentType;
+
+    protected $guarded = [
+        'id'
+    ];
 }

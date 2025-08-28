@@ -23,13 +23,14 @@ return new class extends Migration
 
             $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
             $table->foreignId('project_id')->constrained();
+
             $table->string('client_po')->nullable();
             $table->string('client_po_rev')->nullable();
             $table->date('po_delivery_date')->nullable();
             $table->date('close_date')->nullable();
             $table->date('final_invoice_date')->nullable();
 
-            $table->unsignedTinyInteger('i_e_a')->default(0)->comment('0 = inspection, 1 = expediting, 2 = audit');
+            $table->string('i_e_a')->nullable();
 
             // budget
             $table->decimal('budgeted_hours', 8, 2)->nullable()->comment('Total budgeted hours for the assignment, can not beyond the purchase order');
@@ -51,6 +52,9 @@ return new class extends Migration
             $table->unsignedInteger('total_visits')->nullable()->comment('Total number of visits planned for the assignment');
             $table->unsignedTinyInteger('hours_per_visit')->nullable()->comment('Estimated hours per visit');
             $table->foreignId('visit_contact_id')->nullable()->constrained('contacts');
+
+            $table->text('inter_office_instructions')->nullable();
+            $table->text('inspector_instructions')->nullable();
 
             // scope of assignment (booleans)
             $table->boolean('pre_inspection_meeting')->default(false);

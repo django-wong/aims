@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react';
 import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
-  label?: string;
+  label?: string | React.ReactNode;
   renderLabel?: (props: FormFieldProps) => React.ReactNode;
   required?: boolean;
   description?: string;

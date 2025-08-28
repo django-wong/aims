@@ -7,6 +7,7 @@ use App\Http\Requests\APIv1\Assignments\StoreRequest;
 use App\Http\Requests\APIv1\Assignments\UpdateRequest;
 use App\Models\Assignment;
 use App\Models\Org;
+use App\Models\Project;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
@@ -34,7 +35,7 @@ class AssignmentController extends Controller
     protected function allowedIncludes()
     {
         return [
-            'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client'
+            'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type'
         ];
     }
 
@@ -160,5 +161,15 @@ class AssignmentController extends Controller
         return [
             'data' => $data_by_date
         ];
+    }
+
+    public function next_assignment_number()
+    {
+        Gate::authorize('viewAny', Project::class);
+
+        return response()->json([
+            'data' => Assignment::nextAssignmentNumber(),
+            'message' => 'Next assignment number retrieved successfully.',
+        ]);
     }
 }

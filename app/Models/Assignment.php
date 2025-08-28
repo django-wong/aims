@@ -46,6 +46,7 @@ class Assignment extends Model implements Commentable
             'audit' => 'boolean',
             'exit_call' => 'boolean',
             'flash_report' => 'boolean',
+            'status' => 'boolean',
         ];
     }
 
@@ -107,5 +108,44 @@ class Assignment extends Model implements Commentable
     public function visit_contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class, 'visit_contact_id');
+    }
+
+    public static function nextAssignmentNumber(): string
+    {
+        $year = date('Y');
+        $org = auth()->user()->org;
+        $region = $org->code ?? 'AUS'; // Default to 'AUS' if the region code is not set
+
+        $last_appointment = Assignment::query()->whereYear('created_at', $year)
+            ->where('org_id', $org->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $last_number = 1;
+        if ($last_appointment) {
+            preg_match('/(\d+)$/', $last_appointment->reference_number, $matches);
+            if (isset($matches[1])) {
+                $last_number = (int)$matches[1];
+            }
+        }
+
+        $iteration = 0;
+
+        AGAIN:
+        $iteration++;
+        if ($iteration > 1000) {
+            throw new \Exception('Unable to generate a unique assignment reference number after 1000 attempts.');
+        }
+        $next_number = $last_number + 1;
+        $next_reference = sprintf('%s-%s-%04d', $year, $region, $next_number);
+
+        $exists = Assignment::query()->where('reference_number', $next_reference)->exists();
+
+        if ($exists) {
+            $last_number = $next_number;
+            goto AGAIN;
+        }
+
+        return $next_reference;
     }
 }

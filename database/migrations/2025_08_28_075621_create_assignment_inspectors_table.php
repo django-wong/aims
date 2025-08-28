@@ -15,6 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('assignment_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('assignment_type_id')->constrained()->onDelete('cascade');
+
+            $table->timestamp('acked_at')->nullable();
+            $table->longText('signature_base64')->nullable();
+
+            // Copy on write from budgets table
+            $table->decimal('hourly_rate', 10);
+            $table->decimal('travel_rate', 10)->default(0.5);
+
             $table->timestamps();
         });
     }

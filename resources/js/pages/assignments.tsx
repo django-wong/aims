@@ -219,54 +219,58 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       accessorKey: 'reference_number',
       header: 'BIE reference number',
       cell: ({ row }) => (
-        <Link href={route('assignments.edit', { id: row.original.id})} className={'underline'}>
-          {row.original.reference_number}
+        <Link href={route('assignments.edit', { id: row.original.id })} className={'underline'}>
+          {row.original.reference_number || `Not set`}
         </Link>
-      )
+      ),
     },
     // Date recorded
     {
       accessorKey: 'created_at',
       header: 'Date recorded',
-      cell: ({ row }) => (
-        dayjs(row.original.created_at).format('DD/MM/YYYY')
-      )
+      cell: ({ row }) => dayjs(row.original.created_at).format('DD/MM/YYYY'),
     },
     {
       id: 'client_id',
       accessorKey: 'client_id',
       header: 'Client',
       cell: ({ row }) => {
-        return <>
-          <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
-            {row.original.project?.client?.business_name}
-          </Link>
-        </>;
-      }
+        return (
+          <>
+            <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
+              {row.original.project?.client?.business_name}
+            </Link>
+          </>
+        );
+      },
     },
     {
-      id: 'client_id',
-      accessorKey: 'client_id',
-      header: 'Client',
+      id: 'client_code',
+      accessorKey: 'client_code',
+      header: 'Client Code',
       cell: ({ row }) => {
-        return <>
-          <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
-            {row.original.project?.client?.code}
-          </Link>
-        </>;
-      }
+        return (
+          <>
+            <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
+              {row.original.project?.client?.code}
+            </Link>
+          </>
+        );
+      },
     },
     {
       id: 'project_id',
       accessorKey: 'project_id',
       header: 'Project',
       cell: ({ row }) => {
-        return <>
-          <Link href={route('projects.edit', { id: row.original.project_id })} className={'underline'}>
-            {row.original.project?.title ?? row.original.project_id}
-          </Link>
-        </>;
-      }
+        return (
+          <>
+            <Link href={route('projects.edit', { id: row.original.project_id })} className={'underline'}>
+              {row.original.project?.title ?? row.original.project_id}
+            </Link>
+          </>
+        );
+      },
     },
     // {
     //   accessorKey: 'assignment_type_id',
@@ -276,157 +280,119 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     //   },
     //   size: 100,
     // },
-    ...(
-      isClient ? [] : [
-        po_column
-      ]
-    ),
+    ...(isClient ? [] : [po_column]),
     {
       accessorKey: 'client_po',
       header: 'Client PO',
-      cell: ({ row }) => (
-        row.original.client_po ?? '-'
-      )
+      cell: ({ row }) => row.original.client_po ?? '-',
     },
     {
       accessorKey: 'client_po_rev',
-      header: 'Client PO',
-      cell: ({ row }) => (
-        row.original.client_po_rev ?? '-'
-      )
+      header: 'Client PO Rev',
+      cell: ({ row }) => row.original.client_po_rev ?? '-',
     },
     {
       accessorKey: 'vendor_id',
       header: 'Vendor',
       cell: ({ row }) => {
         return row.original.vendor?.name ?? '-';
-      }
+      },
     },
     {
-      accessorKey: 'vendor_id',
+      accessorKey: 'sub_vendor_id',
       header: 'Vendor',
       cell: ({ row }) => {
         return row.original.sub_vendor?.name ?? '-';
-      }
+      },
     },
     {
       accessorKey: 'equipment_description',
       header: 'Equipment Description',
-      cell: ({ row }) => (
-        row.original.equipment ?? '-'
-      )
+      cell: ({ row }) => row.original.equipment ?? '-',
     },
     {
       accessorKey: 'coordinating_office',
       header: 'Coordinating Office',
-      cell: ({ row }) => (
-        row.original.org?.name ?? '-'
-      )
+      cell: ({ row }) => row.original.org?.name ?? '-',
     },
     {
       accessorKey: 'equipment_category',
       header: 'Equipment Category',
-      cell: ({ row }) => (
-        row.original.equipment_category?.name ?? '-'
-      )
+      cell: ({ row }) => row.original.equipment_category?.name ?? '-',
     },
     // Notes
     {
       accessorKey: 'notes',
       header: 'Notes',
-      cell: ({ row }) => (
-        row.original.notes
-      )
+      cell: ({ row }) => row.original.notes,
     },
     // po_delivery_date
     {
       accessorKey: 'po_delivery_date',
       header: 'PO Delivery Date',
-      cell: ({ row }) => (
-        row.original.po_delivery_date ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY') : '-'
-      )
+      cell: ({ row }) => (row.original.po_delivery_date ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY') : '-'),
     },
     // budgeted hours
     {
       accessorKey: 'budgeted_hours',
       header: 'Budgeted Hours',
-      cell: ({ row }) => (
-        row.original.purchase_order?.budgeted_hours
-      )
+      cell: ({ row }) => row.original.purchase_order?.budgeted_hours,
     },
     {
-      accessorKey: 'budgeted_hours',
-      header: 'Budgeted Hours',
-      cell: ({ row }) => (
-        row.original.purchase_order?.budgeted_mileage
-      )
+      accessorKey: 'budgeted_travel',
+      header: 'Budgeted Travel',
+      cell: ({ row }) => row.original.purchase_order?.budgeted_travel,
     },
     // assignment status
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => (
-        row.original.status
-      )
+      cell: ({ row }) => row.original.status ? 'OPEN' : 'CLOSED',
     },
     // date closed
     {
       accessorKey: 'date_closed',
       header: 'Date Closed',
-      cell: ({ row }) => (
-        row.original.date_closed ? dayjs(row.original.date_closed).format('DD/MM/YYYY') : '-'
-      )
+      cell: ({ row }) => (row.original.close_date ? dayjs(row.original.close_date).format('DD/MM/YYYY') : '-'),
     },
     // final invoice
     {
       accessorKey: 'final_invoice_date',
       header: 'Final Invoice',
-      cell: ({ row }) => (
-        row.original.final_invoice_date ? dayjs(row.original.final_invoice_date).format('DD/MM/YYYY') : '-'
-      )
+      cell: ({ row }) => (row.original.final_invoice_date ? dayjs(row.original.final_invoice_date).format('DD/MM/YYYY') : '-'),
     },
     // original job number
     {
       accessorKey: 'original_job_number',
       header: 'Original Job Number',
-      cell: ({ row }) => (
-        row.original.original_job_number ?? '-'
-      )
+      cell: ({ row }) => row.original.previous_reference_number ?? '-',
     },
 
     // new job number
-    {
-      accessorKey: 'new_job_number',
-      header: 'New Job Number',
-      cell: ({ row }) => (
-        row.original.new_job_number ?? '-'
-      )
-    },
+    // {
+    //   accessorKey: 'new_job_number',
+    //   header: 'New Job Number',
+    //   cell: ({ row }) => row.original.new_job_number ?? '-',
+    // },
 
     // project type
     {
       accessorKey: 'project_type',
       header: 'Project Type',
-      cell: ({ row }) => (
-        row.original.project?.project_type?.name ?? '-'
-      )
+      cell: ({ row }) => row.original.project?.project_type?.name ?? '-',
     },
 
     {
       accessorKey: 'actions',
-      header: () => (
-        <TableCellWrapper last>
-          Actions
-        </TableCellWrapper>
-      ),
+      header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
       cell: ({ row }) => {
         return (
           <TableCellWrapper last>
-            <AssignmentActions assignment={row.original}/>
+            <AssignmentActions assignment={row.original} />
           </TableCellWrapper>
         );
-      }
-    }
+      },
+    },
   ];
 
   const table = useTable('/api/v1/assignments', {
@@ -439,7 +405,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       return true;
     }),
     defaultParams: {
-      'include': 'project.client,assignment_type,vendor,sub_vendor,operation_org,org,inspector,purchase_order',
+      'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,inspector,purchase_order',
       'sort': 'created_at',
       'filter[project_id]': String(options.project?.id ?? '')
     }

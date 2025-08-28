@@ -11,7 +11,7 @@ class StoreAssignmentInspectorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreAssignmentInspectorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => ['required', 'exists:users,id'],
+            'assignment_id' => ['required', 'exists:assignments,id'],
+            'assignment_type_id' => ['required', 'exists:assignment_types,id'],
         ];
     }
 }

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->group(function () {
     Route::get('menus', [MenuController::class, 'index']);
 
-    Route::get('projects/next-project-number', [ProjectController::class, 'nextProjectNumber']);
+    Route::get('assignments/next-assignment-number', [AssignmentController::class, 'next_assignment_number']);
 
     Route::apiResources([
         'purchase-orders' => \App\Http\Controllers\APIv1\PurchaseOrderController::class,
@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
         'inspectors' => InspectorController::class,
         'assignments' => AssignmentController::class,
         'assignment-types' => \App\Http\Controllers\APIv1\AssignmentTypeController::class,
+        'assignment-inspectors' => \App\Http\Controllers\APIv1\AssignmentInspectorController::class,
         'timesheets' => \App\Http\Controllers\APIv1\TimesheetController::class,
         'timesheet-reports' => \App\Http\Controllers\APIv1\TimesheetReportController::class,
         'timesheet-items' => \App\Http\Controllers\APIv1\TimesheetItemController::class,

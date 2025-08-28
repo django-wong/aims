@@ -14,14 +14,13 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm } from '@/hooks/use-form';
-import { Loader2Icon, RefreshCcw } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import { DialogFormProps, Project } from '@/types';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { ClientSelect } from '@/components/client-select';
 import { ProjectTypeSelect } from '@/components/project-type-select';
-import axios from 'axios';
 
 function number() {
   return zod.coerce.number().min(0);
@@ -105,15 +104,6 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 />
                 <FormField
                   control={form.control}
-                  render={({field}) => (
-                    <VFormField required label={'Project Number'} className={'col-span-12 sm:col-span-12'}>
-                      <ProjectNumber value={field.value} onValueChange={field.onChange} allowGenerate={!!(props.value?.id || true)}/>
-                    </VFormField>
-                  )}
-                  name={'number'}
-                />
-                <FormField
-                  control={form.control}
                   render={({field}) => {
                     return <VFormField required label={'Project Type'} className={'col-span-12 sm:col-span-6'}>
                       <ProjectTypeSelect onValueChane={field.onChange} value={field.value}/>
@@ -147,44 +137,5 @@ export function ProjectForm(props: DialogFormProps<Project>) {
         </DialogContent>
       </Dialog>
     </>
-  );
-}
-
-
-interface ProjectNumberProps {
-  value: string,
-  onValueChange: (value: string) => void
-  allowGenerate?: boolean
-}
-function ProjectNumber({value, onValueChange, ...props}: ProjectNumberProps) {
-  const generate = useCallback(() => {
-    axios.get('/api/v1/projects/next-project-number').then(response => {
-      if (response.data) {
-        onValueChange(response.data.data);
-      }
-    })
-  }, [onValueChange]);
-
-  useEffect(() => {
-    console.info('use effect', value);
-    if (!value && props.allowGenerate) {
-      generate();
-    }
-  }, [props.allowGenerate, value, generate]);
-
-  return (
-    <div className={'flex items-center gap-2'}>
-      <Input
-        className={'flex-1'}
-        placeholder={'YYYY-AUS-1234'}
-        value={value}
-        onChange={(event) => {
-          onValueChange(event.target.value);
-        }}
-      />
-      <Button variant={'outline'} onClick={generate} disabled={!props.allowGenerate}>
-        <RefreshCcw/>
-      </Button>
-    </div>
   );
 }

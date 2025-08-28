@@ -24,10 +24,11 @@ import { useEffect, useState } from 'react';
 
 const schema = z.object({
   business_name: z.string().min(1, 'Business name is required'),
-  group: z.string().optional().nullable(),
+  client_group: z.string().optional().nullable(),
+  code: z.string().optional().nullable(),
   coordinator_id: z.number().nullable().optional(),
   reviewer_id: z.number().nullable().optional(),
-  logo_url: z.string().optional(),
+  logo_url: z.string().optional().nullable(),
   logo: z.file().optional(),
   address: z.null().or(
     addressSchema.nullable().optional()
@@ -133,7 +134,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                   name={'business_name'}
                 />
               </div>
-              <div className={'col-span-12'}>
+              <div className={'col-span-6'}>
                 <FormField
                   render={({ field }) => {
                     return <VFormField required label={'Group'}>
@@ -142,7 +143,19 @@ export function ClientForm(props: DialogFormProps<Client>) {
                       }}/>
                     </VFormField>
                   }}
-                  name={'group'}
+                  name={'client_group'}
+                />
+              </div>
+              <div className={'col-span-6'}>
+                <FormField
+                  render={({ field }) => {
+                    return <VFormField required label={'Code'}>
+                      <Input value={field.value} onChange={(event) => {
+                        field.onChange(event);
+                      }}/>
+                    </VFormField>
+                  }}
+                  name={'code'}
                 />
               </div>
               <div className={'col-span-6'}>
