@@ -1,13 +1,13 @@
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { Button } from '@/components/ui/button';
 import Layout from '@/layouts/app-layout';
-import { BreadcrumbItem, User, Skill, DialogFormProps, UserSkill } from '@/types';
+import { BreadcrumbItem, User, DialogFormProps, UserSkill } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Trash, UserRoundPen, Plus, MoreHorizontal, Trash2Icon } from 'lucide-react';
+import { Trash, UserRoundPen, Plus, Trash2Icon } from 'lucide-react';
 import { InspectorForm } from '@/pages/inspectors';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Info, InfoHead, InfoLine } from '@/components/info';
+import { Info, InfoHead, InfoLine, InfoLineValue } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import * as React from 'react';
 import { useState } from 'react';
@@ -18,8 +18,6 @@ import { Input } from '@/components/ui/input';
 import { useDebouncer } from '@/hooks/use-debounced';
 import { ColumnDef } from '@tanstack/react-table';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { useReactiveForm } from '@/hooks/use-form';
@@ -184,82 +182,71 @@ export default function EditPage(props: InspectorEditProps) {
       }
       breadcrumbs={[...breadcrumbs, { title: props.inspector.name, href: '.' }]}
     >
-      <Head title={props.inspector.name}/>
+      <Head title={props.inspector.name} />
       <TwoColumnLayout73
-          left={
-            <Tabs value={hash} onValueChange={setHash}>
-              <TabsList className={'mb-4'}>
-                <TabsTrigger value={'skills'}>Skills</TabsTrigger>
-                <TabsTrigger value={'certificates'}>Certificates</TabsTrigger>
-              </TabsList>
-              <TabsContent value={'skills'}>
-                <UserSkills inspector={props.inspector} />
-              </TabsContent>
-              <TabsContent value={'certificates'}>
-                <UserCertificates inspector={props.inspector}/>
-              </TabsContent>
-            </Tabs>
-          }
-          right={
-            <Info>
-              <InfoHead>Inspector Profile</InfoHead>
-              <div>
-                <InfoLine label={'Name'} icon={'user'}>
-                  {props.inspector.name}
-                </InfoLine>
-                <InfoLine label={'Email'} icon={'mail'}>
-                  {props.inspector.email}
-                </InfoLine>
-                <InfoLine label={'Initials'} icon={'type'}>
-                  {props.inspector.inspector_profile?.initials ?? 'N/A'}
-                </InfoLine>
-                <InfoLine label={'Assigned ID'} icon={'id-card'}>
-                  {props.inspector.inspector_profile?.assigned_identifier ?? 'N/A'}
-                </InfoLine>
-                <InfoLine label={'Address'} icon={'map-pin'}>
-                  {props.inspector.address?.full_address ?? 'N/A'}
-                </InfoLine>
-                <InfoLine label={'Hourly Rate'} icon={'dollar-sign'}>
-                  {props.inspector.inspector_profile?.hourly_rate != null
-                    ? `$${props.inspector.inspector_profile.hourly_rate}`
-                    : 'N/A'}
-                </InfoLine>
-                <InfoLine label={'Travel Rate'} icon={'car'}>
-                  {props.inspector.inspector_profile?.travel_rate != null
-                    ? `$${props.inspector.inspector_profile.travel_rate}`
-                    : 'N/A'}
-                </InfoLine>
-                {(props.inspector.inspector_profile?.new_hourly_rate != null ||
-                  props.inspector.inspector_profile?.new_travel_rate != null ||
-                  props.inspector.inspector_profile?.new_rate_effective_date != null) && (
-                  <>
-                    <InfoLine label={'New Hourly Rate'} icon={'trending-up'}>
-                      {props.inspector.inspector_profile?.new_hourly_rate != null
-                        ? `$${props.inspector.inspector_profile.new_hourly_rate}`
-                        : 'N/A'}
-                    </InfoLine>
-                    <InfoLine label={'New Travel Rate'} icon={'trending-up'}>
-                      {props.inspector.inspector_profile?.new_travel_rate != null
-                        ? `$${props.inspector.inspector_profile.new_travel_rate}`
-                        : 'N/A'}
-                    </InfoLine>
-                    <InfoLine label={'Effective Date'} icon={'calendar'}>
-                      {props.inspector.inspector_profile?.new_rate_effective_date ?? 'N/A'}
-                    </InfoLine>
-                  </>
-                )}
-                <InfoLine label={'On Skills Matrix'} icon={'check-circle'}>
-                  {props.inspector.inspector_profile?.include_on_skills_matrix ? 'Yes' : 'No'}
-                </InfoLine>
-                {props.inspector.inspector_profile?.notes && (
-                  <InfoLine label={'Notes'} icon={'sticky-note'}>
-                    {props.inspector.inspector_profile.notes}
+        left={
+          <Tabs value={hash} onValueChange={setHash}>
+            <TabsList className={'mb-4'}>
+              <TabsTrigger value={'skills'}>Skills</TabsTrigger>
+              <TabsTrigger value={'certificates'}>Certificates</TabsTrigger>
+            </TabsList>
+            <TabsContent value={'skills'}>
+              <UserSkills inspector={props.inspector} />
+            </TabsContent>
+            <TabsContent value={'certificates'}>
+              <UserCertificates inspector={props.inspector} />
+            </TabsContent>
+          </Tabs>
+        }
+        right={
+          <Info>
+            <InfoHead>Inspector Profile</InfoHead>
+            <div>
+              <InfoLine label={'Name'} icon={'user'}>
+                {props.inspector.name}
+              </InfoLine>
+              <InfoLine label={'Email'} icon={'mail'}>
+                {props.inspector.email}
+              </InfoLine>
+              <InfoLine label={'Initials'} icon={'type'}>
+                {props.inspector.inspector_profile?.initials ?? 'N/A'}
+              </InfoLine>
+              <InfoLine label={'Assigned ID'} icon={'id-card'}>
+                {props.inspector.inspector_profile?.assigned_identifier ?? 'N/A'}
+              </InfoLine>
+              <InfoLine label={'Address'} icon={'map-pin'}>
+                {props.inspector.address?.full_address ?? 'N/A'}
+              </InfoLine>
+              <InfoLine label={'Hourly Rate'} icon={'dollar-sign'}>
+                {props.inspector.inspector_profile?.hourly_rate != null ? `$${props.inspector.inspector_profile.hourly_rate}` : 'N/A'}
+              </InfoLine>
+              <InfoLine label={'Travel Rate'} icon={'car'}>
+                {props.inspector.inspector_profile?.travel_rate != null ? `$${props.inspector.inspector_profile.travel_rate}` : 'N/A'}
+              </InfoLine>
+              {(props.inspector.inspector_profile?.new_hourly_rate != null ||
+                props.inspector.inspector_profile?.new_travel_rate != null ||
+                props.inspector.inspector_profile?.new_rate_effective_date != null) && (
+                <>
+                  <InfoLine label={'New Hourly Rate'} icon={'trending-up'}>
+                    {props.inspector.inspector_profile?.new_hourly_rate != null ? `$${props.inspector.inspector_profile.new_hourly_rate}` : 'N/A'}
                   </InfoLine>
-                )}
-              </div>
-            </Info>
-          }
-        />
+                  <InfoLine label={'New Travel Rate'} icon={'trending-up'}>
+                    {props.inspector.inspector_profile?.new_travel_rate != null ? `$${props.inspector.inspector_profile.new_travel_rate}` : 'N/A'}
+                  </InfoLine>
+                  <InfoLine label={'Effective Date'} icon={'calendar'}>
+                    {props.inspector.inspector_profile?.new_rate_effective_date ?? 'N/A'}
+                  </InfoLine>
+                </>
+              )}
+              <InfoLine label={'On Skills Matrix'} icon={'check-circle'}>
+                {props.inspector.inspector_profile?.include_on_skills_matrix ? 'Yes' : 'No'}
+              </InfoLine>
+            </div>
+            <InfoHead>Notes</InfoHead>
+            <InfoLineValue>{props.inspector.inspector_profile?.notes}</InfoLineValue>
+          </Info>
+        }
+      />
     </Layout>
   );
 }

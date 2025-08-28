@@ -8,8 +8,9 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Project } from '@/types';
 import { PropsWithChildren } from 'react';
 import { useAssignmentsTable } from '@/pages/assignments';
-import { ContactIcon, InfoIcon, MessagesSquareIcon } from 'lucide-react';
+import { ContactIcon, InfoIcon, MessagesSquareIcon, TargetIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
+import { HideFromClient } from '@/components/hide-from-client';
 
 export default function ProjectEdit(props: { project: Project }) {
 
@@ -46,6 +47,12 @@ export default function ProjectEdit(props: { project: Project }) {
                 <ContactIcon/>
                 <span className={'hidden lg:inline'}>Assignments</span>
               </TabsTrigger>
+              <HideFromClient>
+                <TabsTrigger value={'nois'}>
+                  <TargetIcon/>
+                  <span className={'hidden lg:inline'}>NOIs</span>
+                </TabsTrigger>
+              </HideFromClient>
               <TabsTrigger value={'comments'}>
                 <MessagesSquareIcon/>
                 <span className={'hidden lg:inline'}>Comments & Attachments</span>
@@ -58,6 +65,11 @@ export default function ProjectEdit(props: { project: Project }) {
             <TabsContent value={'comments'}>
               <Comments commentableType={'Project'} commentableId={props.project.id} />
             </TabsContent>
+            <HideFromClient>
+              <TabsContent value={'nois'}>
+                TODO: Notification of inspections
+              </TabsContent>
+            </HideFromClient>
           </Tabs>
         }
         right={

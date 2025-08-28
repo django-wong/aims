@@ -13,6 +13,7 @@ import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { Timesheets } from '@/pages/assignments/timesheets';
 import { Comments } from '@/components/comments';
 import { useLocationHash } from '@/hooks/use-location-hash';
+import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -35,8 +36,15 @@ export default function Page() {
   } = usePage<SharedData>();
 
   return (
-    <AppLayout breadcrumbs={breadcrumbs} pageAction={<Skeleton className="h-8 w-[60px] rounded-full" />}>
-      {user?.user_role?.role === 6 ? <ClientDasboard /> : <GeneralDashboard />}
+    <AppLayout
+      breadcrumbs={breadcrumbs}
+      pageAction={
+        <HideFromClient>
+          <Skeleton className="h-8 w-[60px] rounded-full" />
+        </HideFromClient>
+      }>
+      <HideFromClient><GeneralDashboard /></HideFromClient>
+      <VisibleToClient><ClientDasboard /></VisibleToClient>
     </AppLayout>
   );
 }
@@ -67,7 +75,7 @@ function ClientDasboard() {
         <TabsList className={'mb-4'}>
           <TabsTrigger value={'timesheets'}>
             <ClockFadingIcon/>
-            <span className={'hidden sm:inline'}>Timesheet</span>
+            <span className={'hidden sm:inline'}>Pending Timesheet</span>
           </TabsTrigger>
           <TabsTrigger value={'inspector-report'}>
             <Newspaper/>
@@ -83,7 +91,7 @@ function ClientDasboard() {
             <div className={'overflow-hidden'}>
               <Timesheets
                 filters={{
-                  'filter[status]': '> 2'
+                  'filter[status]': '= 3'
                 }}
               />
             </div>

@@ -8,6 +8,7 @@ use App\Http\Requests\APIv1\Assignments\UpdateRequest;
 use App\Models\Assignment;
 use App\Models\Org;
 use App\Notifications\NewAssignmentIssued;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -78,9 +79,13 @@ class AssignmentController extends Controller
     {
         Gate::authorize('viewAny', [Assignment::class]);
 
-        return response()->json(
-            $this->getQueryBuilder()->visible()->paginate()
-        );
+        return $this->getQueryBuilder()->tap(function (Builder $query) {
+            if (auth()->user()->isRole(\App\Models\UserRole::CLIENT)) {
+                $query->whereHas('project', function ($query) {
+                    $query->where('client_id', auth()->user()->client?->id);
+                });
+            }
+        })->visible()->paginate();
     }
 
     /**

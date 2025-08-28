@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Projects\StoreRequest;
 use App\Models\Project;
+use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -53,7 +54,11 @@ class ProjectController extends Controller
     {
         Gate::authorize('viewAny', Project::class);
 
-        return $this->getQueryBuilder()->scoped()->paginate();
+        return $this->getQueryBuilder()->tap(function (Builder $query) {
+            if (auth()->user()->isRole(UserRole::CLIENT)) {
+                $query->where('client_id', auth()->user()->client?->id);
+            }
+        })->scoped()->paginate();
     }
 
     /**

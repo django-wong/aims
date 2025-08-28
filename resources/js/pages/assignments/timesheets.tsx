@@ -54,8 +54,17 @@ export function Timesheets(props: TimesheetsProps) {
     },
     {
       accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <Badge variant={'secondary'}>
+          {describe_timesheet_status(row.original.status)}
+        </Badge>
+      )
+    },
+    {
+      accessorKey: 'status',
       header: () => {
-        return <div className={'flex items-center justify-end'}>Status / Actions</div>;
+        return <div className={'flex items-center justify-end'}>Actions</div>;
       },
       cell: ({ row }) => (
         <div className={'flex items-center justify-end'}>
@@ -139,10 +148,9 @@ function TimesheetActions(props: TimesheetActionsProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild onClick={(event) => event.stopPropagation()} className={'cursor-pointer'}>
-          <Badge variant={'secondary'}>
-            {describe_timesheet_status(props.timesheet.status)}
+          <Button variant={'secondary'}>
             <EllipsisVerticalIcon />
-          </Badge>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align={'end'} side={'bottom'}>
           <DropdownMenuLabel>

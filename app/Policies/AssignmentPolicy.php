@@ -21,7 +21,8 @@ class AssignmentPolicy
             UserRole::ADMIN,
             UserRole::STAFF,
             UserRole::FINANCE,
-            UserRole::INSPECTOR
+            UserRole::INSPECTOR,
+            UserRole::CLIENT
         ]);
     }
 

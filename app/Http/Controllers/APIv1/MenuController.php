@@ -55,12 +55,14 @@ class MenuController
                         'url' => route('purchase-orders'),
                         'component' => 'purchase-orders'
                     ],
+                ])),
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::INSPECTOR], [
                     'assignments' => [
                         'name' => 'Assignments',
                         'icon' => 'contact',
                         'url' => route('assignments'),
                         'component' => 'assignments'
-                    ],
+                    ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM], [
                     'invoices' => [
