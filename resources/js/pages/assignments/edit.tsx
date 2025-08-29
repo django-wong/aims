@@ -18,6 +18,7 @@ import { NotificationOfInspection } from '@/pages/assignments/notification-of-in
 import { AssignmentProvider } from '@/providers/assignment-provider';
 import { AssignmentInspectors } from '@/pages/assignments/assignment-inspectors';
 import { AssignmentReports } from '@/pages/assignments/assignment-reports';
+import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
 
 interface EditProps {
   assignment: Assignment;
@@ -81,6 +82,10 @@ export default function Edit(props: EditProps) {
                   <ClockFadingIcon/>
                   <span className={'hidden sm:inline'}>Timesheet</span>
                 </TabsTrigger>
+                <TabsTrigger value={'attachments'}>
+                  <ClockFadingIcon/>
+                  <span className={'hidden sm:inline'}>Attachments</span>
+                </TabsTrigger>
                 <TabsTrigger value={'reports'}>
                   <ClockFadingIcon/>
                   <span className={'hidden sm:inline'}>Reports</span>
@@ -94,6 +99,9 @@ export default function Edit(props: EditProps) {
               </TabsList>
               <TabsContent value={'overview'}>
                 <DailyUsage/>
+              </TabsContent>
+              <TabsContent value={'attachments'}>
+                <AssignmentAttachments/>
               </TabsContent>
               <TabsContent value={'inspectors'}>
                 <AssignmentInspectors/>
