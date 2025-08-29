@@ -17,14 +17,13 @@ class TimesheetController extends Controller
     {
         $timesheet = Timesheet::query()->with('assignment')->findOrFail($id);
 
-        Gate::authorize('inspect', $timesheet->assignment);
+        Gate::authorize('update', $timesheet);
 
         $status = Timesheet\TimesheetStatus::make($timesheet);
 
         if ($status->is(Timesheet\Draft::class)) {
             $timesheet->signed_off_at = Carbon::now();
-            $status->next()
-                ?->transition($timesheet);
+            $status->next()?->transition($timesheet);
         }
 
         return [
@@ -36,6 +35,7 @@ class TimesheetController extends Controller
     protected function allowedIncludes()
     {
         return [
+            'user',
             'assignment',
             'assignment.project',
             'assignment.project.client',

@@ -22,13 +22,10 @@ class TimesheetItemController extends Controller
                 $assignment = Assignment::query()->findOrFail($value);
                 Gate::authorize('view', $assignment);
                 $query->whereIn('timesheet_id', function ($subQuery) use ($value) {
-                    $subQuery->select('id')
-                        ->from('timesheets')
-                        ->where('assignment_id', $value);
+                    $subQuery->select('id')->from('timesheets')->where('assignment_id', $value);
                 });
             }),
             AllowedFilter::callback('timesheet_id', function (Builder $query, $value) {
-                Gate::authorize('view', Timesheet::query()->findOrFail($value));
                 $query->where('timesheet_id', $value);
             }),
         ];
@@ -62,26 +59,39 @@ class TimesheetItemController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @throws \Throwable
      */
     public function store(StoreRequest $request)
     {
-        $po = $request->timesheet()->assignment->purchase_order;
-        $budget = $po->budgets()->where('assignment_type_id', $request->timesheet()->assignment->assignment_type_id)->first();
+        /**
+         * @var \App\Models\AssignmentInspector|null $assignment_inspector
+         */
+        $assignment_inspector = $request->timesheet()->assignment->assignment_inspectors()
+            ->firstWhere(
+                'user_id', $request->validated('on_behalf_of_user_id', auth()->id())
+            );
 
-        if (empty($budget)) {
+        if (empty($assignment_inspector)) {
             return response()->json([
-                'message' => 'No budget found for this assignment type in the associated purchase order. Contact the coordinator to fix this issue.'
+                'message' => 'User is not an inspector on this assignment',
             ], 422);
         }
 
-        $record = DB::transaction(function () use ($request, $budget) {
+        if (empty($assignment_inspector->hourly_rate) || empty($assignment_inspector->travel_rate)) {
+            return response()->json([
+                'message' => 'The purchase order does not have hourly and/or travel rate set',
+            ], 422);
+        }
+
+        $record = DB::transaction(function () use ($request, $assignment_inspector) {
             $record = $request->timesheet()->timesheet_items()->create([
                 ...array_filter($request->validated(), function ($value) {
                     return $value !== null;
                 }),
-                'user_id' => $request->assignment()->inspector_id,
-                'hourly_rate' => $budget->hourly_rate,
-                'travel_rate' => $budget->travel_rate,
+                'hourly_rate' => $assignment_inspector->hourly_rate,
+                'travel_rate' => $assignment_inspector->travel_rate,
+                'user_id' => $assignment_inspector->user_id,
             ]);
 
             $request->saveAttachments($record);
@@ -111,12 +121,14 @@ class TimesheetItemController extends Controller
      */
     public function update(UpdateRequest $request, TimesheetItem $timesheet_item)
     {
-        $updated = $timesheet_item->update(
+        $timesheet_item->update(
             $request->validated()
         );
 
+        $request->saveAttachments($timesheet_item);
+
         return [
-            'message' => $updated ? 'Timesheet item updated successfully' : 'No changes made',
+            'message' => 'Timesheet item updated successfully',
             'data' => $timesheet_item->refresh()->load(['attachments'])
         ];
     }

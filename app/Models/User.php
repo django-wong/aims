@@ -99,8 +99,8 @@ class User extends Authenticatable
 
     public function assignments()
     {
-        return $this->hasMany(
-            Assignment::class, 'inspector_id', 'id'
+        return $this->hasManyThrough(
+            Assignment::class, AssignmentInspector::class, 'user_id', 'id', 'id', 'assignment_id'
         );
     }
 

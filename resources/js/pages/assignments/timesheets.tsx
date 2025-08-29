@@ -19,9 +19,10 @@ import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { Assignment, Timesheet } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { CheckIcon, EllipsisVerticalIcon, PenIcon } from 'lucide-react';
-import { useDeferredValue, useState } from 'react';
+import { startTransition, useDeferredValue, useState } from 'react';
 import axios from 'axios';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
+import { PopoverConfirm } from '@/components/popover-confirm';
 
 interface TimesheetsProps {
   assignment?: Assignment;
@@ -33,6 +34,11 @@ export function Timesheets(props: TimesheetsProps) {
   const deferred_timesheet = useDeferredValue(timesheet);
   const columns: ColumnDef<Timesheet>[] = [
     // range, hours, travel_distance, cost, status
+    {
+      accessorKey: 'inspector',
+      header: 'Inspector',
+      cell: ({ row }) => <span>{row.original.user?.name}</span>
+    },
     {
       accessorKey: 'range',
       header: 'Range (DD/MM/YYYY)',
@@ -84,10 +90,21 @@ export function Timesheets(props: TimesheetsProps) {
           'filter[assignment_id]': String(props.assignment?.id),
         } : null
       ),
+      'include': 'user',
       sort: '-start',
     },
   });
 
+  function approve() {
+    if (timesheet) {
+      axios.post(`/api/v1/timesheets/${timesheet.id}/approve`).then(() => {
+        startTransition(() => {
+          table.reload();
+          setTimesheet(null);
+        })
+      });
+    }
+  }
 
   return (
     <>
@@ -120,6 +137,7 @@ export function Timesheets(props: TimesheetsProps) {
             <DialogClose asChild>
               <Button variant={'outline'}>Close</Button>
             </DialogClose>
+            <Button onClick={approve}>Approve</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -141,11 +159,11 @@ function TimesheetActions(props: TimesheetActionsProps) {
     });
   }
 
-  function request_revise() {
-    axios.post(`/api/v1/timesheets/${props.timesheet.id}/request-revise`).then(() => {
-      table.reload();
-    });
-  }
+  // function request_revise() {
+  //   axios.post(`/api/v1/timesheets/${props.timesheet.id}/request-revise`).then(() => {
+  //     table.reload();
+  //   });
+  // }
 
   return (
     <>

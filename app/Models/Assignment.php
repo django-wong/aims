@@ -11,20 +11,19 @@ use Illuminate\Support\Facades\App;
 
 
 /**
- * @property User     $inspector
- * @property Project  $project
- * @property int      $inspector_id
- * @property int|null $operation_org_id
- * @property int      $org_id
- * @property Org      $org
- * @property Org|null $operation_org
- * @property PurchaseOrder    $purchase_order
+ * @property Project       $project
+ * @property int|null      $operation_org_id
+ * @property int           $org_id
+ * @property Org           $org
+ * @property Org|null      $operation_org
+ * @property PurchaseOrder $purchase_order
+ * @property mixed         $id
  */
 class Assignment extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets, BelongsToPurchaseOrder;
-    use BelongsToAssignmentType;
+    use BelongsToAssignmentType, HasManyAssignmentInspectors;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
@@ -52,14 +51,6 @@ class Assignment extends Model implements Commentable
 
     protected static function booted()
     {
-        static::created(function (self $assignment) {
-            if ($assignment->inspector_id) {
-                $assignment->inspector->notify(
-                    new NewAssignmentIssued($assignment)
-                );
-            }
-        });
-
         $no_self_delegate = function (self $assignment) {
             if ($assignment->operation_org_id && $this->operation_org_id === $this->org_id) {
                 throw new \Exception(
@@ -84,20 +75,17 @@ class Assignment extends Model implements Commentable
             if (is_null($id)) {
                 $id = auth()->user()->org->id;
             }
+
             $query->whereAny(
                 ['operation_org_id', 'org_id'], $id
             );
+
             if (auth()->user()->isRole(UserRole::INSPECTOR)) {
-                $query->where('inspector_id', auth()->id());
+                $query->whereHas('assignment_inspectors', function (Builder $q) {;
+                    $q->where('user_id', auth()->user()->id);
+                });
             }
         });
-    }
-
-    public function inspector(): BelongsTo
-    {
-        return $this->belongsTo(
-            User::class, 'inspector_id'
-        );
     }
 
     public function sub_vendor(): BelongsTo

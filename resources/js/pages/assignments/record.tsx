@@ -88,7 +88,6 @@ export default function Record(props: RecordProps) {
                       <InfoLine label={'Assignment Type'}>
                         <Badge>{props.assignment.assignment_type?.name}</Badge>
                       </InfoLine>
-                      <InfoLine label={'Inspector'}>{props.assignment.inspector?.name}</InfoLine>
                       <InfoLine label={'Vendor'}>{props.assignment.vendor?.name}</InfoLine>
                       {props.assignment.sub_vendor && <InfoLine label={'Sub Vendor'}>{props.assignment.sub_vendor?.name}</InfoLine>}
                       <InfoLine label={'Report Required'}>

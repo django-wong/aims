@@ -39,7 +39,7 @@ class NewAssignmentIssued extends Notification
         $link = URL::signedRoute(
             'assignments.record-timesheet', [
                 'id' => $this->assignment->id,
-                'user' => $this->assignment->inspector_id,
+                'user' => $notifiable->id,
             ]
         );
 

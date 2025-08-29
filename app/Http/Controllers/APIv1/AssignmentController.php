@@ -8,8 +8,11 @@ use App\Http\Requests\APIv1\Assignments\UpdateRequest;
 use App\Models\Assignment;
 use App\Models\Org;
 use App\Models\Project;
+use App\Models\Timesheet;
+use App\Models\TimesheetReport;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -18,24 +21,24 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class AssignmentController extends Controller
 {
 
-    public function link(Assignment $assignment)
-    {
-        Gate::authorize('update', $assignment);
-
-        return [
-            'data' => URL::signedRoute(
-                'assignments.record-timesheet', [
-                    'id' => $assignment->id,
-                    'user' => $assignment->inspector_id,
-                ]
-            )
-        ];
-    }
+    // public function link(Assignment $assignment)
+    // {
+    //     Gate::authorize('update', $assignment);
+    //
+    //     return [
+    //         'data' => URL::signedRoute(
+    //             'assignments.record-timesheet', [
+    //                 'id' => $assignment->id,
+    //                 'user' => $assignment->inspector_id,
+    //             ]
+    //         )
+    //     ];
+    // }
 
     protected function allowedIncludes()
     {
         return [
-            'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type'
+            'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type'
         ];
     }
 
@@ -64,9 +67,11 @@ class AssignmentController extends Controller
 
         Gate::allows('update', $assignment);
 
-        $assignment->inspector->notify(
-            new NewAssignmentIssued($assignment)
-        );
+        $assignment->assignment_inspectors()->each(function ($inspector) use ($assignment) {
+            $inspector->notify(
+                new NewAssignmentIssued($assignment)
+            );
+        });
 
         return response()->json([
             'message' => 'Inspector notified successfully.',
@@ -100,7 +105,7 @@ class AssignmentController extends Controller
 
         return response()->json([
             'data' => $assignment->load(
-                'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org'
+                'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org'
             ),
         ]);
     }
@@ -123,7 +128,7 @@ class AssignmentController extends Controller
         return [
             'message' => 'Assignment updated successfully.',
             'data' => $assignment->load(
-                'project', 'assignment_type', 'inspector', 'vendor', 'sub_vendor', 'operation_org'
+                'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org'
             ),
         ];
     }
@@ -171,5 +176,23 @@ class AssignmentController extends Controller
             'data' => Assignment::nextAssignmentNumber(),
             'message' => 'Next assignment number retrieved successfully.',
         ]);
+    }
+
+    public function timesheet_reports(Assignment $assignment)
+    {
+        Gate::authorize('view', $assignment);
+
+        $query = TimesheetReport::query()->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
+            $query->select('id')
+                ->from('timesheets')
+                ->where('status', '>', Timesheet::DRAFT)
+                ->where('assignment_id', $assignment->id);
+        });
+
+        $query->with([
+            'attachment', 'closed_or_rev_by'
+        ]);
+
+        return $query->paginate();
     }
 }

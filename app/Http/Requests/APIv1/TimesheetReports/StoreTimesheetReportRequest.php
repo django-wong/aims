@@ -36,7 +36,15 @@ class StoreTimesheetReportRequest extends FormRequest
         return [
             'timesheet_id' => ['required', 'exists:timesheets,id'],
             'type' => ['required', 'string'],
-            'attachment' => ['file', 'max:10240']
+            'attachment' => ['file', 'max:10240', 'required'],
+            'doc_no' => ['nullable', 'string'],
+            'rev' => ['nullable', 'string'],
+            'visit_date' => ['nullable', 'date'],
+            'report_no' => ['nullable', 'string'],
+            'vendor_id' => ['nullable', 'exists:vendors,id'],
+            'raised_by' => ['nullable', 'string'],
+            'rev_date' => ['nullable', 'date'],
+            'is_closed' => ['nullable', 'boolean'],
         ];
     }
 }

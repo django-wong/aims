@@ -5,12 +5,12 @@ import { useTable } from '@/hooks/use-table';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 import { Assignment, Attachment, Timesheet, TimesheetItem, TimesheetReport } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, FolderOpenIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import React, { ComponentProps } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 import axios from 'axios';
-import { humanFileSize } from '@/lib/utils';
+import { cn, humanFileSize } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
@@ -22,10 +22,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTimesheet } from '@/providers/timesheet-provider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tab } from '@headlessui/react';
-import { useQueryParam } from '@/hooks/use-query-param';
-import { has } from 'lodash';
+import { TimesheetItemProvider } from '@/providers/timesheet-item-provider';
+import { TimesheetItemAttachments } from '@/pages/timesheets/timesheet-item-attachments';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -35,8 +33,6 @@ interface TimesheetItemsProps {
 }
 
 export function TimesheetItems(props: TimesheetItemsProps) {
-  const [hash, setHash] = useQueryParam('timesheet-items-tab', 'timesheet-items');
-
   const columns: ColumnDef<TimesheetItem>[] = [
     {
       accessorKey: 'date',
@@ -92,9 +88,15 @@ export function TimesheetItems(props: TimesheetItemsProps) {
       accessorKey: 'attachments',
       header: 'Attachments',
       cell: ({ row }) => (
-        <>
-          {row.original.attachments_count}
-        </>
+        <div className={'flex items-center gap-1 justify-start'}>
+          <TimesheetItemProvider value={row.original}>
+            <TimesheetItemAttachments>
+              <Button variant={'secondary'} size={'sm'}>
+                <FolderOpenIcon/> <span>({row.original.attachments_count})</span>
+              </Button>
+            </TimesheetItemAttachments>
+          </TimesheetItemProvider>
+        </div>
       ),
     }
   ];
@@ -135,16 +137,6 @@ export function TimesheetItems(props: TimesheetItemsProps) {
 
   return (
     <>
-      {/*<Tabs value={hash} onValueChange={setHash}>*/}
-      {/*  <TabsList>*/}
-      {/*    <TabsTrigger value={'timesheet-items'}>Timesheet Items</TabsTrigger>*/}
-      {/*    <TabsTrigger value={'reports'}>Report</TabsTrigger>*/}
-      {/*  </TabsList>*/}
-      {/*  <TabsContent value={'timesheet-items'}>*/}
-      {/*  </TabsContent>*/}
-      {/*  <TabsContent value={'reports'}>*/}
-      {/*  </TabsContent>*/}
-      {/*</Tabs>*/}
       <DataTable {...props.datatable} table={table} pagination={false} />
       <div>
         <Accordion type={'multiple'} className={'w-full'} defaultValue={['inspection-report']}>
@@ -262,15 +254,17 @@ function TimesheetReports(props: TimesheetReportsProps) {
               />
             ))}
             {
-              timesheet?.status > 0 ? null : (
+              timesheet?.status && (timesheet?.status > 0) ? null : (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <label className={'w-32 bg-secondary aspect-[3/3] rounded-lg border-dashed border flex flex-col items-center justify-center hover:bg-background cursor-pointer'}>
-                      <div>
-                        <PlusIcon size={32}/>
-                      </div>
-                      <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
-                    </label>
+                    <AttachmentRoot className={'w-32 bg-secondary/20 aspect-[3/3] border-dashed flex flex-col items-center justify-center hover:bg-background'}>
+                      <label>
+                        <div>
+                          <PlusIcon size={32}/>
+                        </div>
+                        <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
+                      </label>
+                    </AttachmentRoot>
                   </TooltipTrigger>
                   <TooltipContent>
                     Upload .xlsx .pdf .docs or image files.
@@ -292,7 +286,7 @@ interface AttachmentItemProps {
 }
 
 export function AttachmentItem(props: AttachmentItemProps) {
-  return <div className={'w-32 aspect-[3/3] rounded-lg border flex flex-col hover:bg-accent cursor-pointer'} onClick={() => {window.open(route('attachments.download', { id: props.attachment?.id }))}}>
+  return <AttachmentRoot onClick={() => {window.open(route('attachments.download', { id: props.attachment?.id }))}}>
     <div className={'flex-grow flex items-center justify-center relative'}>
       {
         props.children ?? (<FileTextIcon/>)
@@ -302,12 +296,16 @@ export function AttachmentItem(props: AttachmentItemProps) {
       </div>
     </div>
     <div className={'flex gap-2 p-2 bg-muted/50 border-t'}>
-      <span className={'flex-grow line-clamp-1'}>
+      <span className={'flex-grow line-clamp-1 truncate'}>
         { props.attachment?.name ?? 'No file name' }
       </span>
-      <span className={'shrink-0'}>
-        { humanFileSize(props.attachment?.size ?? 0) }
-      </span>
     </div>
+  </AttachmentRoot>;
+
+}
+
+export function AttachmentRoot(props: React.ComponentProps<'div'>) {
+  return <div {...props} className={cn('w-48 h-32 rounded-lg border flex flex-col hover:bg-accent cursor-pointer', props.className)}>
+    {props.children}
   </div>;
 }

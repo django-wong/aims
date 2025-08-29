@@ -196,14 +196,16 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
 }
 
 export interface Assignment extends BaseModel {
+  reference_number: string | null;
+  previous_reference_number: string | null;
+
   org_id: number;
   org?: Org;
   operation_org_id: number | null;
   operation_org?: Org;
-  assignment_type_id: number;
-  assignment_type?: AssignmentType;
-  inspector_id: number;
-  inspector?: User;
+
+  assignment_inspectors?: AssignmentInspector[];
+
   project_id: number;
   project?: Project;
   purchase_order_id: number | null;
@@ -216,6 +218,10 @@ export interface Assignment extends BaseModel {
   description: string | null;
   notes: string | null;
   timesheets?: Timesheet[];
+
+  skill_id: number | null;
+  skill?: Skill;
+  i_e_a: string | null;
 
   // Visit information
   first_visit_date: string | null;
@@ -332,6 +338,10 @@ export interface Timesheet extends BaseModel {
   assignment_id: number;
   assignment?: Assignment;
 
+  // The inspector
+  user_id: number;
+  user?: User;
+
   start: string // YYYY-MM-DD
   end: string; // YYYY-MM-DD
 
@@ -347,6 +357,16 @@ export interface TimesheetReport extends BaseModel {
   type: string;
   is_closed: boolean;
   attachment?: Attachment
+  doc_no: string|null;
+  rev: string|null;
+  visit_date: string|null;
+  report_no: string|null;
+  vendor_id: number|null;
+  raised_by: string;
+  rev_date: string|null;
+  closed_or_rev_by_id: number|null;
+  closed_or_rev_by?: User|null;
+  closed_date: string|null;
 }
 
 export interface TimesheetItem extends BaseModel {
@@ -412,4 +432,16 @@ export interface UserSkill extends BaseModel {
   skill_id: number;
   skill?: Skill;
   user?: User
+}
+
+export interface AssignmentInspector extends BaseModel {
+  assignment_id: number;
+  assignment?: Assignment;
+  user_id: number;
+  user?: User;
+  assignment_type_id: number;
+  assignment_type?: AssignmentType;
+  hourly_rate: number;
+  travel_rate: number;
+  notes: string | null;
 }

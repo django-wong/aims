@@ -40,7 +40,6 @@ const timesheetItemSchema = z.object({
   days: number,
   overnights: number,
   travel_distance: number,
-  travel_rate: number,
 
   hotel: number,
   rail_or_airfare: number,
@@ -109,7 +108,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                                   if (props.timesheet) {
                                     const start = dayjs(props.timesheet.start);
                                     const end = dayjs(props.timesheet.end);
-                                    return start.isAfter(date) || end.isBefore(date);
+                                    return start.isAfter(date, 'day') || end.isBefore(date, 'day');
                                   }
                                   return false;
                                 },
@@ -205,34 +204,19 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                     name={'report_hours'}
                   />
                 </div>
-                <div className={'col-span-12 md:col-span-8'}>
+                <div className={'col-span-12 md:col-span-12'}>
                   <FormField
                     control={form.control}
                     render={({ field }) => {
                       return (
                         <>
-                          <VFormField label={'Mileage'}>
-                            <Input placeholder={'KM/Mileage'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                          <VFormField label={'Travel Distance'}>
+                            <Input placeholder={'KM/Mileage'} step={10} min={0} type={'number'} value={field.value} onChange={field.onChange} />
                           </VFormField>
                         </>
                       );
                     }}
                     name={'travel_distance'}
-                  />
-                </div>
-                <div className={'col-span-12 md:col-span-4'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <>
-                          <VFormField label={'Travel Rate'}>
-                            <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                          </VFormField>
-                        </>
-                      );
-                    }}
-                    name={'travel_rate'}
                   />
                 </div>
                 <div className={'col-span-12'}>

@@ -10,7 +10,7 @@ class UpdateTimesheetReportRequest extends FormRequest
 {
     public function timesheet(): Timesheet
     {
-        return $this->route('timesheetReport')->timesheet;
+        return $this->route('timesheet_report')->timesheet;
     }
 
     /**
@@ -18,7 +18,7 @@ class UpdateTimesheetReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows('inspect', $this->timesheet()->assignment);
+        return Gate::allows('update', $this->timesheet());
     }
 
     /**
@@ -29,7 +29,15 @@ class UpdateTimesheetReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachment' => ['file', 'max:10240']
+            'attachment' => ['file', 'max:10240'],
+            'doc_no' => ['nullable', 'string'],
+            'rev' => ['nullable', 'string'],
+            'visit_date' => ['nullable', 'date'],
+            'report_no' => ['nullable', 'string'],
+            'vendor_id' => ['nullable', 'exists:vendors,id'],
+            'raised_by' => ['nullable', 'string'],
+            'rev_date' => ['nullable', 'date'],
+            'is_closed' => ['nullable', 'boolean'],
         ];
     }
 }

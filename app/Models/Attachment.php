@@ -10,10 +10,13 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * @property Model $attachable
+ */
 class Attachment extends Model
 {
     /** @use HasFactory<\Database\Factories\AttachmentFactory> */
-    use HasFactory;
+    use HasFactory, DynamicPagination;
 
     protected $guarded = [
         'id',

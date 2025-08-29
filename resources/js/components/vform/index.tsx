@@ -1,6 +1,6 @@
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage, useFormField } from '@/components/ui/form';
 import { PropsWithChildren } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 interface FormFieldProps {
   label?: string | React.ReactNode;

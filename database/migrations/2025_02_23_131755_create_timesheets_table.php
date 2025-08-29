@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('timesheets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assignment_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->date('start');
             $table->date('end');
             $table->integer('hours')->default(0)->comment('Total hours worked');

@@ -48,7 +48,11 @@ class TimesheetReportController extends Controller
      */
     public function store(StoreTimesheetReportRequest $request)
     {
-        $report = TimesheetReport::query()->create($request->validated());
+        $report = TimesheetReport::query()->create([
+            ...$request->validated(),
+            'visit_date' => $request->validated('visit_date', now()),
+            'raised_by' => $request->user()->name,
+        ]);
 
         Attachment::store(
             file: $request->file('attachment'),
@@ -74,20 +78,25 @@ class TimesheetReportController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTimesheetReportRequest $request, TimesheetReport $timesheetReport)
+    public function update(UpdateTimesheetReportRequest $request, TimesheetReport $timesheet_report)
     {
-        $request->file('attachment');
-
         /**
          * @var Attachment $attachment
          */
-        $attachment = $timesheetReport->attachments()->first();
+        $attachment = $timesheet_report->attachments()->first();
 
-        $revision = $attachment->revision($request->file('attachment'));
+        if ($file = $request->file('attachment')) {
+            $attachment->revision($file);
+            $timesheet_report->closed_or_rev_by_id = $request->user()->id;
+            $timesheet_report->rev_date = now();
+            $timesheet_report->rev = $attachment->revisions()->count();
+        }
+
+        $timesheet_report->update($request->validated());
 
         return [
             'message' => 'You have successfully updated the timesheet report attachment.',
-            'data' => $timesheetReport,
+            'data' => $timesheet_report->refresh(),
         ];
     }
 

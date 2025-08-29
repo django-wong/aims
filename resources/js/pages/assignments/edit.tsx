@@ -9,8 +9,7 @@ import Layout from '@/layouts/app-layout';
 import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { AssignmentActions } from '@/pages/assignments';
-import { ChartNoAxesColumnIcon, ClockFadingIcon, MessagesSquare, Newspaper, UserRoundSearch, UserRoundSearchIcon } from 'lucide-react';
+import { ChartNoAxesColumnIcon, ClockFadingIcon, MessagesSquare, UserRoundSearchIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { Timesheets } from '@/pages/assignments/timesheets';
@@ -18,6 +17,7 @@ import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
 import { NotificationOfInspection } from '@/pages/assignments/notification-of-inspection';
 import { AssignmentProvider } from '@/providers/assignment-provider';
 import { AssignmentInspectors } from '@/pages/assignments/assignment-inspectors';
+import { AssignmentReports } from '@/pages/assignments/assignment-reports';
 
 interface EditProps {
   assignment: Assignment;
@@ -57,7 +57,7 @@ export default function Edit(props: EditProps) {
               </NotificationOfInspection>
             </VisibleToClient>
             <HideFromClient>
-              <AssignmentForm open={true} value={props.assignment} onSubmit={() => {location.reload()}}>
+              <AssignmentForm value={props.assignment} onSubmit={() => {location.reload()}}>
                 <Button>Edit</Button>
               </AssignmentForm>
             </HideFromClient>
@@ -80,6 +80,10 @@ export default function Edit(props: EditProps) {
                 <TabsTrigger value={'timesheets'}>
                   <ClockFadingIcon/>
                   <span className={'hidden sm:inline'}>Timesheet</span>
+                </TabsTrigger>
+                <TabsTrigger value={'reports'}>
+                  <ClockFadingIcon/>
+                  <span className={'hidden sm:inline'}>Reports</span>
                 </TabsTrigger>
                 <HideFromClient>
                   <TabsTrigger value={'comments'}>
@@ -106,6 +110,9 @@ export default function Edit(props: EditProps) {
                   </div>
                 </div>
               </TabsContent>
+              <TabsContent value={'reports'}>
+                <AssignmentReports/>
+              </TabsContent>
               {/*<TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>*/}
               <HideFromClient>
                 <TabsContent value={'comments'}>
@@ -121,6 +128,10 @@ export default function Edit(props: EditProps) {
             <Info>
               <InfoHead>Basic Information</InfoHead>
               <div>
+                <InfoLine icon={'shopping-bag'} label={'BIE Reference Number'}>
+                  {props.assignment.reference_number ?? 'N/A'}
+                </InfoLine>
+
                 <InfoLine icon={'shopping-bag'} label={'Purchase Order'}>
                   <Link href={`/projects/${props.assignment.project?.id || ''}`} className={'underline'}>
                     {props.assignment.purchase_order?.title ?? 'N/A'}

@@ -30,7 +30,7 @@ class Timesheet extends Model
     const INVOICED = 5;
 
     /** @use HasFactory<TimesheetFactory> */
-    use HasFactory, BelongsToAssignment, HasManyTimesheetItems;
+    use HasFactory, BelongsToAssignment, HasManyTimesheetItems, BelongsToUser;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
@@ -42,7 +42,7 @@ class Timesheet extends Model
             'date' => 'date',
             'start' => 'date',
             'end' => 'date',
-            'sign_off_at' => 'datetime',
+            'signed_off_at' => 'datetime',
             'approved_at' => 'datetime',
             'contract_holder_approved_at' => 'datetime',
             'client_approved_at' => 'datetime',

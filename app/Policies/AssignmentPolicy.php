@@ -20,9 +20,9 @@ class AssignmentPolicy
             UserRole::PM,
             UserRole::ADMIN,
             UserRole::STAFF,
+            UserRole::CLIENT,
             UserRole::FINANCE,
             UserRole::INSPECTOR,
-            UserRole::CLIENT
         ]);
     }
 
@@ -31,7 +31,7 @@ class AssignmentPolicy
      */
     public function view(User $user, Assignment $assignment): bool
     {
-        return $user->id === $assignment->inspector_id || $user->can('view', $assignment->project);
+        return $user->can('inspect', $assignment) || $user->can('view', $assignment->project);
     }
 
     /**
@@ -88,6 +88,6 @@ class AssignmentPolicy
 
     public function inspect(User $user, Assignment $assignment): bool
     {
-        return $user->id === $assignment->inspector_id;
+        return $assignment->assignment_inspectors()->where('user_id', $user->id)->exists();
     }
 }

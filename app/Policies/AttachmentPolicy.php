@@ -12,8 +12,6 @@ class AttachmentPolicy
      */
     public function view(User $user, Attachment $attachment): bool
     {
-        return $user->can(
-            'view', $attachment->attachable
-        );
+        return $user->can('view', $attachment->attachable);
     }
 }

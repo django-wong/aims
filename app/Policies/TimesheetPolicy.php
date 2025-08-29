@@ -26,10 +26,9 @@ class TimesheetPolicy
         $operation_org = $model->assignment->operation_org_id;
 
         if ($user->user_role->org_id === $org || $user->user_role->org_id === $operation_org) {
-            if ($user->isAnyRole([UserRole::ADMIN, UserRole::PM, UserRole::STAFF])) {
-                return true;
-            }
-            return $model->assignment?->inspector()->is($user) || $model->assignment->project->client->user()->is($user);
+            return $user->isAnyRole([UserRole::ADMIN, UserRole::PM, UserRole::STAFF])
+                || $user->can('inspect', $model->assignment)
+                || $model->assignment->project->client->user()->is($user);
         }
 
         return false;

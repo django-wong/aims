@@ -32,6 +32,7 @@ import { useCallback, useEffect, useState } from 'react';
 import z from 'zod';
 import { RefreshCcw } from 'lucide-react';
 import axios from 'axios';
+import { DragDropFileUpload } from '@/components/ui/drag-drop-file-upload';
 
 const schema = z.object({
   reference_number: z.string().min(1, 'Reference number is required').max(30, 'Reference number must be at most 30 characters'),
@@ -125,7 +126,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
 
   useEffect(() => {
     if (props.value) {
-      form.reset(props.value);
+      form.reset(props.value as any);
     }
   }, [props.value]);
 
@@ -420,22 +421,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     </>
                   )}
                 />
-                {/*<FormField*/}
-                {/*  name={'notes'}*/}
-                {/*  control={form.control}*/}
-                {/*  render={({ field }) => (*/}
-                {/*    <>*/}
-                {/*      <VFormField label={'Notes'} className={'col-span-12'}>*/}
-                {/*        <Textarea*/}
-                {/*          className={'bg-background min-h-36'}*/}
-                {/*          value={field.value ?? ''}*/}
-                {/*          onChange={field.onChange}*/}
-                {/*          placeholder={'Describe any notes or additional information about the assignment.'}*/}
-                {/*        />*/}
-                {/*      </VFormField>*/}
-                {/*    </>*/}
-                {/*  )}*/}
-                {/*/>*/}
+
                 <div className={'col-span-12'}>
                   <FormField
                     control={form.control}
@@ -873,7 +859,13 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   </div>
                 </div>
 
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Notes </div>
+                <div className={'col-span-12 mt-8 text-lg font-bold'}>Attachments</div>
+
+                <div className={'col-span-12'}>
+                  <DragDropFileUpload/>
+                </div>
+
+                <div className={'col-span-12 mt-8 text-lg font-bold'}>Notes</div>
 
                 <div className={'col-span-12'}>
                   <FormField

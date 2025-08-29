@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
         'users' => UserController::class,
         'contacts' => \App\Http\Controllers\APIv1\ContactController::class,
         'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
+        'attachments' => \App\Http\Controllers\APIv1\AttachmentController::class,
         'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
         'comments' => CommentController::class,
         'inspectors' => InspectorController::class,
@@ -43,7 +44,7 @@ Route::middleware('auth')->group(function () {
     // Assignments
     Route::post('assignments/{id}/notify-inspector', [AssignmentController::class, 'notify'])->name('assignments.notify_inspector');
     Route::get('assignments/{assignment}/pdf', [AssignmentController::class, 'pdf']);
-    Route::get('assignments/{assignment}/link', [AssignmentController::class, 'link']);
+    Route::get('assignments/{assignment}/timesheet-reports', [AssignmentController::class, 'timesheet_reports']);
 
     // Timesheets
     Route::post('timesheets/{id}/sign-off', [\App\Http\Controllers\APIv1\TimesheetController::class, 'signOff']);

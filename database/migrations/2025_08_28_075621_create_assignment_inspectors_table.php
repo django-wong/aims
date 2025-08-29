@@ -20,7 +20,6 @@ return new class extends Migration
             $table->timestamp('acked_at')->nullable();
             $table->longText('signature_base64')->nullable();
 
-            // Copy on write from budgets table
             $table->decimal('hourly_rate', 10);
             $table->decimal('travel_rate', 10)->default(0.5);
 

@@ -4,7 +4,7 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState } from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 
 interface CreateSelectProps<T> extends Pick<SelectPopupProps<T>, 'getItemLabel' | 'getKeywords'> {

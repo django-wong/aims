@@ -33,3 +33,8 @@ When you work with an API controller, make sure you create a request class in `A
 I encourage you to explore the existing codebase to understand how things are structured and how to implement new features.
 
 If you are not working on files in `resources/js/components/ui` directory (which normally you won't need to), then you should avoid to use components from `radix-ui` directly, instead use the wrapped components in `resources/js/components/ui` directory.
+
+When creating forms:
+
+1. You should avoid use `FormItem`, `FormLabel`, `FormControl` and `FormMessage` directly, unless you have a very strong reason. There is wrapper around these components in called `VFormField` defined in `resources/js/components/vform/index.tsx`. 
+2. Avoid using `<input type="date">`, instead use `DatePicker` component defined in `resources/js/components/date-picker.tsx`.

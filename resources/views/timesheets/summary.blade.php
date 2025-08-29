@@ -1,8 +1,14 @@
 <table class="base-table">
     <tr>
+        <td>BIE Reference Number</td>
+        <td>
+            {{ $timesheet->assignment->reference_number ?? 'N/A' }}
+        </td>
+    </tr>
+    <tr>
         <td>Signed off by</td>
         <td>
-            {{ $timesheet->assignment->inspector->name ?? 'N/A' }} on {{ $timesheet->sign_off_at ? $timesheet->sign_off_at->format('Y-m-d') : 'N/A' }}
+            {{ $timesheet->user->name ?? 'N/A' }} on {{ $timesheet->signed_off_at ? $timesheet->signed_off_at->format('Y-m-d') : 'N/A' }}
         </td>
     </tr>
     <tr>

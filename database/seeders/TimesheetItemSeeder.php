@@ -15,9 +15,6 @@ class TimesheetItemSeeder extends Seeder
      */
     public function run(): void
     {
-        TimesheetItem::factory(50)
-            ->recycle(User::query()->get())
-            ->recycle(Timesheet::query()->get())
-            ->create();
+
     }
 }

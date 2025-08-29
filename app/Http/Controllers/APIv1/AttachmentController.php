@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Attachments\StoreRequest;
+use App\Http\Requests\APIv1\IndexAttachmentRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,9 +15,11 @@ class AttachmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexAttachmentRequest $request)
     {
-        //
+        return $this->getQueryBuilder()->tap(function (Builder $query) use ($request) {
+            $query->whereMorphedTo('attachable', $request->attachable());
+        })->paginate();
     }
 
     /**
@@ -33,7 +37,7 @@ class AttachmentController extends Controller
             'create', [Attachment::class, $attachable]
         );
 
-        if (! empty($attachments = $request->file('attachments'))) {
+        if (!empty($attachments = $request->file('attachments'))) {
             foreach ($attachments as $attachment) {
                 Attachment::store(
                     $attachment, attachable: $attachable

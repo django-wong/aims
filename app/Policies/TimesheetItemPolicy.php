@@ -24,18 +24,16 @@ class TimesheetItemPolicy
      */
     public function view(User $user, TimesheetItem $timesheetItem): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Assignment|null $assignment = null): bool
+    public function create(User $user, Assignment $assignment): bool
     {
-        if (!empty($assignment->inspector_id)) {
-            return $assignment->inspector_id === $user->id || Gate::allows('update', $assignment);
-        }
-        return false;
+
+        return $user->can('inspect', $assignment) || $user->can('update', $assignment);
     }
 
     /**

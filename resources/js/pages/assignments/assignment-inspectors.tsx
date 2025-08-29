@@ -12,9 +12,10 @@ import { VFormField } from '@/components/vform';
 import { InspectorSelect } from '@/components/user-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon, TerminalIcon, TrashIcon } from 'lucide-react';
+import { InfoIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
+import { AssignmentInspector } from '@/types';
 
 export function AssignmentInspectors() {
   const assignment = useAssignment();
@@ -117,7 +118,6 @@ export function AssignmentInspectors() {
                               onValueChane={() => {}}
                               onDataChange={(user) => {
                                 field.onChange(user?.id || null);
-                                form.setValue('name', user?.name);
                               }}
                               value={field.value}
                             />

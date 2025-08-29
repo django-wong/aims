@@ -14,8 +14,6 @@ class TimesheetSeeder extends Seeder
      */
     public function run(): void
     {
-        Timesheet::factory(20)
-            ->recycle(Assignment::query()->get())
-            ->create();
+
     }
 }

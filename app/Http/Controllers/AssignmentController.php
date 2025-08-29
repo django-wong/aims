@@ -22,12 +22,12 @@ class AssignmentController extends Controller
     {
         $assignment = Assignment::query()
             ->with(
-                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector', 'purchase_order'
+                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'purchase_order'
             )
             ->findOrFail($id);
 
-        if (auth()->id() === $assignment->inspector_id) {
-            // Redirect user to timesheet if they are the inspector
+        // Redirect to timesheet if user is an inspector for the assignment
+        if (Gate::allows('inspect', $assignment)) {
             return to_route(
                 'assignments.timesheet', $assignment->id
             );
@@ -49,11 +49,11 @@ class AssignmentController extends Controller
 
         $assignment = Assignment::query()
             ->with(
-                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'inspector'
+                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type'
             )
             ->findOrFail($id);
 
-        // Gate::authorize('inspect', $assignment);
+        Gate::authorize('inspect', $assignment);
 
         $start = $request->input('start', now()->startOfWeek()->format('Y-m-d'));
         $end = Carbon::parse($start)->endOfWeek()->format('Y-m-d');
@@ -61,6 +61,7 @@ class AssignmentController extends Controller
         $timesheet = $assignment->timesheets()->firstOrCreate([
             'start' => $start,
             'end' => $end,
+            'user_id' => auth()->id(),
         ]);
 
         if ($request->has('preview_contractor_notification')) {

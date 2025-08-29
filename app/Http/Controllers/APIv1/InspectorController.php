@@ -8,6 +8,9 @@ use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
+/**
+ * Inspector Controller is just a specialized User Controller for creating inspectors.
+ */
 class InspectorController extends Controller
 {
     public function store(StoreRequest $request)

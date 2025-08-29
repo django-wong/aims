@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ColumnToggle, DataTable } from '@/components/data-table-2';
-import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2, User } from 'lucide-react';
+import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { ProjectSelect } from '@/components/project-select';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { toast } from 'sonner';
-import { download } from '@/lib/download-response-as-blob';
+import { download } from '@/utils/download-response-as-blob';
 import { ClientSelect } from '@/components/client-select';
 import { useIsClient } from '@/hooks/use-role';
 import dayjs from 'dayjs';
@@ -405,7 +405,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       return true;
     }),
     defaultParams: {
-      'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,inspector,purchase_order',
+      'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order',
       'sort': 'created_at',
       'filter[project_id]': String(options.project?.id ?? '')
     }

@@ -49,15 +49,14 @@ class StoreRequest extends FormRequest
             'report_hours' => 'nullable|integer|min:0',
             'work_hours' => 'nullable|integer|min:0',
             'travel_hours' => 'nullable|integer|min:0',
-            'hourly_rate' => 'nullable|numeric|min:0',
             'days' => 'nullable|integer|min:0',
             'overnights' => 'nullable|integer|min:0',
             'travel_distance' => 'nullable|integer|min:0',
-            'travel_rate' => 'nullable|integer|min:0',
             'hotel' => 'nullable|numeric|min:0',
             'meals' => 'nullable|numeric|min:0',
             'rail_or_airfare' => 'nullable|numeric|min:0',
             'other' => 'nullable|numeric|min:0',
+            'on_behalf_of_user_id' => 'nullable|exists:users,id',
         ];
     }
 }

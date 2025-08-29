@@ -175,6 +175,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = tr
     loading,
     searchParams,
     setSearchParams,
+    selectable,
     params,
     setParams,
     sorting,

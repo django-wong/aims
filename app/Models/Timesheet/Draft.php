@@ -24,6 +24,7 @@ class Draft implements Status
     {
         $operation_org_id = $timesheet->assignment->operation_org_id;
         if (! empty($operation_org_id) && $operation_org_id !== $timesheet->assignment->org_id) {
+            // Send to operation office for review first
             return Reviewing::class;
         }
         return Approved::class;

@@ -32,12 +32,6 @@ class AssignmentSeeder extends Seeder
                 ->recycle($project)
                 ->recycle($project->org)
                 ->recycle($project->purchase_orders)
-                ->state([
-                    // 'inspector_id' => User::query()->whereHas('user_role', function ($query) use ($project) {
-                    //     $query->where('role', UserRole::INSPECTOR)
-                    //         ->where('org_id', $project->org_id);
-                    // })->inRandomOrder()->first()->id,
-                ])
                 ->create();
         }
     }
