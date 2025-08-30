@@ -104,6 +104,7 @@ const schema = z.object({
   punch_list_format: z.number().int().optional(),
   irn_format: z.number().int().optional(),
   document_stamp: z.number().int().optional(),
+  issue_irn_to_vendor: z.number().int().optional(),
 
   equipment: z.string().min(14).nullable().optional(),
   notes: z.string().max(1500).nullable().optional(),
@@ -866,6 +867,23 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         </VFormField>
                       )}
                       name={'document_stamp'}
+                    />
+                    <FormField
+                      control={form.control}
+                      render={({ field }) => (
+                        <VFormField label={'Issue IRN to Vendor'} className={'col-span-6'}>
+                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <SelectTrigger className={'bg-background w-full'}>
+                              <SelectValue placeholder="Select option" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="0">NO</SelectItem>
+                              <SelectItem value="1">YES</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </VFormField>
+                      )}
+                      name={'issue_irn_to_vendor'}
                     />
                   </div>
                 </div>
