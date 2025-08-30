@@ -51,7 +51,7 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <Link href={`/inspectors/${row.original.id}/edit`}>{row.original.name}</Link>,
+    cell: ({ row }) => <Link className={'underline'} href={`/inspectors/${row.original.id}/edit`}>{row.original.name}</Link>,
   },
   {
     accessorKey: 'email',
@@ -189,12 +189,6 @@ function InspectorActions({ user }: { user: User }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align={'end'} side={'bottom'} className={'w-56'}>
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-        <DropdownMenuItem>
-          Edit
-          <DropdownMenuShortcut>
-            <PencilIcon />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
         <DropdownMenuItem className="text-destructive" onClick={() => {
           if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
             axios.delete(`/api/v1/users/${user.id}`).then(() => {
@@ -529,7 +523,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                     control={form.control}
                     render={({ field }) => {
                       return (
-                        <VFormField label={'Password'}>
+                        <VFormField label={'Password'} required={!props.value} description={props.value ? 'Leave blank to keep the current password' : ''}>
                           <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
                         </VFormField>
                       );

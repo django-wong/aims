@@ -13,4 +13,11 @@ class InspectorProfile extends Model
     protected $guarded = [
         'id', 'user_id'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'include_on_skills_matrix' => 'boolean',
+        ];
+    }
 }

@@ -187,7 +187,6 @@ class AssignmentController extends Controller
         Gate::authorize('view', $assignment);
 
         $query = TimesheetReport::query()
-            ->where('type', '!=', 'inspection-report')
             ->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
                 $query->select('id')->from('timesheets')->where('status', '>', Timesheet::DRAFT)->where('assignment_id', $assignment->id);
             });

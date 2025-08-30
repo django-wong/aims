@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('certificate_id');
+            $table->foreignId('certificate_type_id')->nullable();
+            $table->foreignId('certificate_technique_id')->nullable();
             $table->string('title');
             $table->morphs('certifiable');
             $table->string('level')->nullable()->comment('Certificate level, e.g., "Beginner", "Intermediate", "Advanced"');

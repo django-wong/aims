@@ -2,14 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Assignment;
-use App\Models\TimesheetItem;
+use App\Models\CertificateTechnique;
 use App\Models\User;
-use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Gate;
 
-class TimesheetItemPolicy
+class CertificateTechniquePolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -22,32 +19,31 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, TimesheetItem $timesheetItem): bool
+    public function view(User $user, CertificateTechnique $certificateTechnique): bool
     {
-        return true;
+        return false;
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Assignment $assignment): bool
+    public function create(User $user): bool
     {
-
-        return $user->can('inspect', $assignment) || $user->can('update', $assignment);
+        return false;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, TimesheetItem $timesheetItem): bool
+    public function update(User $user, CertificateTechnique $certificateTechnique): bool
     {
-        return $timesheetItem->user_id === $user->id || $user->can('update', $timesheetItem->timesheet);
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, TimesheetItem $timesheetItem): bool
+    public function delete(User $user, CertificateTechnique $certificateTechnique): bool
     {
         return false;
     }
@@ -55,7 +51,7 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, TimesheetItem $timesheetItem): bool
+    public function restore(User $user, CertificateTechnique $certificateTechnique): bool
     {
         return false;
     }
@@ -63,7 +59,7 @@ class TimesheetItemPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, TimesheetItem $timesheetItem): bool
+    public function forceDelete(User $user, CertificateTechnique $certificateTechnique): bool
     {
         return false;
     }

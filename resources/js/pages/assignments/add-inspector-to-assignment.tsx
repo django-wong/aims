@@ -114,8 +114,8 @@ export function AddInspectorToAssignment() {
             <DialogClose asChild>
               <Button variant={'outline'}>Cancel</Button>
             </DialogClose>
-            <Button onClick={() => save(false)}>Save</Button>
-            <Button onClick={() => save(true)}>Save & Close</Button>
+            <Button onClick={() => save(false)}>Save & Add Another</Button>
+            <Button onClick={() => save(true)}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

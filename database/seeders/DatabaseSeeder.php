@@ -34,7 +34,9 @@ class DatabaseSeeder extends Seeder
             TimesheetSeeder::class,
             TimesheetItemSeeder::class,
             ContactSeeder::class,
-            SkillSeeder::class
+            SkillSeeder::class,
+            CertificateTypeSeeder::class,
+            CertificateTechniqueSeeder::class,
         ]);
     }
 }

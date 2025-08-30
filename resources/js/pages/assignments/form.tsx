@@ -68,7 +68,7 @@ const schema = z.object({
 
   attachments: z.array(
     z.file()
-  ),
+  ).nullable().optional(),
 
   // Visit fields
   first_visit_date: z.string().nullable().optional(),
@@ -161,7 +161,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
           </DialogHeader>
           <DialogInnerContent>
             <Form {...form}>
-              <div className={'grid grid-cols-12 gap-6'}>
+              <div className={'grid grid-cols-12 gap-8'}>
                 <div className={'col-span-12 mt-8 text-lg font-bold'}>Basic Information</div>
 
                 <div className={'col-span-12'}>

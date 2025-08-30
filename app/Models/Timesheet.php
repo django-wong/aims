@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|\Illuminate\Support\HigherOrderCollectionProxy|mixed $signed_off_at
  * @property \Illuminate\Support\Carbon|mixed                            $contract_holder_approved_at
  * @property \Illuminate\Support\Carbon|mixed                            $client_approved_at
+ * @property int                                                       $user_id
  */
 class Timesheet extends Model
 {

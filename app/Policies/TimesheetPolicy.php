@@ -36,7 +36,7 @@ class TimesheetPolicy
 
     public function update(User $user, Timesheet $timesheet): bool|Response
     {
-        if ($user->can('inspect', $timesheet->assignment)) {
+        if ($user->id === $timesheet->user_id) {
             if ($timesheet->status === \App\Models\Timesheet::DRAFT) {
                 return true;
             } else {

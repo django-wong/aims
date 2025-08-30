@@ -219,8 +219,7 @@ export function TimesheetReportForm(props: DialogFormProps & {type?: string}) {
     <>
       <DialogWrapper footer={footer} trigger={props.children} title={'Report'} description={'Manage timesheet report'}>
         <Form {...form}>
-          <div className={'grid grid-cols-12 gap-4'}>
-
+          <div className={'grid grid-cols-12 gap-8'}>
             {
               props.value ? null : (
                 <div className="col-span-12">

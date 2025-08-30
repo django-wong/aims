@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Attachments\StoreRequest;
-use App\Http\Requests\APIv1\BatchUploadAttachmentRequest;
 use App\Http\Requests\APIv1\IndexAttachmentRequest;
 use App\Models\Attachment;
 use App\Models\Comment;

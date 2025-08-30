@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\APIv1;
 
-use App\Http\Controllers\Controller;
 use App\Models\CertificateType;
 use Illuminate\Http\Request;
 
@@ -13,7 +12,7 @@ class CertificateTypeController extends Controller
      */
     public function index()
     {
-        //
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

@@ -10,7 +10,7 @@ import React, { ComponentProps } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 import axios from 'axios';
-import { cn, humanFileSize } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
@@ -59,11 +59,11 @@ export function TimesheetItems(props: TimesheetItemsProps) {
       header: 'Travel Distance',
       cell: ({ row }) => row.original.travel_distance,
     },
-    {
-      accessorKey: 'travel_rate',
-      header: 'Travel Rate',
-      cell: ({ row }) => row.original.travel_rate.toFixed(2),
-    },
+    // {
+    //   accessorKey: 'travel_rate',
+    //   header: 'Travel Rate',
+    //   cell: ({ row }) => row.original.travel_rate.toFixed(2),
+    // },
     {
       accessorKey: 'expenses',
       header: 'Hotel',
@@ -90,7 +90,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
       cell: ({ row }) => (
         <div className={'flex items-center gap-1 justify-start'}>
           <TimesheetItemProvider value={row.original}>
-            <TimesheetItemAttachments>
+            <TimesheetItemAttachments onUploadComplete={table.reload}>
               <Button variant={'secondary'} size={'sm'}>
                 <FolderOpenIcon/> <span>({row.original.attachments_count})</span>
               </Button>

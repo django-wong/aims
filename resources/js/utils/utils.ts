@@ -23,11 +23,11 @@ export function describe_timesheet_status(status: Timesheet['status']) {
     case 1:
       return 'Reviewing';
     case 2:
-      return 'Waiting for Contract Holder Approval';
+      return 'Waiting for Contract Holder Approval'; // Reviewed
     case 3:
-      return 'Waiting for Client Approval';
+      return 'Waiting for Client Approval'; // Approved / Sent to Client
     case 4:
-      return 'Client Approved';
+      return 'Client Approved'; // Client Approved
     case 5:
       return 'Invoiced';
     default:

@@ -5,14 +5,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import { humanFileSize } from '@/lib/utils';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { useReactiveForm } from '@/hooks/use-form';
 import { Button } from '@/components/ui/button';
 import { AttachableProvider } from '@/providers/attachable-provider';
 import { UploadForm } from '@/components/attachments/upload-form';
 import { UploadIcon } from 'lucide-react';
 
 interface AttachmentListProps {
+  onUploadComplete?: () => void;
   attachable_id: number;
   attachable_type: string;
 }
@@ -33,13 +32,10 @@ export function AttachmentList(props: AttachmentListProps) {
     }
   });
 
-  // const form = useReactiveForm({
-  //   url: `/api/v1/attachments`,
-  //   defaultValues: {
-  //     attachable_id: props.attachable_id,
-  //     attachable_type: props.attachable_type
-  //   }
-  // });
+  function onUploadComplete() {
+    table.reload();
+    props.onUploadComplete?.();
+  }
 
   return (
     <DataTable
@@ -49,7 +45,7 @@ export function AttachmentList(props: AttachmentListProps) {
       }
       right={
         <AttachableProvider value={props}>
-          <UploadForm onUploadComplete={() => table.reload()}>
+          <UploadForm onUploadComplete={onUploadComplete}>
             <Button> <UploadIcon/> Upload</Button>
           </UploadForm>
         </AttachableProvider>

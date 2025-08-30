@@ -22,6 +22,7 @@ import { CheckIcon, EllipsisVerticalIcon, PenIcon } from 'lucide-react';
 import { startTransition, useDeferredValue, useState } from 'react';
 import axios from 'axios';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
+import { TimesheetStatus } from '@/pages/timesheets/status';
 
 interface TimesheetsProps {
   assignment?: Assignment;
@@ -62,9 +63,7 @@ export function Timesheets(props: TimesheetsProps) {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge variant={'secondary'}>
-          {describe_timesheet_status(row.original.status)}
-        </Badge>
+        <TimesheetStatus status={row.original.status} />
       )
     },
     {

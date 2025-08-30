@@ -37,4 +37,11 @@ class StoreRequest extends FormRequest
             'address.address_line_3' => 'nullable|string|max:255',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'password.required' => 'Password is required when setup the inspector account.',
+        ];
+    }
 }

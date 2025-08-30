@@ -47,7 +47,7 @@ interface RecordProps {
 export default function Record(props: RecordProps) {
   const page = usePage<SharedData>();
 
-  // const [specialNotesHasBeenRead, setSpecialNotesHasBeenRead] = useLocalStorage(`${props.assignment.id}:special_notes:seen`, false);
+  const [specialNotesHasBeenRead, setSpecialNotesHasBeenRead] = useLocalStorage(`${props.assignment.id}:special_notes:seen`, false);
 
   const [requireSignature, setRequireSignature] = useState(props.inspection.acked_at === null)
   const [showSpecialNotes, setShowSpecialNotes] = useState(requireSignature);
@@ -77,10 +77,10 @@ export default function Record(props: RecordProps) {
       signature_base64: signaturepad.current?.toDataURL()
     }).then(() => {
       startTransition(() => {
-        // setRequireSignature(false);
-        // setShowSpecialNotes(false);
-        // setSpecialNotesHasBeenRead(true);
-        // setSignaturePadOpen(false);
+        setRequireSignature(false);
+        setShowSpecialNotes(false);
+        setSpecialNotesHasBeenRead(true);
+        setSignaturePadOpen(false);
       });
     })
   }

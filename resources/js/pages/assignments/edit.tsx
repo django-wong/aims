@@ -141,7 +141,7 @@ export default function Edit(props: EditProps) {
                 </InfoLine>
 
                 <InfoLine icon={'shopping-bag'} label={'Purchase Order'}>
-                  <Link href={`/projects/${props.assignment.project?.id || ''}`} className={'underline'}>
+                  <Link href={`/purchase-orders/${props.assignment.purchase_order_id || ''}`} className={'underline'}>
                     {props.assignment.purchase_order?.title ?? 'N/A'}
                   </Link>
                 </InfoLine>
