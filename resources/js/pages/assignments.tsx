@@ -300,10 +300,15 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     },
     {
       accessorKey: 'sub_vendor_id',
-      header: 'Vendor',
+      header: 'Sub Vendor',
       cell: ({ row }) => {
         return row.original.sub_vendor?.name ?? '-';
       },
+    },
+    {
+      accessorKey: 'skill_id',
+      header: 'Equipment Category',
+      cell: ({ row }) => row.original.skill?.name ?? '-',
     },
     {
       accessorKey: 'equipment_description',
@@ -405,7 +410,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       return true;
     }),
     defaultParams: {
-      'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order',
+      'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order,skill',
       'sort': 'created_at',
       'filter[project_id]': String(options.project?.id ?? '')
     }

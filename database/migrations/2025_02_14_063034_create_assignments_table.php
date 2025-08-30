@@ -38,6 +38,7 @@ return new class extends Migration
 
             // status
             $table->boolean('status')->default(true)->comment('true for open, false for closed');
+            $table->tinyInteger('stage')->default(0)->comment('true for open, false for closed');
 
             $table->foreignId('skill_id')->nullable()->constrained()->nullOnDelete();
 

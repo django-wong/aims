@@ -9,7 +9,7 @@ import Layout from '@/layouts/app-layout';
 import { AssignmentForm } from '@/pages/assignments/form';
 import { Assignment, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ChartNoAxesColumnIcon, ClockFadingIcon, MessagesSquare, UserRoundSearchIcon } from 'lucide-react';
+import { ChartNoAxesColumnIcon, CheckCheckIcon, ClockFadingIcon, MessagesSquare, UserRoundSearchIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { Timesheets } from '@/pages/assignments/timesheets';
@@ -19,6 +19,7 @@ import { AssignmentProvider } from '@/providers/assignment-provider';
 import { AssignmentInspectors } from '@/pages/assignments/assignment-inspectors';
 import { AssignmentReports } from '@/pages/assignments/assignment-reports';
 import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
+import { ForOperationOffice } from '@/components/for-operation-office';
 
 interface EditProps {
   assignment: Assignment;
@@ -57,6 +58,12 @@ export default function Edit(props: EditProps) {
                 </Button>
               </NotificationOfInspection>
             </VisibleToClient>
+            <ForOperationOffice>
+              <Button>
+                <CheckCheckIcon/>
+                Acknowledge
+              </Button>
+            </ForOperationOffice>
             <HideFromClient>
               <AssignmentForm value={props.assignment} onSubmit={() => {location.reload()}}>
                 <Button>Edit</Button>

@@ -76,12 +76,7 @@ export default function Record(props: RecordProps) {
     axios.post(`/api/v1/assignment-inspectors/${props.inspection.id}/acknowledge`, {
       signature_base64: signaturepad.current?.toDataURL()
     }).then(() => {
-      startTransition(() => {
-        setRequireSignature(false);
-        setShowSpecialNotes(false);
-        setSpecialNotesHasBeenRead(true);
-        setSignaturePadOpen(false);
-      });
+      window.location.reload();
     })
   }
 
@@ -208,18 +203,18 @@ export default function Record(props: RecordProps) {
                   <Info>
                     <InfoHead>Details</InfoHead>
                     <div>
+                      <InfoLine label={'BIE Reference Number'}>
+                        <Badge>
+                          {props.assignment.reference_number}
+                        </Badge>
+                      </InfoLine>
                       <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
                       <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
-                      <InfoLine label={'Assignment Type'}>
-                        <Badge>{props.assignment.assignment_type?.name}</Badge>
+                      <InfoLine label={'Discipline'}>
+                        <Badge>{props.inspection.assignment_type?.name}</Badge>
                       </InfoLine>
                       <InfoLine label={'Vendor'}>{props.assignment.vendor?.name}</InfoLine>
                       {props.assignment.sub_vendor && <InfoLine label={'Sub Vendor'}>{props.assignment.sub_vendor?.name}</InfoLine>}
-                      <InfoLine label={'Report Required'}>
-                        <Badge variant={props.assignment.report_required ? 'default' : 'secondary'}>
-                          {props.assignment.report_required ? 'Yes' : 'No'}
-                        </Badge>
-                      </InfoLine>
                       {props.assignment.equipment && (
                         <InfoLine label={'Equipment'}>
                           <InfoLineValue className="whitespace-pre-wrap">{props.assignment.equipment}</InfoLineValue>
@@ -376,7 +371,7 @@ export default function Record(props: RecordProps) {
                         description={'Read this carefully before starting work on this assignment.'}
                         title={'Special Notes'}
                       >
-                        <div className={'prose'}>{props.assignment.special_notes ?? 'No special notes available.'}</div>
+                        <div className={'prose'} dangerouslySetInnerHTML={{__html: props.assignment.special_notes ?? 'No special notes available.'}}/>
                       </DialogWrapper>
                     </InfoLineValue>
                   </Info>

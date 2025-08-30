@@ -1,7 +1,26 @@
 import { createContext, useContext } from 'react';
-import { Assignment } from '@/types';
+import { Assignment, SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
 
 export const AssignmentContext = createContext<Assignment|null>(null);
+
+export function useIsOperationOffice() {
+  const {
+    props: {
+      auth: {
+        org
+      }
+    }
+  } = usePage<SharedData>()
+
+  const assignment = useAssignment();
+
+  if (assignment?.operation_office_id && org?.id && assignment.operation_org_id === org.id) {
+    return true;
+  }
+
+  return false;
+}
 
 export function useAssignment() {
   const context = useContext(AssignmentContext);

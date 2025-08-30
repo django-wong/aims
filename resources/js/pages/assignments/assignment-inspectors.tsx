@@ -1,22 +1,14 @@
-import { useAssignment } from '@/providers/assignment-provider';
-import { useTable } from '@/hooks/use-table';
 import { ColumnToggle, DataTable } from '@/components/data-table-2';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { DialogInnerContent } from '@/components/dialog-inner-content';
-import { useReactiveForm } from '@/hooks/use-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField } from '@/components/ui/form';
-import { VFormField } from '@/components/vform';
-import { InspectorSelect } from '@/components/user-select';
-import { AssignmentTypeSelect } from '@/components/assignment-type-select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon, TrashIcon } from 'lucide-react';
-import { useState } from 'react';
-import axios from 'axios';
-import { AssignmentInspector } from '@/types';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTable } from '@/hooks/use-table';
 import { AddInspectorToAssignment } from '@/pages/assignments/add-inspector-to-assignment';
+import { useAssignment } from '@/providers/assignment-provider';
+import { AssignmentInspector } from '@/types';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { TrashIcon } from 'lucide-react';
 
 export function AssignmentInspectors() {
   const assignment = useAssignment();
@@ -30,22 +22,46 @@ export function AssignmentInspectors() {
       {
         accessorKey: 'name',
         header: 'Inspector',
-        cell: info => info.getValue(),
+        cell: (info) => info.getValue(),
       },
       {
         accessorKey: 'assignment_type_name',
         header: 'Discipline',
-        cell: info => info.getValue(),
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: 'acked_at',
+        header: 'Acked At',
+        cell: ({ row }) => {
+          if (!row.original.acked_at) {
+            return null;
+          }
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href={route('assignments.pdf', {
+                    id: row.original.assignment_id,
+                    inspector: row.original.user_id,
+                  })}
+                >
+                  <Badge variant={'secondary'}>{row.original.acked_at ? dayjs(row.original.acked_at).format('DD/MM/YYYY h:mm A') : 'N/A'}</Badge>
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>Click to download the signed assignment form</TooltipContent>
+            </Tooltip>
+          );
+        },
       },
       {
         accessorKey: 'hourly_rate',
         header: 'Hourly Rate',
-        cell: info => info.getValue(),
+        cell: (info) => info.getValue(),
       },
       {
         accessorKey: 'travel_rate',
         header: 'Travel Rate',
-        cell: info => info.getValue(),
+        cell: (info) => info.getValue(),
         size: 100000,
       },
       {
@@ -53,34 +69,30 @@ export function AssignmentInspectors() {
         header: () => {
           return <div className={'text-right'}>Actions</div>;
         },
-        cell: ({row}) => {
+        cell: ({ row }) => {
           return (
             <div className={'text-right'}>
-              <Button variant={'secondary'} size={'sm'} onClick={() => {
-                axios.delete('/api/v1/assignment-inspectors/' + row.original.id).then(() => {
-                  table.reload();
-                });
-              }}>
-                <TrashIcon/>
+              <Button
+                variant={'secondary'}
+                size={'sm'}
+                onClick={() => {
+                  axios.delete('/api/v1/assignment-inspectors/' + row.original.id).then(() => {
+                    table.reload();
+                  });
+                }}
+              >
+                <TrashIcon />
               </Button>
             </div>
           );
         },
-      }
-    ]
+      },
+    ],
   });
 
   return (
     <>
-      <DataTable
-        left={
-          <ColumnToggle/>
-        }
-        table={table}
-        right={
-          <AddInspectorToAssignment/>
-        }
-      />
+      <DataTable left={<ColumnToggle />} table={table} right={<AddInspectorToAssignment />} />
     </>
   );
 }

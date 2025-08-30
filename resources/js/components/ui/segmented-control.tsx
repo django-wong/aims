@@ -9,7 +9,7 @@ import React, {
   useState,
   type CSSProperties,
 } from "react"
-import { mergeRefs } from "@/lib/merge-refs"
+import { mergeRefs } from "@/utils/merge-refs"
 
 const SegmentedControl = TabsPrimitive.Root
 

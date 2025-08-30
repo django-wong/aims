@@ -26,12 +26,16 @@ import { StaffSelect } from '@/components/user-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
-import { Assignment, DialogFormProps } from '@/types';
+import { Assignment, DialogFormProps, SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState } from 'react';
 import z from 'zod';
 import { RefreshCcw } from 'lucide-react';
 import axios from 'axios';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePage } from '@inertiajs/react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 const schema = z.object({
   reference_number: z.string().min(1, 'Reference number is required').max(30, 'Reference number must be at most 30 characters'),
@@ -115,6 +119,16 @@ const schema = z.object({
 });
 
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
+  const {
+    props: {
+      auth
+    }
+  } = usePage<SharedData>();
+
+  const isEdit = !!props.value;
+
+  const [type, setType] = useState(props.value?.operation_org_id ? 'delegate' : 'direct'); // 0 = direct assignment, 1 = delegated
+
   const form = useReactiveForm<z.infer<typeof schema>, Assignment>({
     ...useResource('/api/v1/assignments', {
       operation_org_id: null,
@@ -123,10 +137,12 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       vendor_id: null,
       notes: '',
       report_required: false,
-      ...props.value,
+      ...props.value
     }),
     resolver: zodResolver(schema),
   });
+
+  const i_am_the_operation_office = props.value?.operation_org_id === auth.org?.id
 
   useEffect(() => {
     if (props.value) {
@@ -164,13 +180,13 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
               <div className={'grid grid-cols-12 gap-8'}>
                 <div className={'col-span-12 mt-8 text-lg font-bold'}>Basic Information</div>
 
-                <div className={'col-span-12'}>
+                <div className={'col-span-6'}>
                   <FormField
                     control={form.control}
                     render={({ field }) => {
                       return (
                         <VFormField label={'BIE Reference Number'} required>
-                          <ReferenceNumber allowGenerate value={field.value || ''} onValueChange={field.onChange}/>
+                          <ReferenceNumber allowGenerate value={field.value || ''} onValueChange={field.onChange} />
                         </VFormField>
                       );
                     }}
@@ -178,7 +194,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   />
                 </div>
 
-                <div className={'col-span-12'}>
+                <div className={'col-span-6'}>
                   <FormField
                     control={form.control}
                     render={({ field }) => {
@@ -197,7 +213,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <VFormField required label={'Project'} className={'col-span-12'}>
+                      <VFormField required label={'Project'} className={'col-span-6'}>
                         <ProjectSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -208,7 +224,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <VFormField required label={'Purchase Order'} className={'col-span-12'}>
+                      <VFormField required label={'Purchase Order'} className={'col-span-6'}>
                         <PurchaseOrderSelect
                           onValueChane={field.onChange}
                           value={field.value}
@@ -220,6 +236,57 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     </>
                   )}
                 />
+
+                {i_am_the_operation_office ? null : (
+                  <div className={'col-span-12 p-4 border rounded-lg bg-background ring-4 ring-accent'}>
+                    <RadioGroup defaultValue={type} disabled={isEdit} onValueChange={setType} className={'col-span-12'}>
+                      <div className="flex items-center gap-3">
+                        <RadioGroupItem value="direct" id="r1" />
+                        <Label htmlFor="r1">Directly to inspector</Label>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <RadioGroupItem value="delegate" id="r2" />
+                        <Label htmlFor="r2">Delegate to operation office</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
+
+                {type === 'delegate' ? (
+                  <div className={'col-span-12 grid grid-cols-6 gap-4'}>
+                    <FormField
+                      name={'operation_org_id'}
+                      control={form.control}
+                      render={({ field }) => (
+                        <>
+                          <VFormField label={'Operation Office'} className={'col-span-6'}>
+                            <OrgSelect
+                              onValueChane={field.onChange}
+                              params={{
+                                'filter[id]': '!= :my_org',
+                              }}
+                              value={field.value}
+                            />
+                          </VFormField>
+                        </>
+                      )}
+                    />
+
+                    {i_am_the_operation_office ? (
+                      <FormField
+                        name={'operation_coordinator_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField label={'Operation Office Coordinator'} className={'col-span-6'}>
+                              <StaffSelect params={{ cross_org: true }} onValueChane={field.onChange} value={field.value ?? null} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+                    ) : null}
+                  </div>
+                ) : null}
 
                 <div className={'col-span-12 mt-8 text-lg font-bold'}>Client / Vendor / Equipment</div>
 
@@ -381,28 +448,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 {/*    </div>*/}
                 {/*  )*/}
                 {/*}*/}
-                <FormField
-                  name={'operation_org_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField label={'Operation Office'} className={'col-span-6'}>
-                        <OrgSelect placeholder={'Choose an operation office'} onValueChane={field.onChange} value={field.value} />
-                      </VFormField>
-                    </>
-                  )}
-                />
-                <FormField
-                  name={'operation_coordinator_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField label={'OP Coordinator'} className={'col-span-6'}>
-                        <StaffSelect params={{ cross_org: true }} onValueChane={field.onChange} value={field.value ?? null} />
-                      </VFormField>
-                    </>
-                  )}
-                />
+
                 <FormField
                   name={'vendor_id'}
                   control={form.control}
@@ -536,7 +582,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   <FormField
                     control={form.control}
                     render={({ field }) => (
-                      <VFormField label={"Contact Person"} className={'col-span-12'} description={'Contact person at the client\'s side for visit coordination, set up in the client contacts if needed.'}>
+                      <VFormField
+                        label={'Contact Person'}
+                        className={'col-span-12'}
+                        description={"Contact person at the client's side for visit coordination, set up in the client contacts if needed."}
+                      >
                         <ContactSelect
                           onValueChane={field.onChange}
                           value={field.value || null}
@@ -550,7 +600,6 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     name={'visit_contact_id'}
                   />
                 </div>
-
 
                 <div className={'col-span-12 mt-8 text-lg font-bold'}>Scope of Assignment</div>
 
@@ -687,7 +736,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       control={form.control}
                       render={({ field }) => (
                         <VFormField label={'Contact Name'} className={'col-span-12'}>
-                          <Input value={field.value || ''} onChange={field.onChange}/>
+                          <Input value={field.value || ''} onChange={field.onChange} />
                         </VFormField>
                       )}
                       name={'contact_details'}
@@ -696,7 +745,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       control={form.control}
                       render={({ field }) => (
                         <VFormField label={'Contact Email'} className={'col-span-12'}>
-                          <Input type="email" value={field.value || ''} onChange={field.onChange}/>
+                          <Input type="email" value={field.value || ''} onChange={field.onChange} />
                         </VFormField>
                       )}
                       name={'contact_email'}
@@ -898,8 +947,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         <>
                           <VFormField description={'Files will be share with inspectors'}>
                             <Input
-                              id="picture" type="file" multiple accept={'*'}
-                                onChange={(event) => {
+                              id="picture"
+                              type="file"
+                              multiple
+                              accept={'*'}
+                              onChange={(event) => {
                                 field.onChange(Array.from(event.target.files ?? []));
                               }}
                             />
@@ -936,7 +988,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     render={({ field }) => (
                       <VFormField label={'Special Notes'}>
                         <div className={'bg-background overflow-hidden rounded-md border'}>
-                          <Editor value={field.value ?? ''} onChange={field.onChange}/>
+                          <Editor value={field.value ?? ''} onChange={field.onChange} />
                         </div>
                       </VFormField>
                     )}

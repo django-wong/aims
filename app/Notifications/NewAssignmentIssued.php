@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Assignment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -43,6 +44,17 @@ class NewAssignmentIssued extends Notification
             ]
         );
 
+        $data = [
+            'assignment' => $this->assignment,
+            'assignment_inspector' => $this->assignment->assignment_inspectors()->where('user_id', $notifiable->id)->with('assignment_type')->first(),
+        ];
+
+        $pdf = Pdf::loadView('pdfs.assignment-form', $data);
+
+        // save to tmp file so it can be attached
+        $tmpFilePath = tempnam(sys_get_temp_dir(), $this->assignment->reference_number ?? $this->assignment->id) . '.pdf';
+        $pdf->save($tmpFilePath);
+
         return (new MailMessage)
             ->view('email')
             ->subject('You have a new assignment ' . $this->assignment->reference_number)
@@ -50,6 +62,13 @@ class NewAssignmentIssued extends Notification
             ->line('A new assignment has been issued to you.')
             ->line('Please review the assignment details and submit your timesheet once completed.')
             ->attachMany($this->assignment->attachments)
+            ->attach(
+                $tmpFilePath,
+                [
+                    'as' => 'Assignment-' . ($this->assignment->reference_number ?? $this->assignment->id) . '.pdf',
+                    'mime' => 'application/pdf',
+                ]
+            )
             ->action(
                 'View Assignment', $link
             );

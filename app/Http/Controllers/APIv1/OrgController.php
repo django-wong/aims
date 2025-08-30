@@ -7,9 +7,19 @@ use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class OrgController extends Controller
 {
+    protected function allowedFilters()
+    {
+        return [
+            AllowedFilter::custom(
+                'id', new \App\Filters\OperatorFilter()
+            )
+        ];
+    }
+
     protected function allowedSorts()
     {
         return ['name'];

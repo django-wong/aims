@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             CertificateTypeSeeder::class,
             CertificateLevelSeeder::class,
             CertificateTechniqueSeeder::class,
+            SecondOrgSeeder::class,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assignment;
+use App\Models\AssignmentInspector;
 use App\Notifications\NewAssignmentIssued;
 use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
-        $inspection = $assignment->assignment_inspectors()->where('user_id', auth()->id())->firstOrFail();
+        $inspection = $assignment->assignment_inspectors()->where('user_id', auth()->id())->with('assignment_type')->firstOrFail();
 
         Gate::allowIf(
             $inspection, 'You are not assigned as an inspector for this assignment.'
@@ -91,7 +92,7 @@ class AssignmentController extends Controller
 
         Gate::authorize('view', $assignment);
 
-        $assignment_inspector = $assignment->assignment_inspectors()->where('user_id', auth()->id())->first();
+        $assignment_inspector = $assignment->assignment_inspectors()->where('user_id', $request->get('inspector', auth()->id()))->first();
 
         $data = [
             'assignment' => $assignment,

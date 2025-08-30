@@ -17,7 +17,7 @@ export const InspectorSelect = createSelect<User>({
   getKeywords: (item) => [item.name, item.email],
   getItemLabel: (item) => item.name || item.email || 'Unknown User',
   searchParams: new URLSearchParams({
-    'filter[preset]': 'inspector',
+    'filter[preset]': 'inspectors',
     'sort': 'name',
   })
 });

@@ -55,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('assignments', 'assignments')->name('assignments');
     Route::get('assignments/{id}', [AssignmentController::class, 'edit'])->name('assignments.edit');
     Route::get('assignments/{id}/record', [AssignmentController::class, 'record'])->name('assignments.record');
-    Route::get('assignments/{id}/pdf', [AssignmentController::class, 'pdf']);
+    Route::get('assignments/{id}/pdf', [AssignmentController::class, 'pdf'])->name('assignments.pdf');
 
     // Attachments
     Route::get('attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');

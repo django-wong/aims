@@ -38,7 +38,7 @@ class AssignmentController extends Controller
     protected function allowedIncludes()
     {
         return [
-            'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type'
+            'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type', 'skill'
         ];
     }
 
