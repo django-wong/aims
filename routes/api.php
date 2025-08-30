@@ -5,6 +5,7 @@ use App\Http\Controllers\APIv1\AssignmentInspectorController;
 use App\Http\Controllers\APIv1\AssignmentTypeController;
 use App\Http\Controllers\APIv1\AttachmentController;
 use App\Http\Controllers\APIv1\BudgetController;
+use App\Http\Controllers\APIv1\CertificateController;
 use App\Http\Controllers\APIv1\CertificateLevelController;
 use App\Http\Controllers\APIv1\CertificateTechniqueController;
 use App\Http\Controllers\APIv1\CertificateTypeController;
@@ -41,6 +42,7 @@ Route::middleware('auth')->group(function () {
         'vendors' => VendorController::class,
         'attachments' => AttachmentController::class,
         'project-types' => ProjectTypeController::class,
+        'certificates' => CertificateController::class,
         'certificate-types' => CertificateTypeController::class,
         'certificate-techniques' => CertificateTechniqueController::class,
         'certificate-levels' => CertificateLevelController::class,
@@ -72,4 +74,3 @@ Route::middleware('auth')->group(function () {
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);
 });
-

@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Certificate;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class CertificatePolicy
@@ -27,9 +28,14 @@ class CertificatePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, User $for): bool
     {
-        return false;
+        return $user->isAnyRole([
+            UserRole::STAFF,
+            UserRole::ADMIN,
+            UserRole::FINANCE,
+            UserRole::PM,
+        ]) && $user->user_role->org()->is($for->user_role->org);
     }
 
     /**
@@ -37,7 +43,7 @@ class CertificatePolicy
      */
     public function update(User $user, Certificate $certificate): bool
     {
-        return false;
+        return $this->create($user, $certificate->user);
     }
 
     /**
@@ -45,22 +51,6 @@ class CertificatePolicy
      */
     public function delete(User $user, Certificate $certificate): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Certificate $certificate): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Certificate $certificate): bool
-    {
-        return false;
+        return $this->update($user, $certificate);
     }
 }

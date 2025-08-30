@@ -8,6 +8,13 @@ use App\Models\CertificateLevel;
 
 class CertificateLevelController extends Controller
 {
+    protected function allowedSorts()
+    {
+        return [
+            'name'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

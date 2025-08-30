@@ -46,6 +46,7 @@ class Assignment extends Model implements Commentable, Attachable
             'exit_call' => 'boolean',
             'flash_report' => 'boolean',
             'status' => 'boolean',
+            'first_visit_date' => 'date',
         ];
     }
 

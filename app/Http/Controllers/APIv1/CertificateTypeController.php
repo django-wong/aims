@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class CertificateTypeController extends Controller
 {
+    protected function allowedSorts()
+    {
+        return [
+            'name'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

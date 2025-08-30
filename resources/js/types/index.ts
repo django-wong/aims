@@ -446,3 +446,29 @@ export interface AssignmentInspector extends BaseModel {
   notes: string | null;
   acked_at: string | null;
 }
+
+export interface CertificateType extends BaseModel {
+  name: string;
+}
+
+export interface CertificateTechnique extends BaseModel {
+  name: string;
+}
+
+export interface CertificateLevel extends BaseModel {
+  name: string;
+}
+
+export interface Certificate extends BaseModel {
+  user_id: number;
+  user?: User;
+  certificate_type_id: number | null;
+  certificate_type?: CertificateType;
+  certificate_technique_id: number | null;
+  certificate_technique?: CertificateTechnique;
+  certificate_level_id: number | null;
+  certificate_level?: CertificateLevel;
+  title: string;
+  issued_at: string | null; // YYYY-MM-DD format
+  expires_at: string | null; // YYYY-MM-DD format
+}

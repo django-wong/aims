@@ -8,6 +8,13 @@ use App\Models\CertificateTechnique;
 
 class CertificateTechniqueController extends Controller
 {
+    protected function allowedSorts()
+    {
+        return [
+            'name'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

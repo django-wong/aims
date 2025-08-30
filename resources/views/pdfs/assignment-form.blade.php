@@ -19,16 +19,16 @@
             </td>
         </tr>
         <tr>
-            <td class="title">Assignment:</td>
-            <td>#{{$assignment->id}}</td>
+            <td class="title">BIE Reference Number:</td>
+            <td>{{$assignment->reference_number}}</td>
             <td class="title">Project Name:</td>
             <td>{{ $assignment->project->title }}</td>
         </tr>
         <tr>
             <td class="title">Inspector:</td>
-            <td>{{$assignment_inspector?->user?->name ?? 'N/A'}}</td>
+            <td>{{$assignment_inspector?->user?->name ?? ''}}</td>
             <td class="title">Assignment Type:</td>
-            <td>{{ $assignment_inspector->assignment_type->name }}</td>
+            <td>{{ $assignment_inspector?->assignment_type?->name ?? '' }}</td>
         </tr>
         <tr>
             <td class="title">Client:</td>
@@ -38,16 +38,16 @@
         </tr>
         <tr>
             <td class="title">Coordinator</td>
-            <td>{{ $assignment->project->client->coordinator?->name ?? 'N/A' }}</td>
+            <td>{{ $assignment->project->client->coordinator?->name ?? '' }}</td>
             <td class="title">Technical Reviewer:</td>
-            <td>{{ $assignment->project->client->reviewer?->name ?? 'N/A' }}</td>
+            <td>{{ $assignment->project->client->reviewer?->name ?? '' }}</td>
         </tr>
-        <tr>
-            <td class="title">Approved by:</td>
-            <td>TODO</td>
-            <td class="title">Date:</td>
-            <td>TODO</td>
-        </tr>
+{{--        <tr>--}}
+{{--            <td class="title">Approved by:</td>--}}
+{{--            <td>TODO</td>--}}
+{{--            <td class="title">Date:</td>--}}
+{{--            <td>TODO</td>--}}
+{{--        </tr>--}}
         <tr>
             <td colspan="4" class="head">
                 Client Contact Details
@@ -57,13 +57,17 @@
             <td class="title">Name:</td>
             <td>{{$assignment->project->client->user->name ?? 'N/A'}}</td>
             <td class="title">Email:</td>
-            <td>{{ $assignment->project->client->user->email ?? 'N/A' }}</td>
+            <td>
+                @if($assignment->project->client->user->email)
+                    <a href="mailto:{{$assignment->project->client->user->email}}">{{ $assignment->project->client->user->email }}</a>
+                @endif
+            </td>
         </tr>
         <tr>
             <td class="title">Tel No:</td>
-            <td>{{$assignment->visit_contact?->phone ?? 'N/A'}}</td>
+            <td>{{$assignment->visit_contact?->phone ?? ''}}</td>
             <td class="title">Mobile No:</td>
-            <td>{{ $assignment->visit_contact?->mobile ?? 'N/A' }}</td>
+            <td>{{ $assignment->visit_contact?->mobile ?? '' }}</td>
         </tr>
         <tr>
             <td colspan="4" class="head">
@@ -72,9 +76,9 @@
         </tr>
         <tr>
             <td class="title">Main Vendor:</td>
-            <td>{{$assignment->vendor?->name ?? 'N/A'}}</td>
-            <td class="title">Inspection at:</td>
-            <td>TODO</td>
+            <td>{{$assignment->vendor?->name ?? ''}}</td>
+            <td class="title">Sub Vendor:</td>
+            <td>{{$assignment->sub_vendor?->name ?? ''}}</td>
         </tr>
         <tr>
             <td colspan="4" class="head">
@@ -83,15 +87,27 @@
         </tr>
         <tr>
             <td class="title">Name:</td>
-            <td>{{$assignment->visit_contact?->name ?? 'N/A'}}</td>
+            <td>{{$assignment->visit_contact?->name ?? ''}}</td>
             <td class="title">Email:</td>
-            <td>{{$assignment->visit_contact?->email}}</td>
+            <td>
+                @if($assignment->visit_contact?->email)
+                    <a href="mailto:{{$assignment->visit_contact?->email}}">{{$assignment->visit_contact?->email}}</a>
+                @endif
+            </td>
         </tr>
         <tr>
             <td class="title">Tel No:</td>
-            <td>{{$assignment->visit_contact?->phone ?? 'N/A'}}</td>
+            <td>
+                @if($assignment->visit_contact?->phone)
+                    <a href="tel:{{$assignment->visit_contact?->phone ?? ''}}">{{$assignment->visit_contact?->phone ?? ''}}</a>
+                @endif
+            </td>
             <td class="title">Mobile No:</td>
-            <td>{{$assignment->visit_contact?->mobile ?? 'N/A'}}</td>
+            <td>
+                @if($assignment->visit_contact?->mobile)
+                    <a href="tel:{{$assignment->visit_contact?->mobile ?? ''}}">{{$assignment->visit_contact?->mobile ?? ''}}</a>
+                @endif
+            </td>
         </tr>
     </table>
     <table class="table">
@@ -105,7 +121,7 @@
         </tr>
         <tr>
             <td class="title">Date of first visit if known:</td>
-            <td>{{$assignment->first_visit_date?->format('d/m/Y') ?? 'N/A'}}</td>
+            <td>{{$assignment->first_visit_date?->format('d/m/Y') ?? 'TBD'}}</td>
             <td class="title">Pre-inspection meeting</td>
             <td>{{$assignment->pre_inspection_meeting ? 'YES' : 'NO'}}</td>
             <td class="title">Audit</td>
@@ -150,39 +166,43 @@
         </tr>
         <tr>
             <td class="title">Report format:</td>
-            <td>{{$assignment->report_format}}</td>
+            <td>{{$assignment->report_format == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Reporting frequency:</td>
-            <td>{{$assignment->reporting_frequency}}</td>
+            <td>{{$assignment->reporting_frequency == 0 ? 'Daily' : 'Weekly'}}</td>
             <td class="title">Exit Call:</td>
-            <td>{{$assignment->exit_call ? 'YES' : 'NO'}}</td>
+            <td>{{$assignment->exit_call ? 'Yes' : 'No'}}</td>
         </tr>
         <tr>
             <td class="title">Send report to:</td>
-            <td>{{$assignment->report_format}}</td>
+            <td>{{$assignment->report_format == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Timesheet:</td>
-            <td>{{$assignment->timesheet}}</td>
+            <td>{{$assignment->timesheet == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Status/Flash Report:</td>
-            <td>{{$assignment->flash_report ? 'YES' : 'NO'}}</td>
+            <td>{{$assignment->flash_report ? 'Yes' : 'No'}}</td>
         </tr>
         <tr>
             <td class="title">NCR format:</td>
-            <td>{{$assignment->ncr_format}}</td>
+            <td>{{$assignment->ncr_format == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Punch list format:</td>
-            <td>{{$assignment->punch_list_format}}</td>
+            <td>{{$assignment->punch_list_format == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Contact Detail:</td>
-            <td>TODO</td>
+            <td>{{$assignment->contact_details}}</td>
         </tr>
         <tr>
             <td class="title">IRN format:</td>
-            <td>{{$assignment->irn_format}}</td>
+            <td>{{$assignment->irn_format == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Issue IRN to vendor:</td>
-            <td>TODO</td>
+            <td>{{$assignment->issue_irn_to_vendor ? 'YES' : 'NO'}}</td>
             <td class="title">Email:</td>
-            <td>{{$assignment->report_email}}</td>
+            <td>
+                @if($assignment->contact_email)
+                    <a href="mailto:{{$assignment->contact_email}}">{{$assignment->contact_email}}</a>
+                @endif
+            </td>
         </tr>
         <tr>
             <td class="title">Document stamp:</td>
-            <td>TODO</td>
+            <td>{{$assignment->document_stamp == 0 ? 'BIE' : 'Sign'}}</td>
             <td colspan="4"></td>
         </tr>
     </table>
@@ -195,7 +215,7 @@
         </tr>
     </table>
     <div class="content" style="border-top: none; white-space: preserve;">
-        {{ $assignment->special_notes }}
+        {!! $assignment->special_notes !!}
     </div>
     @endif
 
@@ -221,9 +241,9 @@
         </tr>
         <tr>
             <td class="title">Signature:</td>
-            <td>@if(! empty($assignment_inspector->signature_base64)) <img style="height: 100px; width: auto" src="{{ $assignment_inspector->signature_base64 }}"/> @endif</td>
+            <td>@if(! empty($assignment_inspector?->signature_base64)) <img style="height: 100px; width: auto" src="{{ $assignment_inspector?->signature_base64 }}"/> @endif</td>
             <td class="title">Date:</td>
-            <td>{{ $assignment_inspector->acked_at?->format('d/m/Y H:i:s T') ?? 'N/A' }}</td>
+            <td>{{ $assignment_inspector?->acked_at?->format('d/m/Y H:i:s T') ?? 'N/A' }}</td>
         </tr>
     </table>
 </x-pdf.layout>

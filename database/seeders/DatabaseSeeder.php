@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             ContactSeeder::class,
             SkillSeeder::class,
             CertificateTypeSeeder::class,
+            CertificateLevelSeeder::class,
             CertificateTechniqueSeeder::class,
         ]);
     }
