@@ -9,7 +9,7 @@ export function Empty({ children, className, ...props }: ComponentProps<'div'>) 
       <div className={'absolute inset-0 overflow-hidden opacity-5'}>
         <SvgBg/>
       </div>
-      <div className={'flex flex-col items-center justify-center gap-2 text-center'}>
+      <div className={'z-10 flex flex-col items-center justify-center gap-2 text-center'}>
         <PackageOpen/>
         { children || (
           <p className={'px-4'}>

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('path');
             $table->string('disk')->default('local');
             $table->unsignedBigInteger('size')->nullable()->comment('File size in bytes');
+            $table->string('group')->nullable()->comment('Group or category of the attachment');
             $table->timestamps();
             $table->softDeletes();
         });

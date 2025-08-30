@@ -8,6 +8,8 @@ use App\Models\Assignment;
 use App\Models\AssignmentInspector;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentInspectorController extends Controller
 {
@@ -62,10 +64,11 @@ class AssignmentInspectorController extends Controller
             'travel_rate' => $budget?->travel_rate ?? 0,
         ];
 
-        $assignment_inspector = AssignmentInspector::query()->updateOrCreate([
-            'user_id' => $request->validated('user_id'),
-            'assignment_id' => $request->validated('assignment_id'),
-        ], $data);
+        $assignment_inspector = AssignmentInspector::query()
+            ->updateOrCreate([
+                'user_id' => $request->validated('user_id'),
+                'assignment_id' => $request->validated('assignment_id'),
+            ], $data);
 
         return [
             'message' => 'Inspector assigned successfully.',
@@ -103,9 +106,27 @@ class AssignmentInspectorController extends Controller
     public function destroy(AssignmentInspector $assignmentInspector)
     {
         $assignmentInspector->delete();
-
         return [
             'message' => 'Inspector unassigned successfully.'
+        ];
+    }
+
+    public function acknowledge(Request $request, AssignmentInspector $assignment_inspector)
+    {
+        Gate::authorize('ack', $assignment_inspector);
+
+        $validated = $request->validate([
+            'signature_base64' => 'required|string',
+        ]);
+
+        $assignment_inspector->acked_at = now();
+        $assignment_inspector->signature_base64 = $validated['signature_base64'];
+
+        $assignment_inspector->save();
+
+        return [
+            'message' => 'Inspector acknowledged successfully.',
+            'data' => $assignment_inspector->load('user', 'assignment', 'assignment_type')
         ];
     }
 }

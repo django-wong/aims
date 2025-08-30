@@ -74,6 +74,10 @@ export default function Edit(props: EditProps) {
                   <ChartNoAxesColumnIcon/>
                   <span className={'hidden sm:inline'}>Overview</span>
                 </TabsTrigger>
+                <TabsTrigger value={'attachments'}>
+                  <ClockFadingIcon/>
+                  <span className={'hidden sm:inline'}>Attachments</span>
+                </TabsTrigger>
                 <TabsTrigger value={'inspectors'}>
                   <UserRoundSearchIcon/>
                   <span className={'hidden sm:inline'}>Inspectors</span>
@@ -81,10 +85,6 @@ export default function Edit(props: EditProps) {
                 <TabsTrigger value={'timesheets'}>
                   <ClockFadingIcon/>
                   <span className={'hidden sm:inline'}>Timesheet</span>
-                </TabsTrigger>
-                <TabsTrigger value={'attachments'}>
-                  <ClockFadingIcon/>
-                  <span className={'hidden sm:inline'}>Attachments</span>
                 </TabsTrigger>
                 <TabsTrigger value={'reports'}>
                   <ClockFadingIcon/>

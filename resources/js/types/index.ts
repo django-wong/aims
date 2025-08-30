@@ -252,7 +252,7 @@ export interface Assignment extends BaseModel {
   // Report formats
   reporting_format: number;
   reporting_frequency: number;
-  send_report_to_email: string | null;
+  send_report_to: number;
   timesheet_format: number;
   ncr_format: number;
   punch_list_format: number;
@@ -444,4 +444,5 @@ export interface AssignmentInspector extends BaseModel {
   hourly_rate: number;
   travel_rate: number;
   notes: string | null;
+  acked_at: string | null;
 }

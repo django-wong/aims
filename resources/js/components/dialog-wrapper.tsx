@@ -2,30 +2,29 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
 
-export interface DialogWrapperProps extends React.ComponentProps<'div'> {
+export interface DialogWrapperProps extends React.ComponentProps<typeof DialogContent> {
   trigger: React.ReactNode;
   title: string;
   description?: string;
   footer?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  innerContentClassName?: string;
 }
 
-export function DialogWrapper(props: DialogWrapperProps) {
+export function DialogWrapper({ trigger, title, description, footer, open, onOpenChange,innerContentClassName,...props }: DialogWrapperProps) {
   return (
     <>
-      <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-        <DialogTrigger asChild>{props.trigger}</DialogTrigger>
-        <DialogContent className={props.className}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+        <DialogContent {...props}>
           <DialogHeader>
-            <DialogTitle>{props.title}</DialogTitle>
-            {props.description && <DialogDescription>{props.description}</DialogDescription>}
+            <DialogTitle>{title}</DialogTitle>
+            {description && <DialogDescription>{description}</DialogDescription>}
           </DialogHeader>
-          <DialogInnerContent>
-            {props.children}
-          </DialogInnerContent>
+          <DialogInnerContent className={innerContentClassName}>{props.children}</DialogInnerContent>
           <DialogFooter>
-            {props.footer || (
+            {footer || (
               <>
                 <DialogClose asChild>
                   <Button variant={'outline'}>Close</Button>
@@ -36,5 +35,5 @@ export function DialogWrapper(props: DialogWrapperProps) {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

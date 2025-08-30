@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 /**
  * @property Model $attachable
  */
-class Attachment extends Model
+class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable
 {
     /** @use HasFactory<\Database\Factories\AttachmentFactory> */
     use HasFactory, DynamicPagination;
@@ -87,5 +87,10 @@ class Attachment extends Model
     public function revisions()
     {
         return $this->hasMany(AttachmentRevision::class);
+    }
+
+    public function toMailAttachment(): \Illuminate\Mail\Attachment
+    {
+        return \Illuminate\Mail\Attachment::fromStorageDisk($this->disk, $this->path)->as($this->name)->withMime($this->mime_type);
     }
 }

@@ -16,6 +16,7 @@ import { InfoIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
 import { AssignmentInspector } from '@/types';
+import { AddInspectorToAssignment } from '@/pages/assignments/add-inspector-to-assignment';
 
 export function AssignmentInspectors() {
   const assignment = useAssignment();
@@ -69,22 +70,6 @@ export function AssignmentInspectors() {
     ]
   });
 
-  const form = useReactiveForm<z.infer<typeof schema>>({
-    url: '/api/v1/assignment-inspectors',
-    defaultValues: {
-      assignment_id: assignment?.id,
-    },
-    resolver: zodResolver(schema)
-  });
-
-  function save() {
-    form.submit().then(() => {
-      table.reload();
-    });
-  }
-
-  const [open, setOpen] = useState(false);
-
   return (
     <>
       <DataTable
@@ -93,83 +78,9 @@ export function AssignmentInspectors() {
         }
         table={table}
         right={
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                Add Inspector
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Inspector to Assignment</DialogTitle>
-                <DialogDescription className={'grid gap-2'}>
-                  <p>Email notifiaction will be send to inspector upon assignment.</p>
-                </DialogDescription>
-              </DialogHeader>
-              <DialogInnerContent>
-                <Form {...form}>
-                  <div className={'grid grid-cols-12 gap-6'}>
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => {
-                        return (
-                          <VFormField label={'Inspector'} className={'col-span-6'}>
-                            <InspectorSelect
-                              onValueChane={() => {}}
-                              onDataChange={(user) => {
-                                field.onChange(user?.id || null);
-                              }}
-                              value={field.value}
-                            />
-                          </VFormField>
-                        );
-                      }}
-                      name={'user_id'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => {
-                        return (
-                          <VFormField label={'Discipline'} className={'col-span-6'}>
-                            <AssignmentTypeSelect onValueChane={field.onChange} value={field.value} />
-                          </VFormField>
-                        );
-                      }}
-                      name={'assignment_type_id'}
-                    />
-
-                    <div className={'col-span-12 text-sm text-muted-foreground'}>
-                      <Alert>
-                        <InfoIcon />
-                        <div>
-                          <AlertTitle>Heads up!</AlertTitle>
-                          <AlertDescription>
-                            Make sure you have configured the rate in Purchase Order for the Discipline you select.
-                          </AlertDescription>
-                        </div>
-                      </Alert>
-                    </div>
-                  </div>
-                </Form>
-              </DialogInnerContent>
-              <DialogFooter>
-                <DialogClose>
-                  <Button variant={'outline'}>Cancel</Button>
-                </DialogClose>
-                <Button onClick={save}>
-                  Save
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <AddInspectorToAssignment/>
         }
       />
     </>
   );
 }
-
-const schema = z.object({
-  assignment_id: z.number().min(1, { message: 'Assignment is required' }),
-  user_id: z.number().min(1, { message: 'Inspector is required' }),
-  assignment_type_id: z.number().min(1, { message: 'Discipline is required' }),
-});

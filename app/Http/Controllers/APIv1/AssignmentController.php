@@ -103,6 +103,8 @@ class AssignmentController extends Controller
 
         $assignment = Org::current()->assignments()->create($request->validated());
 
+        $request->saveAttachments(for: $assignment);
+
         return response()->json([
             'data' => $assignment->load(
                 'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org'
@@ -124,6 +126,8 @@ class AssignmentController extends Controller
     public function update(UpdateRequest $request, Assignment $assignment)
     {
         $assignment->update($request->validated());
+
+        $request->saveAttachments(for: $assignment);
 
         return [
             'message' => 'Assignment updated successfully.',
@@ -182,12 +186,11 @@ class AssignmentController extends Controller
     {
         Gate::authorize('view', $assignment);
 
-        $query = TimesheetReport::query()->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
-            $query->select('id')
-                ->from('timesheets')
-                ->where('status', '>', Timesheet::DRAFT)
-                ->where('assignment_id', $assignment->id);
-        });
+        $query = TimesheetReport::query()
+            ->where('type', '!=', 'inspection-report')
+            ->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
+                $query->select('id')->from('timesheets')->where('status', '>', Timesheet::DRAFT)->where('assignment_id', $assignment->id);
+            });
 
         $query->with([
             'attachment', 'closed_or_rev_by'

@@ -19,11 +19,11 @@ use Illuminate\Support\Facades\App;
  * @property PurchaseOrder $purchase_order
  * @property mixed         $id
  */
-class Assignment extends Model implements Commentable
+class Assignment extends Model implements Commentable, Attachable
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets, BelongsToPurchaseOrder;
-    use BelongsToAssignmentType, HasManyAssignmentInspectors;
+    use BelongsToAssignmentType, HasManyAssignmentInspectors, HasManyAttachments;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'

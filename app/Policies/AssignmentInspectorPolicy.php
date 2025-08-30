@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\AssignmentInspector;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentInspectorPolicy
 {
@@ -62,5 +63,10 @@ class AssignmentInspectorPolicy
     public function forceDelete(User $user, AssignmentInspector $assignmentInspector): bool
     {
         return false;
+    }
+
+    public function ack(User $user, AssignmentInspector $assignment_inspector)
+    {
+        return Gate::allowIf($assignment_inspector->user_id === $user->id, 'Only the assigned inspector can acknowledge this assignment.');
     }
 }

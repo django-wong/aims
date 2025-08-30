@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\APIv1\Assignments;
 
+use App\Http\Requests\APIv1\HasAttachments;
 use App\Models\Assignment;
 use App\Models\Budget;
 use App\Models\Org;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Gate;
 
 class StoreRequest extends FormRequest
 {
+    use HasAttachments;
+
     public function rules()
     {
         return [
@@ -86,12 +89,13 @@ class StoreRequest extends FormRequest
             // Reporting format fields
             'reporting_format' => 'nullable|integer|in:0,1',
             'reporting_frequency' => 'nullable|integer|in:0,1',
-            'send_report_to_email' => 'nullable|email|max:255',
+            'send_report_to' => 'nullable|email|max:255',
             'timesheet_format' => 'nullable|integer|in:0,1',
             'ncr_format' => 'nullable|integer|in:0,1',
             'punch_list_format' => 'nullable|integer|in:0,1',
             'irn_format' => 'nullable|integer|in:0,1',
             'document_stamp' => 'nullable|integer|in:0,1',
+            'issue_irn_to_vendor' => 'nullable|integer|in:0,1',
             //
         ];
     }

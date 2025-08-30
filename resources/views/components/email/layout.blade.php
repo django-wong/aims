@@ -13,7 +13,7 @@
             {!! Vite::content('resources/css/app.css') !!}
         </style>
     </head>
-    <body style='margin: 0;font-size: 16px;background-color:#ffffff;font-family:"Avenir", "Helvetica Neue",sans-serif;padding:2rem;background-image:url("{{ url('/mail-bg.png') }}");background-position:top;background-repeat:no-repeat, no-repeat;background-size: cover;'>
+    <body style='margin: 0;font-size: 16px;background-color:#ffffff;font-family:"Avenir", "Helvetica Neue",sans-serif;padding:2rem;'>
         <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" style='margin:0 auto;word-break: break-word;'>
             <tbody>
             <tr style="width:100%">

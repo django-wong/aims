@@ -32,7 +32,6 @@ import { useCallback, useEffect, useState } from 'react';
 import z from 'zod';
 import { RefreshCcw } from 'lucide-react';
 import axios from 'axios';
-import { DragDropFileUpload } from '@/components/ui/drag-drop-file-upload';
 
 const schema = z.object({
   reference_number: z.string().min(1, 'Reference number is required').max(30, 'Reference number must be at most 30 characters'),
@@ -67,6 +66,10 @@ const schema = z.object({
 
   i_e_a: z.string().nullable().optional(),
 
+  attachments: z.array(
+    z.file()
+  ),
+
   // Visit fields
   first_visit_date: z.string().nullable().optional(),
   visit_frequency: z.string().nullable().optional(),
@@ -95,7 +98,7 @@ const schema = z.object({
   // Reporting fields
   reporting_format: z.number().int().optional(),
   reporting_frequency: z.number().int().optional(),
-  send_report_to_email: z.string().email().nullable().optional(),
+  send_report_to: z.string().nullable().optional(),
   timesheet_format: z.number().int().optional(),
   ncr_format: z.number().int().optional(),
   punch_list_format: z.number().int().optional(),
@@ -765,11 +768,19 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     <FormField
                       control={form.control}
                       render={({ field }) => (
-                        <VFormField label={'Send Report To Email'} className={'col-span-12'}>
-                          <Input type="email" value={field.value || ''} onChange={field.onChange} />
+                        <VFormField label={'Send report to'} className={'col-span-6'}>
+                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <SelectTrigger className={'bg-background w-full'}>
+                              <SelectValue placeholder="Select timesheet format" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="0">BIE</SelectItem>
+                              <SelectItem value="1">Client</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </VFormField>
                       )}
-                      name={'send_report_to_email'}
+                      name={'send_report_to'}
                     />
                     <FormField
                       control={form.control}
@@ -862,7 +873,24 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 <div className={'col-span-12 mt-8 text-lg font-bold'}>Attachments</div>
 
                 <div className={'col-span-12'}>
-                  <DragDropFileUpload/>
+                  <FormField
+                    control={form.control}
+                    render={({ field }) => {
+                      return (
+                        <>
+                          <VFormField description={'Files will be share with inspectors'}>
+                            <Input
+                              id="picture" type="file" multiple accept={'*'}
+                                onChange={(event) => {
+                                field.onChange(Array.from(event.target.files ?? []));
+                              }}
+                            />
+                          </VFormField>
+                        </>
+                      );
+                    }}
+                    name={'attachments'}
+                  />
                 </div>
 
                 <div className={'col-span-12 mt-8 text-lg font-bold'}>Notes</div>
@@ -915,200 +943,6 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     </>
   );
 }
-
-// const DEFAULT_SPACIAL_NOTES = `
-// <p>Report (in sentence case lettering) must be submitted to the BIE office by 10:00 hrs on the day following the visit with all relevant documents attached. A flash email must be sent, and an exit call made if required. <br/></p>
-//
-// <p><strong>Specifications / Drawings & Data Sheets:</strong></p>
-//
-// <p>
-//   1: xxxxx<br/>
-//   2: xxxxx<br/>
-// </p>
-//
-// <p><strong>Notes:</strong></p>
-//
-// <ul>
-//   <li>1. With each visit an inspection report shall be sent within 48 hours. If there is more than one visit in a week on the same inspection assignment a single report at the end of the week will suffice for each assignment, provided flash report for each visit at the end of the day.</li>
-//   <li>2. Problems arising from Inspection visits that require urgent resolution shall be reported immediately via telephone or e-mail to Wood from Suppliers works at each visit.</li>
-//   <li>3. Inspection and test records shall be progressively signed off and following with ITP sign off (No separate visit for MDR review) prior to release.</li>
-//   <li>4. The ITP should be signed off against all R, W and H points, where the inspector visited to monitor an activity these should also be signed off.</li>
-//   <li>5. Inspection Release Note shall only be issued directly to Wood unless specific instruction given for the package. Inspector must report to Wood before leaving the premises if any issues have been identified which could potentially impact the release.</li>
-//   <li>6. Final Inspection release certificate will only be issued to Supplier, after confirming by Wood Quality Advisor that all SDRL documents are approved.</li>
-//   <li>7. The final signed off ITP should be submitted along with the release note.</li>
-// </ul>
-//
-// <p><strong>Comments:</strong></p>
-// <p>
-// Weekly inspection of one day a week progressing to two days once testing starts <br/>
-// Review material certificates and accept on Woods behalf <br/>
-// Review test certificates and accept on Woods behalf <br/>
-// Witness testing <br/>
-// Inspect Modules for compliance with Woodside specifications and Australian regulations <br/>
-// Progressively sign ITP <br/>
-// Monitor MDR is being compiled progressively <br/>
-// Inspect packaging in in compliance with Woodside specifications <br/>
-// Issue weekly reports and flash reports when required <br/>
-// Issue IRN to release equipment <br/>
-// Attend weekly meeting with Wood/client <br/>
-// </p>
-//
-// <p><strong>Start Date:</strong></p>
-// <p>
-// Pre-Inspection Meeting before start date TBC with inspector for their availability <br/>
-// TBA – October <br/>
-// </p>
-//
-// <p><strong>Client Requirements:</strong></p>
-// <p>
-// Subject in Emails must contain the BIE and Client inspection assignment numbers, client PO Number, Vendor Details and equipment description. example: WOOD_W97330_ABB_BIE_13146 <br/>
-// Flash Report to be sent after each visit by inspector via email directly to Client CC. report.au@biegroup.com <br/>
-// BIE Flash Report, BIE Template format to be used. <br/>
-// Formal Client Inspection Report and Release forms are to be used and are to be sent to client by BIE. <br/>
-// Report Numbering Format & File Name of report must be in accordance with client requirements: <br/>
-// <br/>
-// EXAMPLES for reports. flash reports / release notes: <br/>
-// Flash report: WOOD_W97330_ABB_BIE_13146_FR-01… 02… etc <br/>
-// Inspection Report: WOOD_W97330_ABB_BIE_13146_IR-01… 02… etc <br/>
-// Release: WOOD_W97330_ABB_BIE_13146_IRC-01… 02… etc <br/>
-// <br/>
-// <strong>FLASH REPORTS to be Transmitted Direct to Client - Recipients:</strong> <br/>
-// Martin Shaw: martin.shaw@woodplc.com <br/>
-// cc. Hoascar, Bianca bianca.hoascar@woodplc.com  / reports.au@biegroup.com <br/>
-// <br/>
-// <strong>The Flash Email Report must take the following format:</strong><br/>
-// CLIENT P.O. NO:………………………………………. <br/>
-// BIE REFERENCE NO: …………………………………. <br/>
-// VENDOR NAME:…………………………………… <br/>
-// INSPECTION LOCATION:……………………���… <br/>
-// INSPECTOR NAME:……………………………… <br/>
-// DATE OF INSPECTION:…………………………… <br/>
-// P.O. ITEM NO. & BRIEF DESCRIPTION:……. <br/>
-// ITP ACTIVITY NO.: …………………………………………. <br/>
-// INSPECTION RESULT ACCEPTABLE:       YES/NO <br/>
-// REASON NOT ACCEPTABLE: <br/>
-// </p>
-//
-// <p><strong>Note: This must be in the body of the email and NOT in the form of an email attachment.</strong></p>
-// `.trim();
-
-// const add_inspector_schema = z.object({
-//   user_id: z.number().min(1, 'Inspector is required'),
-//   assignment_type_id: z.number().min(1),
-//   name: z.string().optional(),
-// });
-
-// function AddInspectorForm(props: {
-//   onValueChange?: (value: { user_id: number; name?: string; assignment_type_id: number }) => void;
-//   children?: React.ReactNode;
-// }) {
-//   const [open, setOpen] = useState(false);
-//
-//   const form = useForm<z.infer<typeof add_inspector_schema>>({
-//     defaultValues: {},
-//     resolver: zodResolver(add_inspector_schema),
-//   });
-//
-//   function save() {
-//     form.handleSubmit((data) => {
-//       if (data) {
-//         props.onValueChange?.(data);
-//         setOpen(false);
-//       }
-//     })();
-//   }
-//
-//   return (
-//     <>
-//       <Dialog
-//         open={open}
-//         onOpenChange={(open) => {
-//           setOpen(open);
-//         }}
-//       >
-//         {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
-//         <DialogContent>
-//           <DialogHeader>
-//             <DialogTitle>Add Inspector</DialogTitle>
-//             <DialogDescription>Fill in the details below to add inspector the the assignment.</DialogDescription>
-//           </DialogHeader>
-//           <DialogInnerContent>
-//             <Form {...form}>
-//               <div className={'grid grid-cols-12 gap-6'}>
-//                 <FormField
-//                   control={form.control}
-//                   render={({ field }) => {
-//                     return (
-//                       <VFormField label={'Inspector'} className={'col-span-12'}>
-//                         <InspectorSelect
-//                           onValueChane={() => {}}
-//                           onDataChange={(user) => {
-//                             field.onChange(user?.id || null);
-//                             form.setValue('name', user?.name);
-//                           }}
-//                           value={field.value}
-//                         />
-//                       </VFormField>
-//                     );
-//                   }}
-//                   name={'user_id'}
-//                 />
-//                 <FormField
-//                   control={form.control}
-//                   render={({ field }) => {
-//                     return (
-//                       <VFormField label={'Discipline'} className={'col-span-12'}>
-//                         <AssignmentTypeSelect onValueChane={field.onChange} value={field.value} />
-//                       </VFormField>
-//                     );
-//                   }}
-//                   name={'assignment_type_id'}
-//                 />
-//               </div>
-//             </Form>
-//           </DialogInnerContent>
-//           <DialogFooter>
-//             <DialogClose asChild>
-//               <Button variant={'outline'} type={'button'}>
-//                 Cancel
-//               </Button>
-//             </DialogClose>
-//             <Button onClick={save}>Save</Button>
-//           </DialogFooter>
-//         </DialogContent>
-//       </Dialog>
-//     </>
-//   );
-// }
-
-// interface AllInspectorsProps {
-//   value?: Array<{
-//     user_id: number;
-//     assignment_type_id: number;
-//     name?: string;
-//   }>;
-//   onRemove: (value: { user_id: number; assignment_type_id: number; name?: string }) => void;
-// }
-
-// function AllInspectors(props: AllInspectorsProps) {
-//   return (
-//     <div className={'mb-2 flex items-start justify-start gap-4'}>
-//       {props.value?.map((item, index) => {
-//         return (
-//           <Tooltip key={index}>
-//             <TooltipTrigger>
-//               <Badge onClick={() => props.onRemove(item)} className={'cursor-pointer text-sm'} variant={'outline'} key={index}>
-//                 {item.name}
-//                 <XIcon />
-//               </Badge>
-//             </TooltipTrigger>
-//             <TooltipContent>Click to remove this inspector</TooltipContent>
-//           </Tooltip>
-//         );
-//       })}
-//     </div>
-//   );
-// }
 
 interface ReferenceNumberProps {
   value: string,

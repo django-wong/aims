@@ -37,18 +37,19 @@ class NewAssignmentIssued extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $link = URL::signedRoute(
-            'assignments.record-timesheet', [
-                'id' => $this->assignment->id,
+            'magic-link', [
+                'redirect_to' => route('assignments.record', $this->assignment->id),
                 'user' => $notifiable->id,
             ]
         );
 
         return (new MailMessage)
             ->view('email')
-            ->subject('You have a new assignment')
+            ->subject('You have a new assignment ' . $this->assignment->reference_number)
             ->greeting('Hello ' . $notifiable->name)
             ->line('A new assignment has been issued to you.')
             ->line('Please review the assignment details and submit your timesheet once completed.')
+            ->attachMany($this->assignment->attachments)
             ->action(
                 'View Assignment', $link
             );

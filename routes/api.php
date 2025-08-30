@@ -1,13 +1,26 @@
 <?php
 
 use App\Http\Controllers\APIv1\AssignmentController;
+use App\Http\Controllers\APIv1\AssignmentInspectorController;
+use App\Http\Controllers\APIv1\AssignmentTypeController;
+use App\Http\Controllers\APIv1\AttachmentController;
+use App\Http\Controllers\APIv1\BudgetController;
 use App\Http\Controllers\APIv1\ClientController;
 use App\Http\Controllers\APIv1\CommentController;
+use App\Http\Controllers\APIv1\ContactController;
 use App\Http\Controllers\APIv1\InspectorController;
 use App\Http\Controllers\APIv1\MenuController;
 use App\Http\Controllers\APIv1\OrgController;
 use App\Http\Controllers\APIv1\ProjectController;
+use App\Http\Controllers\APIv1\ProjectTypeController;
+use App\Http\Controllers\APIv1\PurchaseOrderController;
+use App\Http\Controllers\APIv1\SkillController;
+use App\Http\Controllers\APIv1\TimesheetController;
+use App\Http\Controllers\APIv1\TimesheetItemController;
+use App\Http\Controllers\APIv1\TimesheetReportController;
 use App\Http\Controllers\APIv1\UserController;
+use App\Http\Controllers\APIv1\UserSkillController;
+use App\Http\Controllers\APIv1\VendorController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -16,26 +29,26 @@ Route::middleware('auth')->group(function () {
     Route::get('assignments/next-assignment-number', [AssignmentController::class, 'next_assignment_number']);
 
     Route::apiResources([
-        'purchase-orders' => \App\Http\Controllers\APIv1\PurchaseOrderController::class,
+        'purchase-orders' => PurchaseOrderController::class,
         'projects' => ProjectController::class,
         'clients' => ClientController::class,
         'orgs' => OrgController::class,
         'users' => UserController::class,
-        'contacts' => \App\Http\Controllers\APIv1\ContactController::class,
-        'vendors' => \App\Http\Controllers\APIv1\VendorController::class,
-        'attachments' => \App\Http\Controllers\APIv1\AttachmentController::class,
-        'project-types' => \App\Http\Controllers\APIv1\ProjectTypeController::class,
+        'contacts' => ContactController::class,
+        'vendors' => VendorController::class,
+        'attachments' => AttachmentController::class,
+        'project-types' => ProjectTypeController::class,
         'comments' => CommentController::class,
         'inspectors' => InspectorController::class,
         'assignments' => AssignmentController::class,
-        'assignment-types' => \App\Http\Controllers\APIv1\AssignmentTypeController::class,
-        'assignment-inspectors' => \App\Http\Controllers\APIv1\AssignmentInspectorController::class,
-        'timesheets' => \App\Http\Controllers\APIv1\TimesheetController::class,
-        'timesheet-reports' => \App\Http\Controllers\APIv1\TimesheetReportController::class,
-        'timesheet-items' => \App\Http\Controllers\APIv1\TimesheetItemController::class,
-        'budgets' => \App\Http\Controllers\APIv1\BudgetController::class,
-        'skills' => \App\Http\Controllers\APIv1\SkillController::class,
-        'user-skills' => \App\Http\Controllers\APIv1\UserSkillController::class,
+        'assignment-types' => AssignmentTypeController::class,
+        'assignment-inspectors' => AssignmentInspectorController::class,
+        'timesheets' => TimesheetController::class,
+        'timesheet-reports' => TimesheetReportController::class,
+        'timesheet-items' => TimesheetItemController::class,
+        'budgets' => BudgetController::class,
+        'skills' => SkillController::class,
+        'user-skills' => UserSkillController::class,
     ]);
 
     // Users
@@ -47,7 +60,10 @@ Route::middleware('auth')->group(function () {
     Route::get('assignments/{assignment}/timesheet-reports', [AssignmentController::class, 'timesheet_reports']);
 
     // Timesheets
-    Route::post('timesheets/{id}/sign-off', [\App\Http\Controllers\APIv1\TimesheetController::class, 'signOff']);
-    Route::post('timesheets/{timesheet}/approve', [\App\Http\Controllers\APIv1\TimesheetController::class, 'approve']);
+    Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
+    Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
+
+    // Assignment inspectors
+    Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);
 });
 

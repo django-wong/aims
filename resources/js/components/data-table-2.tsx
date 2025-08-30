@@ -111,7 +111,7 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
                       <Empty>
                         <p className={'font-bold text-lg'}>No data founds.</p>
                         <p className={'text-muted-foreground'}>
-                          Your search did not match any data. Please <span className={'underline'} onClick={() => {table.reload()}}>try again</span> or create new one.
+                          Your search did not match any data. Please <span className={'underline cursor-pointer font-semibold'} onClick={() => {table.reload()}}>try again</span> or create new one.
                         </p>
                       </Empty>
                     ) : (

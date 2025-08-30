@@ -1,12 +1,16 @@
-import { usePagedGetApi } from '@/hooks/use-get-api';
-import { AttachmentItem } from '@/pages/timesheets/timesheet-items';
 import { Attachment } from '@/types';
 import { useTable } from '@/hooks/use-table';
-import { DataTable } from '@/components/data-table-2';
+import { ColumnToggle, DataTable } from '@/components/data-table-2';
 import { ColumnDef } from '@tanstack/react-table';
 import { humanFileSize } from '@/lib/utils';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { useReactiveForm } from '@/hooks/use-form';
+import { Button } from '@/components/ui/button';
+import { AttachableProvider } from '@/providers/attachable-provider';
+import { UploadForm } from '@/components/attachments/upload-form';
+import { UploadIcon } from 'lucide-react';
 
 interface AttachmentListProps {
   attachable_id: number;
@@ -29,8 +33,28 @@ export function AttachmentList(props: AttachmentListProps) {
     }
   });
 
+  // const form = useReactiveForm({
+  //   url: `/api/v1/attachments`,
+  //   defaultValues: {
+  //     attachable_id: props.attachable_id,
+  //     attachable_type: props.attachable_type
+  //   }
+  // });
+
   return (
-    <DataTable table={table}/>
+    <DataTable
+      table={table}
+      left={
+        <ColumnToggle/>
+      }
+      right={
+        <AttachableProvider value={props}>
+          <UploadForm onUploadComplete={() => table.reload()}>
+            <Button> <UploadIcon/> Upload</Button>
+          </UploadForm>
+        </AttachableProvider>
+      }
+    />
   )
 }
 

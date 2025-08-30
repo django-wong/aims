@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Attachments\StoreRequest;
+use App\Http\Requests\APIv1\BatchUploadAttachmentRequest;
 use App\Http\Requests\APIv1\IndexAttachmentRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
@@ -33,9 +34,7 @@ class AttachmentController extends Controller
             abort(404, 'Attachable resource not found.');
         }
 
-        Gate::authorize(
-            'create', [Attachment::class, $attachable]
-        );
+        Gate::authorize('create', [Attachment::class, $attachable]);
 
         if (!empty($attachments = $request->file('attachments'))) {
             foreach ($attachments as $attachment) {

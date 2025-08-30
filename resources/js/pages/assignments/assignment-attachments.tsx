@@ -1,3 +1,14 @@
+import { AttachmentList } from '@/components/attachments/list';
+import { useAssignment } from '@/providers/assignment-provider';
+
 export function AssignmentAttachments() {
-  return <div>Assignment Attachments</div>;
+  const assignment = useAssignment();
+
+  if (!assignment) {
+    return null;
+  }
+
+  return <div>
+    <AttachmentList attachable_id={assignment.id} attachable_type={'assignment'}/>
+  </div>;
 }
