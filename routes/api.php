@@ -5,6 +5,7 @@ use App\Http\Controllers\APIv1\AssignmentInspectorController;
 use App\Http\Controllers\APIv1\AssignmentTypeController;
 use App\Http\Controllers\APIv1\AttachmentController;
 use App\Http\Controllers\APIv1\BudgetController;
+use App\Http\Controllers\APIv1\CertificateLevelController;
 use App\Http\Controllers\APIv1\CertificateTechniqueController;
 use App\Http\Controllers\APIv1\CertificateTypeController;
 use App\Http\Controllers\APIv1\ClientController;
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
         'project-types' => ProjectTypeController::class,
         'certificate-types' => CertificateTypeController::class,
         'certificate-techniques' => CertificateTechniqueController::class,
+        'certificate-levels' => CertificateLevelController::class,
         'comments' => CommentController::class,
         'inspectors' => InspectorController::class,
         'assignments' => AssignmentController::class,

@@ -12,6 +12,7 @@ import { TwoColumnLayout73 } from '@/components/main-content';
 import * as React from 'react';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { UserSkills } from '@/pages/inspectors/skills';
+import { UserCertificates } from '@/pages/inspectors/certificates';
 
 interface InspectorEditProps {
   inspector: User;
@@ -140,10 +141,3 @@ export default function EditPage(props: InspectorEditProps) {
 
 
 
-interface UserCertificatesProps {
-  inspector: User;
-}
-
-function UserCertificates(props: UserCertificatesProps) {
-  return <div>TODO</div>;
-}
