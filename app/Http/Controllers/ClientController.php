@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class ClientController extends Controller
 {
     public function edit($id, Request $request)
     {
+        $client = Client::query()->with(['user', 'address', 'coordinator', 'reviewer'])->findOrFail($id);
+
         return Inertia::render('clients/edit', [
-            'client' => Client::query()->with(['user', 'address', 'coordinator', 'reviewer'])->findOrFail($id),
+            'client' => $client,
+            'can' => [
+                'update' => Gate::allows('update', $client),
+            ],
         ]);
     }
 }

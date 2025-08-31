@@ -33,7 +33,7 @@ function reloadReducer(state: number) {
   return state + 1;
 }
 
-export function useTable<T extends BaseTableData>(api: string, { selectable = true, ...options }: UseTableOptions<T>) {
+export function useTable<T extends BaseTableData>(api: string, { selectable = false, ...options }: UseTableOptions<T>) {
   const [searchParams, setSearchParams] = useQueryParamAsSearchParams(api);
   const [data, setData] = useState<T[]>(options?.defaultData ?? []);
   const [sorting, setSorting] = useState<SortingState>([]);

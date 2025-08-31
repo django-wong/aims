@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Notifications\NewAssignmentIssued;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,9 +20,25 @@ use Illuminate\Support\Facades\App;
  * @property Org|null      $operation_org
  * @property PurchaseOrder $purchase_order
  * @property mixed         $id
+ * @property int|mixed     $status
+ * @property User|null     $operation_coordinator
+ * @property string        $reference_number
+ * @property Collection<Attachment>         $attachments
  */
 class Assignment extends Model implements Commentable, Attachable
 {
+    const DRAFT = 0; // This assignment is a draft and has not been issued to an operation org
+    const ISSUED = 1; // This assignment has been issued to an operation org
+    const REJECTED = 2; // The operation org rejected the assignment for a reason
+    const ACCEPTED = 3; // The operation org accepted the assignment and will continue to assign the work to their inspectors
+    const ASSIGNED = 4; // The assignment has been assigned to an inspector
+    const PARTIAL_ACKED = 5; // One or more inspectors have acknowledged the assignment
+    const ACKED = 6; // The inspector has acknowledged the assignment
+    // Reserved states for future use
+    const OPEN = 7; // The inspector has started the assignment
+    const CLOSED = 8; // The inspector has completed the assignment
+
+
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory, BelongsToOrg, DynamicPagination, BelongsToProject, BelongsToVendor, HasManyComments, HasManyTimesheets, BelongsToPurchaseOrder;
     use BelongsToAssignmentType, HasManyAssignmentInspectors, HasManyAttachments, BelongsToSkill;
@@ -45,23 +63,10 @@ class Assignment extends Model implements Commentable, Attachable
             'audit' => 'boolean',
             'exit_call' => 'boolean',
             'flash_report' => 'boolean',
-            'status' => 'boolean',
+            'close_date' => 'date',
+            'is_closed' => 'boolean',
             'first_visit_date' => 'date',
         ];
-    }
-
-    protected static function booted()
-    {
-        // $no_self_delegate = function (self $assignment) {
-        //     if ($assignment->operation_org_id && $this->operation_org_id === $this->org_id) {
-        //         throw new \Exception(
-        //             'You cannot delegate an assignment to the contract holder\'s own organization.'
-        //         );
-        //     }
-        // };
-        //
-        // static::updating($no_self_delegate);
-        // static::creating($no_self_delegate);
     }
 
     public function operation_org(): BelongsTo
@@ -77,12 +82,19 @@ class Assignment extends Model implements Commentable, Attachable
                 $id = auth()->user()->org->id;
             }
 
-            $query->whereAny(
-                ['operation_org_id', 'org_id'], $id
-            );
+            // $query->whereAny(
+            //     ['operation_org_id', 'org_id'], $id
+            // );
+
+            $query->where(function (Builder $query) use ($id) {
+                $query->where('org_id', $id)->orWhere(function (Builder $query) use ($id) {
+                    $query->where('operation_org_id', $id)->where('status', '>=', self::ISSUED);
+                });
+            });
 
             if (auth()->user()->isRole(UserRole::INSPECTOR)) {
-                $query->whereHas('assignment_inspectors', function (Builder $q) {;
+                $query->whereHas('assignment_inspectors', function (Builder $q) {
+                    ;
                     $q->where('user_id', auth()->user()->id);
                 });
             }
@@ -135,6 +147,16 @@ class Assignment extends Model implements Commentable, Attachable
             goto AGAIN;
         }
 
-        return $next_reference;
+        return $next_reference; // e.g., "2024-AUS-0001"
+    }
+
+    public function coordinator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'coordinator_id');
+    }
+
+    public function operation_coordinator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'operation_coordinator_id');
     }
 }

@@ -19,9 +19,14 @@ import { Loading } from '@/components/ui/loading';
 import { useContactsTable } from '@/pages/contacts';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
+import { ClientPermissionProvider, ClientProvider, useClientPermission } from '@/providers/client-provider';
+import { Badge } from '@/components/ui/badge';
 
 interface ClientEditProps {
   client: Client;
+  can: {
+    update: boolean;
+  }
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -36,75 +41,83 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Edit(props: ClientEditProps) {
-  const [hash, setHash] = useQueryParam('tab', 'notes');
+  const [hash, setHash] = useQueryParam('tab', 'contacts');
 
   return <>
-    <Layout
-      pageAction={<>
-        <PopoverConfirm
-          asChild
-          message={'Are you sure to delete this client? THis action cannot be undone.'}
-          onConfirm={
-            () => {
-              axios.delete(route('clients.destroy', { id: props.client.id }))
-                .then(() => {
-                  router.visit(route('clients'));
-                })
-            }
+    <ClientProvider value={props.client}>
+      <ClientPermissionProvider value={props.can}>
+        <Layout
+          pageAction={
+            props.can.update ? (
+              <>
+                <PopoverConfirm
+                  asChild
+                  message={'Are you sure to delete this client? THis action cannot be undone.'}
+                  onConfirm={
+                    () => {
+                      axios.delete(route('clients.destroy', { id: props.client.id }))
+                        .then(() => {
+                          router.visit(route('clients'));
+                        })
+                    }
+                  }
+                >
+                  <Button size={'sm'} variant={'secondary'}>
+                    <Trash/> Delete
+                  </Button>
+                </PopoverConfirm>
+                <ClientForm value={props.client} onSubmit={() => {window.location.reload()}}>
+                  <Button size={'sm'} variant={'secondary'}>
+                    <UserRoundPen/> Edit
+                  </Button>
+                </ClientForm>
+              </>
+            ) : <Badge variant={'destructive'}>Read Only</Badge>
           }
-        >
-          <Button size={'sm'} variant={'secondary'}>
-            <Trash/> Delete
-          </Button>
-        </PopoverConfirm>
-        <ClientForm value={props.client} onSubmit={() => {window.location.reload()}}>
-          <Button size={'sm'} variant={'secondary'}>
-            <UserRoundPen/> Edit
-          </Button>
-        </ClientForm>
-      </>}
-      breadcrumbs={[...breadcrumbs, {title: props.client.business_name, href: '.'}]}>
-      <Head title={props.client.business_name}/>
-      <TwoColumnLayout73
-          left={
-            <Tabs value={hash} onValueChange={setHash}>
-              <TabsList className={'mb-4'}>
-                <TabsTrigger value={'notes'}>Notes</TabsTrigger>
-                <TabsTrigger value={'contacts'}>Contacts</TabsTrigger>
-              </TabsList>
-              <TabsContent value={'notes'}>
-                <NotesEditor client={props.client}/>
-              </TabsContent>
-              <TabsContent value={'contacts'}>
-                <ClientContacts client={props.client}/>
-              </TabsContent>
-            </Tabs>
-          }
-          right={
-            <Info>
-              <InfoHead>Client Profile</InfoHead>
-              <div>
-                <InfoLine label={'Business Name / Group'} icon={'book-user'}>
-                  {props.client.business_name}
-                </InfoLine>
-                <InfoLine label={'Login '} icon={'book-user'}>
-                  {props.client.user?.name ?? 'N/A'}
-                </InfoLine>
-                <InfoLine label="Coordinator" icon={'user-round-cog'}>
-                  {props.client.coordinator?.name ?? 'N/A'}
-                </InfoLine>
-                <InfoLine label={'Reviewer'} icon={'glasses'}>
-                  {props.client.reviewer?.name ?? 'N/A'}
-                </InfoLine>
-              </div>
-              <InfoHead>Address</InfoHead>
-              <p>
-                {props.client.address?.full_address ?? 'N/A'}
-              </p>
-            </Info>
-          }
-        />
-    </Layout>
+          breadcrumbs={[...breadcrumbs, {title: props.client.business_name, href: '.'}]}>
+          <Head title={props.client.business_name}/>
+          <TwoColumnLayout73
+              left={
+                <Tabs value={hash} onValueChange={setHash}>
+                  <TabsList className={'mb-4'}>
+                    <TabsTrigger value={'contacts'}>Contacts</TabsTrigger>
+                    <TabsTrigger value={'notes'}>Notes</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value={'notes'}>
+                    <NotesEditor client={props.client}/>
+                  </TabsContent>
+                  <TabsContent value={'contacts'}>
+                    <ClientContacts client={props.client}/>
+                  </TabsContent>
+                </Tabs>
+              }
+              right={
+                <Info>
+                  <InfoHead>Client Profile</InfoHead>
+                  <div>
+                    <InfoLine label={'Business Name / Group'} icon={'book-user'}>
+                      {props.client.business_name}
+                    </InfoLine>
+                    <InfoLine label={'Login '} icon={'book-user'}>
+                      {props.client.user?.name ?? 'N/A'}
+                    </InfoLine>
+                    <InfoLine label="Coordinator" icon={'user-round-cog'}>
+                      {props.client.coordinator?.name ?? 'N/A'}
+                    </InfoLine>
+                    <InfoLine label={'Reviewer'} icon={'glasses'}>
+                      {props.client.reviewer?.name ?? 'N/A'}
+                    </InfoLine>
+                  </div>
+                  <InfoHead>Address</InfoHead>
+                  <p>
+                    {props.client.address?.full_address ?? 'N/A'}
+                  </p>
+                </Info>
+              }
+            />
+        </Layout>
+      </ClientPermissionProvider>
+    </ClientProvider>
   </>
 }
 
@@ -123,6 +136,8 @@ interface NotesEditorProps {
 }
 
 function NotesEditor(props: NotesEditorProps) {
+  const permission = useClientPermission();
+
   const schema = useMemo(() => {
     return z.object({
       notes: z.string().max(5000, 'Notes must be less than 5000 characters.'),
@@ -149,12 +164,14 @@ function NotesEditor(props: NotesEditorProps) {
             )}
             name={'notes'}
           />
-          <div className={'flex justify-end'}>
-            <Button type={'submit'}>
-              <Loading show={form.formState.isSubmitting}/>
-              Save notes
-            </Button>
-          </div>
+          {permission.update && (
+            <div className={'flex justify-end'}>
+              <Button type={'submit'}>
+                <Loading show={form.formState.isSubmitting}/>
+                Save notes
+              </Button>
+            </div>
+          )}
         </div>
       </form>
     </Form>
@@ -166,9 +183,12 @@ interface ClientContactsProps {
 }
 
 function ClientContacts(props: ClientContactsProps) {
+  const permission = useClientPermission();
+
   const { content } = useContactsTable({
     contactable_id: props.client.id,
     contactable_type: 'client',
+    readonly: !permission.update,
   });
 
   return <>{content}</>;

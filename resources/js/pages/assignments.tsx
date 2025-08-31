@@ -3,8 +3,8 @@ import { Assignment, BreadcrumbItem, Project } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { ColumnToggle, DataTable } from '@/components/data-table-2';
-import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PlusIcon, Trash2 } from 'lucide-react';
+import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
+import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PencilIcon, PlusIcon, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -72,9 +72,10 @@ interface AssignmentActionsProps {
 }
 export function AssignmentActions({ assignment, ...props }: AssignmentActionsProps) {
   const isClient = useIsClient();
+  const table = useTableApi();
 
   return (
-    <>
+    <div className={'flex items-center justify-end gap-2'}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size={'sm'}>
@@ -177,7 +178,15 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
                 <DropdownMenuSubTrigger>Delete</DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem variant={'destructive'}>
+                    <DropdownMenuItem
+                      variant={'destructive'}
+                      onClick={
+                        () => {
+                          axios.delete(`/api/v1/assignments/${assignment.id}`).then(() => {
+                            router.reload();
+                          })
+                        }
+                      }>
                       Confirm
                       <DropdownMenuShortcut>
                         <Trash2 className={'text-red-500'}/>
@@ -190,7 +199,12 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-    </>
+      <AssignmentForm value={assignment} onSubmit={() => {table.reload()}}>
+        <Button variant="secondary" size={'sm'}>
+          <PencilIcon />
+        </Button>
+      </AssignmentForm>
+    </div>
   );
 }
 
@@ -218,6 +232,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     {
       accessorKey: 'reference_number',
       header: 'BIE reference number',
+      enableColumnFilter: true,
       cell: ({ row }) => (
         <Link href={route('assignments.edit', { id: row.original.id })} className={'underline'}>
           {row.original.reference_number || `Not set`}
@@ -257,6 +272,11 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
           </>
         );
       },
+    },
+    {
+      accessorKey: 'operation_org_id',
+      header: 'Operating Office',
+      cell: ({ row }) => row.original.operation_org?.name ?? '-',
     },
     {
       id: 'project_id',
@@ -329,13 +349,21 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     {
       accessorKey: 'notes',
       header: 'Notes',
-      cell: ({ row }) => row.original.notes,
+      cell: ({ row }) => (
+        <div className={'max-w-[300px] line-clamp-1 text-ellipsis'}>
+          {row.original.notes}
+        </div>
+      ),
     },
     // po_delivery_date
     {
       accessorKey: 'po_delivery_date',
       header: 'PO Delivery Date',
-      cell: ({ row }) => (row.original.po_delivery_date ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY') : '-'),
+      cell: ({ row }) => (
+        row.original.po_delivery_date
+          ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY')
+          : '-'
+      ),
     },
     // budgeted hours
     {
@@ -348,11 +376,10 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       header: 'Budgeted Travel',
       cell: ({ row }) => row.original.purchase_order?.budgeted_travel,
     },
-    // assignment status
     {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => row.original.status ? 'OPEN' : 'CLOSED',
+      accessorKey: 'is_closed',
+      header: 'Open / Close',
+      cell: ({ row }) => <Badge variant={row.original.close_date ? 'outline' : 'default'}>{row.original.close_date ? 'Closed' : 'Open'}</Badge>,
     },
     // date closed
     {
@@ -389,6 +416,8 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
 
     {
       accessorKey: 'actions',
+      id: 'actions',
+      enablePinning: true,
       header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
       cell: ({ row }) => {
         return (
@@ -401,6 +430,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
   ];
 
   const table = useTable('/api/v1/assignments', {
+    selectable: false,
     columns: columns.filter((column) => {
       if (options.project) {
         if (['project_id', 'client_id'].indexOf(column.id || '') !== -1) {
@@ -409,6 +439,15 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       }
       return true;
     }),
+    initialState: {
+      columnPinning: {
+        left: ['reference_number'],
+        right: ['actions'],
+      },
+      pagination: {
+        pageSize: 99,
+      },
+    },
     defaultParams: {
       'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order,skill',
       'sort': 'created_at',

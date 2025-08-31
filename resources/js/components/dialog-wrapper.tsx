@@ -20,16 +20,14 @@ export function DialogWrapper({ trigger, title, description, footer, open, onOpe
         <DialogContent {...props}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            {description && <DialogDescription>{description}</DialogDescription>}
+            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
           <DialogInnerContent className={innerContentClassName}>{props.children}</DialogInnerContent>
           <DialogFooter>
             {footer || (
-              <>
-                <DialogClose asChild>
-                  <Button variant={'outline'}>Close</Button>
-                </DialogClose>
-              </>
+              <DialogClose asChild>
+                <Button variant={'outline'}>Close</Button>
+              </DialogClose>
             )}
           </DialogFooter>
         </DialogContent>

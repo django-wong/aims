@@ -15,29 +15,31 @@ class UserRoleSeeder extends Seeder
      */
     public function run(): void
     {
+        $org = Org::query()->orderBy('id', 'desc')->first();
+
         UserRole::factory(2)
-            ->recycle(Org::query()->get())
+            ->recycle($org)
             ->state([
                 'role' => UserRole::ADMIN
             ])
             ->create();
 
         UserRole::factory(2)
-            ->recycle(Org::query()->get())
+            ->recycle($org)
             ->state([
                 'role' => UserRole::PM
             ])
             ->create();
 
         UserRole::factory(2)
-            ->recycle(Org::query()->get())
+            ->recycle($org)
             ->state([
                 'role' => UserRole::INSPECTOR
             ])
             ->create();
 
         UserRole::factory(10)
-            ->recycle(Org::query()->get())
+            ->recycle($org)
             ->state([
                 'role' => UserRole::STAFF
             ])
@@ -45,7 +47,7 @@ class UserRoleSeeder extends Seeder
 
 
         UserRole::factory(10)
-            ->recycle(Org::query()->get())
+            ->recycle($org)
             ->state([
                 'role' => UserRole::CLIENT
             ])

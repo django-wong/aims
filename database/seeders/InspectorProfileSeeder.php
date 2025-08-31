@@ -6,6 +6,7 @@ use App\Models\InspectorProfile;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Seeder;
 
 class InspectorProfileSeeder extends Seeder
@@ -15,7 +16,12 @@ class InspectorProfileSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach(UserRole::query()->where('role', UserRole::INSPECTOR)->cursor() as $user_role) {
+        $cursor = UserRole::query()
+            ->where('role', UserRole::INSPECTOR)
+            ->whereNotIn('user_id', fn (Builder $query) => $query->select('user_id')->from('inspector_profiles'))
+            ->cursor();
+
+        foreach ($cursor as $user_role) {
             InspectorProfile::factory()
                 ->state([
                     'user_id' => $user_role->user_id,

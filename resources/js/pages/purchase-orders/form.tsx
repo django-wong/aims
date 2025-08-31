@@ -15,13 +15,17 @@ import { VFormField } from '@/components/vform';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
-import { ClientSelect } from '@/components/client-select';
 import { ProjectSelect } from '@/components/project-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
   project_id: zod.number(),
-  budget: zod.number().min(1, 'Budget must be positive'),
+  budget: zod.coerce.number().min(1, 'Budget must be positive'),
+
+  mileage_unit: zod.enum(['miles', 'km']).optional(),
+  currency: zod.string().min(1, 'Currency is required'),
+
   first_alert_threshold: zod.number().min(1).max(100).default(70),
   second_alert_threshold: zod.number().min(1).max(100).default(90),
   final_alert_threshold: zod.number().min(1).max(100).default(100),
@@ -32,7 +36,9 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
     ...useResource<PurchaseOrder>('/api/v1/purchase-orders', {
       title: '',
       budget: 0,
-      hourly_rate: 0,
+      // hourly_rate: 0,
+      currency: 'AUD',
+      mileage_unit: 'km',
       first_alert_threshold: 70,
       second_alert_threshold: 90,
       final_alert_threshold: 100,
@@ -98,6 +104,36 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
                     </VFormField>
                   }}
                   name={'budget'}
+                />
+              </div>
+
+              <div className={'col-span-6'}>
+                <FormField
+                  render={({ field }) => {
+                    return <VFormField required label={'Currency'}>
+                      <Input value={field.value} onChange={field.onChange}/>
+                    </VFormField>
+                  }}
+                  name={'currency'}
+                />
+              </div>
+
+              <div className={'col-span-6'}>
+                <FormField
+                  render={({ field }) => {
+                    return <VFormField required label={'Mileage Unit'}>
+                      <Select onValueChange={field.onChange} value={field.value || ''}>
+                        <SelectTrigger className={'bg-background w-full'}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="km">Kilometers (km)</SelectItem>
+                          <SelectItem value="miles">Miles (mi)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </VFormField>
+                  }}
+                  name={'mileage_unit'}
                 />
               </div>
 

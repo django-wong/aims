@@ -6,6 +6,7 @@ use App\Http\Requests\APIv1\Clients\StoreRequest;
 use App\Http\Requests\APIv1\Clients\UpdateRequest;
 use App\Models\Address;
 use App\Models\Client;
+use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
@@ -68,7 +69,18 @@ class ClientController extends Controller
         return response()->json(
             $this->getQueryBuilder()
                 ->where(function (Builder $query) use ($request) {
-                    $query->where('org_id', $request->user()->org->id);
+                    // User can see the clients of their own organization, or if they are delegated to the client's work.
+                    $query->where('org_id', $request->user()->org->id)->orWhere(function (Builder $query) {
+                        $query->whereIn('id', function (QueryBuilder $query) {
+                            $query->select('client_id')
+                                ->from('projects')
+                                ->whereIn('id', function (QueryBuilder $query) {
+                                    $query->select('project_id')
+                                        ->from('assignments')
+                                        ->where('operation_org_id', Org::current()->id);
+                                });
+                        });
+                    });
                 })
                 ->paginate()
         );

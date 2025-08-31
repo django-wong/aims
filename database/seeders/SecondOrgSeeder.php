@@ -25,5 +25,7 @@ class SecondOrgSeeder extends Seeder
                 'org_id' => $org->id
             ])
             ->create();
+
+        $this->call(UserRoleSeeder::class);
     }
 }

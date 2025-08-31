@@ -51,7 +51,6 @@ class NewAssignmentIssued extends Notification
 
         $pdf = Pdf::loadView('pdfs.assignment-form', $data);
 
-        // save to tmp file so it can be attached
         $tmpFilePath = tempnam(sys_get_temp_dir(), $this->assignment->reference_number ?? $this->assignment->id) . '.pdf';
         $pdf->save($tmpFilePath);
 

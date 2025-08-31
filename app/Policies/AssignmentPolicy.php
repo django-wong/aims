@@ -17,12 +17,7 @@ class AssignmentPolicy
     public function viewAny(User $user):bool
     {
         return in_array($user->user_role->role, [
-            UserRole::PM,
-            UserRole::ADMIN,
-            UserRole::STAFF,
-            UserRole::CLIENT,
-            UserRole::FINANCE,
-            UserRole::INSPECTOR,
+            UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT, UserRole::FINANCE, UserRole::INSPECTOR,
         ]);
     }
 
@@ -31,7 +26,17 @@ class AssignmentPolicy
      */
     public function view(User $user, Assignment $assignment): bool
     {
-        return $user->can('inspect', $assignment) || $user->can('view', $assignment->project);
+        if ($user->can('inspect', $assignment)) {
+            return true;
+        };
+
+        if ($user->user_role->org_id === $assignment->operation_org_id || $user->user_role->org_id === $assignment->org_id) {
+            return in_array($user->user_role->role, [
+                UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT, UserRole::FINANCE
+            ]);
+        }
+
+        return $user->can('view', $assignment->project);
     }
 
     /**
@@ -67,7 +72,9 @@ class AssignmentPolicy
      */
     public function delete(User $user, Assignment $assignment): bool
     {
-        return false;
+        return $user->user_role->org_id === $assignment->org_id && $user->isAnyRole([
+            UserRole::ADMIN, UserRole::PM, UserRole::STAFF
+        ]);
     }
 
     /**
@@ -89,5 +96,10 @@ class AssignmentPolicy
     public function inspect(User $user, Assignment $assignment): bool
     {
         return $assignment->assignment_inspectors()->where('user_id', $user->id)->exists();
+    }
+
+    public function reject(User $user, Assignment $assignment): bool
+    {
+        return $user->user_role->org_id === $assignment->operation_org_id;
     }
 }

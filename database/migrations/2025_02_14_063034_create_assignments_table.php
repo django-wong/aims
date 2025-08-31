@@ -17,9 +17,12 @@ return new class extends Migration
             $table->string('previous_reference_number')->nullable();
 
             $table->foreignId('org_id')->index()->constrained();
+            $table->foreignId('coordinator_id')->nullable()->index()->constrained('users');
 
             $table->foreignId('operation_org_id')->nullable()->index()->constrained('orgs');
             $table->foreignId('operation_coordinator_id')->nullable()->index()->constrained('users');
+
+            $table->string('approved_by')->nullable();
 
             $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
             $table->foreignId('project_id')->constrained();
@@ -37,8 +40,9 @@ return new class extends Migration
             $table->decimal('budgeted_travel', 10, 2)->nullable()->comment('Hourly rate for the assignment');
 
             // status
-            $table->boolean('status')->default(true)->comment('true for open, false for closed');
-            $table->tinyInteger('stage')->default(0)->comment('true for open, false for closed');
+            $table->unsignedTinyInteger('status')->default(0)->comment(
+                '0 = Draft, 1 = Issued, 2 = Rejected, 3 = Accepted, 4 = Assigned, 5 = Partial Acked, 6 = Acked, 7 = Open, 8 = Closed'
+            );
 
             $table->foreignId('skill_id')->nullable()->constrained()->nullOnDelete();
 
@@ -54,6 +58,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('hours_per_visit')->nullable()->comment('Estimated hours per visit');
             $table->foreignId('visit_contact_id')->nullable()->constrained('contacts');
 
+            // instructions
             $table->text('inter_office_instructions')->nullable();
             $table->text('inspector_instructions')->nullable();
 
@@ -75,6 +80,7 @@ return new class extends Migration
             $table->string('contact_details')->nullable()->comment('Contact details for the assignment');
             $table->string('contact_email')->nullable()->comment('Contact email for the assignment');
 
+            // reporting and documentation
             $table->tinyInteger('reporting_format')->default(0)->comment('Reporting format: 0 = bie, 1 = client');
             $table->tinyInteger('reporting_frequency')->default(0)->comment('Reporting frequency: 0 = daily, 1 = weekly');
             $table->tinyInteger('send_report_to')->nullable()->comment('1 = BIE, 2 = Client');

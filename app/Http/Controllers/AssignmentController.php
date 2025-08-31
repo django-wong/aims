@@ -19,7 +19,7 @@ class AssignmentController extends Controller
     {
         $assignment = Assignment::query()
             ->with(
-                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'purchase_order'
+                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'purchase_order', 'skill', 'coordinator', 'operation_coordinator'
             )
             ->findOrFail($id);
 

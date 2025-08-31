@@ -32,7 +32,7 @@ import { useCallback, useEffect, useState } from 'react';
 import z from 'zod';
 import { RefreshCcw } from 'lucide-react';
 import axios from 'axios';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { usePage } from '@inertiajs/react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -42,6 +42,8 @@ const schema = z.object({
   previous_reference_number: z.string().max(30, 'Previous reference number must be at most 30 characters').nullable().optional(),
 
   project_id: z.number('Project is required').int().positive(),
+
+  coordinator_id: z.number().int().positive().nullable().optional(),
 
   // Delegate to operation (coordinating) office
   operation_org_id: z.number().int().positive().nullable(),
@@ -213,7 +215,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <VFormField required label={'Project'} className={'col-span-6'}>
+                      <VFormField required label={'Project'} className={'col-span-4'}>
                         <ProjectSelect onValueChane={field.onChange} value={field.value} />
                       </VFormField>
                     </>
@@ -224,13 +226,28 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <VFormField required label={'Purchase Order'} className={'col-span-6'}>
+                      <VFormField required label={'Purchase Order'} className={'col-span-4'}>
                         <PurchaseOrderSelect
                           onValueChane={field.onChange}
                           value={field.value}
                           params={{
                             'filter[project_id]': form.watch('project_id') || '',
                           }}
+                        />
+                      </VFormField>
+                    </>
+                  )}
+                />
+
+                <FormField
+                  name={'coordinator_id'}
+                  control={form.control}
+                  render={({ field }) => (
+                    <>
+                      <VFormField required label={'Coordinator'} className={'col-span-4'}>
+                        <StaffSelect
+                          onValueChane={field.onChange}
+                          value={field.value || null}
                         />
                       </VFormField>
                     </>
@@ -272,19 +289,21 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       )}
                     />
 
-                    {i_am_the_operation_office ? (
-                      <FormField
-                        name={'operation_coordinator_id'}
-                        control={form.control}
-                        render={({ field }) => (
-                          <>
-                            <VFormField label={'Operation Office Coordinator'} className={'col-span-6'}>
-                              <StaffSelect params={{ cross_org: true }} onValueChane={field.onChange} value={field.value ?? null} />
-                            </VFormField>
-                          </>
-                        )}
-                      />
-                    ) : null}
+                    <FormField
+                      name={'operation_coordinator_id'}
+                      control={form.control}
+                      render={({ field }) => (
+                        <>
+                          <VFormField label={'Operation Office Coordinator'} className={'col-span-6'}>
+                            <StaffSelect
+                              params={{ org: form.watch('operation_org_id') }}
+                              onValueChane={field.onChange}
+                              value={field.value ?? null}
+                            />
+                          </VFormField>
+                        </>
+                      )}
+                    />
                   </div>
                 ) : null}
 

@@ -64,11 +64,17 @@ class AssignmentInspectorController extends Controller
             'travel_rate' => $budget?->travel_rate ?? 0,
         ];
 
+
         $assignment_inspector = AssignmentInspector::query()
             ->updateOrCreate([
                 'user_id' => $request->validated('user_id'),
                 'assignment_id' => $request->validated('assignment_id'),
             ], $data);
+
+        if ($assignment->status < Assignment::ASSIGNED) {
+            $assignment->status = Assignment::ASSIGNED;
+            $assignment->save();
+        }
 
         return [
             'message' => 'Inspector assigned successfully.',
@@ -123,6 +129,18 @@ class AssignmentInspectorController extends Controller
         $assignment_inspector->signature_base64 = $validated['signature_base64'];
 
         $assignment_inspector->save();
+
+        $assignment = $assignment_inspector->assignment;
+
+        if ($assignment->status < Assignment::PARTIAL_ACKED) {
+            $assignment->status = Assignment::PARTIAL_ACKED;
+        }
+
+        if (! ($assignment->assignment_inspectors()->whereNull('acked_at')->exists())) {
+            $assignment->status = Assignment::ACKED;
+        }
+
+        $assignment->save();
 
         return [
             'message' => 'Inspector acknowledged successfully.',

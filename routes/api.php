@@ -66,7 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::post('assignments/{id}/notify-inspector', [AssignmentController::class, 'notify'])->name('assignments.notify_inspector');
     Route::get('assignments/{assignment}/pdf', [AssignmentController::class, 'pdf']);
     Route::get('assignments/{assignment}/timesheet-reports', [AssignmentController::class, 'timesheet_reports']);
-
+    Route::post('assignments/{assignment}/send-to-operation-office', [AssignmentController::class, 'send']);
+    Route::post('assignments/{assignment}/accept', [AssignmentController::class, 'accept']);
+    Route::post('assignments/{assignment}/reject', [AssignmentController::class, 'reject']);
     // Timesheets
     Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);

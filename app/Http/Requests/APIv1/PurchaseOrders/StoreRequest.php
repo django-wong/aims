@@ -19,7 +19,12 @@ class StoreRequest extends FormRequest
             'title' => 'required|string|max:255',
             'project_id' => 'required|exists:projects,id',
             'quote_id' => 'nullable|exists:quotes,id',
+
             'budget' => 'required|numeric|min:0|max:999999999999.99',
+
+            'currency' => 'nullable|string|size:3',
+            'mileage_unit' => 'nullable|string|in:km,miles',
+
             'first_alert_threshold' => [
                 'nullable',
                 'integer',
@@ -95,22 +100,24 @@ class StoreRequest extends FormRequest
             'title',
             'quote_id',
             'budget',
-            'hourly_rate',
+            // 'hourly_rate',
+            'currency',
+            'mileage_unit',
             'first_alert_threshold',
             'second_alert_threshold',
             'final_alert_threshold'
         ]);
     }
 
-    /**
-     * Prepare the data for validation.
-     */
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'first_alert_threshold' => $this->first_alert_threshold ?? 70,
-            'second_alert_threshold' => $this->second_alert_threshold ?? 90,
-            'final_alert_threshold' => $this->final_alert_threshold ?? 100,
-        ]);
-    }
+    // /**
+    //  * Prepare the data for validation.
+    //  */
+    // protected function prepareForValidation(): void
+    // {
+    //     $this->merge([
+    //         'first_alert_threshold' => $this->first_alert_threshold ?? 70,
+    //         'second_alert_threshold' => $this->second_alert_threshold ?? 90,
+    //         'final_alert_threshold' => $this->final_alert_threshold ?? 100,
+    //     ]);
+    // }
 }

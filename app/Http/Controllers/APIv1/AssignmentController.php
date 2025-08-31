@@ -5,11 +5,15 @@ namespace App\Http\Controllers\APIv1;
 use App\Http\Requests\APIv1\Assignments\SignOffRequest;
 use App\Http\Requests\APIv1\Assignments\StoreRequest;
 use App\Http\Requests\APIv1\Assignments\UpdateRequest;
+use App\Http\Requests\APIv1\DeleteAssignmentRequest;
+use App\Http\Requests\APIv1\RejectAssignmentRequest;
 use App\Models\Assignment;
+use App\Models\Comment;
 use App\Models\Org;
 use App\Models\Project;
 use App\Models\Timesheet;
 use App\Models\TimesheetReport;
+use App\Notifications\NewAssignmentDelegated;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -34,6 +38,43 @@ class AssignmentController extends Controller
     //         )
     //     ];
     // }
+
+    public function reject(RejectAssignmentRequest $request, Assignment $assignment)
+    {
+        Comment::quick($request->validated('message'), for: $assignment);
+
+        $assignment->update([
+            'status' => Assignment::REJECTED,
+        ]);
+
+        return [
+            'message' => 'You have rejected the assignment.',
+        ];
+    }
+
+    public function send(Assignment $assignment)
+    {
+        $assignment->status = Assignment::ISSUED;
+        $assignment->save();
+
+        $assignment->operation_coordinator?->notify(
+            new NewAssignmentDelegated($assignment)
+        );
+
+        return [
+            'message' => 'Assignment sent to operation office successfully.',
+        ];
+    }
+
+    public function accept(Assignment $assignment)
+    {
+        $assignment->status = Assignment::ACCEPTED;
+        $assignment->save();
+
+        return [
+            'message' => 'You have accepted the assignment.',
+        ];
+    }
 
     protected function allowedIncludes()
     {
@@ -101,7 +142,15 @@ class AssignmentController extends Controller
     {
         Gate::authorize('create', [Assignment::class, Org::current()]);
 
-        $assignment = Org::current()->assignments()->create($request->validated());
+        $data = $request->validated();
+
+        // if ($request->validated('operation_org_id')) {
+        //     $data['status'] = Assignment::ISSUED;
+        // } else {
+        //     $data['status'] = Assignment::DRAFT;
+        // }
+
+        $assignment = Org::current()->assignments()->create($data);
 
         $request->saveAttachments(for: $assignment);
 
@@ -140,9 +189,13 @@ class AssignmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Assignment $assignment)
+    public function destroy(DeleteAssignmentRequest $request, Assignment $assignment)
     {
-        //
+        $assignment->delete();
+
+        return [
+            'message' => 'Assignment deleted successfully.',
+        ];
     }
 
     public function pdf(Assignment $assignment)

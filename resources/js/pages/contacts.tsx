@@ -14,6 +14,7 @@ import axios from 'axios';
 interface UseContactsTableOptions {
   contactable_id: number;
   contactable_type: string; // e.g. 'App\\Models\\Client', '
+  readonly: boolean;
 }
 
 function ContactActions(props: { contact: Contact }) {
@@ -48,58 +49,62 @@ function ContactActions(props: { contact: Contact }) {
   );
 }
 
-const columns: ColumnDef<Contact>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => row.original.name || 'N/A',
-  },
-  {
-    accessorKey: 'title',
-    header: 'Title',
-    cell: ({ row }) => (
-      <>
-        <Badge variant={'outline'}>{row.original.title || 'N/A'}</Badge>
-      </>
-    ),
-  },
-  {
-    accessorKey: 'company',
-    header: 'Company',
-    cell: ({ row }) => row.original.company || 'N/A',
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({ row }) => {
-      if (row.original.email) {
-        return (
-          <a href={`mailto:${row.original.email}`} className={'inline-flex items-center gap-1'}>
-            {row.original.email}
-          </a>
-        );
-      }
-      return 'N/A';
-    },
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: ({ row }) => row.original.phone || 'N/A',
-  },
-  {
-    accessorKey: 'mobile',
-    header: 'Mobile',
-    cell: ({ row }) => row.original.mobile || 'N/A',
-  },
-  {
-    accessorKey: 'actions',
-    header: () => <div className={'text-right'}>Actions</div>,
-    cell: ({ row }) => <ContactActions contact={row.original} />,
-  },
-];
 
 export function useContactsTable(props: UseContactsTableOptions) {
+  const columns: ColumnDef<Contact>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => row.original.name || 'N/A',
+    },
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      cell: ({ row }) => (
+        <>
+          <Badge variant={'outline'}>{row.original.title || 'N/A'}</Badge>
+        </>
+      ),
+    },
+    {
+      accessorKey: 'company',
+      header: 'Company',
+      cell: ({ row }) => row.original.company || 'N/A',
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => {
+        if (row.original.email) {
+          return (
+            <a href={`mailto:${row.original.email}`} className={'inline-flex items-center gap-1'}>
+              {row.original.email}
+            </a>
+          );
+        }
+        return 'N/A';
+      },
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => row.original.phone || 'N/A',
+    },
+    {
+      accessorKey: 'mobile',
+      header: 'Mobile',
+      cell: ({ row }) => row.original.mobile || 'N/A',
+    },
+  ];
+
+  if (!props.readonly) {
+    columns.push({
+      accessorKey: 'actions',
+      header: () => <div className={'text-right'}>Actions</div>,
+      cell: ({ row }) => <ContactActions contact={row.original} />,
+    });
+  }
+
   const table = useTable<Contact>('/api/v1/contacts', {
     columns,
     defaultParams: {
@@ -137,12 +142,16 @@ export function useContactsTable(props: UseContactsTableOptions) {
           right={
             <>
               <ColumnToggle/>
-              <ContactForm
-                contactable_id={props.contactable_id}
-                contactable_type={props.contactable_type}
-                onSubmit={() => {table.reload()}}>
-                <Button>Add New</Button>
-              </ContactForm>
+              {
+                props.readonly ? null : (
+                  <ContactForm
+                    contactable_id={props.contactable_id}
+                    contactable_type={props.contactable_type}
+                    onSubmit={() => {table.reload()}}>
+                    <Button>Add New</Button>
+                  </ContactForm>
+                )
+              }
             </>
           }
         />

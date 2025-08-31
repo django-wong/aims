@@ -31,6 +31,8 @@ class StoreRequest extends FormRequest
                 }
             ],
 
+            'coordinator_id' => 'nullable|exists:users,id',
+
             'client_po' => 'nullable|string|max:255',
             'client_po_rev' => 'nullable|string|max:255',
             'po_delivery_date' => 'nullable|date',
@@ -54,6 +56,7 @@ class StoreRequest extends FormRequest
                     }
                 }
             ],
+            'operation_coordinator_id' => 'nullable|exists:users,id',
 
             // Visit fields
             'first_visit_date' => 'nullable|date',

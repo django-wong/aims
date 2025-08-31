@@ -73,7 +73,7 @@ class UserController extends Controller
         return response()->json(
             $this->getQueryBuilder()
                 ->where(function (Builder $query) use ($request) {
-                    $query->ofOrg($request->user()->org->id);
+                    $query->ofOrg($request->input('org', $request->user()->org->id));
                 })
                 ->paginate()
         );

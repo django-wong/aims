@@ -15,7 +15,7 @@ import { VFormField } from '@/components/vform';
 import { InspectorSelect } from '@/components/user-select';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, PlusIcon, UserRoundPlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useReactiveForm } from '@/hooks/use-form';
 import { z } from 'zod';
@@ -57,7 +57,10 @@ export function AddInspectorToAssignment() {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>Add Inspector</Button>
+          <Button variant={'outline'}>
+            <UserRoundPlusIcon/>
+            Add Inspector
+          </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

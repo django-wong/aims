@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\UpdatePurchaseOrderRequest;
 use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,9 +83,14 @@ class PurchaseOrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PurchaseOrder $purchaseOrder)
+    public function update(UpdatePurchaseOrderRequest $request, PurchaseOrder $purchase_order)
     {
-        //
+        $purchase_order->update($request->basic());
+
+        return [
+            'message' => 'Purchase order updated successfully.',
+            'data' => $purchase_order
+        ];
     }
 
     /**

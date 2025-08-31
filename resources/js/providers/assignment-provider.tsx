@@ -15,7 +15,7 @@ export function useIsOperationOffice() {
 
   const assignment = useAssignment();
 
-  if (assignment?.operation_office_id && org?.id && assignment.operation_org_id === org.id) {
+  if (assignment?.operation_org_id && org?.id && assignment.operation_org_id === org.id) {
     return true;
   }
 

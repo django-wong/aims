@@ -195,14 +195,29 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
   budgeted_mileage: number;
 }
 
+export enum AssignmentStatus {
+  DRAFT = 0,
+  ISSUED = 1,
+  REJECTED = 2,
+  ACCEPTED = 3,
+  ASSIGNED = 4,
+  PARTIAL_ACKED = 5,
+  ACKED = 6,
+}
+
 export interface Assignment extends BaseModel {
   reference_number: string | null;
   previous_reference_number: string | null;
 
   org_id: number;
   org?: Org;
+  coordinator_id: number | null;
+  coordinator?: User;
+
   operation_org_id: number | null;
   operation_org?: Org;
+  operation_coordinator_id: number | null;
+  operation_coordinator?: User;
 
   assignment_inspectors?: AssignmentInspector[];
 
@@ -218,6 +233,10 @@ export interface Assignment extends BaseModel {
   description: string | null;
   notes: string | null;
   timesheets?: Timesheet[];
+
+  po_delivery_date: string | null;
+
+  status: AssignmentStatus;
 
   skill_id: number | null;
   skill?: Skill;

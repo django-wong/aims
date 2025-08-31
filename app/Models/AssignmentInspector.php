@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property mixed                            $travel_rate
  * @property int                              $user_id
  * @property \Illuminate\Support\Carbon|mixed $acked_at
- * @property string                            $signature_base64
+ * @property string                           $signature_base64
+ * @property Assignment                            $assignment
  */
 class AssignmentInspector extends Model
 {

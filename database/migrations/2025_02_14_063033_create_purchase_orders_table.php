@@ -17,11 +17,19 @@ return new class extends Migration
             $table->foreignId('org_id')->constrained();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('quote_id')->nullable()->constrained();
+
+            $table->string('mileage_unit', 10, 2)->default('km')->comment('km or miles');
+            $table->string('currency', 3)->default('AUD');
+
             $table->decimal('budget', 15, 2)->default(0.00);
+            $table->decimal('budgeted_hours', 10, 2)->default(0.00);
+            $table->decimal('budgeted_mileage', 10, 2)->default(0.00);
+
             foreach (['first', 'second', 'final'] as $stage) {
                 $table->unsignedInteger($stage.'_alert_threshold')->default(70);
                 $table->timestamp($stage.'_alert_at')->nullable();
             }
+
             $table->index(['org_id', 'project_id']);
             $table->timestamps();
             $table->softDeletes();
