@@ -60,6 +60,7 @@ class Assignment extends Model implements Commentable, Attachable
             'packing' => 'boolean',
             'document_review' => 'boolean',
             'expediting' => 'boolean',
+            'delegated' => 'boolean',
             'audit' => 'boolean',
             'exit_call' => 'boolean',
             'flash_report' => 'boolean',

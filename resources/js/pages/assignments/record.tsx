@@ -25,6 +25,7 @@ import {
   BookmarkCheck,
   ClockIcon,
   MessageCircleIcon,
+  PaperclipIcon,
   Plus,
   SendIcon,
   SignatureIcon,
@@ -33,6 +34,8 @@ import {
 import { startTransition, useRef, useState } from 'react';
 import SignaturePad, { SignatureCanvas } from 'react-signature-canvas';
 import { SizeAwareBuilder } from '@/components/size-aware-builder';
+import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
+import { AssignmentProvider } from '@/providers/assignment-provider';
 
 interface RecordProps {
   assignment: Assignment;
@@ -81,51 +84,60 @@ export default function Record(props: RecordProps) {
   }
 
   return (
-    <TimesheetProvider value={props.timesheet}>
-      <BaseLayout>
-        <Head title={props.assignment.project?.title} />
-        <div className={'flex w-full flex-1 flex-col'}>
-          <>
+    <AssignmentProvider value={props.assignment}>
+      <TimesheetProvider value={props.timesheet}>
+        <BaseLayout>
+          <Head title={props.assignment.project?.title} />
+          <div className={'flex w-full flex-1 flex-col'}>
             <>
-              <div className={'z-10 p-6 py-8 shadow-sm'}>
-                <div>
-                  <div className={'mb-4 flex items-center justify-between'}>
-                    <div className={'-ml-3 flex items-center gap-2 text-3xl font-bold'}>
-                      <BookmarkCheck className={'h-16 w-16'} />
-                    </div>
-                    <div className={'hidden gap-4 sm:flex'}>
-                      <Button variant={'outline'}>
-                        <span className={'hidden md:inline'}>{page.props.auth.user?.name}</span>
-                        <UserCircle />
-                      </Button>
+              <>
+                <div className={'z-10 p-6 py-8 shadow-sm'}>
+                  <div>
+                    <div className={'mb-4 flex items-center justify-between'}>
+                      <div className={'-ml-3 flex items-center gap-2 text-3xl font-bold'}>
+                        <BookmarkCheck className={'h-16 w-16'} />
+                      </div>
+                      <div className={'hidden gap-4 sm:flex'}>
+                        <Button variant={'outline'}>
+                          <span className={'hidden md:inline'}>{page.props.auth.user?.name}</span>
+                          <UserCircle />
+                        </Button>
+                      </div>
                     </div>
                   </div>
+                  <div className={'flex flex-col gap-4'}>
+                    <h1 className={'text-xl font-bold'}>{props.assignment.project?.title}</h1>
+                    {/*<div className={'flex justify-start'}>*/}
+                    {/*  <div className={'flex items-center justify-start gap-2 rounded-lg border px-2 py-1 text-sm'}>*/}
+                    {/*    <House className={'w-4'} />*/}
+                    {/*    {(props.assignment.operation_org || props.assignment.org)?.name ?? 'Org Name'}*/}
+                    {/*  </div>*/}
+                    {/*</div>*/}
+                  </div>
                 </div>
-                <div className={'flex flex-col gap-4'}>
-                  <h1 className={'text-xl font-bold'}>{props.assignment.project?.title}</h1>
-                  {/*<div className={'flex justify-start'}>*/}
-                  {/*  <div className={'flex items-center justify-start gap-2 rounded-lg border px-2 py-1 text-sm'}>*/}
-                  {/*    <House className={'w-4'} />*/}
-                  {/*    {(props.assignment.operation_org || props.assignment.org)?.name ?? 'Org Name'}*/}
-                  {/*  </div>*/}
-                  {/*</div>*/}
-                </div>
-              </div>
-              <TwoColumnLayout73
-                className={'relative'}
-                left={
-                  <Tabs value={hash} onValueChange={setHash} className={'h-full gap-6'}>
-                    <TabsList>
-                      <TabsTrigger value={'timesheet'}>
-                        <ClockIcon />
-                        <span className={'hidden sm:inline'}>Timesheet</span>
-                      </TabsTrigger>
-                      <TabsTrigger value={'comments'}>
-                        <MessageCircleIcon />
-                        <span className={'hidden sm:inline'}>Comments & Attachments</span>
-                      </TabsTrigger>
-                    </TabsList>
-                    <Info className={'relative flex flex-1 flex-col'}>
+                <TwoColumnLayout73
+                  className={'relative'}
+                  left={
+                    <Tabs value={hash} onValueChange={setHash} className={'h-full gap-6'}>
+                      <TabsList>
+                        <TabsTrigger value={'timesheet'}>
+                          <ClockIcon />
+                          <span className={'hidden sm:inline'}>Timesheet</span>
+                        </TabsTrigger>
+                        <TabsTrigger value={'attachments'}>
+                          <PaperclipIcon />
+                          <span className={'hidden sm:inline'}>
+                            Attachments
+                          </span>
+                        </TabsTrigger>
+                        <TabsTrigger value={'comments'}>
+                          <MessageCircleIcon />
+                          <span className={'hidden sm:inline'}>Comments & Attachments</span>
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value={'attachments'}>
+                        <AssignmentAttachments />
+                      </TabsContent>
                       <TabsContent value={'timesheet'} className={'relative flex flex-1 flex-col gap-4'}>
                         <TimesheetItems
                           actions={(value) => {
@@ -196,192 +208,192 @@ export default function Record(props: RecordProps) {
                       <TabsContent value={'comments'}>
                         <Comments commentableType={'Assignment'} commentableId={props.assignment.id} />
                       </TabsContent>
-                    </Info>
-                  </Tabs>
-                }
-                right={
-                  <Info>
-                    <InfoHead>Details</InfoHead>
-                    <div>
-                      <InfoLine label={'BIE Reference Number'}>
-                        <Badge>
-                          {props.assignment.reference_number}
-                        </Badge>
-                      </InfoLine>
-                      <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
-                      <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
-                      <InfoLine label={'Discipline'}>
-                        <Badge>{props.inspection.assignment_type?.name}</Badge>
-                      </InfoLine>
-                      <InfoLine label={'Vendor'}>{props.assignment.vendor?.name}</InfoLine>
-                      {props.assignment.sub_vendor && <InfoLine label={'Sub Vendor'}>{props.assignment.sub_vendor?.name}</InfoLine>}
-                      {props.assignment.equipment && (
-                        <InfoLine label={'Equipment'}>
-                          <InfoLineValue className="whitespace-pre-wrap">{props.assignment.equipment}</InfoLineValue>
+                    </Tabs>
+                  }
+                  right={
+                    <Info>
+                      <InfoHead>Details</InfoHead>
+                      <div>
+                        <InfoLine label={'BIE Reference Number'}>
+                          <Badge>
+                            {props.assignment.reference_number}
+                          </Badge>
                         </InfoLine>
-                      )}
-                    </div>
+                        <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
+                        <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
+                        <InfoLine label={'Discipline'}>
+                          <Badge>{props.inspection.assignment_type?.name}</Badge>
+                        </InfoLine>
+                        <InfoLine label={'Vendor'}>{props.assignment.vendor?.name}</InfoLine>
+                        {props.assignment.sub_vendor && <InfoLine label={'Sub Vendor'}>{props.assignment.sub_vendor?.name}</InfoLine>}
+                        {props.assignment.equipment && (
+                          <InfoLine label={'Equipment'}>
+                            <InfoLineValue className="whitespace-pre-wrap">{props.assignment.equipment}</InfoLineValue>
+                          </InfoLine>
+                        )}
+                      </div>
 
-                    <Accordion type={'multiple'}>
-                      <AccordionItem value={'visit-information'}>
-                        <AccordionTrigger>Visit Information</AccordionTrigger>
-                        <AccordionContent>
-                          <div>
-                            <InfoLine label={'First Visit Date'}>{props.assignment.first_visit_date || 'N/A'}</InfoLine>
-                            <InfoLine label={'Visit Frequency'}>{props.assignment.visit_frequency || 'N/A'}</InfoLine>
-                            <InfoLine label={'Total Visits'}>{props.assignment.total_visits || 'N/A'}</InfoLine>
-                            <InfoLine label={'Hours per Visit'}>{props.assignment.hours_per_visit || 'N/A'}</InfoLine>
-                            <InfoLine label={'Visit Contact'}>{props.assignment.visit_contact?.name || 'N/A'}</InfoLine>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
+                      <Accordion type={'multiple'}>
+                        <AccordionItem value={'visit-information'}>
+                          <AccordionTrigger>Visit Information</AccordionTrigger>
+                          <AccordionContent>
+                            <div>
+                              <InfoLine label={'First Visit Date'}>{props.assignment.first_visit_date || 'N/A'}</InfoLine>
+                              <InfoLine label={'Visit Frequency'}>{props.assignment.visit_frequency || 'N/A'}</InfoLine>
+                              <InfoLine label={'Total Visits'}>{props.assignment.total_visits || 'N/A'}</InfoLine>
+                              <InfoLine label={'Hours per Visit'}>{props.assignment.hours_per_visit || 'N/A'}</InfoLine>
+                              <InfoLine label={'Visit Contact'}>{props.assignment.visit_contact?.name || 'N/A'}</InfoLine>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
 
-                      <AccordionItem value={'scope-of-assignment'}>
-                        <AccordionTrigger>Scope of the assignment</AccordionTrigger>
-                        <AccordionContent>
-                          <div>
-                            <InfoLine label={'Pre-inspection Meeting'}>
-                              <Badge variant="outline">{props.assignment.pre_inspection_meeting ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Final Inspection'}>
-                              <Badge variant="outline">{props.assignment.final_inspection ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Dimensional'}>
-                              <Badge variant="outline">{props.assignment.dimensional ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Sample Inspection'}>
-                              <Badge variant="outline">{props.assignment.sample_inspection ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Witness of Tests'}>
-                              <Badge variant="outline">{props.assignment.witness_of_tests ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Monitoring'}>
-                              <Badge variant="outline">{props.assignment.monitoring ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Packing'}>
-                              <Badge variant="outline">{props.assignment.packing ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Document Review'}>
-                              <Badge variant="outline">{props.assignment.document_review ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Expediting'}>
-                              <Badge variant="outline">{props.assignment.expediting ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Audit'}>
-                              <Badge variant="outline">{props.assignment.audit ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
+                        <AccordionItem value={'scope-of-assignment'}>
+                          <AccordionTrigger>Scope of the assignment</AccordionTrigger>
+                          <AccordionContent>
+                            <div>
+                              <InfoLine label={'Pre-inspection Meeting'}>
+                                <Badge variant="outline">{props.assignment.pre_inspection_meeting ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Final Inspection'}>
+                                <Badge variant="outline">{props.assignment.final_inspection ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Dimensional'}>
+                                <Badge variant="outline">{props.assignment.dimensional ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Sample Inspection'}>
+                                <Badge variant="outline">{props.assignment.sample_inspection ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Witness of Tests'}>
+                                <Badge variant="outline">{props.assignment.witness_of_tests ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Monitoring'}>
+                                <Badge variant="outline">{props.assignment.monitoring ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Packing'}>
+                                <Badge variant="outline">{props.assignment.packing ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Document Review'}>
+                                <Badge variant="outline">{props.assignment.document_review ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Expediting'}>
+                                <Badge variant="outline">{props.assignment.expediting ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Audit'}>
+                                <Badge variant="outline">{props.assignment.audit ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
 
-                      <AccordionItem value={'status-flash-report'}>
-                        <AccordionTrigger>Status / flash report</AccordionTrigger>
-                        <AccordionContent>
-                          <div>
-                            <InfoLine label={'Exit Call Required'}>
-                              <Badge variant="outline">{props.assignment.exit_call ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Flash Report Required'}>
-                              <Badge variant="outline">{props.assignment.flash_report ? 'Yes' : 'No'}</Badge>
-                            </InfoLine>
-                            {props.assignment.contact_details && <InfoLine label={'Contact Details'}>{props.assignment.contact_details}</InfoLine>}
-                            {props.assignment.contact_email && <InfoLine label={'Contact Email'}>{props.assignment.contact_email}</InfoLine>}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
+                        <AccordionItem value={'status-flash-report'}>
+                          <AccordionTrigger>Status / flash report</AccordionTrigger>
+                          <AccordionContent>
+                            <div>
+                              <InfoLine label={'Exit Call Required'}>
+                                <Badge variant="outline">{props.assignment.exit_call ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Flash Report Required'}>
+                                <Badge variant="outline">{props.assignment.flash_report ? 'Yes' : 'No'}</Badge>
+                              </InfoLine>
+                              {props.assignment.contact_details && <InfoLine label={'Contact Details'}>{props.assignment.contact_details}</InfoLine>}
+                              {props.assignment.contact_email && <InfoLine label={'Contact Email'}>{props.assignment.contact_email}</InfoLine>}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
 
-                      <AccordionItem value={'report-format'}>
-                        <AccordionTrigger>Report format</AccordionTrigger>
-                        <AccordionContent>
-                          <div>
-                            <InfoLine label={'Reporting Format'}>
-                              <Badge variant="outline">{props.assignment.reporting_format === 0 ? 'BIE' : 'Client'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Reporting Frequency'}>
-                              <Badge variant="outline">{props.assignment.reporting_frequency === 0 ? 'Daily' : 'Weekly'}</Badge>
-                            </InfoLine>
-                            {props.assignment.send_report_to && (
-                              <InfoLine label={'Send Report To'}>{props.assignment.send_report_to === 0 ? 'BIE' : 'CLIENT'}</InfoLine>
-                            )}
-                            <InfoLine label={'Timesheet Format'}>
-                              <Badge variant="outline">{props.assignment.timesheet_format === 0 ? 'BIE' : 'Client'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'NCR Format'}>
-                              <Badge variant="outline">{props.assignment.ncr_format === 0 ? 'BIE' : 'Client'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Punch List Format'}>
-                              <Badge variant="outline">{props.assignment.punch_list_format === 0 ? 'BIE' : 'Client'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'IRN Format'}>
-                              <Badge variant="outline">{props.assignment.irn_format === 0 ? 'BIE' : 'Client'}</Badge>
-                            </InfoLine>
-                            <InfoLine label={'Document Stamp'}>
-                              <Badge variant="outline">{props.assignment.document_stamp === 0 ? 'BIE' : 'Sign'}</Badge>
-                            </InfoLine>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                        <AccordionItem value={'report-format'}>
+                          <AccordionTrigger>Report format</AccordionTrigger>
+                          <AccordionContent>
+                            <div>
+                              <InfoLine label={'Reporting Format'}>
+                                <Badge variant="outline">{props.assignment.reporting_format === 0 ? 'BIE' : 'Client'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Reporting Frequency'}>
+                                <Badge variant="outline">{props.assignment.reporting_frequency === 0 ? 'Daily' : 'Weekly'}</Badge>
+                              </InfoLine>
+                              {props.assignment.send_report_to && (
+                                <InfoLine label={'Send Report To'}>{props.assignment.send_report_to === 0 ? 'BIE' : 'CLIENT'}</InfoLine>
+                              )}
+                              <InfoLine label={'Timesheet Format'}>
+                                <Badge variant="outline">{props.assignment.timesheet_format === 0 ? 'BIE' : 'Client'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'NCR Format'}>
+                                <Badge variant="outline">{props.assignment.ncr_format === 0 ? 'BIE' : 'Client'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Punch List Format'}>
+                                <Badge variant="outline">{props.assignment.punch_list_format === 0 ? 'BIE' : 'Client'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'IRN Format'}>
+                                <Badge variant="outline">{props.assignment.irn_format === 0 ? 'BIE' : 'Client'}</Badge>
+                              </InfoLine>
+                              <InfoLine label={'Document Stamp'}>
+                                <Badge variant="outline">{props.assignment.document_stamp === 0 ? 'BIE' : 'Sign'}</Badge>
+                              </InfoLine>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
 
-                    <InfoHead>Notes</InfoHead>
-                    <InfoLineValue className={'justify-start'}>{props.assignment.notes}</InfoLineValue>
+                      <InfoHead>Notes</InfoHead>
+                      <InfoLineValue className={'justify-start'}>{props.assignment.notes || 'N/A'}</InfoLineValue>
 
-                    <InfoHead>Special Notes</InfoHead>
-                    <InfoLineValue className={'justify-start'}>
-                      <DialogWrapper
-                        {...(requireSignature ? {
-                          onPointerDownOutside: (event) => {
-                            event.preventDefault();
-                            return false;
-                          },
-                          showCloseButton: false,
-                          onEscapeKeyDown: (event) => {
-                            event.preventDefault();
-                            return false;
-                          },
-                          footer: <>
-                            <DialogWrapper
-                              open={signaturePadOpen}
-                              onOpenChange={setSignaturePadOpen}
-                              innerContentClassName={'!p-0'}
-                              trigger={
-                                <Button>
-                                  Sign to acknowledge <SignatureIcon/>
-                                </Button>
-                              }
-                              description={'You must sign to acknowledge that you have read and understood the requirement.'}
-                              title={'Please sign in the space below'}
-                              footer={<>
-                                <Button onClick={ack}>Submit</Button>
-                              </>}
-                            >
-                              <SizeAwareBuilder
-                                className={'w-full aspect-video'}
-                                builder={(size) => <SignaturePad ref={signaturepad} canvasProps={{ ...size }} />}
-                              />
-                            </DialogWrapper>
-                          </>
-                        } : {
+                      <InfoHead>Special Notes</InfoHead>
+                      <InfoLineValue className={'justify-start'}>
+                        <DialogWrapper
+                          {...(requireSignature ? {
+                            onPointerDownOutside: (event) => {
+                              event.preventDefault();
+                              return false;
+                            },
+                            showCloseButton: false,
+                            onEscapeKeyDown: (event) => {
+                              event.preventDefault();
+                              return false;
+                            },
+                            footer: <>
+                              <DialogWrapper
+                                open={signaturePadOpen}
+                                onOpenChange={setSignaturePadOpen}
+                                innerContentClassName={'!p-0'}
+                                trigger={
+                                  <Button>
+                                    Sign to acknowledge <SignatureIcon/>
+                                  </Button>
+                                }
+                                description={'You must sign to acknowledge that you have read and understood the requirement.'}
+                                title={'Please sign in the space below'}
+                                footer={<>
+                                  <Button onClick={ack}>Submit</Button>
+                                </>}
+                              >
+                                <SizeAwareBuilder
+                                  className={'w-full aspect-video'}
+                                  builder={(size) => <SignaturePad ref={signaturepad} canvasProps={{ ...size }} />}
+                                />
+                              </DialogWrapper>
+                            </>
+                          } : {
 
-                        })}
-                        open={showSpecialNotes}
-                        onOpenChange={setShowSpecialNotes}
-                        className={'sm:max-w-4xl'}
-                        trigger={<Button className={'w-full'}>View</Button>}
-                        description={'Read this carefully before starting work on this assignment.'}
-                        title={'Special Notes'}
-                      >
-                        <div className={'prose'} dangerouslySetInnerHTML={{__html: props.assignment.special_notes ?? 'No special notes available.'}}/>
-                      </DialogWrapper>
-                    </InfoLineValue>
-                  </Info>
-                }
-              />
+                          })}
+                          open={showSpecialNotes}
+                          onOpenChange={setShowSpecialNotes}
+                          className={'sm:max-w-4xl'}
+                          trigger={<Button className={'w-full'}>View</Button>}
+                          description={'Read this carefully before starting work on this assignment.'}
+                          title={'Special Notes'}
+                        >
+                          <div className={'prose'} dangerouslySetInnerHTML={{__html: props.assignment.special_notes ?? 'No special notes available.'}}/>
+                        </DialogWrapper>
+                      </InfoLineValue>
+                    </Info>
+                  }
+                />
+              </>
             </>
-          </>
-        </div>
-      </BaseLayout>
-    </TimesheetProvider>
+          </div>
+        </BaseLayout>
+      </TimesheetProvider>
+    </AssignmentProvider>
   );
 }
 

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -27,6 +28,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Support\Facades\Gate::define('viewDashboard', function (User $user) {
+            return $user->isAnyRole([
+                UserRole::SYSTEM,
+                UserRole::ADMIN,
+                UserRole::PM,
+                UserRole::STAFF
+            ]);
+        });
+
         RedirectIfAuthenticated::redirectUsing(function ($request) {
             if (! $request->user()->org()->exists()) {
                 return route('setup');

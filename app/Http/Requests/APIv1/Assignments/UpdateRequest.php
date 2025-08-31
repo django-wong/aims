@@ -15,7 +15,7 @@ class UpdateRequest extends StoreRequest
         return Gate::allows('update', $this->route('assignment'));
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             ...parent::rules(),

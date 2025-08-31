@@ -12,13 +12,17 @@ use App\Models\Comment;
 use App\Models\Org;
 use App\Models\Project;
 use App\Models\Timesheet;
+use App\Models\TimesheetItem;
 use App\Models\TimesheetReport;
 use App\Notifications\NewAssignmentDelegated;
 use App\Notifications\NewAssignmentIssued;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use PhpParser\Node\Expr\Assign;
 use Spatie\QueryBuilder\AllowedFilter;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -54,6 +58,12 @@ class AssignmentController extends Controller
 
     public function send(Assignment $assignment)
     {
+        if (empty($assignment->operation_coordinator)) {
+            return response()->json([
+                'message' => 'Please assign an operation coordinator before sending the assignment to operation office.',
+            ], 422);
+        }
+
         $assignment->status = Assignment::ISSUED;
         $assignment->save();
 
@@ -203,26 +213,60 @@ class AssignmentController extends Controller
         return Pdf::loadView('pdfs.assignment-form', ['assignment' => $assignment])->download("assignment-{$assignment->id}.pdf");
     }
 
-    public function daily_usage()
+    public function daily_usage(Request $request, Assignment $assignment)
     {
-        // TODO: Return the hours logged by type in last 60 days
-        $start = (new \DateTime())->modify('-60 days');
+        $validated = $request->validate([
+            'range' => 'required|in:-7 days,-30 days,-90 days',
+        ]);
+
+        $start = (new \DateTime())->modify($validated['range']);
         $end = new \DateTime();
 
         $data_by_date = [];
 
-        while ($start <= $end) {
-            $data_by_date[$start->format('Y-m-d')] = [
-                'work' => 0,
-                'travel' => 0,
-                'remote' => 0,
+        $timesheet_items = TimesheetItem::query()->whereBetween('date', [$start->format('Y-m-d'), $end->format('Y-m-d')])
+            ->select([
+                'date',
+                \DB::raw('SUM(work_hours) as work'),
+                \DB::raw('SUM(travel_hours) as travel'),
+                \DB::raw('SUM(report_hours) as remote'),
+            ])
+            ->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
+                $query->select('id')
+                    ->from('timesheets')
+                    ->where('status', '>', Timesheet::DRAFT)
+                    ->where('assignment_id', $assignment->id);
+            })
+            ->groupBy('date')
+            ->get();
+
+        foreach ($timesheet_items as $item) {
+            $data_by_date[$item->date->format('Y-m-d')] = [
+                'work' => (int)$item->work,
+                'travel' => (int)$item->travel,
+                'remote' => (int)$item->remote,
             ];
+        }
+
+        while ($start <= $end) {
+            if (empty($data_by_date[$start->format('Y-m-d')])) {
+                $data_by_date[$start->format('Y-m-d')] = [
+                    'work' => 0, 'travel' => 0, 'remote' => 0,
+                ];
+            }
             $start->modify('+1 day');
         }
 
-        return [
-            'data' => $data_by_date
-        ];
+        ksort($data_by_date);
+
+        $usage = [];
+
+        foreach ($data_by_date as $date => $data) {
+            $data['date'] = $date;
+            $usage[] = $data;
+        }
+
+        return ['data' => $usage];
     }
 
     public function next_assignment_number()

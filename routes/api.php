@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('assignments/{assignment}/send-to-operation-office', [AssignmentController::class, 'send']);
     Route::post('assignments/{assignment}/accept', [AssignmentController::class, 'accept']);
     Route::post('assignments/{assignment}/reject', [AssignmentController::class, 'reject']);
+    Route::get('assignments/{assignment}/daily-usage', [AssignmentController::class, 'daily_usage']);
     // Timesheets
     Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);

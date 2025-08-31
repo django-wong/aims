@@ -1,7 +1,11 @@
 import { AttachmentList } from '@/components/attachments/list';
 import { useAssignment } from '@/providers/assignment-provider';
 
-export function AssignmentAttachments() {
+interface AssignmentAttachmentsProps {
+  allowUpload?: boolean;
+}
+
+export function AssignmentAttachments(props: AssignmentAttachmentsProps) {
   const assignment = useAssignment();
 
   if (!assignment) {
@@ -9,6 +13,6 @@ export function AssignmentAttachments() {
   }
 
   return <div>
-    <AttachmentList attachable_id={assignment.id} attachable_type={'assignment'}/>
+    <AttachmentList allowUpload={props.allowUpload} attachable_id={assignment.id} attachable_type={'assignment'} onUploadComplete={() => {}}/>
   </div>;
 }

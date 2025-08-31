@@ -28,18 +28,21 @@ import { VFormField } from '@/components/vform';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
 import { Assignment, DialogFormProps, SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState } from 'react';
-import z from 'zod';
-import { RefreshCcw } from 'lucide-react';
 import axios from 'axios';
+import { RefreshCcw } from 'lucide-react';
+import { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import z from 'zod';
 
-import { usePage } from '@inertiajs/react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
+import { usePage } from '@inertiajs/react';
+import { Switch } from '@/components/ui/switch';
 
 const schema = z.object({
   reference_number: z.string().min(1, 'Reference number is required').max(30, 'Reference number must be at most 30 characters'),
   previous_reference_number: z.string().max(30, 'Previous reference number must be at most 30 characters').nullable().optional(),
+
+  delegated: z.boolean(),
 
   project_id: z.number('Project is required').int().positive(),
 
@@ -48,15 +51,6 @@ const schema = z.object({
   // Delegate to operation (coordinating) office
   operation_org_id: z.number().int().positive().nullable(),
   operation_coordinator_id: z.number().int().positive().nullable().optional(),
-
-  delegates: z
-    .array(
-      z.object({
-        org_id: z.number().int().positive(),
-        name: z.string().optional(),
-      }),
-    )
-    .optional(),
 
   skill_id: z.number().int().positive().nullable().optional(),
 
@@ -72,9 +66,7 @@ const schema = z.object({
 
   i_e_a: z.string().nullable().optional(),
 
-  attachments: z.array(
-    z.file()
-  ).nullable().optional(),
+  attachments: z.array(z.file()).nullable().optional(),
 
   // Visit fields
   first_visit_date: z.string().nullable().optional(),
@@ -122,14 +114,12 @@ const schema = z.object({
 
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
   const {
-    props: {
-      auth
-    }
+    props: { auth },
   } = usePage<SharedData>();
 
   const isEdit = !!props.value;
 
-  const [type, setType] = useState(props.value?.operation_org_id ? 'delegate' : 'direct'); // 0 = direct assignment, 1 = delegated
+  // const [type, setType] = useState(props.value?.operation_org_id ? 'delegate' : 'direct'); // 0 = direct assignment, 1 = delegated
 
   const form = useReactiveForm<z.infer<typeof schema>, Assignment>({
     ...useResource('/api/v1/assignments', {
@@ -137,14 +127,15 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       inspectors: [],
       sub_vendor_id: null,
       vendor_id: null,
+      delegated: false,
       notes: '',
       report_required: false,
-      ...props.value
+      ...props.value,
     }),
     resolver: zodResolver(schema),
   });
 
-  const i_am_the_operation_office = props.value?.operation_org_id === auth.org?.id
+  const i_am_the_operation_office = props.value?.operation_org_id === auth.org?.id;
 
   useEffect(() => {
     if (props.value) {
@@ -177,843 +168,831 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
             <DialogTitle>Assignment</DialogTitle>
             <DialogDescription>Fill in the necessary details and submit.</DialogDescription>
           </DialogHeader>
-          <DialogInnerContent>
+          <DialogInnerContent className={'relative p-0'}>
             <Form {...form}>
-              <div className={'grid grid-cols-12 gap-8'}>
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Basic Information</div>
-
-                <div className={'col-span-6'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'BIE Reference Number'} required>
-                          <ReferenceNumber allowGenerate value={field.value || ''} onValueChange={field.onChange} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'reference_number'}
-                  />
-                </div>
-
-                <div className={'col-span-6'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Previous Reference Number'}>
-                          <Input value={field.value || ''} onChange={field.onChange}></Input>
-                        </VFormField>
-                      );
-                    }}
-                    name={'previous_reference_number'}
-                  />
-                </div>
-
-                <FormField
-                  name={'project_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField required label={'Project'} className={'col-span-4'}>
-                        <ProjectSelect onValueChane={field.onChange} value={field.value} />
-                      </VFormField>
-                    </>
-                  )}
-                />
-                <FormField
-                  name={'purchase_order_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField required label={'Purchase Order'} className={'col-span-4'}>
-                        <PurchaseOrderSelect
-                          onValueChane={field.onChange}
-                          value={field.value}
-                          params={{
-                            'filter[project_id]': form.watch('project_id') || '',
+              <div className={'px-6 py-4'}>
+                <Accordion type={'multiple'} defaultValue={['basic', 'client-po-vendor-equipment']}>
+                  <AccordionItem value={'basic'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Basic Information</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'BIE Reference Number'} required>
+                                <ReferenceNumber allowGenerate value={field.value || ''} onValueChange={field.onChange} />
+                              </VFormField>
+                            );
                           }}
+                          name={'reference_number'}
                         />
-                      </VFormField>
-                    </>
-                  )}
-                />
+                      </div>
 
-                <FormField
-                  name={'coordinator_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField required label={'Coordinator'} className={'col-span-4'}>
-                        <StaffSelect
-                          onValueChane={field.onChange}
-                          value={field.value || null}
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Previous Reference Number'}>
+                                <Input value={field.value || ''} onChange={field.onChange}></Input>
+                              </VFormField>
+                            );
+                          }}
+                          name={'previous_reference_number'}
                         />
-                      </VFormField>
-                    </>
-                  )}
-                />
-
-                {i_am_the_operation_office ? null : (
-                  <div className={'col-span-12 p-4 border rounded-lg bg-background ring-4 ring-accent'}>
-                    <RadioGroup defaultValue={type} disabled={isEdit} onValueChange={setType} className={'col-span-12'}>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="direct" id="r1" />
-                        <Label htmlFor="r1">Directly to inspector</Label>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="delegate" id="r2" />
-                        <Label htmlFor="r2">Delegate to operation office</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
 
-                {type === 'delegate' ? (
-                  <div className={'col-span-12 grid grid-cols-6 gap-4'}>
-                    <FormField
-                      name={'operation_org_id'}
-                      control={form.control}
-                      render={({ field }) => (
-                        <>
-                          <VFormField label={'Operation Office'} className={'col-span-6'}>
-                            <OrgSelect
-                              onValueChane={field.onChange}
-                              params={{
-                                'filter[id]': '!= :my_org',
-                              }}
-                              value={field.value}
+                      <FormField
+                        name={'project_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField required label={'Project'} className={'col-span-6'}>
+                              <ProjectSelect onValueChane={field.onChange} value={field.value} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+                      <FormField
+                        name={'purchase_order_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField required label={'Purchase Order'} className={'col-span-6'}>
+                              <PurchaseOrderSelect
+                                onValueChane={field.onChange}
+                                value={field.value}
+                                params={{
+                                  'filter[project_id]': form.watch('project_id') || '',
+                                }}
+                              />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+
+                      <FormField
+                        name={'coordinator_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField required label={'Coordinator'} className={'col-span-6'}>
+                              <StaffSelect onValueChane={field.onChange} value={field.value || null} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+
+                      {i_am_the_operation_office ? null : (
+                        <div className={'col-span-12 grid grid-cols-1 gap-6 bg-background p-6 rounded-md border'}>
+                          <FormField
+                            render={({ field }) => {
+                              return (
+                                <Label>
+                                  <Switch
+                                    required
+                                    disabled={isEdit}
+                                    checked={field.value}
+                                    onCheckedChange={(value) => {
+                                      field.onChange(value);
+                                      if (!value) {
+                                        form.setValue('operation_org_id', null);
+                                        form.setValue('operation_coordinator_id', null);
+                                      }
+                                    }}
+                                  />
+                                  Delegate to operation office
+                                </Label>
+                              );
+                            }}
+                            control={form.control}
+                            name={'delegated'}
+                          />
+
+                          {form.watch('delegated') ? (
+                            <div className={'grid grid-cols-6 gap-6'}>
+                              <FormField
+                                name={'operation_org_id'}
+                                control={form.control}
+                                render={({ field }) => (
+                                  <>
+                                    <VFormField label={'Operation Office'} className={'col-span-6'}>
+                                      <OrgSelect
+                                        onValueChane={field.onChange}
+                                        params={{
+                                          'filter[id]': '!= :my_org',
+                                        }}
+                                        value={field.value}
+                                      />
+                                    </VFormField>
+                                  </>
+                                )}
+                              />
+
+                              {form.watch('operation_org_id') && (
+                                <FormField
+                                  name={'operation_coordinator_id'}
+                                  control={form.control}
+                                  render={({ field }) => (
+                                    <>
+                                      <VFormField
+                                        description={'This person will receive the notifications.'}
+                                        label={'Operation Office Coordinator'}
+                                        className={'col-span-6'}
+                                      >
+                                        <StaffSelect
+                                          params={{ org: form.watch('operation_org_id') }}
+                                          onValueChane={field.onChange}
+                                          value={field.value ?? null}
+                                        />
+                                      </VFormField>
+                                    </>
+                                  )}
+                                />
+                              )}
+                            </div>
+                          ) : null}
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'client-po-vendor-equipment'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Client / PO / Vendor / Equipment</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6 pb-6'}>
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Client PO'}>
+                                <Input value={field.value || ''} onChange={field.onChange} placeholder={'Client purchase order number'} />
+                              </VFormField>
+                            );
+                          }}
+                          name={'client_po'}
+                        />
+                      </div>
+
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Client PO Rev'}>
+                                <Input value={field.value || ''} onChange={field.onChange} placeholder={'Revision number'} />
+                              </VFormField>
+                            );
+                          }}
+                          name={'client_po_rev'}
+                        />
+                      </div>
+
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => (
+                            <VFormField label={'PO Delivery Date'}>
+                              <DatePicker
+                                value={field.value || undefined}
+                                onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
+                              />
+                            </VFormField>
+                          )}
+                          name={'po_delivery_date'}
+                        />
+                      </div>
+
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => (
+                            <VFormField label={'Close Date'}>
+                              <DatePicker
+                                value={field.value || undefined}
+                                onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
+                              />
+                            </VFormField>
+                          )}
+                          name={'close_date'}
+                        />
+                      </div>
+
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => (
+                            <VFormField label={'Final Invoice Date'}>
+                              <DatePicker
+                                value={field.value || undefined}
+                                onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
+                              />
+                            </VFormField>
+                          )}
+                          name={'final_invoice_date'}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'equipment'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Equipment / I-E-A</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Equipment'}>
+                                <SkillSelect onValueChane={(value) => field.onChange(value)} value={field.value ?? null} />
+                              </VFormField>
+                            );
+                          }}
+                          name={'skill_id'}
+                        />
+                      </div>
+
+                      <div className={'col-span-6'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => (
+                            <VFormField label={'I/E/A'}>
+                              <Select onValueChange={field.onChange} value={field.value || ''}>
+                                <SelectTrigger className={'bg-background w-full'}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="I">I</SelectItem>
+                                  <SelectItem value="E">E</SelectItem>
+                                  <SelectItem value="A">A</SelectItem>
+                                  <SelectItem value="IE">IE</SelectItem>
+                                  <SelectItem value="EA">EA</SelectItem>
+                                  <SelectItem value="IA">IA</SelectItem>
+                                  <SelectItem value="IEA">IEA</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </VFormField>
+                          )}
+                          name={'i_e_a'}
+                        />
+                      </div>
+
+                      <div className={'col-span-12'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Description'}>
+                                <Input value={field.value || ''} onChange={field.onChange}></Input>
+                              </VFormField>
+                            );
+                          }}
+                          name={'equipment'}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'vendors'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Vendors</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                      <FormField
+                        name={'vendor_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField label={'Main Vendor'} className={'col-span-6'}>
+                              <VendorSelect onValueChane={field.onChange} value={field.value} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+                      <FormField
+                        name={'sub_vendor_id'}
+                        control={form.control}
+                        render={({ field }) => (
+                          <>
+                            <VFormField label={'Sub Vendor'} className={'col-span-6'}>
+                              <VendorSelect onValueChane={field.onChange} value={field.value} />
+                            </VFormField>
+                          </>
+                        )}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'instructions'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Instructions</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                      <div className={'col-span-12'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Inter-Office Instructions'}>
+                                <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
+                              </VFormField>
+                            );
+                          }}
+                          name={'inter_office_instructions'}
+                        />
+                      </div>
+                      <div className={'col-span-12'}>
+                        <FormField
+                          control={form.control}
+                          render={({ field }) => {
+                            return (
+                              <VFormField label={'Inspector Instructions'}>
+                                <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
+                              </VFormField>
+                            );
+                          }}
+                          name={'inspector_instructions'}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'visit-details'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Visit Details</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'First Visit Date'} className={'col-span-6'}>
+                            <DatePicker
+                              value={field.value || undefined}
+                              onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
                             />
                           </VFormField>
-                        </>
-                      )}
-                    />
-
-                    <FormField
-                      name={'operation_coordinator_id'}
-                      control={form.control}
-                      render={({ field }) => (
-                        <>
-                          <VFormField label={'Operation Office Coordinator'} className={'col-span-6'}>
-                            <StaffSelect
-                              params={{ org: form.watch('operation_org_id') }}
-                              onValueChane={field.onChange}
-                              value={field.value ?? null}
-                            />
+                        )}
+                        name={'first_visit_date'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Visit Frequency'} className={'col-span-6'}>
+                            <Input value={field.value || ''} onChange={field.onChange} placeholder="e.g., weekly, monthly" />
                           </VFormField>
-                        </>
-                      )}
-                    />
-                  </div>
-                ) : null}
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Client / Vendor / Equipment</div>
-
-                <div className={'col-span-6'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Client PO'}>
-                          <Input value={field.value || ''} onChange={field.onChange} placeholder={'Client purchase order number'} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'client_po'}
-                  />
-                </div>
-
-                <div className={'col-span-6'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Client PO Rev'}>
-                          <Input value={field.value || ''} onChange={field.onChange} placeholder={'Revision number'} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'client_po_rev'}
-                  />
-                </div>
-
-                <div className={'col-span-4'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'PO Delivery Date'}>
-                        <DatePicker
-                          value={field.value || undefined}
-                          onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
-                        />
-                      </VFormField>
-                    )}
-                    name={'po_delivery_date'}
-                  />
-                </div>
-
-                <div className={'col-span-4'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'Close Date'}>
-                        <DatePicker
-                          value={field.value || undefined}
-                          onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
-                        />
-                      </VFormField>
-                    )}
-                    name={'close_date'}
-                  />
-                </div>
-
-                <div className={'col-span-4'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'Final Invoice Date'}>
-                        <DatePicker
-                          value={field.value || undefined}
-                          onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
-                        />
-                      </VFormField>
-                    )}
-                    name={'final_invoice_date'}
-                  />
-                </div>
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'I/E/A'}>
-                        <Select onValueChange={field.onChange} value={field.value || ''}>
-                          <SelectTrigger className={'bg-background w-full'}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="I">I</SelectItem>
-                            <SelectItem value="E">E</SelectItem>
-                            <SelectItem value="A">A</SelectItem>
-                            <SelectItem value="IE">IE</SelectItem>
-                            <SelectItem value="EA">EA</SelectItem>
-                            <SelectItem value="IA">IA</SelectItem>
-                            <SelectItem value="IEA">IEA</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </VFormField>
-                    )}
-                    name={'i_e_a'}
-                  />
-                </div>
-
-                {/*<div className={'col-span-12'}>*/}
-                {/*  <RadioGroup defaultValue={mode} onValueChange={setMode} orientation={'horizontal'}>*/}
-                {/*    <div className="flex items-center gap-3">*/}
-                {/*      <RadioGroupItem value="assign" id="r1" />*/}
-                {/*      <Label htmlFor="r1">Assign to inspector</Label>*/}
-                {/*    </div>*/}
-                {/*    <div className="flex items-center gap-3">*/}
-                {/*      <RadioGroupItem value="delegate" id="r2" />*/}
-                {/*      <Label htmlFor="r2">Delegate</Label>*/}
-                {/*    </div>*/}
-                {/*  </RadioGroup>*/}
-                {/*</div>*/}
-                {/*{*/}
-                {/*  mode === 'delegate' ? (*/}
-                {/*    <FormField*/}
-                {/*      name={'operation_org_id'}*/}
-                {/*      control={form.control}*/}
-                {/*      render={({ field }) => (*/}
-                {/*        <>*/}
-                {/*          <VFormField*/}
-                {/*            label={'Operation Office'}*/}
-                {/*            className={'col-span-12'}*/}
-                {/*            description={'Operation office will decide who will be the coordinator and inspector.'}*/}
-                {/*          >*/}
-                {/*            <OrgSelect placeholder={'Choose an operation office'} onValueChane={field.onChange} value={field.value} />*/}
-                {/*          </VFormField>*/}
-                {/*        </>*/}
-                {/*      )}*/}
-                {/*    />*/}
-                {/*  ) : (*/}
-                {/*    <div className={'col-span-12 grid grid-cols-1 gap-4'}>*/}
-                {/*      <FormField*/}
-                {/*        control={form.control}*/}
-                {/*        render={({ field }) => {*/}
-                {/*          return (*/}
-                {/*            <div className={'w-full'}>*/}
-                {/*              <AllInspectors*/}
-                {/*                value={field.value}*/}
-                {/*                onRemove={(value) => {*/}
-                {/*                  field.onChange((field.value ?? []).filter((item) => item != value));*/}
-                {/*                }}*/}
-                {/*              />*/}
-                {/*              <AddInspectorForm*/}
-                {/*                onValueChange={(value) => {*/}
-                {/*                  field.onChange([...field.value, value]);*/}
-                {/*                }}*/}
-                {/*              >*/}
-                {/*                <Button className={'w-full'}>*/}
-                {/*                  <PlusIcon /> Add Inspector*/}
-                {/*                </Button>*/}
-                {/*              </AddInspectorForm>*/}
-                {/*              <FormMessage />*/}
-                {/*            </div>*/}
-                {/*          );*/}
-                {/*        }}*/}
-                {/*        name={'inspectors'}*/}
-                {/*      />*/}
-                {/*    </div>*/}
-                {/*  )*/}
-                {/*}*/}
-
-                <FormField
-                  name={'vendor_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField label={'Vendor'} className={'col-span-6'}>
-                        <VendorSelect onValueChane={field.onChange} value={field.value} />
-                      </VFormField>
-                    </>
-                  )}
-                />
-                <FormField
-                  name={'sub_vendor_id'}
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <VFormField label={'Sub Vendor'} className={'col-span-6'}>
-                        <VendorSelect onValueChane={field.onChange} value={field.value} />
-                      </VFormField>
-                    </>
-                  )}
-                />
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Equipment'}>
-                          <SkillSelect onValueChane={(value) => field.onChange(value)} value={field.value ?? null} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'skill_id'}
-                  />
-                </div>
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Description'}>
-                          <Input value={field.value || ''} onChange={field.onChange}></Input>
-                        </VFormField>
-                      );
-                    }}
-                    name={'equipment'}
-                  />
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Instructions</div>
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Inter-Office Instructions'}>
-                          <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
-                        </VFormField>
-                      );
-                    }}
-                    name={'inter_office_instructions'}
-                  />
-                </div>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Inspector Instructions'}>
-                          <Textarea value={field.value || ''} onChange={field.onChange}></Textarea>
-                        </VFormField>
-                      );
-                    }}
-                    name={'inspector_instructions'}
-                  />
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Visit Details</div>
-
-                <div className={'col-span-12 grid grid-cols-12 gap-4'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'First Visit Date'} className={'col-span-6'}>
-                        <DatePicker
-                          value={field.value || undefined}
-                          onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
-                        />
-                      </VFormField>
-                    )}
-                    name={'first_visit_date'}
-                  />
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'Visit Frequency'} className={'col-span-6'}>
-                        <Input value={field.value || ''} onChange={field.onChange} placeholder="e.g., weekly, monthly" />
-                      </VFormField>
-                    )}
-                    name={'visit_frequency'}
-                  />
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'Total Visits'} className={'col-span-6'}>
-                        <Input
-                          type="number"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                        />
-                      </VFormField>
-                    )}
-                    name={'total_visits'}
-                  />
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'Hours Per Visit'} className={'col-span-6'}>
-                        <Input
-                          type="number"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                        />
-                      </VFormField>
-                    )}
-                    name={'hours_per_visit'}
-                  />
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField
-                        label={'Contact Person'}
-                        className={'col-span-12'}
-                        description={"Contact person at the client's side for visit coordination, set up in the client contacts if needed."}
-                      >
-                        <ContactSelect
-                          onValueChane={field.onChange}
-                          value={field.value || null}
-                          params={{
-                            contactable_type: 'client',
-                            contactable_id: `{project.${form.watch('project_id')}.client_id}`,
-                          }}
-                        />
-                      </VFormField>
-                    )}
-                    name={'visit_contact_id'}
-                  />
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Scope of Assignment</div>
-
-                <div className={'col-span-12'}>
-                  <div className={'grid grid-cols-2 gap-4'}>
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="pre_inspection_meeting" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="pre_inspection_meeting" className="text-sm font-medium">
-                            Pre-inspection Meeting
-                          </label>
-                        </div>
-                      )}
-                      name={'pre_inspection_meeting'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="final_inspection" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="final_inspection" className="text-sm font-medium">
-                            Final Inspection
-                          </label>
-                        </div>
-                      )}
-                      name={'final_inspection'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="dimensional" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="dimensional" className="text-sm font-medium">
-                            Dimensional
-                          </label>
-                        </div>
-                      )}
-                      name={'dimensional'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="sample_inspection" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="sample_inspection" className="text-sm font-medium">
-                            Sample Inspection
-                          </label>
-                        </div>
-                      )}
-                      name={'sample_inspection'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="witness_of_tests" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="witness_of_tests" className="text-sm font-medium">
-                            Witness of Tests
-                          </label>
-                        </div>
-                      )}
-                      name={'witness_of_tests'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="monitoring" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="monitoring" className="text-sm font-medium">
-                            Monitoring
-                          </label>
-                        </div>
-                      )}
-                      name={'monitoring'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="packing" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="packing" className="text-sm font-medium">
-                            Packing
-                          </label>
-                        </div>
-                      )}
-                      name={'packing'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="document_review" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="document_review" className="text-sm font-medium">
-                            Document Review
-                          </label>
-                        </div>
-                      )}
-                      name={'document_review'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="expediting" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="expediting" className="text-sm font-medium">
-                            Expediting
-                          </label>
-                        </div>
-                      )}
-                      name={'expediting'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="audit" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="audit" className="text-sm font-medium">
-                            Audit
-                          </label>
-                        </div>
-                      )}
-                      name={'audit'}
-                    />
-                  </div>
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Status / Flash Report / Exit Call</div>
-
-                <div className={'col-span-12'}>
-                  <div className={'grid grid-cols-12 gap-4'}>
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Contact Name'} className={'col-span-12'}>
-                          <Input value={field.value || ''} onChange={field.onChange} />
-                        </VFormField>
-                      )}
-                      name={'contact_details'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Contact Email'} className={'col-span-12'}>
-                          <Input type="email" value={field.value || ''} onChange={field.onChange} />
-                        </VFormField>
-                      )}
-                      name={'contact_email'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="col-span-6 flex items-center space-x-2">
-                          <Checkbox id="exit_call" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="exit_call" className="text-sm font-medium">
-                            Exit Call Required
-                          </label>
-                        </div>
-                      )}
-                      name={'exit_call'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <div className="col-span-6 flex items-center space-x-2">
-                          <Checkbox id="flash_report" checked={field.value || false} onCheckedChange={field.onChange} />
-                          <label htmlFor="flash_report" className="text-sm font-medium">
-                            Flash Report Required
-                          </label>
-                        </div>
-                      )}
-                      name={'flash_report'}
-                    />
-                  </div>
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Reporting</div>
-
-                <div className={'col-span-12'}>
-                  <div className={'grid grid-cols-12 gap-4'}>
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Reporting Format'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select reporting format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE</SelectItem>
-                              <SelectItem value="1">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'reporting_format'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Reporting Frequency'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select reporting frequency" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">Daily</SelectItem>
-                              <SelectItem value="1">Weekly</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'reporting_frequency'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Send report to'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select timesheet format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE</SelectItem>
-                              <SelectItem value="1">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'send_report_to'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Timesheet Format'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select timesheet format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE</SelectItem>
-                              <SelectItem value="1">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'timesheet_format'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'NCR Format'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select NCR format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE</SelectItem>
-                              <SelectItem value="1">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'ncr_format'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Punch List Format'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select punch list format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE</SelectItem>
-                              <SelectItem value="1">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'punch_list_format'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'IRN Format'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select IRN format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE</SelectItem>
-                              <SelectItem value="1">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'irn_format'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Document Stamp'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select document stamp" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">BIE Stamp</SelectItem>
-                              <SelectItem value="1">Sign</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'document_stamp'}
-                    />
-                    <FormField
-                      control={form.control}
-                      render={({ field }) => (
-                        <VFormField label={'Issue IRN to Vendor'} className={'col-span-6'}>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
-                            <SelectTrigger className={'bg-background w-full'}>
-                              <SelectValue placeholder="Select option" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">NO</SelectItem>
-                              <SelectItem value="1">YES</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </VFormField>
-                      )}
-                      name={'issue_irn_to_vendor'}
-                    />
-                  </div>
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Attachments</div>
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <>
-                          <VFormField description={'Files will be share with inspectors'}>
+                        )}
+                        name={'visit_frequency'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Total Visits'} className={'col-span-6'}>
                             <Input
-                              id="picture"
-                              type="file"
-                              multiple
-                              accept={'*'}
-                              onChange={(event) => {
-                                field.onChange(Array.from(event.target.files ?? []));
+                              type="number"
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                            />
+                          </VFormField>
+                        )}
+                        name={'total_visits'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Hours Per Visit'} className={'col-span-6'}>
+                            <Input
+                              type="number"
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                            />
+                          </VFormField>
+                        )}
+                        name={'hours_per_visit'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField
+                            label={'Contact Person'}
+                            className={'col-span-6'}
+                            description={"Contact person at the client's side for visit coordination, set up in the client contacts if needed."}
+                          >
+                            <ContactSelect
+                              onValueChane={field.onChange}
+                              value={field.value || null}
+                              params={{
+                                contactable_type: 'client',
+                                contactable_id: `{project.${form.watch('project_id')}.client_id}`,
                               }}
                             />
                           </VFormField>
-                        </>
-                      );
-                    }}
-                    name={'attachments'}
-                  />
-                </div>
-
-                <div className={'col-span-12 mt-8 text-lg font-bold'}>Notes</div>
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'General Notes'} className={'col-span-12'}>
-                        <Textarea
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          placeholder="General notes about the assignment"
-                          className="min-h-24"
-                        />
-                      </VFormField>
-                    )}
-                    name={'notes'}
-                  />
-                </div>
-
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => (
-                      <VFormField label={'Special Notes'}>
-                        <div className={'bg-background overflow-hidden rounded-md border'}>
-                          <Editor value={field.value ?? ''} onChange={field.onChange} />
-                        </div>
-                      </VFormField>
-                    )}
-                    name={'special_notes'}
-                  />
-                </div>
+                        )}
+                        name={'visit_contact_id'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'scope'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Scope of Assignment</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-2 gap-6 '}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="pre_inspection_meeting" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="pre_inspection_meeting" className="text-sm font-medium">
+                              Pre-inspection Meeting
+                            </label>
+                          </div>
+                        )}
+                        name={'pre_inspection_meeting'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="final_inspection" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="final_inspection" className="text-sm font-medium">
+                              Final Inspection
+                            </label>
+                          </div>
+                        )}
+                        name={'final_inspection'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="dimensional" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="dimensional" className="text-sm font-medium">
+                              Dimensional
+                            </label>
+                          </div>
+                        )}
+                        name={'dimensional'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="sample_inspection" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="sample_inspection" className="text-sm font-medium">
+                              Sample Inspection
+                            </label>
+                          </div>
+                        )}
+                        name={'sample_inspection'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="witness_of_tests" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="witness_of_tests" className="text-sm font-medium">
+                              Witness of Tests
+                            </label>
+                          </div>
+                        )}
+                        name={'witness_of_tests'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="monitoring" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="monitoring" className="text-sm font-medium">
+                              Monitoring
+                            </label>
+                          </div>
+                        )}
+                        name={'monitoring'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="packing" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="packing" className="text-sm font-medium">
+                              Packing
+                            </label>
+                          </div>
+                        )}
+                        name={'packing'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="document_review" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="document_review" className="text-sm font-medium">
+                              Document Review
+                            </label>
+                          </div>
+                        )}
+                        name={'document_review'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="expediting" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="expediting" className="text-sm font-medium">
+                              Expediting
+                            </label>
+                          </div>
+                        )}
+                        name={'expediting'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="audit" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="audit" className="text-sm font-medium">
+                              Audit
+                            </label>
+                          </div>
+                        )}
+                        name={'audit'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'exit-call'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Status / Flash Report / Exit Call</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Contact Name'} className={'col-span-6'}>
+                            <Input value={field.value || ''} onChange={field.onChange} />
+                          </VFormField>
+                        )}
+                        name={'contact_details'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Contact Email'} className={'col-span-6'}>
+                            <Input type="email" value={field.value || ''} onChange={field.onChange} />
+                          </VFormField>
+                        )}
+                        name={'contact_email'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="col-span-12 flex items-center space-x-2">
+                            <Checkbox id="exit_call" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="exit_call" className="text-sm font-medium">
+                              Exit Call Required
+                            </label>
+                          </div>
+                        )}
+                        name={'exit_call'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <div className="col-span-12 flex items-center space-x-2">
+                            <Checkbox id="flash_report" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="flash_report" className="text-sm font-medium">
+                              Flash Report Required
+                            </label>
+                          </div>
+                        )}
+                        name={'flash_report'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'reporting'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Reporting Format</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Reporting Format'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select reporting format" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE</SelectItem>
+                                <SelectItem value="1">Client</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'reporting_format'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Reporting Frequency'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select reporting frequency" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">Daily</SelectItem>
+                                <SelectItem value="1">Weekly</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'reporting_frequency'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Send report to'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select timesheet format" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE</SelectItem>
+                                <SelectItem value="1">Client</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'send_report_to'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Timesheet Format'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select timesheet format" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE</SelectItem>
+                                <SelectItem value="1">Client</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'timesheet_format'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'NCR Format'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select NCR format" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE</SelectItem>
+                                <SelectItem value="1">Client</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'ncr_format'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Punch List Format'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select punch list format" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE</SelectItem>
+                                <SelectItem value="1">Client</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'punch_list_format'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'IRN Format'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select IRN format" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE</SelectItem>
+                                <SelectItem value="1">Client</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'irn_format'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Document Stamp'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select document stamp" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">BIE Stamp</SelectItem>
+                                <SelectItem value="1">Sign</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'document_stamp'}
+                      />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField label={'Issue IRN to Vendor'} className={'col-span-6'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                              <SelectTrigger className={'bg-background w-full'}>
+                                <SelectValue placeholder="Select option" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">NO</SelectItem>
+                                <SelectItem value="1">YES</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        )}
+                        name={'issue_irn_to_vendor'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'attachments'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Add Attachments</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={''}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <>
+                              <VFormField description={'Files will be share with inspectors'}>
+                                <Input
+                                  id="picture"
+                                  type="file"
+                                  multiple
+                                  accept={'*'}
+                                  onChange={(event) => {
+                                    field.onChange(Array.from(event.target.files ?? []));
+                                  }}
+                                />
+                              </VFormField>
+                            </>
+                          );
+                        }}
+                        name={'attachments'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'notes'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Notes</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={''}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField>
+                            <Textarea
+                              value={field.value || ''}
+                              onChange={field.onChange}
+                              placeholder="General notes about the assignment"
+                              className="min-h-24"
+                            />
+                          </VFormField>
+                        )}
+                        name={'notes'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value={'special'}>
+                    <AccordionTrigger>
+                      <AssignmentSectionHead>Special Notes</AssignmentSectionHead>
+                    </AccordionTrigger>
+                    <AccordionContent className={''}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <Editor className={'bg-background rounded-md border'} value={field.value ?? ''} onChange={field.onChange} />
+                        )}
+                        name={'special_notes'}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </Form>
           </DialogInnerContent>
@@ -1034,18 +1013,18 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
 }
 
 interface ReferenceNumberProps {
-  value: string,
-  onValueChange: (value: string) => void
-  allowGenerate?: boolean
+  value: string;
+  onValueChange: (value: string) => void;
+  allowGenerate?: boolean;
 }
 
-function ReferenceNumber({value, onValueChange, ...props}: ReferenceNumberProps) {
+function ReferenceNumber({ value, onValueChange, ...props }: ReferenceNumberProps) {
   const generate = useCallback(() => {
-    axios.get('/api/v1/assignments/next-assignment-number').then(response => {
+    axios.get('/api/v1/assignments/next-assignment-number').then((response) => {
       if (response.data) {
         onValueChange(response.data.data);
       }
-    })
+    });
   }, [onValueChange]);
 
   useEffect(() => {
@@ -1066,8 +1045,16 @@ function ReferenceNumber({value, onValueChange, ...props}: ReferenceNumberProps)
         }}
       />
       <Button variant={'outline'} onClick={generate} disabled={!props.allowGenerate}>
-        <RefreshCcw/>
+        <RefreshCcw />
       </Button>
     </div>
+  );
+}
+
+function AssignmentSectionHead(props: PropsWithChildren) {
+  return (
+    <>
+      <div className={'font-bold'}>{props.children}</div>
+    </>
   );
 }

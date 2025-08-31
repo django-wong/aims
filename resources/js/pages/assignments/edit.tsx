@@ -95,7 +95,7 @@ export default function Edit(props: EditProps) {
               )}
             </ForOperationOffice>
             <ForContractHolderOffice>
-              {props.assignment.operation_org_id && [AssignmentStatus.REJECTED, AssignmentStatus.DRAFT].indexOf(props.assignment.status) !== -1 && (
+              {props.assignment.delegated && [AssignmentStatus.REJECTED, AssignmentStatus.DRAFT].indexOf(props.assignment.status) !== -1 && (
                 <PopoverConfirm side={'bottom'} align={'end'} message={'Please make sure you have all files uploaded.'} onConfirm={() => {
                       axios.post('/api/v1/assignments/' + props.assignment.id + '/send-to-operation-office').then(() => {
                         router.reload();
@@ -108,6 +108,7 @@ export default function Edit(props: EditProps) {
                 </PopoverConfirm>
               )}
             </ForContractHolderOffice>
+            {/* Delegated to my office but haven't accepted it */}
             {props.assignment.operation_org_id === org?.id && props.assignment.status < AssignmentStatus.ACCEPTED ? null : (
               <AssignmentForm
                 value={props.assignment}
@@ -159,7 +160,7 @@ export default function Edit(props: EditProps) {
                 <DailyUsage />
               </TabsContent>
               <TabsContent value={'attachments'}>
-                <AssignmentAttachments />
+                <AssignmentAttachments allowUpload={true}/>
               </TabsContent>
               <TabsContent value={'inspectors'}>
                 <AssignmentInspectors />

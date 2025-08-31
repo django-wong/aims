@@ -32,4 +32,9 @@ class TimesheetController extends Controller
     {
         return inertia('timesheets/captured');
     }
+
+    public function index()
+    {
+        return inertia('timesheets');
+    }
 }

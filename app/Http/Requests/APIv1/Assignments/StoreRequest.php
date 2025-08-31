@@ -15,10 +15,12 @@ class StoreRequest extends FormRequest
 {
     use HasAttachments;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'reference_number' => 'nullable|string|max:255|unique:assignments,reference_number',
+            'delegated' => 'boolean',
+
             'previous_reference_number' => 'nullable|string|max:255',
             'project_id' => 'required|exists:projects,id',
             'purchase_order_id' => [

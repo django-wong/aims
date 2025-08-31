@@ -14,4 +14,9 @@ class VendorController extends Controller
             'vendor' => $vendor->load(['address']),
         ]);
     }
+
+    public function index()
+    {
+        return inertia('vendors');
+    }
 }

@@ -24,11 +24,11 @@ class AssignmentController extends Controller
             ->findOrFail($id);
 
         // Redirect to timesheet if user is an inspector for the assignment
-        // if (Gate::allows('inspect', $assignment)) {
-        //     return to_route(
-        //         'assignments.record', $assignment->id
-        //     );
-        // }
+        if (Gate::allows('inspect', $assignment)) {
+            return to_route(
+                'assignments.record', $assignment->id
+            );
+        }
 
         return inertia('assignments/edit', [
             'capability' => [
@@ -106,5 +106,12 @@ class AssignmentController extends Controller
         $pdf = Pdf::loadView('pdfs.assignment-form', $data);
 
         return $pdf->stream("assignment-{$assignment->id}.pdf");
+    }
+
+    public function index()
+    {
+        Gate::authorize('viewAny', Assignment::class);
+
+        return inertia('assignments');
     }
 }

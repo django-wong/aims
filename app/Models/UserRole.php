@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @property string $role
@@ -27,6 +28,11 @@ class UserRole extends Model
     protected $guarded = [
         'id', 'created_at', 'updated_at',
     ];
+
+    protected static function booted()
+    {
+
+    }
 
     static public function current(): UserRole|null
     {

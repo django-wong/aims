@@ -14,6 +14,7 @@ interface AttachmentListProps {
   onUploadComplete?: () => void;
   attachable_id: number;
   attachable_type: string;
+  allowUpload?: boolean;
 }
 
 export function AttachmentList(props: AttachmentListProps) {
@@ -44,11 +45,13 @@ export function AttachmentList(props: AttachmentListProps) {
         <ColumnToggle/>
       }
       right={
-        <AttachableProvider value={props}>
-          <UploadForm onUploadComplete={onUploadComplete}>
-            <Button> <UploadIcon/> Upload</Button>
-          </UploadForm>
-        </AttachableProvider>
+        props.allowUpload ? (
+          <AttachableProvider value={props}>
+            <UploadForm onUploadComplete={onUploadComplete}>
+              <Button variant={'outline'}> <UploadIcon/> Upload</Button>
+            </UploadForm>
+          </AttachableProvider>
+        ) : null
       }
     />
   )

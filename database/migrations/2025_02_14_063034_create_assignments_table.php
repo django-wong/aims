@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
+            $table->boolean('delegated')->default(false);
             $table->string('reference_number')->nullable();
             $table->string('previous_reference_number')->nullable();
 

@@ -28,4 +28,9 @@ class UserController
 
         return redirect()->route('dashboard');
     }
+
+    public function index()
+    {
+        return inertia('users');
+    }
 }

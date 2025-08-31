@@ -26,7 +26,7 @@
         </tr>
         <tr>
             <td class="title">Inspector:</td>
-            <td>{{$assignment_inspector?->user?->name ?? ''}}</td>
+            <td>{{ $assignment_inspector?->user?->name ?? '' }}</td>
             <td class="title">Assignment Type:</td>
             <td>{{ $assignment_inspector?->assignment_type?->name ?? '' }}</td>
         </tr>
@@ -243,7 +243,7 @@
             <td class="title">Signature:</td>
             <td>@if(! empty($assignment_inspector?->signature_base64)) <img style="height: 100px; width: auto" src="{{ $assignment_inspector?->signature_base64 }}"/> @endif</td>
             <td class="title">Date:</td>
-            <td>{{ $assignment_inspector?->acked_at?->format('d/m/Y H:i:s T') ?? 'N/A' }}</td>
+            <td>{{ empty($assignment_inspector?->acked_at) ? '' : $assignment_inspector?->acked_at?->format('d/m/Y H:i:s T') }}</td>
         </tr>
     </table>
 </x-pdf.layout>

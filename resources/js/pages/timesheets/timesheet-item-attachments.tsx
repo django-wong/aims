@@ -12,7 +12,7 @@ export function TimesheetItemAttachments(props: Props) {
 
   return (
     <DialogWrapper trigger={props.children} title={'Flash Report / Receipts etc'} className={'sm:max-w-4xl'}>
-      <AttachmentList onUploadComplete={props.onUploadComplete} attachable_id={timesheet_item.id} attachable_type={'timesheet_item'}/>
+      <AttachmentList allowUpload={true} onUploadComplete={props.onUploadComplete} attachable_id={timesheet_item.id} attachable_type={'timesheet_item'}/>
     </DialogWrapper>
   )
 }

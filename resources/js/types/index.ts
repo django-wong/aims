@@ -209,6 +209,8 @@ export interface Assignment extends BaseModel {
   reference_number: string | null;
   previous_reference_number: string | null;
 
+  delegated: boolean;
+
   org_id: number;
   org?: Org;
   coordinator_id: number | null;

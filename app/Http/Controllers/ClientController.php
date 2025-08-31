@@ -20,4 +20,10 @@ class ClientController extends Controller
             ],
         ]);
     }
+
+    public function index()
+    {
+        Gate::authorize('viewAny', Client::class);
+        return inertia('clients');
+    }
 }

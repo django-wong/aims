@@ -18,7 +18,7 @@ class MenuController
 
         return [
             'main' => [
-                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF, UserRole::INSPECTOR],[
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF],[
                     'dashboard' => [
                         'name' => 'Dashboard',
                         'icon' => 'house',
@@ -42,7 +42,7 @@ class MenuController
                         'component' => 'vendors'
                     ]
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::INSPECTOR, UserRole::CLIENT],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT],[
                     'projects' => [
                         'name' => 'Projects',
                         'icon' => 'briefcase-business',
@@ -50,7 +50,7 @@ class MenuController
                         'component' => 'projects'
                     ],
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::INSPECTOR],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF],[
                     'purchase-orders' => [
                         'name' => 'Purchase Orders (WO)',
                         'icon' => 'shopping-bag',
@@ -58,7 +58,7 @@ class MenuController
                         'component' => 'purchase-orders'
                     ],
                 ])),
-                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::INSPECTOR], [
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT], [
                     'assignments' => [
                         'name' => 'Assignments',
                         'icon' => 'contact',

@@ -12,6 +12,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Project::class);
         return inertia('projects');
     }
 

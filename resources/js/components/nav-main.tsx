@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar"
 import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 import { router } from '@inertiajs/react';
+import { BookTemplateIcon } from 'lucide-react';
 
 export interface MainNavItem {
   name: string;
@@ -20,6 +21,16 @@ export function NavMain({
 }: {
   items: MainNavItem[]
 }) {
+
+  if (items.length === 0) {
+    return (
+      <div className={'p-6 flex flex-col items-center text-center bg-background gap-4 justify-center text-sm text-zinc-500 border-2 m-4 rounded-lg border-dashed border-zinc-200'}>
+        <BookTemplateIcon/>
+        Empty here
+      </div>
+    );
+  }
+
   const isActive = (item: MainNavItem) => {
     const url = new URL(item.url);
     return window.location.href.startsWith(url.origin + url.pathname);

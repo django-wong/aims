@@ -18,10 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import {
-  House,
-  Plus, ShieldUserIcon
-} from 'lucide-react';
+import { House, Plus, PlusIcon, ShieldUserIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
 import { Badge } from '@/components/ui/badge';
@@ -81,11 +78,11 @@ const data = {
       url: '/settings',
       icon: IconSettings,
     },
-    {
-      title: 'Get Help',
-      url: '/help',
-      icon: IconHelp,
-    },
+    // {
+    //   title: 'Get Help',
+    //   url: '/help',
+    //   icon: IconHelp,
+    // },
   ],
   documents: [
     {
@@ -130,9 +127,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <HideFromClient>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button asChild variant={'outline'} size={'icon'}>
+                    <Button asChild variant={'outline'} size={'sm'}>
                       <a href={route('setup')}>
-                        <Plus size={18}/>
+                        <PlusIcon/>
                       </a>
                     </Button>
                   </TooltipTrigger>

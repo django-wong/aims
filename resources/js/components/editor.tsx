@@ -58,8 +58,10 @@ import {
   AlignJustifyIcon,
 } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/utils/cn';
 
 interface EditorProps {
+  className?: string;
   value?: string;
   onChange?: (value: string) => void;
 }
@@ -119,8 +121,8 @@ export function Editor(props: EditorProps) {
     content: props.value,
   });
   return (
-    <>
-      <div className={'bg-background sticky top-0 left-1 z-50 flex flex-wrap gap-0 border-b p-3'}>
+    <div className={cn('', props.className)}>
+      <div className={'sticky top-0 left-0 z-50 flex flex-wrap gap-0 border-b p-3 bg-accent'}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant={'ghost'} size={'icon'}>
@@ -308,6 +310,6 @@ export function Editor(props: EditorProps) {
       </div>
       <FloatingMenu editor={editor}></FloatingMenu>
       <BubbleMenu editor={editor} />
-    </>
+    </div>
   );
 }

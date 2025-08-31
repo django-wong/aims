@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
   Card,
@@ -25,102 +25,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useAssignment } from '@/providers/assignment-provider';
 
 export const description = "An interactive area chart"
-
-const chartData = [
-  { date: "2024-04-01", work: 2, travel: 1, remote: 0, },
-  { date: "2024-04-02", work: 9, travel: 1, remote: 0, },
-  { date: "2024-04-03", work: 1, travel: 1, remote: 0, },
-  { date: "2024-04-04", work: 2, travel: 2, remote: 0, },
-  { date: "2024-04-05", work: 3, travel: 2, remote: 0, },
-  { date: "2024-04-06", work: 3, travel: 3, remote: 0, },
-  { date: "2024-04-07", work: 2, travel: 1, remote: 0, },
-  { date: "2024-04-08", work: 4, travel: 3, remote: 3, },
-  { date: "2024-04-09", work: 5, travel: 1, remote: 0, },
-  { date: "2024-04-10", work: 2, travel: 1, remote: 0, },
-  { date: "2024-04-11", work: 3, travel: 3, remote: 0, },
-  { date: "2024-04-12", work: 2, travel: 2, remote: 0, },
-  { date: "2024-04-13", work: 3, travel: 3, remote: 0, },
-  { date: "2024-04-14", work: 1, travel: 2, remote: 0, },
-  { date: "2024-04-15", work: 1, travel: 1, remote: 0, },
-  { date: "2024-04-16", work: 1, travel: 1, remote: 0, },
-  { date: "2024-04-17", work: 4, travel: 3, remote: 0, },
-  { date: "2024-04-18", work: 3, travel: 4, remote: 0, },
-  { date: "2024-04-19", work: 2, travel: 1, remote: 3, },
-  { date: "2024-04-20", work: 8, travel: 1, remote: 0, },
-  { date: "2024-04-21", work: 1, travel: 2, remote: 0, },
-  { date: "2024-04-22", work: 2, travel: 1, remote: 0, },
-  { date: "2024-04-23", work: 1, travel: 2, remote: 0, },
-  { date: "2024-04-24", work: 3, travel: 2, remote: 0, },
-  { date: "2024-04-25", work: 2, travel: 2, remote: 0, },
-  { date: "2024-04-26", work: 7, travel: 1, remote: 0, },
-  { date: "2024-04-27", work: 3, travel: 4, remote: 0, },
-  { date: "2024-04-28", work: 1, travel: 1, remote: 0, },
-  { date: "2024-04-29", work: 3, travel: 2, remote: 0, },
-  { date: "2024-04-30", work: 4, travel: 3, remote: 0, },
-  { date: "2024-05-01", work: 1, travel: 2, remote: 0, },
-  { date: "2024-05-02", work: 2, travel: 3, remote: 2, },
-  { date: "2024-05-03", work: 2, travel: 1, remote: 0, },
-  { date: "2024-05-04", work: 3, travel: 4, remote: 0, },
-  { date: "2024-05-05", work: 4, travel: 3, remote: 0, },
-  { date: "2024-05-06", work: 4, travel: 5, remote: 0, },
-  { date: "2024-05-07", work: 3, travel: 3, remote: 5, },
-  { date: "2024-05-08", work: 1, travel: 2, remote: 0, },
-  { date: "2024-05-09", work: 2, travel: 1, remote: 0, },
-  { date: "2024-05-10", work: 2, travel: 3, remote: 0, },
-  { date: "2024-05-11", work: 3, travel: 2, remote: 0, },
-  { date: "2024-05-12", work: 1, travel: 2, remote: 0, },
-  { date: "2024-05-13", work: 1, travel: 1, remote: 3, },
-  { date: "2024-05-14", work: 4, travel: 4, remote: 0, },
-  { date: "2024-05-15", work: 4, travel: 3, remote: 0, },
-  { date: "2024-05-16", work: 3, travel: 4, remote: 0, },
-  { date: "2024-05-17", work: 4, travel: 4, remote: 0, },
-  { date: "2024-05-18", work: 3, travel: 3, remote: 0, },
-  { date: "2024-05-19", work: 2, travel: 1, remote: 0, },
-  { date: "2024-05-20", work: 1, travel: 2, remote: 0, },
-  { date: "2024-05-21", work: 8, travel: 1, remote: 0, },
-  { date: "2024-05-22", work: 8, travel: 1, remote: 0, },
-  { date: "2024-05-23", work: 2, travel: 2, remote: 0, },
-  { date: "2024-05-24", work: 2, travel: 2, remote: 0, },
-  { date: "2024-05-25", work: 2, travel: 2, remote: 0, },
-  { date: "2024-05-26", work: 2, travel: 1, remote: 0, },
-  { date: "2024-05-27", work: 4, travel: 4, remote: 0, },
-  { date: "2024-05-28", work: 2, travel: 1, remote: 0, },
-  { date: "2024-05-29", work: 7, travel: 1, remote: 0, },
-  { date: "2024-05-30", work: 3, travel: 2, remote: 0, },
-  { date: "2024-05-31", work: 1, travel: 2, remote: 0, },
-  { date: "2024-06-01", work: 1, travel: 2, remote: 0, },
-  { date: "2024-06-02", work: 4, travel: 4, remote: 0, },
-  { date: "2024-06-03", work: 1, travel: 1, remote: 0, },
-  { date: "2024-06-04", work: 4, travel: 3, remote: 0, },
-  { date: "2024-06-05", work: 8, travel: 1, remote: 0, },
-  { date: "2024-06-06", work: 2, travel: 2, remote: 0, },
-  { date: "2024-06-07", work: 3, travel: 3, remote: 0, },
-  { date: "2024-06-08", work: 3, travel: 3, remote: 0, },
-  { date: "2024-06-09", work: 4, travel: 4, remote: 0, },
-  { date: "2024-06-10", work: 1, travel: 2, remote: 0, },
-  { date: "2024-06-11", work: 9, travel: 1, remote: 0, },
-  { date: "2024-06-12", work: 4, travel: 4, remote: 0, },
-  { date: "2024-06-13", work: 8, travel: 1, remote: 0, },
-  { date: "2024-06-14", work: 4, travel: 3, remote: 0, },
-  { date: "2024-06-15", work: 3, travel: 3, remote: 0, },
-  { date: "2024-06-16", work: 3, travel: 3, remote: 0, },
-  { date: "2024-06-17", work: 4, travel: 5, remote: 0, },
-  { date: "2024-06-18", work: 1, travel: 1, remote: 0, },
-  { date: "2024-06-19", work: 3, travel: 2, remote: 0, },
-  { date: "2024-06-20", work: 4, travel: 4, remote: 0, },
-  { date: "2024-06-21", work: 1, travel: 2, remote: 0, },
-  { date: "2024-06-22", work: 3, travel: 2, remote: 0, },
-  { date: "2024-06-23", work: 4, travel: 5, remote: 0, },
-  { date: "2024-06-24", work: 1, travel: 1, remote: 0, },
-  { date: "2024-06-25", work: 1, travel: 1, remote: 0, },
-  { date: "2024-06-26", work: 4, travel: 3, remote: 0, },
-  { date: "2024-06-27", work: 4, travel: 4, remote: 0, },
-  { date: "2024-06-28", work: 1, travel: 2, remote: 0, },
-  { date: "2024-06-29", work: 1, travel: 1, remote: 0, },
-  { date: "2024-06-30", work: 4, travel: 4, remote: 0, },
-]
 
 const chartConfig = {
   visitors: {
@@ -141,21 +50,28 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function DailyUsage() {
-  const [timeRange, setTimeRange] = React.useState("90d")
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
-    }
-    const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+  const [timeRange, setTimeRange] = React.useState("-30 days")
+
+  const assignment = useAssignment();
+
+  const [data, setData] = useState<{
+    date: string, // YYYY-MM-DD
+    work: number,
+    travel: number,
+    remote: number
+  }[]>([]);
+
+
+  useEffect(() => {
+    axios.get(`/api/v1/assignments/${assignment!.id}/daily-usage`, {
+      params: {
+        range: timeRange
+      }
+    }).then((response) => {
+      setData(response.data['data']);
+    });
+  }, [timeRange, assignment, setData])
 
   return (
     <Card className="pt-0">
@@ -174,13 +90,13 @@ export function DailyUsage() {
             <SelectValue placeholder="Last 3 months" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="90d" className="rounded-lg">
+            <SelectItem value="-90 days" className="rounded-lg">
               Last 3 months
             </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
+            <SelectItem value="-30 days" className="rounded-lg">
               Last 30 days
             </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
+            <SelectItem value="-7 days" className="rounded-lg">
               Last 7 days
             </SelectItem>
           </SelectContent>
@@ -191,7 +107,7 @@ export function DailyUsage() {
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          <BarChart data={filteredData} stackOffset={'positive'}>
+          <BarChart data={data} stackOffset={'positive'}>
             <defs>
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
                 <stop

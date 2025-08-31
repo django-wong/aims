@@ -18,5 +18,12 @@ class TimesheetItem extends Model implements Attachable
         'deleted_at'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+        ];
+    }
+
     // ....
 }
