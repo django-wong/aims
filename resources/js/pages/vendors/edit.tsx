@@ -19,7 +19,8 @@ import { Loading } from '@/components/ui/loading';
 import { useContactsTable } from '@/pages/contacts';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
-import { useRoute } from 'ziggy-js';
+import { useOrg } from '@/hooks/use-org';
+import { useRole } from '@/hooks/use-role';
 
 interface VendorEditProps {
   vendor: Vendor;
@@ -53,7 +54,7 @@ export default function Edit(props: VendorEditProps) {
             <Trash/> Delete
           </Button>
         </PopoverConfirm>
-        <VendorForm value={props.vendor} onSubmit={() => {}}>
+        <VendorForm value={props.vendor} onSubmit={() => {router.reload()}}>
           <Button size={'sm'} variant={'secondary'}>
             <UserRoundPen/> Edit
           </Button>
@@ -143,9 +144,15 @@ interface VendorContactsProps {
 }
 
 function VendorContacts(props: VendorContactsProps) {
+  const role = useRole();
+  const org = useOrg();
+
+  const readonly = props.vendor.org_id != org!.id || [1,2,3,4,8].indexOf(role!) === -1
+
   const { content } = useContactsTable({
     contactable_id: props.vendor.id,
     contactable_type: 'vendor',
+    readonly: readonly
   });
 
   return <>{content}</>;

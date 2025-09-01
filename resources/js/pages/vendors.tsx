@@ -1,75 +1,79 @@
-import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Vendor } from '@/types';
-import { Button } from '@/components/ui/button';
 import { DataTable, useTableApi } from '@/components/data-table-2';
-import { useTable } from '@/hooks/use-table';
-import { ColumnDef } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut,
-  DropdownMenuTrigger
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { EllipsisVertical, PlusIcon } from 'lucide-react';
-import { VendorForm } from '@/pages/vendors/form';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
 import { useDebouncer } from '@/hooks/use-debounced';
+import { useTable } from '@/hooks/use-table';
+import AppLayout from '@/layouts/app-layout';
+import { VendorForm } from '@/pages/vendors/form';
+import { BreadcrumbItem, Vendor } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
+import { EllipsisVertical, PlusIcon } from 'lucide-react';
+import { useState } from 'react';
 
 const columns: ColumnDef<Vendor>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => {
-      return <Link href={route('vendors.edit', {id: row.original.id})} className={'underline'}>{row.original.name}</Link>;
-    }
+      return (
+        <Link href={route('vendors.edit', { id: row.original.id })} className={'underline'}>
+          {row.original.name}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: 'business_name',
     header: 'Business Name',
-    cell: ({ row }) => row.original.business_name
+    cell: ({ row }) => row.original.business_name,
   },
   {
     accessorKey: 'address',
     header: 'Address',
     size: 10000,
-    cell: ({ row }) => row.original.address?.full_address || 'N/A'
+    cell: ({ row }) => row.original.address?.full_address || 'N/A',
   },
   {
     accessorKey: 'actions',
     header: () => {
-      return <div className={'text-right'}>
-        Actions
-      </div>
+      return <div className={'text-right'}>Actions</div>;
     },
     cell: ({ row }) => (
       <div className={'text-right'}>
-        <VendorActions vendor={row.original}/>
+        <VendorActions vendor={row.original} />
       </div>
-    )
-  }
+    ),
+  },
 ];
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Home',
-    href: '/'
+    href: '/',
   },
   {
     title: 'Vendors',
-    href: '/vendors'
-  }
+    href: '/vendors',
+  },
 ];
 
 export default function Vendors() {
   const table = useTable('/api/v1/vendors', {
     columns,
     defaultParams: {
-      'include': 'address'
-    }
+      include: 'address',
+    },
   });
 
   const [keywords, setKeywords] = useState<string>(table.searchParams.get('filter[keywords]') || '');
@@ -80,15 +84,15 @@ export default function Vendors() {
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <VendorForm
-          onSubmit={() => table.reload()}>
+        <VendorForm onSubmit={() => table.reload()}>
           <Button>
-            <PlusIcon/>
+            <PlusIcon />
             New
           </Button>
         </VendorForm>
-      }>
-      <Head title={'Vendors'}/>
+      }
+    >
+      <Head title={'Vendors'} />
       <div className={'px-6'}>
         <DataTable
           left={
@@ -102,8 +106,8 @@ export default function Vendors() {
                   table.setSearchParams((params) => {
                     params.set('filter[keywords]', event.target.value);
                     return params;
-                  })
-                })
+                  });
+                });
               }}
             />
           }

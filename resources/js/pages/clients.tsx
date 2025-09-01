@@ -178,7 +178,7 @@ export default function Clients() {
         breadcrumbs={breadcrumbs}
         pageAction={
           <ClientForm onSubmit={() => table.reload()}>
-            <Button size={'sm'}>
+            <Button>
               <Plus /> New
             </Button>
           </ClientForm>

@@ -66,7 +66,7 @@ export default function Edit(props: ClientEditProps) {
                     <Trash/> Delete
                   </Button>
                 </PopoverConfirm>
-                <ClientForm value={props.client} onSubmit={() => {window.location.reload()}}>
+                <ClientForm value={props.client} onSubmit={() => {router.reload()}}>
                   <Button size={'sm'} variant={'secondary'}>
                     <UserRoundPen/> Edit
                   </Button>
@@ -120,16 +120,6 @@ export default function Edit(props: ClientEditProps) {
     </ClientProvider>
   </>
 }
-
-
-function Content(props: PropsWithChildren) {
-  return (
-    <div className={'h-[40vh] flex justify-center items-center bg-muted/40 rounded-lg outline-2 outline-dashed outline-border'}>
-      { props.children }
-    </div>
-  )
-}
-
 
 interface NotesEditorProps {
   client: Client;

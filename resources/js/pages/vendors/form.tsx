@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { Textarea } from '@/components/ui/textarea';
 import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/address-form';
+import { useState } from 'react';
 const schema = zod.object({
   name: zod.string().min(1, 'Name is required'),
   business_name: zod.string().min(1, 'Business name is required'),
@@ -35,16 +36,19 @@ export function VendorForm(props: DialogFormProps<Vendor>) {
     resolver: zodResolver(schema)
   });
 
+  const [open, setOpen] = useState(false);
+
   function save() {
     form.submit().then((response) => {
       if (response) {
         props.onSubmit(response.data);
+        setOpen(false);
       }
     })
   }
 
   return (
-    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
