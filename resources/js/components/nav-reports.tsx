@@ -43,7 +43,7 @@ export function NavReports() {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Report / KPIs</SidebarGroupLabel>
+      <SidebarGroupLabel>Report / KPIs (work in progress)</SidebarGroupLabel>
       <SidebarMenu>
         {menus.map((item) => (
           <SidebarMenuItem key={item.name}>

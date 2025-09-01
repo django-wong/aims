@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
                 UserRole::PM,
                 UserRole::STAFF,
                 UserRole::CLIENT,
+                UserRole::INSPECTOR
             ]);
         });
 

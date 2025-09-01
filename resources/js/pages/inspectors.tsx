@@ -11,7 +11,7 @@ import { DataTable, useTableApi } from '@/components/data-table-2';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Circle, LocationEdit, MoreHorizontal, Plus, Trash2Icon } from 'lucide-react';
+import { Circle, LocationEdit, MoreHorizontal, Plus, ScanFace, Trash2Icon } from 'lucide-react';
 import axios from 'axios';
 import { z } from 'zod';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
@@ -35,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { DatePicker } from '@/components/date-picker';
 import { Link } from '@inertiajs/react';
 import dayjs from 'dayjs';
+import { VisibleToStaffAndAbove } from '@/components/hide-from-client';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -189,6 +190,16 @@ function InspectorActions({ user }: { user: User }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align={'end'} side={'bottom'} className={'w-56'}>
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+        <VisibleToStaffAndAbove>
+          <Link href={route('impersonate', { id: user.id })}>
+            <DropdownMenuItem>
+              Impersonate
+              <DropdownMenuShortcut>
+                <ScanFace className={'size-4'} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </Link>
+        </VisibleToStaffAndAbove>
         <DropdownMenuItem className="text-destructive" onClick={() => {
           if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
             axios.delete(`/api/v1/users/${user.id}`).then(() => {

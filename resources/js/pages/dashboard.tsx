@@ -1,19 +1,12 @@
-// import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
-// import { SectionCards } from "@/components/section-cards"
-
-import data from "./data.json"
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, SharedData } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePage } from '@inertiajs/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartNoAxesColumnIcon, ClockFadingIcon, FileCheckIcon, MessagesSquare, Newspaper } from 'lucide-react';
-import { DailyUsage } from '@/pages/assignments/daily-usage';
+import { ClockFadingIcon, FileCheckIcon } from 'lucide-react';
 import { Timesheets } from '@/pages/assignments/timesheets';
-import { Comments } from '@/components/comments';
 import { useLocationHash } from '@/hooks/use-location-hash';
-import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
+import { HideFromClient, VisibleToClient, VisibleToOperator, VisibleToStaffAndAbove } from '@/components/hide-from-client';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -27,14 +20,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ]
 
 export default function Page() {
-  const {
-    props: {
-      auth: {
-        user
-      }
-    }
-  } = usePage<SharedData>();
-
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
@@ -43,8 +28,14 @@ export default function Page() {
           <Skeleton className="h-8 w-[60px] rounded-full" />
         </HideFromClient>
       }>
-      <HideFromClient><GeneralDashboard /></HideFromClient>
+      <VisibleToStaffAndAbove><GeneralDashboard /></VisibleToStaffAndAbove>
       <VisibleToClient><ClientDasboard /></VisibleToClient>
+      <VisibleToOperator>
+        <div className="m-6 p-4 border rounded-lg bg-yellow-50 text-yellow-800">
+          <p>You are logged in as an Operator. Please use the admin panel to manage the system.</p>
+          <p>TODO: Show inspector's assignments</p>
+        </div>
+      </VisibleToOperator>
     </AppLayout>
   );
 }
