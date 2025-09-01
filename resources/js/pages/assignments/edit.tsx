@@ -23,6 +23,7 @@ import { Assignment, AssignmentStatus, BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import {
+  AlarmClockIcon,
   ChartNoAxesColumnIcon,
   CheckCheckIcon,
   ClockFadingIcon,
@@ -37,6 +38,7 @@ import { ForContractHolderOffice } from '@/components/for-contract-holder-office
 import axios from 'axios';
 import { AssignmentStatusBadge } from '@/pages/assignments/assignment-status-badge';
 import { PopoverConfirm } from '@/components/popover-confirm';
+import { useIsClient } from '@/hooks/use-role';
 
 interface EditProps {
   assignment: Assignment;
@@ -44,6 +46,7 @@ interface EditProps {
 
 export default function Edit(props: EditProps) {
   const [hash, setHash] = useQueryParam('tab', 'timesheets');
+  const isClient = useIsClient();
 
   const org = useOrg();
 
@@ -72,55 +75,64 @@ export default function Edit(props: EditProps) {
             {/*<AssignmentActions assignment={props.assignment}/>*/}
             <VisibleToClient>
               <NotificationOfInspection>
-                <Button variant={'outline'}>Notification of Inspection</Button>
+                <Button variant={'outline'}>
+                  <AlarmClockIcon/>
+                  Notification of Inspection
+                </Button>
               </NotificationOfInspection>
             </VisibleToClient>
 
-            <ForOperationOffice>
-              {props.assignment.status === AssignmentStatus.ISSUED && (
-                <>
-                  <Button
-                    onClick={() => {
-                      if (confirm('Are you sure accept this assignment?')) {
-                        axios.post('/api/v1/assignments/' + props.assignment.id + '/accept').then(() => {
+            <HideFromClient>
+              <ForOperationOffice>
+                {props.assignment.status === AssignmentStatus.ISSUED && (
+                  <>
+                    <Button
+                      onClick={() => {
+                        if (confirm('Are you sure accept this assignment?')) {
+                          axios.post('/api/v1/assignments/' + props.assignment.id + '/accept').then(() => {
+                            router.reload();
+                          });
+                        }
+                      }}>
+                      <CheckCheckIcon />
+                      Acknowledge
+                    </Button>
+                    <RejectWithMessage />
+                  </>
+                )}
+              </ForOperationOffice>
+            </HideFromClient>
+            <HideFromClient>
+              <ForContractHolderOffice>
+                {props.assignment.delegated && [AssignmentStatus.REJECTED, AssignmentStatus.DRAFT].indexOf(props.assignment.status) !== -1 && (
+                  <PopoverConfirm side={'bottom'} align={'end'} message={'Please make sure you have all files uploaded.'} onConfirm={() => {
+                        axios.post('/api/v1/assignments/' + props.assignment.id + '/send-to-operation-office').then(() => {
                           router.reload();
                         });
-                      }
-                    }}>
-                    <CheckCheckIcon />
-                    Acknowledge
+                      }}>
+                    <Button variant={'outline'}>
+                      <SendIcon />
+                      Send to operation office
+                    </Button>
+                  </PopoverConfirm>
+                )}
+              </ForContractHolderOffice>
+            </HideFromClient>
+            <HideFromClient>
+              {/* Delegated to my office but haven't accepted it */}
+              {props.assignment.operation_org_id === org?.id && props.assignment.status < AssignmentStatus.ACCEPTED ? null : (
+                <AssignmentForm
+                  value={props.assignment}
+                  onSubmit={() => {
+                    router.reload();
+                  }}
+                >
+                  <Button>
+                    <PencilIcon /> Edit
                   </Button>
-                  <RejectWithMessage />
-                </>
+                </AssignmentForm>
               )}
-            </ForOperationOffice>
-            <ForContractHolderOffice>
-              {props.assignment.delegated && [AssignmentStatus.REJECTED, AssignmentStatus.DRAFT].indexOf(props.assignment.status) !== -1 && (
-                <PopoverConfirm side={'bottom'} align={'end'} message={'Please make sure you have all files uploaded.'} onConfirm={() => {
-                      axios.post('/api/v1/assignments/' + props.assignment.id + '/send-to-operation-office').then(() => {
-                        router.reload();
-                      });
-                    }}>
-                  <Button variant={'outline'}>
-                    <SendIcon />
-                    Send to operation office
-                  </Button>
-                </PopoverConfirm>
-              )}
-            </ForContractHolderOffice>
-            {/* Delegated to my office but haven't accepted it */}
-            {props.assignment.operation_org_id === org?.id && props.assignment.status < AssignmentStatus.ACCEPTED ? null : (
-              <AssignmentForm
-                value={props.assignment}
-                onSubmit={() => {
-                  router.reload();
-                }}
-              >
-                <Button>
-                  <PencilIcon /> Edit
-                </Button>
-              </AssignmentForm>
-            )}
+            </HideFromClient>
           </>
         }
       >
@@ -137,10 +149,12 @@ export default function Edit(props: EditProps) {
                   <PaperclipIcon />
                   <span className={'hidden sm:inline'}>Attachments</span>
                 </TabsTrigger>
-                <TabsTrigger value={'inspectors'}>
-                  <UserRoundSearchIcon />
-                  <span className={'hidden sm:inline'}>Inspectors</span>
-                </TabsTrigger>
+                <HideFromClient>
+                  <TabsTrigger value={'inspectors'}>
+                    <UserRoundSearchIcon />
+                    <span className={'hidden sm:inline'}>Inspectors</span>
+                  </TabsTrigger>
+                </HideFromClient>
                 <TabsTrigger value={'timesheets'}>
                   <ClockFadingIcon />
                   <span className={'hidden sm:inline'}>Timesheet</span>
@@ -160,11 +174,13 @@ export default function Edit(props: EditProps) {
                 <DailyUsage />
               </TabsContent>
               <TabsContent value={'attachments'}>
-                <AssignmentAttachments allowUpload={true}/>
+                <AssignmentAttachments allowUpload={!isClient}/>
               </TabsContent>
-              <TabsContent value={'inspectors'}>
-                <AssignmentInspectors />
-              </TabsContent>
+              <HideFromClient>
+                <TabsContent value={'inspectors'}>
+                  <AssignmentInspectors />
+                </TabsContent>
+              </HideFromClient>
               <TabsContent value={'timesheets'}>
                 <div className={'grid gap-4'}>
                   <div className={'overflow-hidden'}>
@@ -204,11 +220,13 @@ export default function Edit(props: EditProps) {
                     'N/A'
                   )}
                 </InfoLine>
-                <InfoLine icon={'shopping-bag'} label={'Contract Holder Ref / WO No.'}>
-                  <Link href={`/purchase-orders/${props.assignment.purchase_order_id || ''}`} className={'underline'}>
-                    {props.assignment.purchase_order?.title ?? 'N/A'}
-                  </Link>
-                </InfoLine>
+                <HideFromClient>
+                  <InfoLine icon={'shopping-bag'} label={'Contract Holder Ref / WO No.'}>
+                    <Link href={`/purchase-orders/${props.assignment.purchase_order_id || ''}`} className={'underline'}>
+                      {props.assignment.purchase_order?.title ?? 'N/A'}
+                    </Link>
+                  </InfoLine>
+                </HideFromClient>
                 <InfoLine icon={'square-arrow-out-up-right'} label={'Project'}>
                   <Link href={`/projects/${props.assignment.project?.id || ''}`} className={'underline'}>
                     {props.assignment.project?.title ?? 'N/A'}

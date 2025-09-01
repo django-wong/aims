@@ -137,11 +137,13 @@ export default function Projects() {
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <ProjectForm onSubmit={() => table.reload()}>
-          <Button>
-            <Plus /> New
-          </Button>
-        </ProjectForm>
+        <HideFromClient>
+          <ProjectForm onSubmit={() => table.reload()}>
+            <Button>
+              <Plus /> New
+            </Button>
+          </ProjectForm>
+        </HideFromClient>
       }
     >
       <div className="px-6">

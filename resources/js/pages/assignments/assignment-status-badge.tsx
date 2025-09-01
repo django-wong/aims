@@ -11,7 +11,7 @@ export function AssignmentStatusBadge() {
       return (
         <Badge className={''} variant={'outline'}>
           <CircleDashedIcon />
-          Draft
+          Draft {assignment?.status}
         </Badge>
       );
     case AssignmentStatus.ISSUED:

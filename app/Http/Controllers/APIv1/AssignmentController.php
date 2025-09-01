@@ -109,6 +109,12 @@ class AssignmentController extends Controller
                     $query->where('client_id', $value);
                 });
             }),
+            AllowedFilter::callback('group', function (Builder $query, $value) {
+                match ($value) {
+                    'delegated' => $query->where('delegated', true),
+                    default => null,
+                };
+            })
         ];
     }
 

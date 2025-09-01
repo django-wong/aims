@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTable } from '@/hooks/use-table';
-import { describe_timesheet_status, timesheet_range } from '@/lib/utils';
+import { timesheet_range } from '@/lib/utils';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { Assignment, Timesheet } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
@@ -23,6 +23,10 @@ import { startTransition, useDeferredValue, useState } from 'react';
 import axios from 'axios';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
 import { TimesheetStatus } from '@/pages/timesheets/status';
+import { AssignmentProvider, useAssignment } from '@/providers/assignment-provider';
+import { useOrg } from '@/hooks/use-org';
+import { useIsClient } from '@/hooks/use-role';
+import { Link } from '@inertiajs/react';
 
 interface TimesheetsProps {
   assignment?: Assignment;
@@ -32,12 +36,24 @@ interface TimesheetsProps {
 export function Timesheets(props: TimesheetsProps) {
   const [timesheet, setTimesheet] = useState<Timesheet | null>();
   const deferred_timesheet = useDeferredValue(timesheet);
+  const assignment = useAssignment();
+  const isClient = useIsClient();
+
   const columns: ColumnDef<Timesheet>[] = [
     // range, hours, travel_distance, cost, status
+    ...(isClient
+      ? [
+          {
+            accessorKey: 'assignment',
+            header: 'Assignment',
+            cell: ({ row }) => <Link className={'underline'} href={route('assignments.edit', row.original.assignment_id)}>{row.original.assignment?.reference_number}</Link>,
+          },
+        ]
+      : []),
     {
       accessorKey: 'inspector',
       header: 'Inspector',
-      cell: ({ row }) => <span>{row.original.user?.name}</span>
+      cell: ({ row }) => <span>{row.original.user?.name}</span>,
     },
     {
       accessorKey: 'range',
@@ -62,9 +78,7 @@ export function Timesheets(props: TimesheetsProps) {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => (
-        <TimesheetStatus status={row.original.status} />
-      )
+      cell: ({ row }) => <TimesheetStatus status={row.original.status} />,
     },
     {
       accessorKey: 'actions',
@@ -72,9 +86,11 @@ export function Timesheets(props: TimesheetsProps) {
         return <div className={'flex items-center justify-end'}>Actions</div>;
       },
       cell: ({ row }) => (
-        <div className={'flex items-center justify-end'}>
-          <TimesheetActions timesheet={row.original} onViewDetailsClick={setTimesheet} />
-        </div>
+        <AssignmentProvider value={row.original.assignment || props.assignment || assignment}>
+          <div className={'flex items-center justify-end'}>
+            <TimesheetActions timesheet={row.original} onViewDetailsClick={setTimesheet} />
+          </div>
+        </AssignmentProvider>
       ),
     },
   ];
@@ -88,7 +104,7 @@ export function Timesheets(props: TimesheetsProps) {
           'filter[assignment_id]': String(props.assignment?.id),
         } : null
       ),
-      'include': 'user',
+      'include': 'user,assignment',
       sort: '-start',
     },
   });
@@ -149,7 +165,10 @@ interface TimesheetActionsProps {
 }
 
 function TimesheetActions(props: TimesheetActionsProps) {
+  const assignment = useAssignment();
   const table = useTableApi();
+  const org = useOrg();
+  const isClient = useIsClient();
 
   function approve() {
     axios.post(`/api/v1/timesheets/${props.timesheet.id}/approve`).then(() => {
@@ -163,11 +182,39 @@ function TimesheetActions(props: TimesheetActionsProps) {
   //   });
   // }
 
+  let need_approval = false;
+
+  if (org?.id === assignment!.operation_org_id) {
+    if ([1].indexOf(props.timesheet!.status) != -1) {
+      need_approval = true;
+    }
+  }
+
+  if (org?.id === assignment!.org_id) {
+    if (isClient) {
+      if ([3].indexOf(props.timesheet!.status) != -1) {
+        need_approval = true;
+      }
+    } else {
+      if ([1, 2].indexOf(props.timesheet!.status) != -1) {
+        need_approval = true;
+      }
+    }
+  }
+
+
   return (
-    <>
+    <div className={'flex items-center space-x-2'}>
+      { need_approval ? (
+        <Button variant={'secondary'} onClick={approve} size={'sm'}>
+          <CheckIcon />
+          Approve
+        </Button>
+      ) : null }
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild onClick={(event) => event.stopPropagation()} className={'cursor-pointer'}>
-          <Button variant={'secondary'}>
+          <Button variant={'secondary'} size={'sm'}>
             <EllipsisVerticalIcon />
           </Button>
         </DropdownMenuTrigger>
@@ -178,22 +225,6 @@ function TimesheetActions(props: TimesheetActionsProps) {
               <span>#{props.timesheet.id}</span>
             </div>
           </DropdownMenuLabel>
-          { props.timesheet.status > 0 ? (
-            <DropdownMenuGroup>
-              <DropdownMenuItem variant={'default'} onClick={approve}>
-                Approve
-                <DropdownMenuShortcut>
-                  <CheckIcon />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              {/*<DropdownMenuItem variant={'destructive'} onClick={request_revise}>*/}
-              {/*  Request Revise*/}
-              {/*  <DropdownMenuShortcut>*/}
-              {/*    <XIcon />*/}
-              {/*  </DropdownMenuShortcut>*/}
-              {/*</DropdownMenuItem>*/}
-            </DropdownMenuGroup>
-          ) : null }
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => props.onViewDetailsClick?.(props.timesheet)}>
@@ -205,6 +236,6 @@ function TimesheetActions(props: TimesheetActionsProps) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-    </>
+    </div>
   );
 }

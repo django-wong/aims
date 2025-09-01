@@ -31,6 +31,10 @@ import { download } from '@/utils/download-response-as-blob';
 import { ClientSelect } from '@/components/client-select';
 import { useIsClient } from '@/hooks/use-role';
 import dayjs from 'dayjs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQueryParam } from '@/hooks/use-query-param';
+import { useOrg } from '@/hooks/use-org';
+import { HideFromClient } from '@/components/hide-from-client';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -48,6 +52,9 @@ export default function AssignmentsPage() {
   const {table, content} = useAssignmentsTable();
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
+
+  // const [hash, setHash] = useQueryParam('tab', 'all');
+
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
@@ -61,7 +68,9 @@ export default function AssignmentsPage() {
           </Button>
         </AssignmentForm>
       }>
-      <div className={'px-6'}>{ content }</div>
+      <div className={'px-6'}>
+        {content}
+      </div>
     </AppLayout>
   );
 }
@@ -76,6 +85,13 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
 
   return (
     <div className={'flex items-center justify-end gap-2'}>
+      <HideFromClient>
+        <AssignmentForm value={assignment} onSubmit={() => {table.reload()}}>
+          <Button variant="secondary" size={'sm'}>
+            <PencilIcon />
+          </Button>
+        </AssignmentForm>
+      </HideFromClient>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size={'sm'}>
@@ -199,11 +215,6 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <AssignmentForm value={assignment} onSubmit={() => {table.reload()}}>
-        <Button variant="secondary" size={'sm'}>
-          <PencilIcon />
-        </Button>
-      </AssignmentForm>
     </div>
   );
 }
@@ -485,7 +496,20 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
   return {
     table,
     content: (
-      <>
+      <div className={'grid grid-cols-1 gap-4'}>
+        <Tabs
+          value={table.searchParams.get('filter[group]') || 'all'}
+          onValueChange={(value) => {
+            table.setSearchParams((params) => {
+              params.set('filter[group]', value);
+              return params;
+            })
+          }}>
+          <TabsList>
+            <TabsTrigger value={'all'}>All</TabsTrigger>
+            <TabsTrigger value={'delegated'}>Delegated</TabsTrigger>
+          </TabsList>
+        </Tabs>
         <DataTable
           table={table}
           left={<>
@@ -537,7 +561,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
             </>
           }
         />
-      </>
+      </div>
     )
   }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Models\UserRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class MenuController
 {
@@ -18,23 +19,21 @@ class MenuController
 
         return [
             'main' => [
-                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF],[
+                ...(Gate::allows('viewDashboard') ? [
                     'dashboard' => [
                         'name' => 'Dashboard',
                         'icon' => 'house',
                         'url' => route('dashboard'),
                         'component' => 'dashboard'
                     ],
-                ])),
-                ...($when([UserRole::ADMIN],[
+                ] : []),
+                ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE],[
                     'clients' => [
                         'name' => 'Clients',
                         'icon' => 'book-user',
                         'url' => route('clients'),
                         'component' => 'clients'
-                    ]
-                ])),
-                ...($when([UserRole::ADMIN], [
+                    ],
                     'vendors' => [
                         'name' => 'Vendors',
                         'icon' => 'user-round-search',
@@ -50,7 +49,7 @@ class MenuController
                         'component' => 'projects'
                     ],
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::FINANCE],[
                     'purchase-orders' => [
                         'name' => 'Purchase Orders (WO)',
                         'icon' => 'shopping-bag',
@@ -66,7 +65,7 @@ class MenuController
                         'component' => 'assignments'
                     ]
                 ])),
-                ...($when([UserRole::ADMIN, UserRole::PM], [
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::FINANCE], [
                     'invoices' => [
                         'name' => 'Invoices',
                         'icon' => 'house',
@@ -74,20 +73,22 @@ class MenuController
                         'component' => 'invoices'
                     ],
                 ])),
-                ...($when([UserRole::ADMIN], [
+                ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM], [
                     'inspector' => [
                         'name' => 'Inspector (FieldOps)',
                         'icon' => 'users',
                         'url' => route('inspectors'),
                         'component' => 'inspectors'
-                    ],
+                    ]
+                ])),
+                ...($when([UserRole::ADMIN], [
                     'users' => [
                         'name' => 'User & Access',
                         'icon' => 'users',
                         'url' => route('users'),
                         'component' => 'users'
                     ]
-                ])),
+                ]))
             ],
         ];
     }

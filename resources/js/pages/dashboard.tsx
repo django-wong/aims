@@ -77,10 +77,6 @@ function ClientDasboard() {
             <ClockFadingIcon/>
             <span className={'hidden sm:inline'}>Pending Timesheet</span>
           </TabsTrigger>
-          <TabsTrigger value={'inspector-report'}>
-            <Newspaper/>
-            <span className={'hidden sm:inline'}>Inspector Report</span>
-          </TabsTrigger>
           <TabsTrigger value={'invoices'}>
             <FileCheckIcon/>
             <span className={'hidden sm:inline'}>Invoices</span>
@@ -97,7 +93,6 @@ function ClientDasboard() {
             </div>
           </div>
         </TabsContent>
-        <TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>
         <TabsContent value={'invoices'}>TODO: Invoices</TabsContent>
       </Tabs>
     </div>
