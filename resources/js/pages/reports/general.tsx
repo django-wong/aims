@@ -30,14 +30,14 @@ export default function GeneralReport(props: GeneralReportProps) {
 
   const table = useTable<any>('', {
     columns: props.columns,
-    defaultData: props.data
+    defaultData: props.data,
   })
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="flex flex-col px-6">
         <DataTable
-          table={table}
+          table={table} pagination={false}
         />
       </div>
     </AppLayout>
