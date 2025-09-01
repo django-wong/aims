@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
-import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PencilIcon, PlusIcon, Trash2 } from 'lucide-react';
+import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, FileIcon, Mail, MessageSquare, PencilIcon, PlusIcon, Trash2,
+  User2Icon
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -31,9 +33,7 @@ import { download } from '@/utils/download-response-as-blob';
 import { ClientSelect } from '@/components/client-select';
 import { useIsClient } from '@/hooks/use-role';
 import dayjs from 'dayjs';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useQueryParam } from '@/hooks/use-query-param';
-import { useOrg } from '@/hooks/use-org';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HideFromClient } from '@/components/hide-from-client';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -485,8 +485,8 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
         }}
         renderTrigger={(project) => {
           return (
-            <Button variant={'outline'}>
-              Project: <Badge variant={'secondary'}>{project?.title ?? 'All'}</Badge>
+            <Button variant={project ? 'outline' : 'dashed'}>
+              <FileIcon/> Project{project ? `: ${project.title}` : ''}
             </Button>
           );
         }}/>
@@ -545,8 +545,8 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
                     value={Number(table.searchParams.get('filter[client_id]')) || null}
                     renderTrigger={(client) => {
                       return (
-                        <Button variant={'outline'}>
-                          Client: <Badge variant={'secondary'}>{client?.business_name ?? 'All'}</Badge>
+                        <Button variant={client ? 'outline' : 'dashed'}>
+                          <User2Icon/>Client{client ? `: ${client.business_name}` : ''}
                         </Button>
                       );
                     }}

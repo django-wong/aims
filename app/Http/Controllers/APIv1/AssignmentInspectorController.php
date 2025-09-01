@@ -16,24 +16,24 @@ class AssignmentInspectorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return $this->getQueryBuilder()->tap(function (Builder $query) {
+
+        $validated = $request->validate([
+            'assignment_id' => 'sometimes|nullable|exists:assignments,id',
+        ]);
+
+        return $this->getQueryBuilder()->tap(function (Builder $query) use ($validated) {
             $query->leftJoin('assignments', 'assignment_inspectors.assignment_id', '=', 'assignments.id')
-                // ->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id')
                 ->leftJoin('assignment_types', 'assignment_inspectors.assignment_type_id', '=', 'assignment_types.id')
-                // ->leftJoin('budgets', function (QueryBuilder $query) {
-                //     $query->on('budgets.purchase_order_id', '=', 'purchase_orders.id')
-                //         ->on('budgets.assignment_type_id', '=', 'assignment_inspectors.assignment_type_id');
-                // })
                 ->leftJoin('users', 'assignment_inspectors.user_id', '=', 'users.id');
+
+            $query->where('assignment_id', $validated['assignment_id']);
 
             $query->select([
                 'assignment_inspectors.*',
                 'users.name as name',
                 'assignment_types.name as assignment_type_name',
-                // 'budgets.hourly_rate as hourly_rate',
-                // 'budgets.travel_rate as travel_rate',
             ]);
         })->paginate();
     }

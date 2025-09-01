@@ -26,6 +26,7 @@ interface DataTableProps<T extends BaseTableData> {
   table: ReturnType<typeof useTable<T>>;
   left?: React.ReactNode;
   right?: React.ReactNode;
+  head?: React.ReactNode;
   onRowClick?: (row: Row<T>) => void;
   pagination?: boolean;
 }
@@ -70,12 +71,12 @@ export function ColumnToggle() {
 }
 
 const tableVariants = cva(
-  "overflow-hidden rounded-md border relative",
+  "overflow-hidden rounded-md border-muted relative",
   {
     variants: {
       variant: {
         default:
-          "",
+          "ring-muted ring-4",
         clean:
           "",
       }
@@ -100,6 +101,9 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
             </div>
           </div>
         )}
+
+        {props.head}
+
         <div className={cn(tableVariants({ variant }), props.containerClassName)}>
           <Table
             bottom={
@@ -130,7 +134,7 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
                   {headerGroup.headers.map((header, index) => (
                     <TableHead
                       key={header.id}
-                      className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'bg-muted border-r last:border-r-0')}
+                      className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'py-2 bg-muted border-r last:border-r-0')}
                       style={{ ...computedStyle(header.column)}}>
                       {
                         header.isPlaceholder
