@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('hours')->default(0)->comment('Total hours worked');
             $table->integer('travel_distance')->default(0)->comment('Total kilometers/miles traveled');
             $table->decimal('cost', 10)->default(0.00)->comment('Total cost for the timesheet, computed from the mileage, hourly rate, and any additional expenses');
+
             $table->unsignedTinyInteger('status')->default(0)->index()->comment(
                 'Status of the timesheet:
                  0 = draft,
@@ -34,14 +35,15 @@ return new class extends Migration
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('contract_holder_approved_at')->nullable();
             $table->timestamp('client_approved_at')->nullable();
-            $table->timestamp('invoiced_at')->nullable();
+
+            // The invoiced timestamps for invoices that goes to contractor and client
+            $table->foreignId('contractor_invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
+            $table->foreignId('client_invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
 
             $table->timestamps();
             $table->softDeletes();
             $table->index(['assignment_id', 'status']);
         });
-
-
     }
 
     /**

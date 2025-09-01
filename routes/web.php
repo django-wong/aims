@@ -9,6 +9,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MagicLinkController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
@@ -86,6 +87,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Inspectors
     Route::get('inspectors', [InspectorController::class, 'index'])->name('inspectors');
     Route::get('inspectors/{id}/edit', [InspectorController::class, 'edit']);
+
+    // Reports
+    Route::controller(ReportController::class)->prefix('reports')->group(function () {
+        Route::get('hours-entry-all', 'hours_entry_all')->name('reports.hours-entry-all');
+        Route::get('hours-entry-bie-local', 'hours_entry_bie_local')->name('reports.hours-entry-bie-local');
+        Route::get('hours-entry-other', 'hours_entry_other')->name('reports.hours-entry-other');
+        Route::get('field-operatives-manhour-summary', 'field_operatives_manhour_summary')->name('reports.field-operatives-manhour-summary');
+        Route::get('invoice-required', 'invoice_required')->name('reports.invoice-required');
+        Route::get('man-hours', 'man_hours')->name('reports.man-hours');
+        Route::get('reports-late', 'reports_late')->name('reports.reports-late');
+    });
 
     // Fallback to 404 page for undefined routes
     Route::inertia('{any}', '404');

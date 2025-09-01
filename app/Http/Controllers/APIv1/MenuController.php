@@ -92,4 +92,47 @@ class MenuController
             ],
         ];
     }
+
+    public function reports()
+    {
+        return [
+            [
+                'name' => 'Field Operatives Manhour Summary',
+                'url' => route('reports.field-operatives-manhour-summary'),
+                'icon' => 'blocks',
+            ],
+            [
+                'name' => 'Hours Entry - All',
+                'url' => route('reports.hours-entry-all'),
+                'icon' => 'file-clock',
+                'children' => [
+                    [
+                        'name' => 'Hours Entry - BIE Local',
+                        'url' => route('reports.hours-entry-bie-local'),
+                        'icon' => 'file-clock',
+                    ],
+                    [
+                        'name' => 'Hours Entry - BIE Local',
+                        'url' => route('reports.hours-entry-bie-local'),
+                        'icon' => 'file-clock',
+                    ]
+                ]
+            ],
+            [
+                'name' => 'Man-hours',
+                'url' => route('reports.man-hours'),
+                'icon' => 'clock-plus',
+            ],
+            [
+                'name' => 'Invoice Required',
+                'url' => route('reports.invoice-required'),
+                'icon' => 'receipt',
+            ],
+            [
+                'name' => 'Reports Late',
+                'url' => route('reports.reports-late'),
+                'icon' => 'file-warning',
+            ],
+        ];
+    }
 }

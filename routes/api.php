@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
     Route::get('menus', [MenuController::class, 'index']);
+    Route::get('menus/reports', [MenuController::class, 'reports']);
 
     Route::get('assignments/next-assignment-number', [AssignmentController::class, 'next_assignment_number']);
 
