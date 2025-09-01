@@ -20,6 +20,7 @@ import { Circle } from 'lucide-react';
 import zod from 'zod';
 import { AssignmentTypeSelect } from '@/components/assignment-type-select';
 import { usePurchaseOrder } from '@/providers/purchasr-order-provider';
+import { useState } from 'react';
 
 const schema = zod.object({
   purchase_order_id: zod.coerce.number().optional(),
@@ -50,18 +51,20 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
 
   const isUpdate = !!(props.value && props.value.id);
 
+  const [open, setOpen] = useState(false);
+
   function save() {
     form.submit().then(async (response) => {
       if (response) {
-        console.info('Budget saved successfully', response);
         props.onSubmit(response.data);
+        setOpen(false);
       }
     });
   }
 
   return (
     <>
-      <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      <Dialog open={open} onOpenChange={setOpen}>
         {props.children && <DialogTrigger asChild={props.asChild === undefined ? true : props.asChild}>{props.children}</DialogTrigger>}
         <DialogContent>
           <DialogHeader>
@@ -111,7 +114,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                               step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                               placeholder={'0.00'}
                             />
                           </VFormField>
@@ -131,7 +134,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                               step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                               placeholder={'0.00'}
                             />
                           </VFormField>
@@ -151,7 +154,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                               step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                               placeholder={'0.50'}
                             />
                           </VFormField>
@@ -171,7 +174,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                               step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                               placeholder={'0.00'}
                             />
                           </VFormField>

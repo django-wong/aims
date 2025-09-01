@@ -58,7 +58,7 @@ export default function EditPage(props: InspectorEditProps) {
           <InspectorForm
             value={props.inspector}
             onSubmit={() => {
-              window.location.reload();
+              router.reload();
             }}
           >
             <Button size={'sm'} variant={'secondary'}>

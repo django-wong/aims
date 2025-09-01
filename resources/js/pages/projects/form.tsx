@@ -13,7 +13,7 @@ import {
 import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
-import { useReactiveForm } from '@/hooks/use-form';
+import { useReactiveForm, useResource } from '@/hooks/use-form';
 import { Loader2Icon } from 'lucide-react';
 import { DialogFormProps, Project } from '@/types';
 import { useState } from 'react';
@@ -22,41 +22,22 @@ import zod from 'zod';
 import { ClientSelect } from '@/components/client-select';
 import { ProjectTypeSelect } from '@/components/project-type-select';
 
-function number() {
-  return zod.coerce.number().min(0);
-}
-
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
-  po_number: zod.string().min(1, 'PO Number is required').default(''),
-  number: zod.string().min(1),
-  project_type_id: zod.number().nullable(),
-  client_id: zod.number().nullable(),
-  budget: zod.number().min(0, 'Budget must be a positive number'),
-  quote_id: zod.number().nullable().optional(),
-  status: zod.number().default(1),
 
-  first_alert_threshold: number(),
-  second_alert_threshold: number(),
-  final_alert_threshold: number(),
+  project_type_id: zod.number(),
+  client_id: zod.number(),
 });
 
 export function ProjectForm(props: DialogFormProps<Project>) {
   const form = useReactiveForm<zod.infer<typeof schema>, Project>({
-    url: 'api/v1/projects',
-    method: 'POST',
-    resolver: zodResolver(schema) as any,
-    defaultValues: {
-      title: 'My awesome new project',
-      po_number: 'PO-1174',
-      project_type_id: 2,
+    ...(useResource('/api/v1/projects', {
+      title: '',
+      project_type_id: null,
       client_id: null,
-      budget: 50_000,
-      status: Math.random() > 0.5 ? 1 : 0,
-      first_alert_threshold: 70,
-      second_alert_threshold: 90,
-      final_alert_threshold: 100,
-    }
+      ...props.value
+    })),
+    resolver: zodResolver(schema) as any,
   });
 
   const [open, setOpen] = useState(props.open);

@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { ProjectSelect } from '@/components/project-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
 
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
@@ -51,13 +52,16 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
     form.submit().then(res => {
       if (res) {
         props.onOpenChange?.(false);
+        setOpen(false);
         props.onSubmit(form.getValues());
       }
     })
   }
 
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>

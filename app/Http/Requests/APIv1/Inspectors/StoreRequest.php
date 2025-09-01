@@ -11,7 +11,7 @@ class StoreRequest extends FormRequest
         return [
             'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
 
-            'title' => ['string', 'max:255'],
+            'title' => ['string', 'max:255', 'nullable'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
@@ -36,6 +36,17 @@ class StoreRequest extends FormRequest
             'address.address_line_2' => 'nullable|string|max:255',
             'address.address_line_3' => 'nullable|string|max:255',
         ];
+    }
+
+    public function basic()
+    {
+        return $this->only([
+            'title',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
+        ]);
     }
 
     public function messages()

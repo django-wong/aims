@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property PurchaseOrder $purchase_order
+ * @property numeric       $hourly_rate
+ * @property numeric         $travel_rate
  */
 class Budget extends Model
 {

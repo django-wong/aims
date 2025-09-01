@@ -22,6 +22,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAssignment } from '@/providers/assignment-provider';
 import { useTableApi } from '@/components/data-table-2';
+import { GrossMarginPreview } from '@/pages/assignments/gross-margin-preview';
 
 export function AddInspectorToAssignment() {
   const [open, setOpen] = useState(false);
@@ -94,12 +95,26 @@ export function AddInspectorToAssignment() {
                   render={({ field }) => {
                     return (
                       <VFormField label={'Discipline'} className={'col-span-6'}>
-                        <AssignmentTypeSelect onValueChane={field.onChange} value={field.value} />
+                        <AssignmentTypeSelect
+                          onValueChane={field.onChange} value={field.value}
+                        />
                       </VFormField>
                     );
                   }}
                   name={'assignment_type_id'}
                 />
+
+                {
+                  assignment?.purchase_order_id && (
+                    <div className={'col-span-12 px-1'}>
+                      <GrossMarginPreview
+                        purchase_order_id={assignment.purchase_order_id}
+                        assignment_type_id={form.watch('assignment_type_id')}
+                        user_id={form.watch('user_id')}
+                      />
+                    </div>
+                  )
+                }
 
                 <div className={'text-muted-foreground col-span-12 text-sm'}>
                   <Alert>
@@ -131,3 +146,5 @@ const schema = z.object({
   user_id: z.number().min(1, { message: 'Inspector is required' }),
   assignment_type_id: z.number().min(1, { message: 'Discipline is required' }),
 });
+
+

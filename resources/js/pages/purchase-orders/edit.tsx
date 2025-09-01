@@ -1,6 +1,6 @@
 import Layout from '@/layouts/app-layout';
 import { BreadcrumbItem, PurchaseOrder } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,7 +30,7 @@ export default function PurchaseOrderEditPage(props: Props) {
   return (
     <Layout
       pageAction={
-        <PurchaseOrderForm value={props.purchase_order} onSubmit={() => {window.location.reload()}}>
+        <PurchaseOrderForm value={props.purchase_order} onSubmit={() => {router.reload()}}>
           <Button>
             <PencilIcon/>
             Edit

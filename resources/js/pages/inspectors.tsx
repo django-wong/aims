@@ -11,7 +11,7 @@ import { DataTable, useTableApi } from '@/components/data-table-2';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Circle, LocationEdit, MoreHorizontal, PencilIcon, Plus, Trash2Icon } from 'lucide-react';
+import { Circle, LocationEdit, MoreHorizontal, Plus, Trash2Icon } from 'lucide-react';
 import axios from 'axios';
 import { z } from 'zod';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
@@ -165,7 +165,7 @@ export default function Inspectors() {
           }
           table={table}
           right={
-            <InspectorForm onSubmit={() => {}}>
+            <InspectorForm onSubmit={() => {table.reload()}}>
               <Button>
                 <Plus/> New
               </Button>
@@ -206,13 +206,13 @@ function InspectorActions({ user }: { user: User }) {
   );
 }
 
-const inspector = z.object({
+const inspector_profile = z.object({
   initials: z.string().nullable().optional(),
   address_id: z.number().nullable().optional(),
-  hourly_rate: z.number().optional(),
-  travel_rate: z.number().optional(),
-  new_hourly_rate: z.number().nullable().optional(),
-  new_travel_rate: z.number().nullable().optional(),
+  hourly_rate: z.coerce.number(),
+  travel_rate: z.coerce.number(),
+  new_hourly_rate: z.coerce.number().nullable().optional(),
+  new_travel_rate: z.coerce.number().nullable().optional(),
   new_rate_effective_date: z.date().or(z.string()).nullable().optional(),
   assigned_identifier: z.string().nullable().optional(),
   include_on_skills_matrix: z.boolean(),
@@ -220,14 +220,14 @@ const inspector = z.object({
 });
 
 const schema = z.object({
-  title: z.string().optional(),
+  title: z.string().optional().nullable(),
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email address'),
-  inspector_profile: inspector,
+  inspector_profile: inspector_profile,
   password: z.string().min(8).optional().nullable(),
   password_confirmation: z.string().optional().nullable(),
-  address: addressSchema.optional()
+  address: addressSchema.optional().nullable()
 });
 
 
@@ -335,10 +335,10 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         <VFormField label={'Hourly Rate'}>
                           <Input
                             type={'number'}
-                            step={'0.01'}
+                            step={'10'}
                             min={'0'}
                             value={field.value ?? ''}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                             placeholder={'0.00'}
                           />
                         </VFormField>
@@ -356,10 +356,10 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         <VFormField label={'Travel Rate'}>
                           <Input
                             type={'number'}
-                            step={'0.01'}
+                            step={'10'}
                             min={'0'}
                             value={field.value ?? ''}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
                             placeholder={'0.00'}
                           />
                         </VFormField>

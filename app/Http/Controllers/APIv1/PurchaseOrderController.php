@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\UpdatePurchaseOrderRequest;
+use App\Models\Budget;
+use App\Models\InspectorProfile;
 use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +14,34 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class PurchaseOrderController extends Controller
 {
+
+    public function calculate_gross_margins(Request $request, PurchaseOrder $purchase_order)
+    {
+        $validated = $request->validate([
+            'assignment_type_id' => 'required|exists:assignment_types,id',
+            'user_id' => 'required',
+        ]);
+
+        /**
+         * @var Budget $budget
+         * @var InspectorProfile $inspector_profile
+         */
+        $budget = $purchase_order->budgets()->where('assignment_type_id', $validated['assignment_type_id'])->firstOrFail();
+
+        $inspector_profile = InspectorProfile::query()->where('user_id', $validated['user_id'])->firstOrFail();
+
+        $inspection = ($budget->hourly_rate - $inspector_profile->hourly_rate) / $budget->hourly_rate * 100;
+        $travel = ($budget->travel_rate - $inspector_profile->travel_rate) / $budget->travel_rate * 100;
+        $total = $inspection + $travel;
+
+        return response()->json([
+            'data' => [
+                'inspection' => round($inspection, 2),
+                'travel' => round($travel, 2),
+                'total' => round($total, 2),
+            ]
+        ]);
+    }
 
     protected function allowedFilters()
     {

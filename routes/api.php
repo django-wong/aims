@@ -71,10 +71,14 @@ Route::middleware('auth')->group(function () {
     Route::post('assignments/{assignment}/accept', [AssignmentController::class, 'accept']);
     Route::post('assignments/{assignment}/reject', [AssignmentController::class, 'reject']);
     Route::get('assignments/{assignment}/daily-usage', [AssignmentController::class, 'daily_usage']);
+
     // Timesheets
     Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);
+
+    // Purchase Orders
+    Route::get('purchase-orders/{purchase_order}/calculate-gross-margins', [PurchaseOrderController::class, 'calculate_gross_margins']);
 });

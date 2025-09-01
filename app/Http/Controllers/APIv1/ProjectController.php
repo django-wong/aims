@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Projects\StoreRequest;
+use App\Http\Requests\APIv1\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
@@ -78,9 +79,14 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $project->update($request->validated());
+
+        return [
+            'data' => $project->refresh(),
+            'message' => 'Project updated successfully.',
+        ];
     }
 
     /**
