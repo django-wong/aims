@@ -31,7 +31,7 @@ import {
   SignatureIcon,
   UserCircle,
 } from 'lucide-react';
-import { startTransition, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import SignaturePad, { SignatureCanvas } from 'react-signature-canvas';
 import { SizeAwareBuilder } from '@/components/size-aware-builder';
 import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
@@ -79,7 +79,7 @@ export default function Record(props: RecordProps) {
     axios.post(`/api/v1/assignment-inspectors/${props.inspection.id}/acknowledge`, {
       signature_base64: signaturepad.current?.toDataURL()
     }).then(() => {
-      window.location.reload();
+      router.reload();
     })
   }
 
@@ -216,7 +216,7 @@ export default function Record(props: RecordProps) {
                       <div>
                         <InfoLine label={'BIE Reference Number'}>
                           <Badge>
-                            {props.assignment.reference_number}
+                            {props.assignment.reference_number ?? 'N/A'}
                           </Badge>
                         </InfoLine>
                         <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>

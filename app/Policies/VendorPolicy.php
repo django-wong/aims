@@ -26,4 +26,14 @@ class VendorPolicy
     {
         return $user->can('update', $vendor->org);
     }
+
+    public function view(User $user, Vendor $vendor)
+    {
+        return $user->user_role->org()->is($vendor->org) && $user->isAnyRole([
+            \App\Models\UserRole::PM,
+            \App\Models\UserRole::ADMIN,
+            \App\Models\UserRole::STAFF,
+            \App\Models\UserRole::FINANCE,
+        ]);
+    }
 }

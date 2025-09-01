@@ -3,6 +3,7 @@
 namespace App\Http\Requests\APIv1\Contacts;
 
 use App\Models\Contactable;
+use App\Support\ModelResolver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,7 +14,7 @@ class IndexRequest extends FormRequest
         /**
          * @var class-string<Model> $class
          */
-        $class = '\\App\\Models\\' . ucfirst($this->validated('contactable_type'));
+        $class = ModelResolver::for($this->validated('contactable_type'));
         $id = $this->validated('contactable_id');
         if (is_numeric($id)) {
             FIND:
