@@ -80,18 +80,26 @@ class TimesheetItemController extends Controller
 
         if (empty($assignment_inspector->hourly_rate) || empty($assignment_inspector->travel_rate)) {
             return response()->json([
-                'message' => 'The purchase order does not have hourly and/or travel rate set',
+                'message' =>
+                    'The purchase order does not have hourly and/or travel rate set',
             ], 422);
         }
 
-        $record = DB::transaction(function () use ($request, $assignment_inspector) {
+        $date = $request->validated('date');
+
+        if (! empty($request->validated('dates'))) {
+            $date = $request->validated('dates')[0];
+        }
+
+        $record = DB::transaction(function () use ($request, $assignment_inspector, $date) {
             $record = $request->timesheet()->timesheet_items()->create([
                 ...array_filter($request->validated(), function ($value) {
                     return $value !== null;
                 }),
+                'date' => $date,
+                'user_id' => $assignment_inspector->user_id,
                 'hourly_rate' => $assignment_inspector->hourly_rate,
                 'travel_rate' => $assignment_inspector->travel_rate,
-                'user_id' => $assignment_inspector->user_id,
             ]);
 
             $request->saveAttachments($record);
@@ -99,13 +107,17 @@ class TimesheetItemController extends Controller
             return $record;
         });
 
-        return response()->json([
+        for ($i = 1; $i < count($request->validated('dates', [])); $i++) {
+            $date = $request->validated('dates')[$i];
+            $replicate = $record->replicate();
+            $replicate->date = $date;
+            $replicate->save();
+        }
+
+        return [
             'message' => 'Timesheet item created successfully',
-            'data' => $record->load([
-                'timesheet',
-                'attachments'
-            ]),
-        ]);
+            'data' => $record->load(['timesheet', 'attachments']),
+        ];
     }
 
     /**

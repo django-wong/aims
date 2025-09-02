@@ -45,7 +45,15 @@ class StoreRequest extends FormRequest
         return [
             'timesheet_id' => 'required|exists:timesheets,id',
             'item_number' => 'nullable|string|max:255',
-            'date' => ['nullable','date', new UniqueTimesheetItemDate($this->timesheet())],
+
+            'date' => [
+                'date', new UniqueTimesheetItemDate($this->timesheet()), 'required_without:dates'
+            ],
+
+            'dates' => [
+                'required_without:date'
+            ],
+
             'report_hours' => 'nullable|integer|min:0',
             'work_hours' => 'nullable|integer|min:0',
             'travel_hours' => 'nullable|integer|min:0',

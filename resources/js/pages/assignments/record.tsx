@@ -3,6 +3,7 @@ import { useTableApi } from '@/components/data-table-2';
 import { DialogWrapper } from '@/components/dialog-wrapper';
 import { Info, InfoHead, InfoLine, InfoLineValue } from '@/components/info';
 import { TwoColumnLayout73 } from '@/components/main-content';
+import { SizeAwareBuilder } from '@/components/size-aware-builder';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,8 +13,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useQueryParam } from '@/hooks/use-query-param';
 import { BaseLayout } from '@/layouts/base-layout';
 import { timesheet_range } from '@/lib/utils';
+import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 import { TimesheetItemActions, TimesheetItems } from '@/pages/timesheets/timesheet-items';
+import { AssignmentProvider } from '@/providers/assignment-provider';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
 import { Assignment, AssignmentInspector, SharedData, Timesheet, TimesheetStatus } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -31,11 +34,8 @@ import {
   SignatureIcon,
   UserCircle,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { startTransition, useRef, useState } from 'react';
 import SignaturePad, { SignatureCanvas } from 'react-signature-canvas';
-import { SizeAwareBuilder } from '@/components/size-aware-builder';
-import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
-import { AssignmentProvider } from '@/providers/assignment-provider';
 
 interface RecordProps {
   assignment: Assignment;
@@ -44,7 +44,7 @@ interface RecordProps {
   end: string;
   prev: string;
   next: string;
-  inspection: AssignmentInspector
+  inspection: AssignmentInspector;
 }
 
 export default function Record(props: RecordProps) {
@@ -52,15 +52,17 @@ export default function Record(props: RecordProps) {
 
   const [specialNotesHasBeenRead, setSpecialNotesHasBeenRead] = useLocalStorage(`${props.assignment.id}:special_notes:seen`, false);
 
-  const [requireSignature, setRequireSignature] = useState(props.inspection.acked_at === null)
-  const [showSpecialNotes, setShowSpecialNotes] = useState(requireSignature);
+  const [requireSignature, setRequireSignature] = useState(props.inspection.acked_at === null);
+  const [showSpecialNotes, setShowSpecialNotes] = useState(requireSignature || !specialNotesHasBeenRead);
 
   const [hash, setHash] = useQueryParam('tab', 'timesheet');
 
   function signoff() {
     axios.post('/api/v1/timesheets/' + props.timesheet.id + '/sign-off').then((response) => {
       if (response.data) {
-        router.reload();
+        startTransition(() => {
+          router.reload();
+        });
       }
     });
   }
@@ -69,18 +71,24 @@ export default function Record(props: RecordProps) {
 
   const range = timesheet_range(props);
 
-  const [
-    signaturePadOpen, setSignaturePadOpen
-  ] = useState(false);
+  const [signaturePadOpen, setSignaturePadOpen] = useState(false);
 
   const signaturepad = useRef<SignatureCanvas>(null);
 
   function ack() {
-    axios.post(`/api/v1/assignment-inspectors/${props.inspection.id}/acknowledge`, {
-      signature_base64: signaturepad.current?.toDataURL()
-    }).then(() => {
-      router.reload();
-    })
+    axios
+      .post(`/api/v1/assignment-inspectors/${props.inspection.id}/acknowledge`, {
+        signature_base64: signaturepad.current?.toDataURL(),
+      })
+      .then(() => {
+        startTransition(() => {
+          setShowSpecialNotes(false);
+          setSpecialNotesHasBeenRead(true);
+          setRequireSignature(false);
+          setSignaturePadOpen(false);
+          router.reload();
+        })
+      });
   }
 
   return (
@@ -126,9 +134,7 @@ export default function Record(props: RecordProps) {
                         </TabsTrigger>
                         <TabsTrigger value={'attachments'}>
                           <PaperclipIcon />
-                          <span className={'hidden sm:inline'}>
-                            Attachments
-                          </span>
+                          <span className={'hidden sm:inline'}>Attachments</span>
                         </TabsTrigger>
                         <TabsTrigger value={'comments'}>
                           <MessageCircleIcon />
@@ -215,9 +221,7 @@ export default function Record(props: RecordProps) {
                       <InfoHead>Details</InfoHead>
                       <div>
                         <InfoLine label={'BIE Reference Number'}>
-                          <Badge>
-                            {props.assignment.reference_number ?? 'N/A'}
-                          </Badge>
+                          <Badge>{props.assignment.reference_number ?? 'N/A'}</Badge>
                         </InfoLine>
                         <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
                         <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
@@ -313,9 +317,7 @@ export default function Record(props: RecordProps) {
                               </InfoLine>
                               {props.assignment.send_report_to && (
                                 <InfoLine label={'Send Report To'}>
-                                  {props.assignment.send_report_to == 0 ? 'BIE' : (
-                                    props.assignment.send_report_to == 1 ? 'Client' : 'Both'
-                                  )}
+                                  {props.assignment.send_report_to == 0 ? 'BIE' : props.assignment.send_report_to == 1 ? 'Client' : 'Both'}
                                 </InfoLine>
                               )}
                               <InfoLine label={'Timesheet Format'}>
@@ -344,41 +346,45 @@ export default function Record(props: RecordProps) {
                       <InfoHead>Special Notes</InfoHead>
                       <InfoLineValue className={'justify-start'}>
                         <DialogWrapper
-                          {...(requireSignature ? {
-                            onPointerDownOutside: (event) => {
-                              event.preventDefault();
-                              return false;
-                            },
-                            showCloseButton: false,
-                            onEscapeKeyDown: (event) => {
-                              event.preventDefault();
-                              return false;
-                            },
-                            footer: <>
-                              <DialogWrapper
-                                open={signaturePadOpen}
-                                onOpenChange={setSignaturePadOpen}
-                                innerContentClassName={'!p-0'}
-                                trigger={
-                                  <Button>
-                                    Sign to acknowledge <SignatureIcon/>
-                                  </Button>
-                                }
-                                description={'You must sign to acknowledge that you have read and understood the requirement.'}
-                                title={'Please sign in the space below'}
-                                footer={<>
-                                  <Button onClick={ack}>Submit</Button>
-                                </>}
-                              >
-                                <SizeAwareBuilder
-                                  className={'w-full aspect-video'}
-                                  builder={(size) => <SignaturePad ref={signaturepad} canvasProps={{ ...size }} />}
-                                />
-                              </DialogWrapper>
-                            </>
-                          } : {
-
-                          })}
+                          {...(requireSignature
+                            ? {
+                                onPointerDownOutside: (event) => {
+                                  event.preventDefault();
+                                  return false;
+                                },
+                                showCloseButton: false,
+                                onEscapeKeyDown: (event) => {
+                                  event.preventDefault();
+                                  return false;
+                                },
+                                footer: (
+                                  <>
+                                    <DialogWrapper
+                                      open={signaturePadOpen}
+                                      onOpenChange={setSignaturePadOpen}
+                                      innerContentClassName={'!p-0'}
+                                      trigger={
+                                        <Button>
+                                          Sign to acknowledge <SignatureIcon />
+                                        </Button>
+                                      }
+                                      description={'You must sign to acknowledge that you have read and understood the requirement.'}
+                                      title={'Please sign in the space below'}
+                                      footer={
+                                        <>
+                                          <Button onClick={ack}>Submit</Button>
+                                        </>
+                                      }
+                                    >
+                                      <SizeAwareBuilder
+                                        className={'aspect-video w-full'}
+                                        builder={(size) => <SignaturePad ref={signaturepad} canvasProps={{ ...size }} />}
+                                      />
+                                    </DialogWrapper>
+                                  </>
+                                ),
+                              }
+                            : {})}
                           open={showSpecialNotes}
                           onOpenChange={setShowSpecialNotes}
                           className={'sm:max-w-4xl'}
@@ -386,7 +392,10 @@ export default function Record(props: RecordProps) {
                           description={'Read this carefully before starting work on this assignment.'}
                           title={'Special Notes'}
                         >
-                          <div className={'prose'} dangerouslySetInnerHTML={{__html: props.assignment.special_notes ?? 'No special notes available.'}}/>
+                          <div
+                            className={'prose'}
+                            dangerouslySetInnerHTML={{ __html: props.assignment.special_notes ?? 'No special notes available.' }}
+                          />
                         </DialogWrapper>
                       </InfoLineValue>
                     </Info>

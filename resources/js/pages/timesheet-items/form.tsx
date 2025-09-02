@@ -1,4 +1,4 @@
-import { DatePicker } from '@/components/date-picker';
+import { MultipleDatePicker } from '@/components/date-picker';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -28,12 +28,14 @@ const number = z.coerce.number().min(0).optional();
 
 const timesheetItemSchema = z.object({
   timesheet_id: z.number(),
-  date: z
+  dates: z.array(
+    z
     .date()
     .or(z.string())
     .transform((value) => {
       return dayjs(value).format('YYYY/MM/DD');
-    }),
+    })
+  ),
   work_hours: number,
   travel_hours: number,
   report_hours: number,
@@ -66,7 +68,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
 
   useEffect(() => {
     console.log(props.timesheet);
-  })
+  });
 
   const [open, setOpen] = useState(false);
 
@@ -102,7 +104,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                       return (
                         <>
                           <VFormField required label={'Date'}>
-                            <DatePicker
+                            <MultipleDatePicker
                               calendar={{
                                 disabled: (date) => {
                                   if (props.timesheet) {
@@ -120,7 +122,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                         </>
                       );
                     }}
-                    name={'date'}
+                    name={'dates'}
                   />
                 </div>
                 <div className={'col-span-12 md:col-span-6'}>
@@ -222,9 +224,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                 <div className={'col-span-12'}>
                   <Accordion type={'single'} className={'w-full'} defaultValue={''} collapsible>
                     <AccordionItem value={'expenses'}>
-                      <AccordionTrigger>
-                        Expenses (click to expand)
-                      </AccordionTrigger>
+                      <AccordionTrigger>Expenses (click to expand)</AccordionTrigger>
                       <AccordionContent>
                         <div className={'w-full'}>
                           <div className={'grid grid-cols-12 gap-4'}>
@@ -296,8 +296,11 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                             <FormItem>
                               <FormLabel>Attachments (Expense receipt, flash report etc)</FormLabel>
                               <Input
-                                id="picture" type="file" multiple accept={'*'}
-                                  onChange={(event) => {
+                                id="picture"
+                                type="file"
+                                multiple
+                                accept={'*'}
+                                onChange={(event) => {
                                   field.onChange(Array.from(event.target.files ?? []));
                                 }}
                               />
