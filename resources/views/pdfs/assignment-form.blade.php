@@ -2,7 +2,7 @@
     <x-pdf.header>
         <table style="width: 100%; margin: 0; padding: 0; border: none; border-collapse: collapse;">
             <tr>
-                <td style="height: 100%; vertical-align: bottom;" class="left">Assignment Form #{{$assignment->id}}</td>
+                <td style="height: 100%; vertical-align: bottom;" class="left">Assignment Form #{{$assignment->reference_number}}</td>
                 <td style="height: 100%; vertical-align: bottom; position: relative" class="right">
                     <img style="position: absolute; right: -4px; bottom: 8px; height: 48px; width: auto" src="{{ public_path('logo.png') }}"/>
                 </td>
@@ -193,8 +193,8 @@
             <td>{{$assignment->ncr_format == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Punch list format:</td>
             <td>{{$assignment->punch_list_format == 0 ? 'BIE' : 'Client'}}</td>
-            <td class="title">Contact Detail:</td>
-            <td>{{$assignment->contact_details}}</td>
+            <td class="title">Contact Name:</td>
+            <td>{{$assignment->client_contact?->name}}</td>
         </tr>
         <tr>
             <td class="title">IRN format:</td>
@@ -203,15 +203,21 @@
             <td>{{$assignment->issue_irn_to_vendor ? 'YES' : 'NO'}}</td>
             <td class="title">Email:</td>
             <td>
-                @if($assignment->contact_email)
-                    <a href="mailto:{{$assignment->contact_email}}">{{$assignment->contact_email}}</a>
+                @if(! empty($assignment->client_contact->email))
+                    <a href="mailto:{{$assignment->client_contact->email}}">{{$assignment->client_contact->email}}</a>
                 @endif
             </td>
         </tr>
         <tr>
             <td class="title">Document stamp:</td>
             <td>{{$assignment->document_stamp == 0 ? 'BIE' : 'Sign'}}</td>
-            <td colspan="4"></td>
+            <td colspan="2"></td>
+            <td class="title">Phone:</td>
+            <td>
+                @if(! empty($assignment->client_contact->phone))
+                    <a href="tel:{{$assignment->client_contact->phone}}">{{$assignment->client_contact->phone}}</a>
+                @endif
+            </td>
         </tr>
     </table>
     <x-pdf.page-break/>
@@ -252,6 +258,14 @@
             <td>@if(! empty($assignment_inspector?->signature_base64)) <img style="height: 100px; width: auto" src="{{ $assignment_inspector?->signature_base64 }}"/> @endif</td>
             <td class="title">Date:</td>
             <td>{{ empty($assignment_inspector?->acked_at) ? '' : $assignment_inspector?->acked_at?->format('d/m/Y H:i:s T') }}</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <p>
+                    Visit the link to record your work. <br>
+                    <a href="{{ route('assignments.record', $assignment->id) }}">{{ route('assignments.record', $assignment->id) }}</a>
+                </p>
+            </td>
         </tr>
     </table>
 </x-pdf.layout>

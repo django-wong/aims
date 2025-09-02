@@ -41,7 +41,7 @@ class AssignmentController extends Controller
     public function record(Request $request, string $id)
     {
 
-        $validated = $request->validate([
+        $request->validate([
             'start' => 'nullable|date_format:Y-m-d',
         ]);
 

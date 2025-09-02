@@ -161,4 +161,9 @@ class Assignment extends Model implements Commentable, Attachable
     {
         return $this->belongsTo(User::class, 'operation_coordinator_id');
     }
+
+    public function client_contact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class, 'client_contact_id');
+    }
 }

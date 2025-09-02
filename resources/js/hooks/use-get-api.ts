@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { useState } from 'react';
 
 interface UsePagedGetApiProps<T> {
@@ -25,18 +26,15 @@ export function usePagedGetApi<T>(endpoint: string, options?: UsePagedGetApiProp
           url.searchParams.append(key, value);
         });
       }
-      return fetch(url, {
-        signal: params.signal
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Error fetching data from ${url}: ${response.statusText}`);
-          }
-          return response.json();
+      return axios
+        .get(url.toString(), {
+          signal: params.signal,
         })
-        .then(data => data['data'])
-    }
+        .then((response) => {
+          return response.data['data'];
+        });
+    },
   });
 
-  return {...api, page, setPage, pageSize, setPageSize};
+  return { ...api, page, setPage, pageSize, setPageSize };
 }

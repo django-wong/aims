@@ -57,7 +57,7 @@ return new class extends Migration
             $table->string('visit_frequency')->nullable()->comment('Frequency of visits (e.g., weekly, monthly)');
             $table->unsignedInteger('total_visits')->nullable()->comment('Total number of visits planned for the assignment');
             $table->unsignedTinyInteger('hours_per_visit')->nullable()->comment('Estimated hours per visit');
-            $table->foreignId('visit_contact_id')->nullable()->constrained('contacts');
+            $table->foreignId('visit_contact_id')->nullable()->comment('contact on vendor side')->constrained('contacts');
 
             // instructions
             $table->text('inter_office_instructions')->nullable();
@@ -78,8 +78,7 @@ return new class extends Migration
             // Status/flash report/exit call
             $table->boolean('exit_call')->default(false)->comment('Indicates if an exit call is required');
             $table->boolean('flash_report')->default(false)->comment('Indicates if a flash report is required');
-            $table->string('contact_details')->nullable()->comment('Contact details for the assignment');
-            $table->string('contact_email')->nullable()->comment('Contact email for the assignment');
+            $table->foreignId('client_contact_id')->nullable()->constrained('contacts');
 
             // reporting and documentation
             $table->tinyInteger('reporting_format')->default(0)->comment('Reporting format: 0 = bie, 1 = client');

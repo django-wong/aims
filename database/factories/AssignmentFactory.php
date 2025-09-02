@@ -24,7 +24,7 @@ class AssignmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'assignment_type_id' => AssignmentType::factory(),
+            'reference_number' => $this->faker->unique()->bothify('####-ABC-####'),
             'project_id' => Project::factory(),
             'org_id' => Org::factory(),
             'operation_org_id' => null,

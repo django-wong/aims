@@ -183,14 +183,12 @@ export default function Edit(props: EditProps) {
               </HideFromClient>
               <TabsContent value={'timesheets'}>
                 <div className={'grid gap-4'}>
-                  <div className={'overflow-hidden'}>
-                    <Timesheets
-                      assignment={props.assignment}
-                      filters={{
-                        'filter[status]': '> 0',
-                      }}
-                    />
-                  </div>
+                  <Timesheets
+                    assignment={props.assignment}
+                    filters={{
+                      'filter[status]': '> 0',
+                    }}
+                  />
                 </div>
               </TabsContent>
               <TabsContent value={'reports'}>

@@ -90,8 +90,7 @@ const schema = z.object({
   // Status/flash report/exit call
   exit_call: z.boolean().optional(),
   flash_report: z.boolean().optional(),
-  contact_details: z.string().nullable().optional(),
-  contact_email: z.string().email().nullable().optional(),
+  client_contact_id: z.number().int().positive().nullable().optional(),
 
   // Reporting fields
   reporting_format: z.number().int().optional(),
@@ -247,7 +246,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       />
 
                       {i_am_the_operation_office ? null : (
-                        <div className={'col-span-12 grid grid-cols-1 gap-6 bg-background p-6 rounded-md border'}>
+                        <div className={'bg-background col-span-12 grid grid-cols-1 gap-6 rounded-md border p-6'}>
                           <FormField
                             render={({ field }) => {
                               return (
@@ -461,7 +460,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     <AccordionTrigger>
                       <AssignmentSectionHead>Vendors</AssignmentSectionHead>
                     </AccordionTrigger>
-                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
                       <FormField
                         name={'vendor_id'}
                         control={form.control}
@@ -490,7 +489,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     <AccordionTrigger>
                       <AssignmentSectionHead>Instructions</AssignmentSectionHead>
                     </AccordionTrigger>
-                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
                       <div className={'col-span-12'}>
                         <FormField
                           control={form.control}
@@ -523,7 +522,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     <AccordionTrigger>
                       <AssignmentSectionHead>Visit Details</AssignmentSectionHead>
                     </AccordionTrigger>
-                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
                       <FormField
                         control={form.control}
                         render={({ field }) => (
@@ -597,7 +596,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     <AccordionTrigger>
                       <AssignmentSectionHead>Scope of Assignment</AssignmentSectionHead>
                     </AccordionTrigger>
-                    <AccordionContent className={'grid grid-cols-2 gap-6 '}>
+                    <AccordionContent className={'grid grid-cols-2 gap-6'}>
                       <FormField
                         control={form.control}
                         render={({ field }) => (
@@ -724,29 +723,11 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                     <AccordionTrigger>
                       <AssignmentSectionHead>Status / Flash Report / Exit Call</AssignmentSectionHead>
                     </AccordionTrigger>
-                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
                       <FormField
                         control={form.control}
                         render={({ field }) => (
-                          <VFormField label={'Contact Name'} className={'col-span-6'}>
-                            <Input value={field.value || ''} onChange={field.onChange} />
-                          </VFormField>
-                        )}
-                        name={'contact_details'}
-                      />
-                      <FormField
-                        control={form.control}
-                        render={({ field }) => (
-                          <VFormField label={'Contact Email'} className={'col-span-6'}>
-                            <Input type="email" value={field.value || ''} onChange={field.onChange} />
-                          </VFormField>
-                        )}
-                        name={'contact_email'}
-                      />
-                      <FormField
-                        control={form.control}
-                        render={({ field }) => (
-                          <div className="col-span-12 flex items-center space-x-2">
+                          <div className="col-span-6 flex items-center space-x-2">
                             <Checkbox id="exit_call" checked={field.value || false} onCheckedChange={field.onChange} />
                             <label htmlFor="exit_call" className="text-sm font-medium">
                               Exit Call Required
@@ -758,7 +739,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       <FormField
                         control={form.control}
                         render={({ field }) => (
-                          <div className="col-span-12 flex items-center space-x-2">
+                          <div className="col-span-6 flex items-center space-x-2">
                             <Checkbox id="flash_report" checked={field.value || false} onCheckedChange={field.onChange} />
                             <label htmlFor="flash_report" className="text-sm font-medium">
                               Flash Report Required
@@ -767,13 +748,33 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         )}
                         name={'flash_report'}
                       />
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => (
+                          <VFormField
+                            label={'Contact Person'}
+                            className={'col-span-12'}
+                            description={'Contact person at the client side for exit call, set up in the vendor contacts if needed.'}
+                          >
+                            <ContactSelect
+                              onValueChane={field.onChange}
+                              value={field.value || null}
+                              params={{
+                                contactable_type: 'client',
+                                contactable_id: `{project.${form.watch('project_id')}.client_id}`,
+                              }}
+                            />
+                          </VFormField>
+                        )}
+                        name={'client_contact_id'}
+                      />
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value={'reporting'}>
                     <AccordionTrigger>
                       <AssignmentSectionHead>Reporting Format</AssignmentSectionHead>
                     </AccordionTrigger>
-                    <AccordionContent className={'grid grid-cols-12 gap-6 '}>
+                    <AccordionContent className={'grid grid-cols-12 gap-6'}>
                       <FormField
                         control={form.control}
                         render={({ field }) => (

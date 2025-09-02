@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
+use App\Models\Vendor;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,6 +16,12 @@ class ContactSeeder extends Seeder
     {
         Client::query()->cursor()->each(function (Client $client) {
             $client->contacts()->createMany(
+                \App\Models\Contact::factory(5)->make()->toArray()
+            );
+        });
+
+        Vendor::query()->cursor()->each(function (Vendor $vendor) {
+            $vendor->contacts()->createMany(
                 \App\Models\Contact::factory(5)->make()->toArray()
             );
         });

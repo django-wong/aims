@@ -82,8 +82,7 @@ class StoreRequest extends FormRequest
             // Status/flash report/exit call
             'exit_call' => 'nullable|boolean',
             'flash_report' => 'nullable|boolean',
-            'contact_details' => 'nullable|string|max:255',
-            'contact_email' => 'nullable|email|max:255',
+            'client_contact_id' => 'nullable|exists:contacts,id',
 
             // Equipment and additional notes
             'equipment' => 'nullable|string',
