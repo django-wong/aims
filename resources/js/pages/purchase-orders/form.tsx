@@ -65,8 +65,8 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
       {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{props.value ? 'Edit Purchase Order' : 'New Purchase Order'}</DialogTitle>
-          <DialogDescription>Fill in the details below to create or update the purchase order.</DialogDescription>
+          <DialogTitle>Work Order</DialogTitle>
+          <DialogDescription>Fill in the details below to create or update the work order.</DialogDescription>
         </DialogHeader>
         <DialogInnerContent>
           <div className={'grid grid-cols-12 gap-6'}>
@@ -74,7 +74,7 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
               <div className={'col-span-12'}>
                 <FormField
                   render={({ field }) => {
-                    return <VFormField required label={'Purchase Order Title'}>
+                    return <VFormField required label={'Work Order Number / Title'}>
                       <Input value={field.value || ''} onChange={field.onChange}/>
                     </VFormField>
                   }}

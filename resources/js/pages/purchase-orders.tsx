@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/data-table-2';
+import { DataTable, useTableApi } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,46 +15,36 @@ import AppLayout from '@/layouts/app-layout';
 import { PurchaseOrder } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
+import { EllipsisVertical, Eye, Plus, Trash2, Trash2Icon } from 'lucide-react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import { PopoverConfirm } from '@/components/popover-confirm';
+import axios from 'axios';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
+  const table = useTableApi();
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size={'sm'}>
-          <EllipsisVertical />
+    <div className={'flex items-center justify-end'}>
+      <PopoverConfirm side={'bottom'} align={'end'} message={'Are you sure to delete this work order? Please make sure it\' not been used by any assignments.'} onConfirm={() => {
+        axios.delete('/api/v1/purchase-orders/' + props.purchaseOrder.id).then(() => {
+          table.reload();
+        });
+      }} asChild>
+        <Button size={'sm'} variant={'destructive'}>
+          <Trash2Icon/>
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>{props.purchaseOrder.title}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            View Details
-            <DropdownMenuShortcut>
-              <Eye />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem className={'text-red-500'}>
-            Delete
-            <DropdownMenuShortcut>
-              <Trash2 />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PopoverConfirm>
+    </div>
   );
 }
 
 const columns: ColumnDef<PurchaseOrder>[] = [
   {
     accessorKey: 'po_number',
-    header: 'PO#',
+    header: 'Work Order Number #',
     enableResizing: true,
     minSize: 200,
     size: 300,
@@ -67,6 +57,17 @@ const columns: ColumnDef<PurchaseOrder>[] = [
       );
     },
   },
+
+  {
+    accessorKey: 'previous_title',
+    header: 'Previous Number #',
+    cell: ({ row }) => (
+      <>
+        <span>{row.original.previous_title}</span>
+      </>
+    )
+  },
+
   {
     accessorKey: 'project',
     header: 'Project',
@@ -129,7 +130,7 @@ export default function PurchaseOrdersPage() {
     <AppLayout
       breadcrumbs={[
         { title: 'Home', href: '/' },
-        { title: 'Purchase Orders', href: '/purchase-orders' },
+        { title: 'Work Orders', href: '/purchase-orders' },
       ]}
       pageAction={
         <PurchaseOrderForm
@@ -138,12 +139,12 @@ export default function PurchaseOrdersPage() {
           onSubmit={() => table.reload()}
         >
           <Button>
-            <Plus /> New Purchase Order
+            <Plus /> New Work Order
           </Button>
         </PurchaseOrderForm>
       }
     >
-      <Head title="Purchase Orders" />
+      <Head title="Work Orders" />
       <div className="px-6">
         <DataTable table={table} />
       </div>

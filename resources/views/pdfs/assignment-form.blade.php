@@ -174,7 +174,15 @@
         </tr>
         <tr>
             <td class="title">Send report to:</td>
-            <td>{{$assignment->report_format == 0 ? 'BIE' : 'Client'}}</td>
+            <td>
+                @if($assignment->send_report_to == 0)
+                    BIE
+                @elseif ($assignment->send_report_to == 1)
+                    Client
+                @else
+                    BIE & Client
+                @endif
+            </td>
             <td class="title">Timesheet:</td>
             <td>{{$assignment->timesheet == 0 ? 'BIE' : 'Client'}}</td>
             <td class="title">Status/Flash Report:</td>

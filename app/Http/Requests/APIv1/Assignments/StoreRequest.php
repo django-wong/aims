@@ -94,7 +94,7 @@ class StoreRequest extends FormRequest
             // Reporting format fields
             'reporting_format' => 'nullable|integer|in:0,1',
             'reporting_frequency' => 'nullable|integer|in:0,1',
-            'send_report_to' => 'nullable|email|max:255',
+            'send_report_to' => 'nullable|numeric|in:0,1,2',
             'timesheet_format' => 'nullable|integer|in:0,1',
             'ncr_format' => 'nullable|integer|in:0,1',
             'punch_list_format' => 'nullable|integer|in:0,1',

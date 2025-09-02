@@ -84,7 +84,7 @@ return new class extends Migration
             // reporting and documentation
             $table->tinyInteger('reporting_format')->default(0)->comment('Reporting format: 0 = bie, 1 = client');
             $table->tinyInteger('reporting_frequency')->default(0)->comment('Reporting frequency: 0 = daily, 1 = weekly');
-            $table->tinyInteger('send_report_to')->nullable()->comment('1 = BIE, 2 = Client');
+            $table->tinyInteger('send_report_to')->nullable()->comment('0 = BIE, 1 = Client, 2 = Both');
             $table->tinyInteger('timesheet_format')->default(0)->comment('Timesheet format: 0 = bie, 1 = client');
             $table->tinyInteger('ncr_format')->default(0)->comment('NCR format: 0 = bie, 1 = client');
             $table->tinyInteger('punch_list_format')->default(0)->comment('Punch list format: 0 = bie, 1 = client');

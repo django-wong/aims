@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('title')->index();
+            $table->string('previous_title')->nullable()->comment('To track title changes');
             $table->foreignId('org_id')->constrained();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('quote_id')->nullable()->constrained();

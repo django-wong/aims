@@ -77,9 +77,16 @@ export default function PurchaseOrderEditPage(props: Props) {
             <Info>
               <InfoHead>Basic Information</InfoHead>
               <div>
-                <InfoLine label={'PO#'} icon={'info'}>
+                <InfoLine label={'Work Order #'} icon={'info'}>
                   {props.purchase_order.title}
                 </InfoLine>
+                {
+                  props.purchase_order.previous_title && (
+                    <InfoLine label={'Previous Work Order #'} icon={'info'}>
+                      {props.purchase_order.previous_title}
+                    </InfoLine>
+                  )
+                }
                 <InfoLine label={'Project'} icon={'library-big'}>
                   {props.purchase_order.project?.title || '--'}
                 </InfoLine>

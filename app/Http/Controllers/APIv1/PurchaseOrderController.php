@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\DeletePurchaseOrderRequest;
 use App\Http\Requests\APIv1\UpdatePurchaseOrderRequest;
 use App\Models\Budget;
 use App\Models\InspectorProfile;
 use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -126,8 +128,21 @@ class PurchaseOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PurchaseOrder $purchaseOrder)
+    public function destroy(DeletePurchaseOrderRequest $request, PurchaseOrder $purchase_order)
     {
-        //
+        try {
+            $purchase_order->delete();
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return response()->json([
+                    'message' => 'Failed to delete purchase order. It may be linked to other records.'
+                ], 400);
+            }
+            throw $e;
+        }
+
+        return response()->json([
+            'message' => 'Purchase order deleted successfully.'
+        ]);
     }
 }

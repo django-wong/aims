@@ -312,7 +312,11 @@ export default function Record(props: RecordProps) {
                                 <Badge variant="outline">{props.assignment.reporting_frequency === 0 ? 'Daily' : 'Weekly'}</Badge>
                               </InfoLine>
                               {props.assignment.send_report_to && (
-                                <InfoLine label={'Send Report To'}>{props.assignment.send_report_to === 0 ? 'BIE' : 'CLIENT'}</InfoLine>
+                                <InfoLine label={'Send Report To'}>
+                                  {props.assignment.send_report_to == 0 ? 'BIE' : (
+                                    props.assignment.send_report_to == 1 ? 'Client' : 'Both'
+                                  )}
+                                </InfoLine>
                               )}
                               <InfoLine label={'Timesheet Format'}>
                                 <Badge variant="outline">{props.assignment.timesheet_format === 0 ? 'BIE' : 'Client'}</Badge>

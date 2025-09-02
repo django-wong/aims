@@ -96,7 +96,7 @@ const schema = z.object({
   // Reporting fields
   reporting_format: z.number().int().optional(),
   reporting_frequency: z.number().int().optional(),
-  send_report_to: z.string().nullable().optional(),
+  send_report_to: z.coerce.number().nullable().optional(),
   timesheet_format: z.number().int().optional(),
   ncr_format: z.number().int().optional(),
   punch_list_format: z.number().int().optional(),
@@ -132,7 +132,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       report_required: false,
       ...props.value,
     }),
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
   });
 
   const i_am_the_operation_office = props.value?.operation_org_id === auth.org?.id;
@@ -221,7 +221,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <>
-                            <VFormField required label={'Purchase Order'} className={'col-span-6'}>
+                            <VFormField required label={'Work Order'} className={'col-span-6'}>
                               <PurchaseOrderSelect
                                 onValueChane={field.onChange}
                                 value={field.value}
@@ -264,7 +264,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                                       }
                                     }}
                                   />
-                                  Delegate to operation office
+                                  Delegate to coordination office
                                 </Label>
                               );
                             }}
@@ -279,7 +279,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                                 control={form.control}
                                 render={({ field }) => (
                                   <>
-                                    <VFormField label={'Operation Office'} className={'col-span-6'}>
+                                    <VFormField label={'Coordination Office'} className={'col-span-6'}>
                                       <OrgSelect
                                         onValueChane={field.onChange}
                                         params={{
@@ -300,7 +300,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                                     <>
                                       <VFormField
                                         description={'This person will receive the notifications.'}
-                                        label={'Operation Office Coordinator'}
+                                        label={'Coordinator'}
                                         className={'col-span-6'}
                                       >
                                         <StaffSelect
@@ -577,14 +577,14 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                           <VFormField
                             label={'Contact Person'}
                             className={'col-span-6'}
-                            description={"Contact person at the client's side for visit coordination, set up in the client contacts if needed."}
+                            description={"Contact person at the main vendor's side for visit coordination, set up in the vendor contacts if needed."}
                           >
                             <ContactSelect
                               onValueChane={field.onChange}
                               value={field.value || null}
                               params={{
-                                contactable_type: 'client',
-                                contactable_id: `{project.${form.watch('project_id')}.client_id}`,
+                                contactable_type: 'vendor',
+                                contactable_id: form.watch('vendor_id'),
                               }}
                             />
                           </VFormField>
@@ -819,6 +819,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                               <SelectContent>
                                 <SelectItem value="0">BIE</SelectItem>
                                 <SelectItem value="1">Client</SelectItem>
+                                <SelectItem value="2">BIE & Client</SelectItem>
                               </SelectContent>
                             </Select>
                           </VFormField>

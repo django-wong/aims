@@ -51,7 +51,7 @@ class MenuController
                 ])),
                 ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::FINANCE],[
                     'purchase-orders' => [
-                        'name' => 'Purchase Orders (WO)',
+                        'name' => 'Work Orders (WO)',
                         'icon' => 'shopping-bag',
                         'url' => route('purchase-orders'),
                         'component' => 'purchase-orders'

@@ -22,6 +22,15 @@ class PurchaseOrder extends Model implements Commentable
         'usage'
     ];
 
+    protected static function booted()
+    {
+        static::updating(function (PurchaseOrder $purchase_order) {
+            if ($purchase_order->isDirty('title')) {
+                $purchase_order->previous_title = implode(', ', array_filter([$purchase_order->previous_title, $purchase_order->getOriginal('title')]));
+            }
+        });
+    }
+
     protected function usage(): Attribute
     {
         return Attribute::make(
