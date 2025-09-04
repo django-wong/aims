@@ -189,11 +189,21 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
   project?: Project;
   quote_id: number | null;
   quote?: Quote;
-  budget: number;
+
+  // Computed on the fly
   usage: number;
+
+  budget: number;
   hourly_rate: number;
   budgeted_hours: number;
   budgeted_mileage: number;
+
+  total_hours: number;
+  total_mileage: number;
+  total_cost: number;
+
+  currency: string | null;
+  mileage_unit: string | null;
 }
 
 export enum AssignmentStatus {
@@ -223,6 +233,7 @@ export interface Assignment extends BaseModel {
   operation_coordinator?: User;
 
   assignment_inspectors?: AssignmentInspector[];
+  assignment_inspector?: AssignmentInspector;
 
   project_id: number;
   project?: Project;
@@ -363,6 +374,9 @@ export interface Timesheet extends BaseModel {
   // The inspector
   user_id: number;
   user?: User;
+
+  mileage_unit: string;
+  currency: string;
 
   start: string // YYYY-MM-DD
   end: string; // YYYY-MM-DD

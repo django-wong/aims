@@ -7,6 +7,7 @@ use App\Http\Requests\APIv1\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -47,7 +48,19 @@ class ProjectController extends Controller
 
         return $this->getQueryBuilder()->tap(function (Builder $query) {
             if (auth()->user()->isRole(UserRole::CLIENT)) {
-                $query->where('client_id', auth()->user()->client?->id);
+                $query->where(
+                    'client_id', auth()->user()->client?->id
+                );
+            }
+
+            if (auth()->user()->isRole(UserRole::INSPECTOR)) {
+                $query->whereIn(
+                    'id', function (QueryBuilder $query) {
+                        $query->select('project_id')->from('assignments')
+                            ->leftJoin('assignment_inspectors', 'assignments.id', '=', 'assignment_inspectors.assignment_id')
+                            ->where('assignment_inspectors.user_id', auth()->user()->id);
+                    }
+                );
             }
         })->scoped()->paginate();
     }

@@ -4,16 +4,18 @@ namespace App\Policies;
 
 use App\Models\Client;
 use App\Models\User;
+use App\Models\UserRole;
 
 class ClientPolicy
 {
     public function viewAny(User $user):bool
     {
         return in_array($user->user_role->role, [
-            \App\Models\UserRole::PM,
-            \App\Models\UserRole::ADMIN,
-            \App\Models\UserRole::STAFF,
-            \App\Models\UserRole::FINANCE,
+            UserRole::PM,
+            UserRole::ADMIN,
+            UserRole::STAFF,
+            UserRole::INSPECTOR,
+            UserRole::FINANCE,
         ]);
     }
 
@@ -25,10 +27,10 @@ class ClientPolicy
     public function create(User $user): bool
     {
         return in_array($user->user_role->role, [
-            \App\Models\UserRole::PM,
-            \App\Models\UserRole::ADMIN,
-            \App\Models\UserRole::STAFF,
-            \App\Models\UserRole::FINANCE,
+            UserRole::PM,
+            UserRole::ADMIN,
+            UserRole::STAFF,
+            UserRole::FINANCE,
         ]);
     }
 

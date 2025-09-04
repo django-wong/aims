@@ -84,6 +84,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->route('dashboard');
     })->name('leave-impersonation');
 
+    Route::get('notification-of-inspection', function () {
+        return Inertia::render('404');
+    })->name('notification-of-inspection');
+
     // Inspectors
     Route::get('inspectors', [InspectorController::class, 'index'])->name('inspectors');
     Route::get('inspectors/{id}/edit', [InspectorController::class, 'edit']);

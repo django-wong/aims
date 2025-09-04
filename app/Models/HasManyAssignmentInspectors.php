@@ -8,4 +8,9 @@ trait HasManyAssignmentInspectors
     {
         return $this->hasMany(AssignmentInspector::class);
     }
+
+    public function assignment_inspector()
+    {
+        return $this->hasOne(AssignmentInspector::class)->where('user_id', auth()->id());
+    }
 }

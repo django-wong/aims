@@ -10,7 +10,9 @@ import { ProjectSelect } from '@/components/project-select';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import axios from 'axios';
-import { Trash2 } from 'lucide-react';
+import { FileIcon, ScrollTextIcon, Trash2 } from 'lucide-react';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import { GenerateFromSelectedTimesheets } from '@/pages/invoices/generate-from-selected-timesheets';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -25,10 +27,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns: ColumnDef<Timesheet>[] = [
   {
-    accessorKey: 'assignment.project.title',
-    header: 'Project',
+    accessorKey: 'assignment.referebce_number',
+    header: 'Assignment',
     cell: ({ row }) => {
-      return row.original.assignment?.project?.title || 'N/A';
+      return row.original.assignment?.reference_number || 'N/A';
     },
   },
   {
@@ -72,10 +74,10 @@ const columns: ColumnDef<Timesheet>[] = [
               {row.original.timesheet_items?.length ? (
                 row.original.timesheet_items.map((item) => (
                   <div key={item.id} className="flex items-center gap-6">
-                    <div className="font-semibold flex-grow">{item.user?.name}</div>
-                    <div className="text-muted-foreground text-sm flex items-center gap-2">
-                      <span>{item.hours}h</span>
-                      <span>{item.travel_distance} km</span>
+                    <div className="flex-grow font-semibold">{item.user?.name}</div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span>{item.hours}h, </span>
+                      <span>{item.travel_distance} distance</span>
                     </div>
                   </div>
                 ))
@@ -93,7 +95,11 @@ const columns: ColumnDef<Timesheet>[] = [
   },
   {
     accessorKey: 'actions',
-    header: 'Actions',
+    header: () => (
+      <TableCellWrapper last>
+        Actions
+      </TableCellWrapper>
+    ),
     cell: ({ row }) => {
       return <TimesheetActions timesheet={row.original} />;
     },
@@ -102,6 +108,7 @@ const columns: ColumnDef<Timesheet>[] = [
 
 export default function Timesheets() {
   const table = useTable('/api/v1/timesheets', {
+    selectable: true,
     columns: columns,
     defaultParams: {
       include: 'assignment.project.client,timesheet_items_count,timesheet_items.user',
@@ -111,19 +118,13 @@ export default function Timesheets() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <div className="px-6 grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-6 px-6">
         <DataTable
           table={table}
           left={
             <>
               <ProjectSelect
-                renderTrigger={(project) => {
-                  return (
-                    <Button variant={'outline'}>
-                      Project: <Badge>{project ? project.title : 'All'}</Badge>
-                    </Button>
-                  );
-                }}
+                placeholder={'Filter by Project'}
                 className={'max-w-[250px]'}
                 value={parseInt(table.searchParams.get('filter[project_id]') || '') || null}
                 onValueChane={(value) => {
@@ -135,6 +136,11 @@ export default function Timesheets() {
               />
             </>
           }
+          // right={
+          //   <>
+          //     <GenerateFromSelectedTimesheets/>
+          //   </>
+          // }
         />
         <div></div>
       </div>
@@ -149,20 +155,22 @@ interface TimesheetActionsProps {
 export function TimesheetActions(props: TimesheetActionsProps) {
   const table = useTableApi();
   return (
-    <PopoverConfirm
-      asChild
-      message={'Are you sure you want to delete this timesheet?'}
-      onConfirm={() => {
-        axios.delete('/api/v1/timesheets/' + props.timesheet.id).then(() => {
-          table.reload();
-        });
-      }}
-      side={'bottom'}
-      align={'end'}
-    >
-      <Button variant="ghost" size="sm">
-        <Trash2 />
-      </Button>
-    </PopoverConfirm>
+    <div className={'flex items-center justify-end gap-2'}>
+      <PopoverConfirm
+        asChild
+        message={'Are you sure you want to delete this timesheet?'}
+        onConfirm={() => {
+          axios.delete('/api/v1/timesheets/' + props.timesheet.id).then(() => {
+            table.reload();
+          });
+        }}
+        side={'bottom'}
+        align={'end'}
+      >
+        <Button variant="secondary" size="sm">
+          <Trash2 />
+        </Button>
+      </PopoverConfirm>
+    </div>
   );
 }

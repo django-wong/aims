@@ -18,10 +18,6 @@ class PurchaseOrder extends Model implements Commentable
         'id', 'created_at', 'updated_at'
     ];
 
-    protected $appends = [
-        'usage'
-    ];
-
     protected static function booted()
     {
         static::updating(function (PurchaseOrder $purchase_order) {
@@ -29,12 +25,5 @@ class PurchaseOrder extends Model implements Commentable
                 $purchase_order->previous_title = implode(', ', array_filter([$purchase_order->previous_title, $purchase_order->getOriginal('title')]));
             }
         });
-    }
-
-    protected function usage(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => rand(0, 100) / 100
-        );
     }
 }

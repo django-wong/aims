@@ -33,10 +33,9 @@ import { download } from '@/utils/download-response-as-blob';
 import { ClientSelect } from '@/components/client-select';
 import { useIsClient } from '@/hooks/use-role';
 import dayjs from 'dayjs';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HideFromClient } from '@/components/hide-from-client';
 
-const breadcrumbs: BreadcrumbItem[] = [
+export const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Home',
     href: '/'
@@ -497,19 +496,19 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     table,
     content: (
       <div className={'grid grid-cols-1 gap-4'}>
-        <Tabs
-          value={table.searchParams.get('filter[group]') || 'all'}
-          onValueChange={(value) => {
-            table.setSearchParams((params) => {
-              params.set('filter[group]', value);
-              return params;
-            })
-          }}>
-          <TabsList>
-            <TabsTrigger value={'all'}>All</TabsTrigger>
-            <TabsTrigger value={'delegated'}>Delegated</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/*<Tabs*/}
+        {/*  value={table.searchParams.get('filter[group]') || 'all'}*/}
+        {/*  onValueChange={(value) => {*/}
+        {/*    table.setSearchParams((params) => {*/}
+        {/*      params.set('filter[group]', value);*/}
+        {/*      return params;*/}
+        {/*    })*/}
+        {/*  }}>*/}
+        {/*  <TabsList>*/}
+        {/*    <TabsTrigger value={'all'}>All</TabsTrigger>*/}
+        {/*    <TabsTrigger value={'delegated'}>Delegated</TabsTrigger>*/}
+        {/*  </TabsList>*/}
+        {/*</Tabs>*/}
         <DataTable
           table={table}
           left={<>

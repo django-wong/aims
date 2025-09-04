@@ -22,9 +22,18 @@ return new class extends Migration
             $table->string('mileage_unit', 10, 2)->default('km')->comment('km or miles');
             $table->string('currency', 3)->default('AUD');
 
+            $table->decimal('total_hours', 10, 2)->default(0.00);
+            $table->decimal('total_mileage', 10, 2)->default(0.00);
+            $table->decimal('total_cost', 15, 2)->default(0.00);
+
             $table->decimal('budget', 15, 2)->default(0.00);
             $table->decimal('budgeted_hours', 10, 2)->default(0.00);
             $table->decimal('budgeted_mileage', 10, 2)->default(0.00);
+
+            // Usage of hours
+            $table->decimal('usage')->storedAs(
+                'CASE WHEN budgeted_hours > 0 THEN total_hours / budgeted_hours ELSE 0 END'
+            );
 
             foreach (['first', 'second', 'final'] as $stage) {
                 $table->unsignedInteger($stage.'_alert_threshold')->default(70);

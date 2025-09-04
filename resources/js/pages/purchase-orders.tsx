@@ -1,21 +1,11 @@
 import { DataTable, useTableApi } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { PurchaseOrder } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { EllipsisVertical, Eye, Plus, Trash2, Trash2Icon } from 'lucide-react';
+import { Plus, Trash2Icon } from 'lucide-react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
@@ -83,15 +73,25 @@ const columns: ColumnDef<PurchaseOrder>[] = [
     cell: ({ row }) => row.original.project?.client?.business_name || 'N/A',
   },
   {
-    accessorKey: 'budget',
-    header: 'Budget',
+    accessorKey: 'budgeted_hours',
+    header: 'Budget Hours',
     minSize: 100,
     maxSize: 150,
     cell: ({ row }) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(row.original.budget);
+      // return new Intl.NumberFormat('en-US', {
+      //   style: 'currency',
+      //   currency: 'USD',
+      // }).format(row.original.budgeted_hours);
+      return `${row.original.budgeted_hours}`;
+    },
+  },
+  {
+    accessorKey: 'total_hours',
+    header: 'Budget Hours',
+    minSize: 100,
+    maxSize: 150,
+    cell: ({ row }) => {
+      return row.original.total_hours;
     },
   },
   {

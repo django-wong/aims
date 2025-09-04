@@ -13,17 +13,27 @@ return new class extends Migration
     public function up(): void
     {
         $this->down();
+
         DB::unprepared('
             CREATE PROCEDURE IF NOT EXISTS calculate_timesheet_by_id(IN $timesheet_id BIGINT)
             BEGIN
 
                 DECLARE $hours, $travel_distance, $cost, $travel_cost, $total_expense DECIMAL(10, 2);
-                SELECT SUM(hours), SUM(travel_distance), SUM(cost), SUM(travel_cost),SUM(total_expense)
-                INTO $hours, $travel_distance, $cost, $travel_cost, $total_expense
+                SELECT
+                    SUM(hours),
+                    SUM(travel_distance),
+                    SUM(cost),
+                    SUM(travel_cost),
+                    SUM(total_expense)
+                INTO
+                    $hours,
+                    $travel_distance,
+                    $cost,
+                    $travel_cost,
+                    $total_expense
                 FROM timesheet_items
                 WHERE
-                    timesheet_id = $timesheet_id
-                    AND deleted_at IS NULL;
+                    timesheet_id = $timesheet_id AND deleted_at IS NULL;
 
                 UPDATE timesheets
                     SET

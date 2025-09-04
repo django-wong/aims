@@ -8,11 +8,12 @@ import { DateRange } from 'react-day-picker';
 interface SingleDatePickerProps {
   placeholder?: string;
   value?: Date | string;
+  disabled?: boolean;
   onChange?: (date: Date | undefined) => void;
   calendar?: React.ComponentProps<typeof Calendar>
 }
 
-export function DatePicker({value, onChange, placeholder, ...props }: SingleDatePickerProps) {
+export function DatePicker({disabled, value, onChange, placeholder, ...props }: SingleDatePickerProps) {
 
   const date = value ? new Date(value) : undefined;
   const [open, setOpen] = useState(false);
@@ -21,7 +22,7 @@ export function DatePicker({value, onChange, placeholder, ...props }: SingleDate
     <>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant={'outline'} {...props} className={'data-[empty=true]:text-muted-foreground w-full justify-start font-normal'}>
+          <Button disabled={disabled} variant={'outline'} {...props} className={'data-[empty=true]:text-muted-foreground w-full justify-start font-normal'}>
             <div className={'flex-grow flex justify-start'}>
               {date ? (
                 <span className={''}>

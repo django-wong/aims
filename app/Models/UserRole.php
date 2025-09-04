@@ -19,7 +19,7 @@ class UserRole extends Model
     const SYSTEM = 1; // Reserved for system admin
     const ADMIN = 2;
     const FINANCE = 3;
-    const PM = 4;
+    const PM = 4; // PM and Staff should have same permissions
     const INSPECTOR = 5;
     const CLIENT = 6;
     const VENDOR = 7;

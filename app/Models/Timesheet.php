@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Carbon;
 
 /**
@@ -19,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|\Illuminate\Support\HigherOrderCollectionProxy|mixed $signed_off_at
  * @property \Illuminate\Support\Carbon|mixed                            $contract_holder_approved_at
  * @property \Illuminate\Support\Carbon|mixed                            $client_approved_at
- * @property int                                                       $user_id
+ * @property int                                                         $user_id
  */
 class Timesheet extends Model
 {
@@ -56,5 +57,42 @@ class Timesheet extends Model
         return $query->where(
             'status', Timesheet::DRAFT
         );
+    }
+
+    /**
+     * The pending timesheets for a person to take action on.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopePending(Builder $query)
+    {
+        return $query->where(function (Builder $query) {
+            // As a coordinator, I want to see timesheets that need my approval
+            $query->orWhere(function (Builder $query) {
+                $query
+                    ->whereIn('assignment_id', fn (QueryBuilder $query) => $query->select('id')->from('assignments')->where('coordinator_id', auth()->id()))
+                    ->where('status', Timesheet::APPROVED);
+            });
+
+            // As an operation coordinator, I want to see timesheets that need my review
+            $query->orWhere(function (Builder $query) {
+                $query
+                    ->whereIn('assignment_id', fn (QueryBuilder $query) => $query->select('id')->from('assignments')->where('operation_coordinator_id', auth()->id()))
+                    ->where('status', Timesheet::REVIEWING);
+            });
+
+            // As a client, I want to see timesheets that need my approval
+            $query->orWhere(function (Builder $query) {
+                $query
+                    ->whereIn('assignment_id', fn (QueryBuilder $query) => $query->select('assignments.id')->from('assignments')->leftJoin('projects', 'assignments.project_id', '=', 'projects.id')->where('projects.client_id', auth()->user()->client?->id ?? 0))
+                    ->where('status', Timesheet::CONTRACT_HOLDER_APPROVED);
+            });
+        });
+    }
+
+    public function scopeVisible(Builder $query): Builder
+    {
+        return $query->whereIn('assignment_id', Assignment::query()->visible()->select('id'));
     }
 }

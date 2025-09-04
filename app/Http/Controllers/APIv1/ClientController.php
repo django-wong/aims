@@ -81,6 +81,19 @@ class ClientController extends Controller
                                 });
                         });
                     });
+
+                    if (auth()->user()->isRole(UserRole::INSPECTOR)) {
+                        $query->whereIn('id', function (QueryBuilder $query) {
+                            $query->select('client_id')
+                                ->from('projects')
+                                ->whereIn('id', function (QueryBuilder $query) {
+                                    $query->select('project_id')
+                                        ->from('assignments')
+                                        ->leftJoin('assignment_inspectors', 'assignments.id', '=', 'assignment_inspectors.assignment_id')
+                                        ->where('assignment_inspectors.user_id', auth()->user()->id);
+                                });
+                        });
+                    }
                 })
                 ->paginate()
         );

@@ -23,6 +23,8 @@ import {
 import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useRole } from '@/hooks/use-role';
+import { useAuth } from '@/hooks/use-auth';
 
 interface MenuItem {
   name: string
@@ -35,16 +37,27 @@ export function NavReports() {
   const { isMobile } = useSidebar()
   const [menus, setMenus] = useState<MenuItem[]>([]);
 
+  const {
+    user
+  } = useAuth();
+
   useEffect(() => {
     axios.get('/api/v1/menus/reports').then(response => {
       setMenus(response.data);
     })
-  }, [])
+  }, [user?.id])
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Report / KPIs (work in progress)</SidebarGroupLabel>
       <SidebarMenu>
+        {menus.length === 0 && (
+          <SidebarMenuItem>
+            <SidebarMenuButton disabled>
+              <span>No reports available</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
         {menus.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>

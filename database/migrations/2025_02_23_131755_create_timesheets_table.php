@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->date('start');
             $table->date('end');
+
+            // Updated by triggers
             $table->integer('hours')->default(0)->comment('Total hours worked');
             $table->integer('travel_distance')->default(0)->comment('Total kilometers/miles traveled');
             $table->decimal('cost', 10)->default(0.00)->comment('Total cost for the timesheet, computed from the mileage, hourly rate, and any additional expenses');

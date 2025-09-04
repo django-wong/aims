@@ -25,24 +25,10 @@ use Illuminate\Support\Facades\URL;
 use PhpParser\Node\Expr\Assign;
 use Spatie\QueryBuilder\AllowedFilter;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\QueryBuilder\AllowedInclude;
 
 class AssignmentController extends Controller
 {
-
-    // public function link(Assignment $assignment)
-    // {
-    //     Gate::authorize('update', $assignment);
-    //
-    //     return [
-    //         'data' => URL::signedRoute(
-    //             'assignments.record-timesheet', [
-    //                 'id' => $assignment->id,
-    //                 'user' => $assignment->inspector_id,
-    //             ]
-    //         )
-    //     ];
-    // }
-
     public function reject(RejectAssignmentRequest $request, Assignment $assignment)
     {
         Comment::quick($request->validated('message'), for: $assignment);
@@ -89,7 +75,7 @@ class AssignmentController extends Controller
     protected function allowedIncludes()
     {
         return [
-            'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type', 'skill'
+            'project', 'assignment_type', 'vendor', 'sub_vendor', 'operation_org', 'org', 'purchase_order', 'project.client', 'project.project_type', 'skill', 'assignment_inspector', 'assignment_inspector.assignment_type'
         ];
     }
 
@@ -237,7 +223,7 @@ class AssignmentController extends Controller
                 \DB::raw('SUM(travel_hours) as travel'),
                 \DB::raw('SUM(report_hours) as remote'),
             ])
-            ->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
+            ->whereIn('timesheet_id', function (QueryBuilder $query) use ($assignment) {
                 $query->select('id')
                     ->from('timesheets')
                     ->where('status', '>', Timesheet::DRAFT)
@@ -290,7 +276,7 @@ class AssignmentController extends Controller
         Gate::authorize('view', $assignment);
 
         $query = TimesheetReport::query()
-            ->whereIn('timesheet_id', function (QueryBuilder  $query) use ($assignment) {
+            ->whereIn('timesheet_id', function (QueryBuilder $query) use ($assignment) {
                 $query->select('id')->from('timesheets')->where('status', '>', Timesheet::DRAFT)->where('assignment_id', $assignment->id);
             });
 

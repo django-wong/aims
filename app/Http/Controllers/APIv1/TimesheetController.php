@@ -51,7 +51,7 @@ class TimesheetController extends Controller
             'hours',
             'travel_distance',
             AllowedFilter::callback('keywords', function (Builder $query, $value) {}),
-            AllowedFilter::custom('status', new OperatorFilter())
+            AllowedFilter::custom('status', new OperatorFilter(), 'timesheets.status')
         ];
     }
 
@@ -69,19 +69,29 @@ class TimesheetController extends Controller
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Timesheet::class);
-        return $this->getQueryBuilder()->tap(function (Builder $query) {
-            if (auth()->user()->isRole(UserRole::CLIENT)) {
-                $query->whereIn(
-                    'id', function ($q) {
-                        $q->select('timesheets.id')
-                            ->from('timesheets')
-                            ->join('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
-                            ->join('projects', 'assignments.project_id', '=', 'projects.id')
-                            ->where('projects.client_id', auth()->user()->client->id);
-                    }
-                )->where('status', '>', Timesheet::APPROVED);
-            }
-        })->defaultSort('-created_at')->paginate();
+
+        $query = $this->getQueryBuilder()->visible()->defaultSort('-created_at');
+
+        if (auth()->user()->isRole(UserRole::CLIENT)) {
+            $query->whereIn(
+                'id', function ($q) {
+                    $q->select('timesheets.id')
+                        ->from('timesheets')
+                        ->join('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
+                        ->join('projects', 'assignments.project_id', '=', 'projects.id')
+                        ->where(
+                            'projects.client_id', auth()->user()->client->id
+                        );
+                }
+            )->where('timesheets.status', '>', Timesheet::APPROVED);
+        }
+
+        $query->leftJoin('assignments', 'timesheets.assignment_id', '=', 'assignments.id');
+        $query->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id');
+
+        $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency');
+
+        return $query->paginate();
     }
 
 

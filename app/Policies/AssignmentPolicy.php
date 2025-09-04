@@ -17,7 +17,7 @@ class AssignmentPolicy
     public function viewAny(User $user):bool
     {
         return in_array($user->user_role->role, [
-            UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT, UserRole::FINANCE,
+            UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT, UserRole::FINANCE, UserRole::INSPECTOR
         ]);
     }
 

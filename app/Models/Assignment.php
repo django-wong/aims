@@ -80,23 +80,19 @@ class Assignment extends Model implements Commentable, Attachable
     {
         return $query->where(function (Builder $query) use ($to) {
             $id = $to instanceof Org ? $to->id : $to;
+
             if (is_null($id)) {
                 $id = auth()->user()->org->id;
             }
 
-            // $query->whereAny(
-            //     ['operation_org_id', 'org_id'], $id
-            // );
-
             $query->where(function (Builder $query) use ($id) {
                 $query->where('org_id', $id)->orWhere(function (Builder $query) use ($id) {
-                    $query->where('operation_org_id', $id)->where('status', '>=', self::ISSUED);
+                    $query->where('operation_org_id', $id)->where('assignments.status', '>=', self::ISSUED);
                 });
             });
 
             if (auth()->user()->isRole(UserRole::INSPECTOR)) {
                 $query->whereHas('assignment_inspectors', function (Builder $q) {
-                    ;
                     $q->where('user_id', auth()->user()->id);
                 });
             }

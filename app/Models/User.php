@@ -15,7 +15,8 @@ use Lab404\Impersonate\Models\Impersonate;
  * @property Org      $org
  * @property UserRole $user_role
  * @property int      $id
- * @property string    $email
+ * @property string   $email
+ * @property Client   $client
  */
 class User extends Authenticatable
 {
@@ -85,8 +86,8 @@ class User extends Authenticatable
 
         return $query->whereIn(
             'id', function (QueryBuilder $query) use ($org) {
-                $query->select('user_id')->from('user_roles')->where('org_id', $org);
-            }
+            $query->select('user_id')->from('user_roles')->where('org_id', $org);
+        }
         );
     }
 

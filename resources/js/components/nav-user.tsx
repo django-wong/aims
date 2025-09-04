@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/sidebar"
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Undo2 } from 'lucide-react';
+import { SettingsIcon, Undo2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -77,20 +78,25 @@ export function NavUser() {
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="text-muted-foreground truncate text-xs">{user.email}</span>
                 </div>
+                <Badge>
+                  {describe_user_role(user.user_role?.role)}
+                </Badge>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/*<DropdownMenuGroup>*/}
-            {/*  <DropdownMenuItem>*/}
-            {/*    <IconUserCircle />*/}
-            {/*    Account*/}
-            {/*  </DropdownMenuItem>*/}
-            {/*  <DropdownMenuItem>*/}
-            {/*    <IconNotification />*/}
-            {/*    Notifications*/}
-            {/*  </DropdownMenuItem>*/}
-            {/*</DropdownMenuGroup>*/}
-            {/*<DropdownMenuSeparator />*/}
+            <DropdownMenuGroup>
+              {/*<DropdownMenuItem>*/}
+              {/*  <IconUserCircle />*/}
+              {/*  Account*/}
+              {/*</DropdownMenuItem>*/}
+              <Link href={'/settings'}>
+                <DropdownMenuItem>
+                  <SettingsIcon />
+                  Settings
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             {impersonating && (
               <Link href={route('leave-impersonation')}>
                 <DropdownMenuItem>
@@ -110,4 +116,27 @@ export function NavUser() {
       </SidebarMenuItem>
     </SidebarMenu>
   );
+}
+
+function describe_user_role(role: number|string|null|undefined) {
+  switch (role?.toString()) {
+    case '1':
+      return 'System Admin';
+    case '2':
+      return 'Admin';
+    case '3':
+      return 'Finance';
+    case '4':
+      return 'PM';
+    case '5':
+      return 'Inspector';
+    case '6':
+      return 'Client';
+    case '7':
+      return 'Vendor';
+    case '8':
+      return 'Staff';
+    default:
+      return 'User';
+  }
 }

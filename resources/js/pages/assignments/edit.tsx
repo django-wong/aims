@@ -257,7 +257,7 @@ export default function Edit(props: EditProps) {
                   {props.assignment.purchase_order?.budgeted_hours || 'N/A'}
                 </InfoLine>
                 <InfoLine icon={'car'} label={'Mileage'}>
-                  {props.assignment.purchase_order?.budgeted_mileage || 'N/A'}
+                  {props.assignment.purchase_order?.budgeted_mileage} {props.assignment.purchase_order?.mileage_unit}
                 </InfoLine>
               </div>
 

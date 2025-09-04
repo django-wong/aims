@@ -12,9 +12,11 @@ class ProjectPolicy
     public function viewAny(User $user):bool
     {
         return in_array($user->user_role->role, [
-            \App\Models\UserRole::PM,
-            \App\Models\UserRole::ADMIN,
+            UserRole::PM,
+            UserRole::STAFF,
+            UserRole::ADMIN,
             UserRole::CLIENT,
+            UserRole::INSPECTOR
         ]);
     }
 

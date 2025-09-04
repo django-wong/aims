@@ -11,7 +11,7 @@ import * as React from 'react';
 
 import { NavReports } from '@/components/nav-reports';
 import { NavMain } from '@/components/nav-main';
-import { NavSecondary } from '@/components/nav-secondary';
+// import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
 import { Button } from '@/components/ui/button';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
@@ -22,85 +22,85 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
 import { Badge } from '@/components/ui/badge';
 
-const data = {
-  navClouds: [
-    {
-      title: 'Capture',
-      icon: IconCamera,
-      isActive: true,
-      url: '/capture',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '/capture/active-proposals',
-        },
-        {
-          title: 'Archived',
-          url: '/capture/archived',
-        },
-      ],
-    },
-    {
-      title: 'Proposal',
-      icon: IconFileDescription,
-      url: '/proposal',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '/proposal/active-proposals',
-        },
-        {
-          title: 'Archived',
-          url: '/proposal/archived',
-        },
-      ],
-    },
-    {
-      title: 'Prompts',
-      icon: IconFileAi,
-      url: '/prompts',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '/prompts/active-proposals',
-        },
-        {
-          title: 'Archived',
-          url: '/prompts/archived',
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '/settings',
-      icon: IconSettings,
-    },
-    // {
-    //   title: 'Get Help',
-    //   url: '/help',
-    //   icon: IconHelp,
-    // },
-  ],
-  documents: [
-    {
-      name: 'Report A',
-      url: '/data-library',
-      icon: IconDatabase,
-    },
-    {
-      name: 'Report B',
-      url: '/reports',
-      icon: IconReport,
-    },
-    {
-      name: 'Report C',
-      url: '/assistant',
-      icon: IconFileWord,
-    },
-  ],
-};
+// const data = {
+//   navClouds: [
+//     {
+//       title: 'Capture',
+//       icon: IconCamera,
+//       isActive: true,
+//       url: '/capture',
+//       items: [
+//         {
+//           title: 'Active Proposals',
+//           url: '/capture/active-proposals',
+//         },
+//         {
+//           title: 'Archived',
+//           url: '/capture/archived',
+//         },
+//       ],
+//     },
+//     {
+//       title: 'Proposal',
+//       icon: IconFileDescription,
+//       url: '/proposal',
+//       items: [
+//         {
+//           title: 'Active Proposals',
+//           url: '/proposal/active-proposals',
+//         },
+//         {
+//           title: 'Archived',
+//           url: '/proposal/archived',
+//         },
+//       ],
+//     },
+//     {
+//       title: 'Prompts',
+//       icon: IconFileAi,
+//       url: '/prompts',
+//       items: [
+//         {
+//           title: 'Active Proposals',
+//           url: '/prompts/active-proposals',
+//         },
+//         {
+//           title: 'Archived',
+//           url: '/prompts/archived',
+//         },
+//       ],
+//     },
+//   ],
+//   navSecondary: [
+//     {
+//       title: 'Settings',
+//       url: '/settings',
+//       icon: IconSettings,
+//     },
+//     // {
+//     //   title: 'Get Help',
+//     //   url: '/help',
+//     //   icon: IconHelp,
+//     // },
+//   ],
+//   documents: [
+//     {
+//       name: 'Report A',
+//       url: '/data-library',
+//       icon: IconDatabase,
+//     },
+//     {
+//       name: 'Report B',
+//       url: '/reports',
+//       icon: IconReport,
+//     },
+//     {
+//       name: 'Report C',
+//       url: '/assistant',
+//       icon: IconFileWord,
+//     },
+//   ],
+// };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const {
@@ -150,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={Object.values(main)} />
         <NavReports/>
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/*<NavSecondary items={data.navSecondary} className="mt-auto" />*/}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

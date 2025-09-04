@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Models\Timesheet;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -24,53 +25,61 @@ class MenuController
                         'name' => 'Dashboard',
                         'icon' => 'house',
                         'url' => route('dashboard'),
-                        'component' => 'dashboard'
                     ],
                 ] : []),
-                ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE],[
+                ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE, UserRole::INSPECTOR],[
                     'clients' => [
                         'name' => 'Clients',
                         'icon' => 'book-user',
                         'url' => route('clients'),
-                        'component' => 'clients'
                     ],
                     'vendors' => [
                         'name' => 'Vendors',
                         'icon' => 'user-round-search',
                         'url' => route('vendors'),
-                        'component' => 'vendors'
                     ]
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT, UserRole::INSPECTOR],[
                     'projects' => [
                         'name' => 'Projects',
                         'icon' => 'briefcase-business',
                         'url' => route('projects'),
-                        'component' => 'projects'
                     ],
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::FINANCE],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::FINANCE],[
                     'purchase-orders' => [
                         'name' => 'Work Orders (WO)',
                         'icon' => 'shopping-bag',
                         'url' => route('purchase-orders'),
-                        'component' => 'purchase-orders'
                     ],
                 ])),
-                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT], [
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::CLIENT, UserRole::INSPECTOR], [
                     'assignments' => [
                         'name' => 'Assignments',
                         'icon' => 'contact',
                         'url' => route('assignments'),
-                        'component' => 'assignments'
                     ]
                 ])),
-                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::FINANCE], [
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::CLIENT], [
+                    'timesheets' => [
+                        'name' => 'Timesheets',
+                        'icon' => 'clock',
+                        'url' => route('timesheets'),
+                        'badge' => Timesheet::query()->pending()->count()
+                    ]
+                ])),
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF], [
+                    'noi' => [
+                        'name' => 'NOI',
+                        'icon' => 'contact',
+                        'url' => route('notification-of-inspection'),
+                    ]
+                ])),
+                ...($when([UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::FINANCE, UserRole::CLIENT], [
                     'invoices' => [
                         'name' => 'Invoices',
-                        'icon' => 'house',
+                        'icon' => 'scroll-text',
                         'url' => route('invoices'),
-                        'component' => 'invoices'
                     ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM], [
@@ -78,7 +87,6 @@ class MenuController
                         'name' => 'Inspector (FieldOps)',
                         'icon' => 'users',
                         'url' => route('inspectors'),
-                        'component' => 'inspectors'
                     ]
                 ])),
                 ...($when([UserRole::ADMIN], [
@@ -86,7 +94,6 @@ class MenuController
                         'name' => 'User & Access',
                         'icon' => 'users',
                         'url' => route('users'),
-                        'component' => 'users'
                     ]
                 ]))
             ],
@@ -95,6 +102,10 @@ class MenuController
 
     public function reports()
     {
+        if (auth()->user()->isAnyRole([UserRole::CLIENT, UserRole::INSPECTOR, UserRole::VENDOR])) {
+            return [];
+        }
+
         return [
             [
                 'name' => 'Field Operatives Manhour Summary',

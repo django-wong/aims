@@ -8,7 +8,7 @@ import { useAssignment } from '@/providers/assignment-provider';
 import { AssignmentInspector } from '@/types';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { TrashIcon } from 'lucide-react';
+import { KeySquareIcon, TrashIcon } from 'lucide-react';
 
 export function AssignmentInspectors() {
   const assignment = useAssignment();
@@ -71,7 +71,19 @@ export function AssignmentInspectors() {
         },
         cell: ({ row }) => {
           return (
-            <div className={'text-right'}>
+            <div className={'flex items-center justify-end space-x-2'}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant={'secondary'} size={'sm'} asChild>
+                    <a href={route('impersonate', { id: row.original.user_id})}>
+                      <KeySquareIcon/>
+                    </a>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Impersonate this inspector to perform actions on their behalf.
+                </TooltipContent>
+              </Tooltip>
               <Button
                 variant={'secondary'}
                 size={'sm'}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Models\AssignmentInspector;
+use App\Models\UserRole;
 use App\Notifications\NewAssignmentIssued;
 use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 use Illuminate\Http\Request;
@@ -112,6 +113,14 @@ class AssignmentController extends Controller
     {
         Gate::authorize('viewAny', Assignment::class);
 
-        return inertia('assignments');
+        $role = auth()->user()->user_role->role;
+
+        if ($role == UserRole::INSPECTOR) {
+            return inertia(
+                'assignments/for-inspectors'
+            );
+        }
+
+        return $role == UserRole::CLIENT ? inertia('assignments/for-clients') : inertia('assignments');
     }
 }

@@ -162,28 +162,28 @@ export default function Projects() {
                   });
                 }}
               />
-              <ClientSelect
-                canCreateNew={true}
-                className={'w-auto'}
-                onValueChane={(value) => {
-                  table.setSearchParams((prev) => {
-                    if (value) {
-                      prev.set('filter[client_id]', String(value));
-                    } else {
-                      prev.delete('filter[client_id]');
-                    }
-                    return prev;
-                  });
-                }}
-                renderTrigger={(client) => (
-                  <HideFromClient>
+              <HideFromClient>
+                <ClientSelect
+                  canCreateNew={true}
+                  className={'w-auto'}
+                  onValueChane={(value) => {
+                    table.setSearchParams((prev) => {
+                      if (value) {
+                        prev.set('filter[client_id]', String(value));
+                      } else {
+                        prev.delete('filter[client_id]');
+                      }
+                      return prev;
+                    });
+                  }}
+                  renderTrigger={(client) => (
                     <Button variant={'outline'}>
                       Client: <Badge variant={'secondary'}>{client?.business_name ?? client?.user?.name ?? 'All'}</Badge>
                     </Button>
-                  </HideFromClient>
-                )}
-                value={parseInt(table.searchParams.get('filter[client_id]') || '')}
-              />
+                  )}
+                  value={parseInt(table.searchParams.get('filter[client_id]') || '')}
+                />
+              </HideFromClient>
               {table.getSelectedRowModel().rows.length > 0 && (
                 <Button variant={'destructive'}>
                   <Trash2 />

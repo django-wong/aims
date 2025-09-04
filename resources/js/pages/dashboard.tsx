@@ -1,12 +1,12 @@
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, SharedData } from '@/types';
+import { BreadcrumbItem } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usePage } from '@inertiajs/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClockFadingIcon, FileCheckIcon } from 'lucide-react';
 import { Timesheets } from '@/pages/assignments/timesheets';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { HideFromClient, VisibleToClient, VisibleToOperator, VisibleToStaffAndAbove } from '@/components/hide-from-client';
+import { useAssignmentsTable } from '@/pages/assignments';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -29,12 +29,9 @@ export default function Page() {
         </HideFromClient>
       }>
       <VisibleToStaffAndAbove><GeneralDashboard /></VisibleToStaffAndAbove>
-      <VisibleToClient><ClientDasboard /></VisibleToClient>
+      <VisibleToClient><ClientDashboard /></VisibleToClient>
       <VisibleToOperator>
-        <div className="m-6 p-4 border rounded-lg bg-yellow-50 text-yellow-800">
-          <p>You are logged in as an Operator. Please use the admin panel to manage the system.</p>
-          <p>TODO: Show inspector's assignments</p>
-        </div>
+        <InspectorDashboard/>
       </VisibleToOperator>
     </AppLayout>
   );
@@ -57,7 +54,7 @@ function GeneralDashboard() {
 }
 
 
-function ClientDasboard() {
+function ClientDashboard() {
   const [hash, setHash] = useLocationHash('timesheets');
 
   return (
@@ -88,4 +85,11 @@ function ClientDasboard() {
       </Tabs>
     </div>
   );
+}
+
+function InspectorDashboard() {
+  const {
+    content
+  } = useAssignmentsTable();
+  return <div className={'px-6'}>{content}</div>;
 }

@@ -3,10 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
-use App\Models\Org;
 use App\Models\Project;
 use App\Models\ProjectType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ProjectSeeder extends Seeder
@@ -16,10 +14,12 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        Project::factory(5)
-            ->recycle(ProjectType::query()->get())
-            ->recycle(Org::query()->get())
-            ->recycle(Client::query()->get())
-            ->create();
+        foreach (Client::query()->cursor() as $client) {
+            Project::factory(2)
+                ->recycle(ProjectType::query()->get())
+                ->recycle($client->org)
+                ->recycle($client)
+                ->create();
+        }
     }
 }

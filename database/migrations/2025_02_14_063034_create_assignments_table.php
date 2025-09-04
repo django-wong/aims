@@ -25,7 +25,6 @@ return new class extends Migration
 
             $table->string('approved_by')->nullable();
 
-            $table->foreignId('assignment_type_id')->index()->nullable()->constrained();
             $table->foreignId('project_id')->constrained();
 
             $table->string('client_po')->nullable();

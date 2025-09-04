@@ -1,8 +1,8 @@
-import { MultipleDatePicker } from '@/components/date-picker';
+import { DatePicker, MultipleDatePicker } from '@/components/date-picker';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Loading } from '@/components/ui/loading';
@@ -28,6 +28,7 @@ const number = z.coerce.number().min(0).optional();
 
 const timesheetItemSchema = z.object({
   timesheet_id: z.number(),
+
   dates: z.array(
     z
     .date()
@@ -35,7 +36,10 @@ const timesheetItemSchema = z.object({
     .transform((value) => {
       return dayjs(value).format('YYYY/MM/DD');
     })
-  ),
+  ).optional(),
+
+  date: z.string().optional().nullable(),
+
   work_hours: number,
   travel_hours: number,
   report_hours: number,
@@ -97,34 +101,58 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
           <DialogInnerContent>
             <div className={'grid grid-cols-12 gap-4'}>
               <Form {...form}>
-                <div className={'col-span-12 md:col-span-6'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <>
-                          <VFormField required label={'Date'}>
-                            <MultipleDatePicker
-                              calendar={{
-                                disabled: (date) => {
-                                  if (props.timesheet) {
-                                    const start = dayjs(props.timesheet.start);
-                                    const end = dayjs(props.timesheet.end);
-                                    return start.isAfter(date, 'day') || end.isBefore(date, 'day');
-                                  }
-                                  return false;
-                                },
-                              }}
-                              value={field.value}
-                              onChange={(date) => field.onChange(date)}
-                            />
-                          </VFormField>
-                        </>
-                      );
-                    }}
-                    name={'dates'}
-                  />
-                </div>
+                {
+                  props.value ? (
+                    <div className={'col-span-12 md:col-span-6'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <>
+                              <VFormField required label={'Date'}>
+                                <DatePicker
+                                  disabled
+                                  value={field.value ?? undefined}
+                                  onChange={(date) => field.onChange(date ? dayjs(date).format('YYYY/MM/DD') : null)}
+                                />
+                              </VFormField>
+                            </>
+                          );
+                        }}
+                        name={'date'}
+                      />
+                    </div>
+                  ) : (
+                    <div className={'col-span-12 md:col-span-6'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <>
+                              <VFormField required label={'Date'}>
+                                <MultipleDatePicker
+                                  calendar={{
+                                    disabled: (date) => {
+                                      if (props.timesheet) {
+                                        const start = dayjs(props.timesheet.start);
+                                        const end = dayjs(props.timesheet.end);
+                                        return start.isAfter(date, 'day') || end.isBefore(date, 'day');
+                                      }
+                                      return false;
+                                    },
+                                  }}
+                                  value={field.value}
+                                  onChange={(date) => field.onChange(date)}
+                                />
+                              </VFormField>
+                            </>
+                          );
+                        }}
+                        name={'dates'}
+                      />
+                    </div>
+                  )
+                }
                 <div className={'col-span-12 md:col-span-6'}>
                   <div>
                     <div className={'grid grid-cols-12 gap-4'}>
@@ -316,9 +344,12 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
             </div>
           </DialogInnerContent>
           <DialogFooter>
+            <DialogClose asChild>
+              <Button variant={'outline'}>Cancel</Button>
+            </DialogClose>
             <Button disabled={form.submitDisabled || form.formState.isSubmitting} onClick={save}>
               <Loading show={form.formState.isSubmitting} />
-              Add
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
