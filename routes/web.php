@@ -11,6 +11,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\SystemConfiguration;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
@@ -102,6 +103,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('man-hours', 'man_hours')->name('reports.man-hours');
         Route::get('reports-late', 'reports_late')->name('reports.reports-late');
     });
+
+    Route::get('system-configuration', SystemConfiguration::class)->name('system-configuration');
 
     // Fallback to 404 page for undefined routes
     Route::inertia('{any}', '404');

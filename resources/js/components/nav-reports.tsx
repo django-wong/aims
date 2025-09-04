@@ -74,9 +74,9 @@ export function NavReports() {
                     <span className="sr-only">More</span>
                   </SidebarMenuAction>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="rounded-lg" side={isMobile ? 'bottom' : 'right'} align={isMobile ? 'end' : 'start'}>
-                  <DropdownMenuLabel>More...</DropdownMenuLabel>
-                  <DropdownMenuSeparator/>
+                <DropdownMenuContent className="rounded-lg min-w-[200px]" side={isMobile ? 'bottom' : 'right'} align={isMobile ? 'end' : 'start'}>
+                  {/*<DropdownMenuLabel>More variants</DropdownMenuLabel>*/}
+                  {/*<DropdownMenuSeparator/>*/}
                   {item.children?.map((item, index) => {
                     return (
                       <DropdownMenuItem key={index}>

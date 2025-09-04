@@ -94,6 +94,11 @@ class MenuController
                         'name' => 'User & Access',
                         'icon' => 'users',
                         'url' => route('users'),
+                    ],
+                    'system-configuration' => [
+                        'name' => 'System Configuration',
+                        'icon' => 'cog',
+                        'url' => route('system-configuration'),
                     ]
                 ]))
             ],
@@ -118,21 +123,43 @@ class MenuController
                 'icon' => 'file-clock',
                 'children' => [
                     [
-                        'name' => 'Hours Entry - BIE Local',
+                        'name' => 'BIE Local',
                         'url' => route('reports.hours-entry-bie-local'),
-                        'icon' => 'file-clock',
+                        'icon' => 'folder',
                     ],
                     [
-                        'name' => 'Hours Entry - BIE Local',
+                        'name' => 'Others',
                         'url' => route('reports.hours-entry-bie-local'),
-                        'icon' => 'file-clock',
+                        'icon' => 'folder',
                     ]
                 ]
             ],
             [
-                'name' => 'Man-hours',
+                'name' => 'Man-hours summary',
                 'url' => route('reports.man-hours'),
                 'icon' => 'clock-plus',
+                'children' => [
+                    [
+                        'name' => 'Local',
+                        'icon' => 'folder'
+                    ],
+                    [
+                        'name' => 'Others',
+                        'icon' => 'folder'
+                    ],
+                    [
+                        'name' => 'By Year - Local',
+                        'icon' => 'folder'
+                    ],
+                    [
+                        'name' => 'By Year - Others',
+                        'icon' => 'folder'
+                    ],
+                    [
+                        'name' => 'Monthly By Year',
+                        'icon' => 'folder'
+                    ]
+                ]
             ],
             [
                 'name' => 'Invoice Required',

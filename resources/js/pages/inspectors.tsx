@@ -183,7 +183,7 @@ function InspectorActions({ user }: { user: User }) {
   const table = useTableApi();
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <MoreHorizontal className="h-4 w-4" />
         </Button>
