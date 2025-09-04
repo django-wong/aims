@@ -5,13 +5,14 @@ import AppLayout from '@/layouts/app-layout';
 import { PurchaseOrder } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Plus, Trash2Icon } from 'lucide-react';
+import { InfoIcon, Plus, Trash2Icon } from 'lucide-react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   const table = useTableApi();
@@ -78,16 +79,26 @@ const columns: ColumnDef<PurchaseOrder>[] = [
     minSize: 100,
     maxSize: 150,
     cell: ({ row }) => {
-      // return new Intl.NumberFormat('en-US', {
-      //   style: 'currency',
-      //   currency: 'USD',
-      // }).format(row.original.budgeted_hours);
       return `${row.original.budgeted_hours}`;
     },
   },
   {
     accessorKey: 'total_hours',
-    header: 'Budget Hours',
+    header: () => {
+      return (
+        <div className={'flex items-center gap-1'}>
+          Total Used Hours
+          <Tooltip>
+            <TooltipTrigger>
+              <InfoIcon className={'size-3'}/>
+            </TooltipTrigger>
+            <TooltipContent>
+              Hours from all assignments including unapproved.
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      );
+    },
     minSize: 100,
     maxSize: 150,
     cell: ({ row }) => {

@@ -150,16 +150,10 @@ export default function PurchaseOrderEditPage(props: Props) {
 function OverviewContent(props: { purchase_order: PurchaseOrder }) {
   return (
     <div className="space-y-6">
-      <Overview/>
-
-      <DailyHoursUsage/>
-
-      <div>
-        <Button>
-          <ArrowDownToLineIcon/>
-          Export as CSV
-        </Button>
-      </div>
+      <PurchaseOrderProvider value={props.purchase_order}>
+        <Overview/>
+        <DailyHoursUsage/>
+      </PurchaseOrderProvider>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { ColumnToggle, DataTable, TableRefresher, useTableApi } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, TableRefresher } from '@/components/data-table-2';
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,7 +12,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useOrg } from '@/hooks/use-org';
 import { useIsClient } from '@/hooks/use-role';
 import { useTable } from '@/hooks/use-table';
 import { timesheet_range } from '@/lib/utils';
@@ -24,7 +23,7 @@ import { Assignment, Timesheet } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
-import { CheckIcon, EllipsisVerticalIcon, PenIcon } from 'lucide-react';
+import { EllipsisVerticalIcon, PenIcon } from 'lucide-react';
 import { startTransition, useDeferredValue, useState } from 'react';
 import { ClientApprove } from '../timesheets/client-approve';
 import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';

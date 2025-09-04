@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int $org_id
+ * @property int   $org_id
+ * @property int $id
  */
 class PurchaseOrder extends Model implements Commentable
 {

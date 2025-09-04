@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('approved_by')->nullable();
 
             $table->foreignId('project_id')->constrained();
+            $table->foreignId('purchase_order_id')->nullable()->constrained();
 
             $table->string('client_po')->nullable();
             $table->string('client_po_rev')->nullable();
@@ -44,11 +45,13 @@ return new class extends Migration
                 '0 = Draft, 1 = Issued, 2 = Rejected, 3 = Accepted, 4 = Assigned, 5 = Partial Acked, 6 = Acked, 7 = Open, 8 = Closed'
             );
 
+            // Equipment/Skill
             $table->foreignId('skill_id')->nullable()->constrained()->nullOnDelete();
+            $table->longText('equipment')->nullable()->comment('Equipment used during the assignment');
 
+            // Vendors
             $table->foreignId('vendor_id')->nullable()->constrained();
             $table->foreignId('sub_vendor_id')->nullable()->constrained('vendors');
-            $table->foreignId('purchase_order_id')->nullable()->constrained();
             $table->boolean('report_required')->default(false)->comment('Indicates if a report is required for this assignment');
 
             // visit
@@ -90,7 +93,7 @@ return new class extends Migration
             $table->tinyInteger('document_stamp')->default(0)->comment('Document stamp: 0 = bie, 1 = sign');
             $table->tinyInteger('issue_irn_to_vendor')->default(0)->comment('Issue IRN to vendor: 0 = NO, 1 = YES');
 
-            $table->longText('equipment')->nullable()->comment('Equipment used during the assignment');
+            // Notes
             $table->longText('notes')->nullable()->comment('Notes of the assignment');
             $table->longText('special_notes')->nullable();
             $table->timestamps();

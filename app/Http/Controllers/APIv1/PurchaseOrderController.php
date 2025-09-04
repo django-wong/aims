@@ -8,6 +8,9 @@ use App\Models\Budget;
 use App\Models\InspectorProfile;
 use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
+use App\Models\PurchaseOrderDailyUsage;
+use App\Models\PurchaseOrderMonthlyUsage;
+use App\Support\Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -43,6 +46,33 @@ class PurchaseOrderController extends Controller
                 'total' => round($total, 2),
             ]
         ]);
+    }
+
+    public function daily_usage(string $purchase_order)
+    {
+        $usages = PurchaseOrderDailyUsage::query()->where('purchase_order_id', $purchase_order)->where('date', '>=', now()->subMonth())->get();
+
+        $end = now();
+        $start = now()->subMonth();
+
+        $data = [];
+
+        for ($date = $start; $date->lte($end); $date->addDay()) {
+            $day = $usages->firstWhere('date', $date->format('Y-m-d'));
+            $data[] = [
+                'date' => $date->format('Y-m-d'),
+                'total_expense' => $day?->total_expense ?? 0,
+                'hours' => $day?->hours ?? 0,
+                'cost' => $day?->cost ?? 0,
+                'travel_cost' => $day?->travel_cost ?? 0,
+                'travel_distance' => $day?->travel_distance ?? 0,
+                'total_cost' => $day?->total_cost ?? 0,
+            ];
+        }
+
+        return [
+            'data' => $data
+        ];
     }
 
     protected function allowedFilters()
@@ -143,6 +173,45 @@ class PurchaseOrderController extends Controller
 
         return response()->json([
             'message' => 'Purchase order deleted successfully.'
+        ]);
+    }
+
+    public function overview(PurchaseOrder $purchase_order)
+    {
+        /**
+         * @var PurchaseOrderMonthlyUsage $current
+         */
+        $current = PurchaseOrderMonthlyUsage::query()->where('purchase_order_id', $purchase_order->id)
+            ->where('month', now()->format('Y-m'))
+            ->first();
+
+        $last = PurchaseOrderMonthlyUsage::query()->where('purchase_order_id', $purchase_order->id)
+            ->where('month', now()->subMonth()->format('Y-m'))
+            ->first();
+
+        return response()->json([
+            'data' => [
+                'expense' => [
+                    'current' => $current?->total_expense ?? 0,
+                    'growth' => Helpers::growth_rate($current?->total_expense, $last?->total_expense),
+                    'previous' => $last?->total_expense ?? 0,
+                ],
+                'approved_hours' => [
+                    'current' => $current?->hours ?? 0,
+                    'growth' => Helpers::growth_rate($current?->hours, $last?->hours),
+                    'previous' => $last?->hours ?? 0,
+                ],
+                'approved_mileage' => [
+                    'current' => $current->travel_distance,
+                    'growth' => Helpers::growth_rate($current->travel_distance, $last?->travel_distance),
+                    'previous' => $last?->travel_distance ?? 0,
+                ],
+                'total_cost' => [
+                    'current' => $current->total_cost,
+                    'growth' => Helpers::growth_rate($current->total_cost, $last?->total_cost),
+                    'previous' => $last?->total_cost ?? 0,
+                ],
+            ]
         ]);
     }
 }

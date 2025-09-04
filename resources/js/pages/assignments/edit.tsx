@@ -45,7 +45,7 @@ interface EditProps {
 }
 
 export default function Edit(props: EditProps) {
-  const [hash, setHash] = useQueryParam('tab', 'timesheets');
+  const [hash, setHash] = useQueryParam('tab', 'overview');
   const isClient = useIsClient();
 
   const org = useOrg();

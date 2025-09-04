@@ -81,4 +81,6 @@ Route::middleware('auth')->group(function () {
 
     // Purchase Orders
     Route::get('purchase-orders/{purchase_order}/calculate-gross-margins', [PurchaseOrderController::class, 'calculate_gross_margins']);
+    Route::get('purchase-orders/{purchase_order}/overview', [PurchaseOrderController::class, 'overview']);
+    Route::get('purchase-orders/{purchase_order}/daily-usage', [PurchaseOrderController::class, 'daily_usage']);
 });
