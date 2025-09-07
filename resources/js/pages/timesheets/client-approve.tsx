@@ -3,12 +3,14 @@ import { Button } from '@/components/ui/button';
 import { CheckIcon } from 'lucide-react';
 import axios from 'axios';
 import { useTableApi } from '@/components/data-table-2';
-import { useClient } from '@/providers/client-provider';
+import { useIsClient } from '@/hooks/use-role';
 
 export function ClientApprove() {
   const timesheet = useTimesheet();
   const table = useTableApi();
-  const isClient = useClient();
+  const isClient = useIsClient();
+
+  console.info(timesheet);
 
   if (timesheet?.status !== 3 || !isClient) {
     return null;

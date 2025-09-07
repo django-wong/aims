@@ -1,10 +1,11 @@
 import {
-  getCoreRowModel, getFilteredRowModel,
+  getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel, PaginationState,
-  SortingState,
+  getSortedRowModel,
   TableOptions,
-  useReactTable
+  TableState,
+  useReactTable,
 } from '@tanstack/react-table';
 import { startTransition, useEffect, useReducer, useState } from 'react';
 import { useQueryParamAsSearchParams } from '@/hooks/use-query-param-as-search-params';
@@ -36,13 +37,20 @@ function reloadReducer(state: number) {
 export function useTable<T extends BaseTableData>(api: string, { selectable = false, ...options }: UseTableOptions<T>) {
   const [searchParams, setSearchParams] = useQueryParamAsSearchParams(api);
   const [data, setData] = useState<T[]>(options?.defaultData ?? []);
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [total, setTotal] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
   const [reload, triggerReload] = useReducer(reloadReducer, 0);
   const [params, setParams] = useState<Record<string, string>>(options?.defaultParams ?? {});
   const [initialLoaded, setInitialLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [state, setState] = useState<Partial<TableState>>(() => {
+    return {
+      pagination: {
+        pageIndex: parseInt(searchParams.get('page') ?? '1') - 1,
+        pageSize: parseInt(searchParams.get('per_page') ?? String(options.initialState?.pagination?.pageSize ?? 10)),
+      }
+    }
+  });
 
   const columns = Array.from(options?.columns ?? []);
 
@@ -71,35 +79,36 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     });
   }
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: parseInt(searchParams.get('page') ?? '1') - 1,
-    pageSize: parseInt(searchParams.get('pageSize') ?? String(options.initialState?.pagination?.pageSize ?? 10)),
-  });
+  // const [pagination, setPagination] = useState<PaginationState>();
+
 
   const table = useReactTable<T>({
     pageCount: totalPage,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    manualSorting: true,
     getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true,
+    defaultColumn: {
+      enableSorting: false,
+    },
     ...options,
     columns: columns,
     data: data,
-    manualPagination: true,
-    state: {
-      pagination,
-    },
-    onPaginationChange: (updater) => {
-      const value = typeof updater === 'function' ? updater(pagination) : updater;
+    state: state,
+    onStateChange: (updater) => {
+      const value = typeof updater === 'function' ? updater(state as any) : updater;
       startTransition(() => {
-        setPagination(value);
+        setState(value);
         setSearchParams((params) => {
-          params.set('page', String(value.pageIndex + 1));
-          params.set('pageSize', String(value.pageSize));
+          params.set('page', String(value.pagination.pageIndex + 1));
+          params.set('per_page', String(value.pagination.pageSize));
+          params.set('sort', (value.sorting || []).map((item) => `${item.desc ? '-' : ''}${item.id}`).join(','));
           return params;
         });
-      });
-    },
+      })
+    }
   });
 
   useEffect(() => {
@@ -122,8 +131,8 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
       url.searchParams.set(key, value);
     });
 
-    url.searchParams.set('page', String(pagination.pageIndex + 1));
-    url.searchParams.set('per_page', String(pagination.pageSize));
+    url.searchParams.set('page', String(state.pagination!.pageIndex + 1));
+    url.searchParams.set('per_page', String(state.pagination!.pageSize));
 
     const fetchOptions = {
       signal: abortController.signal,
@@ -166,7 +175,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
       });
 
     return () => abortController.abort();
-  }, [api, pagination, searchParams, sorting, reload, params]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [api, searchParams, reload, params, state.pagination]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     initialLoaded,
@@ -178,8 +187,6 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     selectable,
     params,
     setParams,
-    sorting,
-    setSorting,
     total,
     totalPage,
     reload: () => {

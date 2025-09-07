@@ -13,6 +13,8 @@ import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Input } from '@/components/ui/input';
+import { useDebouncer } from '@/hooks/use-debounced';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   const table = useTableApi();
@@ -34,11 +36,12 @@ function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
 
 const columns: ColumnDef<PurchaseOrder>[] = [
   {
-    accessorKey: 'po_number',
+    accessorKey: 'title',
     header: 'Work Order Number #',
     enableResizing: true,
     minSize: 200,
     size: 300,
+    enableSorting: true,
     maxSize: 500,
     cell: ({ row }) => {
       return (
@@ -52,6 +55,7 @@ const columns: ColumnDef<PurchaseOrder>[] = [
   {
     accessorKey: 'previous_title',
     header: 'Previous Number #',
+    enableSorting: false,
     cell: ({ row }) => (
       <>
         <span>{row.original.previous_title}</span>
@@ -128,14 +132,30 @@ const columns: ColumnDef<PurchaseOrder>[] = [
 ];
 
 export default function PurchaseOrdersPage() {
-  const [formOpen, setFormOpen] = useState(false);
-
   const table = useTable<PurchaseOrder>('/api/v1/purchase-orders', {
     columns: columns,
     defaultParams: {
       include: 'project.client',
     },
   });
+
+  const debouncer = useDebouncer();
+  const [formOpen, setFormOpen] = useState(false);
+  const [keywords, setKeywords] = useState(table.searchParams.get('keywords') || '');
+
+  function onKeywordsChange(value: string) {
+    setKeywords(value);
+    debouncer(() => {
+      table.setSearchParams((params) => {
+        if (value) {
+          params.set('keywords', value);
+        } else {
+          params.delete('keywords');
+        }
+        return params;
+      });
+    })
+  }
 
   return (
     <AppLayout
@@ -157,7 +177,12 @@ export default function PurchaseOrdersPage() {
     >
       <Head title="Work Orders" />
       <div className="px-6">
-        <DataTable table={table} />
+        <DataTable
+          left={
+            <Input value={keywords} onChange={(event) => onKeywordsChange(event.target.value)} className={'w-[200px]'} placeholder={'Search...'}/>
+          }
+          table={table}
+        />
       </div>
     </AppLayout>
   );

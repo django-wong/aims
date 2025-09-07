@@ -7,15 +7,19 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
   switch (props.status) {
     case 0:
       return (
-        <Badge variant="outline" className={'bg-gray-100'}>
-          Draft
-        </Badge>
+        <StatusExplanation status={props.status}>
+          <Badge variant="outline" className={'bg-gray-100'}>
+            Draft
+          </Badge>
+        </StatusExplanation>
       );
     case 1:
       return (
-        <Badge variant="outline" className={'bg-yellow-50 border-yellow-200'}>
-          Reviewing
-        </Badge>
+        <StatusExplanation status={props.status}>
+          <Badge variant="outline" className={'bg-yellow-50 border-yellow-200'}>
+            Reviewing
+          </Badge>
+        </StatusExplanation>
       );
     case 2:
       return (
@@ -27,27 +31,35 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       );
     case 3:
       return (
-        <Badge variant="outline" className={'bg-purple-50 border-purple-200'}>
-          Waiting for Client Approval
-        </Badge>
+        <StatusExplanation status={props.status}>
+          <Badge variant="outline" className={'bg-purple-50 border-purple-200'}>
+            Waiting for Client Approval
+          </Badge>
+        </StatusExplanation>
       );
     case 4:
       return (
-        <Badge variant="outline" className={'bg-green-50 border-green-200'}>
-          Client Approved
-        </Badge>
+        <StatusExplanation status={props.status}>
+          <Badge variant="outline" className={'bg-green-50 border-green-200'}>
+            Client Approved
+          </Badge>
+        </StatusExplanation>
       );
     case 5:
       return (
-        <Badge variant="outline" className={'bg-teal-50 border-teal-200'}>
-          Invoiced
-        </Badge>
+        <StatusExplanation status={props.status}>
+          <Badge variant="outline" className={'bg-teal-50 border-teal-200'}>
+            Invoiced
+          </Badge>
+        </StatusExplanation>
       );
     default:
       return (
-        <Badge variant="outline" className={'bg-red-50 border-red-200'}>
-          Unknown Status
-        </Badge>
+        <StatusExplanation status={props.status}>
+          <Badge variant="outline" className={'bg-red-50 border-red-200'}>
+            Unknown Status
+          </Badge>
+        </StatusExplanation>
       );
   }
 }

@@ -74,7 +74,7 @@ class TimesheetController extends Controller
 
         if (auth()->user()->isRole(UserRole::CLIENT)) {
             $query->whereIn(
-                'id', function ($q) {
+                'timesheets.id', function ($q) {
                     $q->select('timesheets.id')
                         ->from('timesheets')
                         ->join('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
@@ -86,8 +86,9 @@ class TimesheetController extends Controller
             )->where('timesheets.status', '>', Timesheet::APPROVED);
         }
 
-        $query->leftJoin('assignments', 'timesheets.assignment_id', '=', 'assignments.id');
-        $query->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id');
+        $query
+            ->leftJoin('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
+            ->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id');
 
         $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency');
 

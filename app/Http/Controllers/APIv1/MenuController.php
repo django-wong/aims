@@ -52,6 +52,11 @@ class MenuController
                         'icon' => 'shopping-bag',
                         'url' => route('purchase-orders'),
                     ],
+                    'quotes' => [
+                        'name' => 'Quotations',
+                        'icon' => 'sheet',
+                        'url' => route('quotations'),
+                    ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::CLIENT, UserRole::INSPECTOR], [
                     'assignments' => [

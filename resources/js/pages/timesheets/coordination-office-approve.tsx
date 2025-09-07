@@ -14,14 +14,16 @@ export function CoordinationOfficeApprove() {
   const auth = useAuth();
 
   if (role === 5 || role === 6 || role === 7) {
+    console.info('123123')
     return null;
   }
 
   if (timesheet?.assignment?.operation_org_id !== auth.org?.id) {
+    console.info('12312323123');
     return null;
   }
 
-  if (timesheet?.status !== 2) {
+  if (timesheet?.status !== 1) {
     return null;
   }
 

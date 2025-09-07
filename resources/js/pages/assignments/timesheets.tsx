@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useIsClient } from '@/hooks/use-role';
 import { useTable } from '@/hooks/use-table';
-import { timesheet_range } from '@/lib/utils';
+import { cn, timesheet_range } from '@/lib/utils';
 import { TimesheetStatus } from '@/pages/timesheets/status';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { AssignmentProvider, useAssignment } from '@/providers/assignment-provider';
@@ -80,7 +80,10 @@ export function Timesheets(props: TimesheetsProps) {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <TimesheetStatus status={row.original.status} />,
+      cell: ({ row }) =>
+        <span className={cn('timesheet-status', `timesheet-status-${row.original.status}`)}>
+          <TimesheetStatus status={row.original.status} />
+        </span>
     },
     {
       accessorKey: 'actions',

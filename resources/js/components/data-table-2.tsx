@@ -7,13 +7,7 @@ import { computedStyle } from '@/components/ui/table-cell-wrapper';
 import { BaseTableData, useTable } from '@/hooks/use-table';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  LoaderCircle, RefreshCcwIcon
-} from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronUp, LoaderCircle, RefreshCcwIcon } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
@@ -96,9 +90,7 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
         {(props.left || props.right) && (
           <div className={'flex flex-wrap items-center justify-between gap-2'}>
             <div className={'flex flex-grow flex-wrap items-center justify-start gap-2'}>{props.left}</div>
-            <div className={'flex flex-wrap items-center justify-start gap-2'}>
-              {props.right}
-            </div>
+            <div className={'flex flex-wrap items-center justify-start gap-2'}>{props.right}</div>
           </div>
         )}
 
@@ -109,83 +101,93 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
             bottom={
               <>
                 {table.getRowModel().rows.length ? null : (
-                  <div
-                    className={'sticky left-0 flex p-8 w-full items-center justify-center overflow-hidden'}>
+                  <div className={'sticky left-0 flex w-full items-center justify-center overflow-hidden p-8'}>
                     {table.initialLoaded ? (
                       <Empty>
-                        <p className={'font-bold text-lg'}>No data founds.</p>
+                        <p className={'text-lg font-bold'}>No data founds.</p>
                         <p className={'text-muted-foreground'}>
-                          Your search did not match any data. Please <span className={'underline cursor-pointer font-semibold'} onClick={() => {table.reload()}}>try again</span> or create new one.
+                          Your search did not match any data. Please{' '}
+                          <span
+                            className={'cursor-pointer font-semibold underline'}
+                            onClick={() => {
+                              table.reload();
+                            }}
+                          >
+                            try again
+                          </span>{' '}
+                          or create new one.
                         </p>
                       </Empty>
                     ) : (
-                      <span className={'inline-flex items-center gap-2 text-muted-foreground'}>
-                        <LoaderCircle className={'animate-spin'}/> Loading...
+                      <span className={'text-muted-foreground inline-flex items-center gap-2'}>
+                        <LoaderCircle className={'animate-spin'} /> Loading...
                       </span>
                     )}
                   </div>
                 )}
               </>
             }
-            >
+          >
             <TableHeader className={'sticky top-0 z-10'}>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => (
                     <TableHead
-                      key={header.id}
-                      className={cn('pin-'+(header.column.getIsPinned() || 'none'), 'py-2 bg-muted border-r last:border-r-0')}
-                      style={{ ...computedStyle(header.column)}}>
-                      {
-                        header.isPlaceholder
-                          ? null
-                          : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )
-                      }
+                      onClick={header.column.getToggleSortingHandler()}
+                      key={`${index}:${header.id}`}
+                      className={cn('pin-' + (header.column.getIsPinned() || 'none'), 'bg-muted border-r py-2 last:border-r-0')}
+                      style={{ ...computedStyle(header.column) }}
+                    >
+                      <div className={'flex items-center'}>
+                        <div className={'flex-grow'}>
+                          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        </div>
+                        <div className={'flex-shrink-0'}>
+                          {header.column.getIsSorted() ? (
+                            header.column.getIsSorted() === 'desc' ? (
+                              <ChevronDown className="ml-1 inline-block h-4 w-4" />
+                            ) : (
+                              <ChevronUp className="ml-1 inline-block h-4 w-4" />
+                            )
+                          ) : null}
+                        </div>
+                      </div>
                     </TableHead>
                   ))}
                 </tr>
               ))}
             </TableHeader>
-            <TableBody className="**:data-[slot=table-cell]:first:w-8 hover:bg-muted">
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className={cn('pin-'+(cell.column.getIsPinned() || 'none'), 'bg-background border-r last:border-r-0')}
-                        style={{...computedStyle(cell.column)}}>
-                        {
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )
-                        }
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : null}
+            <TableBody className="hover:bg-muted **:data-[slot=table-cell]:first:w-8">
+              {table.getRowModel().rows?.length
+                ? table.getRowModel().rows.map((row) => (
+                    <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className={cn('pin-' + (cell.column.getIsPinned() || 'none'), 'bg-background border-r last:border-r-0')}
+                          style={{ ...computedStyle(cell.column) }}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                : null}
             </TableBody>
           </Table>
         </div>
-        { showPagination && (
+        {showPagination && (
           <div className="flex items-center justify-between">
             <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-              {
-                table.selectable ? (
-                  <>
-                    {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
-                  </>
-                ) : null
-              }
+              {table.selectable ? (
+                <>
+                  {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+                </>
+              ) : null}
             </div>
             <div className="flex w-full items-center gap-2 lg:w-fit">
               <div className="hidden items-center gap-2 lg:flex">
-                <Label htmlFor="rows-per-page" className="text-sm font-medium hidden 2xl:inline">
+                <Label htmlFor="rows-per-page" className="hidden text-sm font-medium 2xl:inline">
                   Rows per page
                 </Label>
                 <Select
@@ -206,7 +208,7 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex w-fit items-center justify-center text-sm font-medium hidden 2xl:inline">
+              <div className="flex hidden w-fit items-center justify-center text-sm font-medium 2xl:inline">
                 Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
               </div>
               <div className="ml-auto flex items-center gap-2 lg:ml-0">

@@ -100,6 +100,11 @@ class AssignmentController extends Controller
                     'delegated' => $query->where('delegated', true),
                     default => null,
                 };
+            }),
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                $query->where(function (Builder $query) use ($value) {
+                    $query->whereAny(['reference_number', 'previous_reference_number'], 'like', "%{$value}%");
+                });
             })
         ];
     }

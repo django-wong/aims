@@ -85,6 +85,11 @@ class PurchaseOrderController extends Controller
                     $query->where('project_id', $value);
                 }
             }),
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                if (!empty($value)) {
+                    $query->whereAny(['title', 'previous_title'], 'like', "%$value%");
+                }
+            })
         ];
     }
 
@@ -202,13 +207,13 @@ class PurchaseOrderController extends Controller
                     'previous' => $last?->hours ?? 0,
                 ],
                 'approved_mileage' => [
-                    'current' => $current->travel_distance,
-                    'growth' => Helpers::growth_rate($current->travel_distance, $last?->travel_distance),
+                    'current' => $current?->travel_distance,
+                    'growth' => Helpers::growth_rate($current?->travel_distance, $last?->travel_distance),
                     'previous' => $last?->travel_distance ?? 0,
                 ],
                 'total_cost' => [
-                    'current' => $current->total_cost,
-                    'growth' => Helpers::growth_rate($current->total_cost, $last?->total_cost),
+                    'current' => $current?->total_cost,
+                    'growth' => Helpers::growth_rate($current?->total_cost, $last?->total_cost),
                     'previous' => $last?->total_cost ?? 0,
                 ],
             ]
