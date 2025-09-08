@@ -161,12 +161,9 @@ class AssignmentController extends Controller
 
         $data = $request->validated();
 
-        // if ($request->validated('operation_org_id')) {
-        //     $data['status'] = Assignment::ISSUED;
-        // } else {
-        //     $data['status'] = Assignment::DRAFT;
-        // }
-
+        /**
+         * @var Assignment $assignment
+         */
         $assignment = Org::current()->assignments()->create($data);
 
         $request->saveAttachments(for: $assignment);

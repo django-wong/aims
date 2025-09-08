@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-    public function field_operatives_manhour_summary()
+    public function field_operatives_manhour_summary(Request $request)
     {
+        $year = $request->get('year', date('Y'));
+
         $result = DB::select('
             select
                 users.name,
@@ -30,11 +32,13 @@ class ReportController extends Controller
                 left join user_roles on users.id = user_roles.user_id
                 left join orgs on user_roles.org_id = orgs.id
                 left join timesheet_items on timesheet_items.user_id = users.id
-            where user_roles.role = 5 and YEAR(timesheet_items.date) = 2025
+            where user_roles.role = 5 and YEAR(timesheet_items.date) = ?
             group by users.id, orgs.name;
-        ');
+        ', [$year]);
 
-        return inertia('reports/general', [
+        return inertia('reports/field-operatives-manhour-summary', [
+            'next_year' => $year + 1,
+            'previous_year' => $year - 1,
             'data' => $result,
             'title' => 'Field Operatives Manhour Summary',
             'columns' => [
