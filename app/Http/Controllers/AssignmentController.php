@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\AssignmentInspector;
 use App\Models\UserRole;
-use App\Notifications\NewAssignmentIssued;
+use App\Notifications\AssignmentHasBeenIssued;
 use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

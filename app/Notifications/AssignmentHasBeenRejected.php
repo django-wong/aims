@@ -2,21 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\Timesheet;
+use App\Models\Assignment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
-class TimesheetIsApprovedByClient extends Notification
+class AssignmentHasBeenRejected extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Timesheet $timesheet)
+    public function __construct(private Assignment $assignment)
     {
         //
     }
@@ -38,25 +37,11 @@ class TimesheetIsApprovedByClient extends Notification
     {
         return (new MailMessage)
             ->view('email')
-            ->subject('Timesheet has approved by client')
-            ->greeting('Hi ' . $notifiable->name)
-            ->line('The timesheet has been approved by the client. Please review the timesheet in assignment details and make further action from there.')
-            ->line(
-                new HtmlString(
-                    view(
-                        'timesheets.summary', [
-                            'timesheet' => $this->timesheet
-                        ]
-                    )
-                )
-            )
+            ->subject("Assignment {$this->assignment->reference_number} was rejected by the coordinating office.")
+            ->greeting('Hello ' . $notifiable->name)
+            ->line("{$this->assignment->reference_number} was rejected by the coordination office, please review the assignment details and revise as necessary.")
             ->action(
-                'View Assignment',
-                route(
-                    'assignments.edit', [
-                        'id' => $this->timesheet->assignment_id
-                    ]
-                )
+                'View Assignment', route('assignments.edit', $this->assignment->id)
             );
     }
 

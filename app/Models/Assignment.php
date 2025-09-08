@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Notifications\NewAssignmentIssued;
+use App\Notifications\AssignmentHasBeenIssued;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

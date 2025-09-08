@@ -129,7 +129,6 @@ class AssignmentInspectorController extends Controller
         $assignment_inspector->signature_base64 = $validated['signature_base64'];
 
         $assignment_inspector->save();
-
         $assignment = $assignment_inspector->assignment;
 
         if ($assignment->status < Assignment::PARTIAL_ACKED) {

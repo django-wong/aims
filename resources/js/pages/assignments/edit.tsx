@@ -112,7 +112,7 @@ export default function Edit(props: EditProps) {
                       }}>
                     <Button variant={'outline'}>
                       <SendIcon />
-                      Send to operation office
+                      Send to coordination office
                     </Button>
                   </PopoverConfirm>
                 )}

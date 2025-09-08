@@ -14,8 +14,9 @@ use App\Models\Project;
 use App\Models\Timesheet;
 use App\Models\TimesheetItem;
 use App\Models\TimesheetReport;
-use App\Notifications\NewAssignmentDelegated;
-use App\Notifications\NewAssignmentIssued;
+use App\Notifications\AssignmentHasBeenRejected;
+use App\Notifications\AssignmentHasBeenDelegated;
+use App\Notifications\AssignmentHasBeenIssued;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
@@ -31,11 +32,16 @@ class AssignmentController extends Controller
 {
     public function reject(RejectAssignmentRequest $request, Assignment $assignment)
     {
-        Comment::quick($request->validated('message'), for: $assignment);
+        Comment::quick(sprintf("%s has rejected the assignment with message: \n%s", $request->user()->name, $request->validated('message')), for: $assignment);
 
         $assignment->update([
             'status' => Assignment::REJECTED,
         ]);
+
+        // Send notification to contract holder coordinator
+        $assignment->coordinator?->notify(
+            new AssignmentHasBeenRejected($assignment)
+        );
 
         return [
             'message' => 'You have rejected the assignment.',
@@ -54,7 +60,7 @@ class AssignmentController extends Controller
         $assignment->save();
 
         $assignment->operation_coordinator?->notify(
-            new NewAssignmentDelegated($assignment)
+            new AssignmentHasBeenDelegated($assignment)
         );
 
         return [
@@ -66,6 +72,10 @@ class AssignmentController extends Controller
     {
         $assignment->status = Assignment::ACCEPTED;
         $assignment->save();
+
+        $assignment->coordinator?->notify(
+            new \App\Notifications\AssignmentHasBeenAccepted($assignment)
+        );
 
         return [
             'message' => 'You have accepted the assignment.',
@@ -117,7 +127,7 @@ class AssignmentController extends Controller
 
         $assignment->assignment_inspectors()->each(function ($inspector) use ($assignment) {
             $inspector->notify(
-                new NewAssignmentIssued($assignment)
+                new AssignmentHasBeenIssued($assignment)
             );
         });
 

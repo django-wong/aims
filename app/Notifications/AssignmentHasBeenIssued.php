@@ -10,7 +10,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
-class NewAssignmentIssued extends Notification
+class AssignmentHasBeenIssued extends Notification
 {
     use Queueable;
 

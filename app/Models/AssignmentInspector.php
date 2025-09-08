@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Notifications\NewAssignmentIssued;
+use App\Notifications\AssignmentHasBeenIssued;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,7 +32,7 @@ class AssignmentInspector extends Model
         static::created(function (self $item) {
             if ($item->user_id) {
                 $item->user->notify(
-                    new NewAssignmentIssued($item->assignment)
+                    new AssignmentHasBeenIssued($item->assignment)
                 );
             }
         });

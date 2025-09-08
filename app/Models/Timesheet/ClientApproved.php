@@ -3,7 +3,7 @@
 namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
-use App\Notifications\TimesheetIsApprovedByClient;
+use App\Notifications\TimesheetHasBeenApprovedByClient;
 use Illuminate\Support\Facades\Gate;
 
 class ClientApproved implements Status
@@ -29,7 +29,7 @@ class ClientApproved implements Status
         $timesheet->save();
 
         $timesheet->assignment->project->client->coordinator?->notify(
-            new TimesheetIsApprovedByClient($timesheet)
+            new TimesheetHasBeenApprovedByClient($timesheet)
         );
     }
 }
