@@ -20,6 +20,7 @@ import { Circle } from 'lucide-react';
 import zod from 'zod';
 import { RoleSelect } from '@/components/role-select';
 import { useExternalState } from '@/hooks/use-external-state';
+import { useEffect } from 'react';
 
 type UserFormProps = DialogFormProps<User>;
 
@@ -79,6 +80,12 @@ export function UserForm(props: UserFormProps) {
       }
     });
   }
+
+  useEffect(() => {
+    if (props.value) {
+      form.reset(props.value)
+    }
+  }, [props.value])
 
   const [open, setOpen] = useExternalState(props.open || false);
 

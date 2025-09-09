@@ -129,6 +129,7 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
   }
 
   return {
+    url,
     setUrl,
     setMethod,
     submitDisabled: form.formState.isSubmitting || form.formState.disabled,

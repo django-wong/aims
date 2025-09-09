@@ -37,6 +37,7 @@ class ReportController extends Controller
         ', [$year]);
 
         return inertia('reports/field-operatives-manhour-summary', [
+            'year' => $year,
             'next_year' => $year + 1,
             'previous_year' => $year - 1,
             'data' => $result,
@@ -114,5 +115,65 @@ class ReportController extends Controller
     public function hours_log()
     {
         return inertia('reports/hours-log');
+    }
+
+    public function man_hours(Request $request)
+    {
+        $year = $request->get('year', date('Y'));
+
+        $type = $request->get('type', 'all');
+
+        $org_id = auth()->user()->user_role->org_id;
+
+        $condition = match ($type) {
+            'local' => "and assignments.org_id = {$org_id}",
+            'others' => "and assignments.operation_org_id = {$org_id}",
+            default => '',
+        };
+
+        $data = DB::select("
+            with monthly_usage as (select
+                clients.business_name as client_name,
+                clients.client_group as client_group,
+                lower(date_format(timesheet_items.date, '%b')) as month,
+                sum(timesheet_items.hours) as hours
+            from timesheet_items
+            left join timesheets on timesheet_items.timesheet_id = timesheets.id
+            left join assignments on timesheets.assignment_id = assignments.id
+            left join projects on assignments.project_id = projects.id
+            left join clients on projects.client_id = clients.id
+            where year(timesheet_items.date) = ? {$condition}
+            group by clients.id, month)
+            select
+                client_name,
+                client_group,
+                JSON_OBJECTAGG(month, hours) as monthly_hours
+            from monthly_usage group by client_name, client_group;
+        ", [$year]);
+
+        return inertia('reports/man-hours', [
+            'data' => array_map(function ($item) {
+                $item->monthly_hours = json_decode($item->monthly_hours, true);
+                return $item;
+            }, $data),
+            'year' => $year,
+            'next_year' => $year + 1,
+            'previous_year' => $year - 1,
+        ]);
+    }
+
+    public function man_hours_by_year()
+    {
+        return inertia('reports/man-hours-by-year');
+    }
+
+    public function man_hours_monthly_by_year()
+    {
+        return inertia('reports/man-hours-monthly-by-year');
+    }
+
+    public function man_hours_monthly_by_year_and_office()
+    {
+        return inertia('reports/man-hours-monthly-by-year-and-office');
     }
 }

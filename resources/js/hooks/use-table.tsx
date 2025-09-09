@@ -23,6 +23,7 @@ type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'ge
   // Each table should have a unique alias if you intend to use multiple tables on the same page
   alias?: string;
   defaultData?: T[];
+  data?: T[];
   selectable?: boolean;
 };
 
@@ -36,7 +37,7 @@ function reloadReducer(state: number) {
 
 export function useTable<T extends BaseTableData>(api: string, { selectable = false, ...options }: UseTableOptions<T>) {
   const [searchParams, setSearchParams] = useQueryParamAsSearchParams(api);
-  const [data, setData] = useState<T[]>(options?.defaultData ?? []);
+  const [data, setData] = useState<T[]>(options.data ?? options?.defaultData ?? []);
   const [total, setTotal] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
   const [reload, triggerReload] = useReducer(reloadReducer, 0);
@@ -145,34 +146,50 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
 
     setLoading(true);
 
-    fetch(url, fetchOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
+    const promise = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 500)
+    });
+
+    if (!api) {
+      startTransition(() => {
+        setInitialLoaded(true);
+        setLoading(false);
       })
-      .then((response) => {
-        startTransition(() => {
-          setTotal(response.total || 0);
-          setData(Array.isArray(response.data) ? response.data : []);
-          setTotalPage(response.last_page);
+      return;
+    }
+
+    promise.then(() => {
+      return fetch(url, fetchOptions)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((response) => {
+          startTransition(() => {
+            setTotal(response.total || 0);
+            setData(Array.isArray(response.data) ? response.data : []);
+            setTotalPage(response.last_page);
+          });
+        })
+        .catch((error) => {
+          startTransition(() => {
+            // setData([]);
+            // setTotal(0);
+            // setTotalPage(1);
+          });
+          throw error;
+        })
+        .finally(() => {
+          startTransition(() => {
+            setInitialLoaded(true);
+            setLoading(false);
+          });
         });
-      })
-      .catch((error) => {
-        startTransition(() => {
-          // setData([]);
-          // setTotal(0);
-          // setTotalPage(1);
-        });
-        throw error;
-      })
-      .finally(() => {
-        startTransition(() => {
-          setInitialLoaded(true);
-          setLoading(false);
-        });
-      });
+    });
 
     return () => abortController.abort();
   }, [api, searchParams, reload, params, state.pagination]); // eslint-disable-line react-hooks/exhaustive-deps

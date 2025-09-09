@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRole } from '@/hooks/use-role';
 import { useAuth } from '@/hooks/use-auth';
+import { Link } from '@inertiajs/react';
 
 interface MenuItem {
   name: string
@@ -61,10 +62,10 @@ export function NavReports() {
         {menus.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <Link href={item.url}>
                 <DynamicIcon name={item.icon} className={'size-6'} />
                 <span>{item.name}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
             {(item.children || []).length > 0 && (
               <DropdownMenu>
@@ -75,14 +76,14 @@ export function NavReports() {
                   </SidebarMenuAction>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="rounded-lg min-w-[200px]" side={isMobile ? 'bottom' : 'right'} align={isMobile ? 'end' : 'start'}>
-                  {/*<DropdownMenuLabel>More variants</DropdownMenuLabel>*/}
-                  {/*<DropdownMenuSeparator/>*/}
                   {item.children?.map((item, index) => {
                     return (
-                      <DropdownMenuItem key={index}>
-                        <DynamicIcon name={item.icon} />
-                        <span>{item.name}</span>
-                      </DropdownMenuItem>
+                      <Link href={item.url} key={index}>
+                        <DropdownMenuItem>
+                          <DynamicIcon name={item.icon} />
+                          <span>{item.name}</span>
+                        </DropdownMenuItem>
+                      </Link>
                     );
                   })}
                 </DropdownMenuContent>

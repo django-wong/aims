@@ -104,6 +104,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('field-operatives-manhour-summary', 'field_operatives_manhour_summary')->name('reports.field-operatives-manhour-summary');
         Route::get('invoice-required', 'invoice_required')->name('reports.invoice-required');
         Route::get('man-hours', 'man_hours')->name('reports.man-hours');
+        Route::get('man-hours-by-year', 'man_hours_by_year')->name('reports.man-hours-2');
+        Route::get('man-hours-monthly-by-year', 'man_hours_monthly_by_year')->name('reports.man-hours-3');
+        Route::get('man-hours-monthly-by-year-and-office', 'man_hours_monthly_by_year_and_office')->name('reports.man-hours-4');
         Route::get('reports-late', 'reports_late')->name('reports.reports-late');
     });
 

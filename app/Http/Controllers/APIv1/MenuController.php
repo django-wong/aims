@@ -138,24 +138,19 @@ class MenuController
                 'icon' => 'clock-fading',
                 'children' => [
                     [
-                        'name' => 'Local',
-                        'icon' => 'folder'
-                    ],
-                    [
-                        'name' => 'Others',
-                        'icon' => 'folder'
-                    ],
-                    [
-                        'name' => 'By Year - Local',
-                        'icon' => 'folder'
-                    ],
-                    [
-                        'name' => 'By Year - Others',
-                        'icon' => 'folder'
+                        'name' => 'By Year (All, Local, and Others)',
+                        'icon' => 'folder',
+                        'url' => route('reports.man-hours-2')
                     ],
                     [
                         'name' => 'Monthly By Year',
-                        'icon' => 'folder'
+                        'icon' => 'folder',
+                        'url' => route('reports.man-hours-3')
+                    ],
+                    [
+                        'name' => 'Monthly By Year and Office',
+                        'icon' => 'folder',
+                        'url' => route('reports.man-hours-4')
                     ]
                 ]
             ],

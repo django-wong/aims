@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
 
     // Reports
     Route::get('reports/hours-entry', [\App\Http\Controllers\APIv1\ReportController::class, 'hours_entry']);
+    Route::get('reports/hours-log', [\App\Http\Controllers\APIv1\ReportController::class, 'hours_log']);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);

@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class HoursLog extends Model
 {
-    //
+    use DynamicPagination;
 }

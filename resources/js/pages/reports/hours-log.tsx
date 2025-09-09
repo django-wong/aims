@@ -5,6 +5,7 @@ import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -17,17 +18,34 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function HoursLog(props: any) {
+export default function HoursLog() {
   const table = useTable('/api/v1/reports/hours-log', {
     columns,
   });
+
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
+
+  // Sync keywords with table search params
+  const handleKeywordsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setKeywords(value);
+    table.setSearchParams((params) => {
+      if (value) {
+        params.set('filter[keywords]', value);
+      } else {
+        params.delete('filter[keywords]');
+      }
+      return params;
+    });
+  };
+
 
   return (
     <Layout breadcrumbs={breadcrumbs}>
       <Head title="hours-log" />
       <div className={'px-6'}>
         <DataTable left={
-          <Input placeholder="Search..." className={'w-[200px]'}/>
+          <Input placeholder="Search..." className={'w-[200px]'} value={keywords} onChange={handleKeywordsChange}/>
         } table={table} right={<ColumnToggle/>} />
       </div>
     </Layout>
