@@ -18,7 +18,7 @@ return new class extends Migration
                 users.name as inspector_name,
                 clients.client_group as client_group,
                 clients.business_name as client_name,
-                clients.code as client_code
+                clients.code as client_code,
                 assignments.reference_number as reference_number,
                 'TODO' as report_number,
                 projects.title as project_title,
