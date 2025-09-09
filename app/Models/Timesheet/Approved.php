@@ -36,8 +36,11 @@ class Approved implements Status
         $timesheet->status = Timesheet::APPROVED;
         $timesheet->save();
 
-        $timesheet->assignment->project->client->coordinator?->notify(
-            new TimesheetIsWaitingForContractorOfficeApproval($timesheet)
-        );
+        $client = $timesheet->assignment?->project?->client;
+        foreach ([$client?->coordinator, $client?->reviewer] as $notifiable) {
+            $notifiable?->notify(
+                new TimesheetIsWaitingForContractorOfficeApproval($timesheet)
+            );
+        }
     }
 }

@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property integer   $org_id
- * @property User|null $coordinator
- * @property int|null  $address_id
- * @property User     $user
+ * @property integer    $org_id
+ * @property User|null  $coordinator
+ * @property int|null   $address_id
+ * @property User       $user
+ * @property User|null $reviewer
  */
 class Client extends Model implements Contactable
 {
