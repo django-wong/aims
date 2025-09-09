@@ -22,7 +22,7 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { StaffSelect } from '@/components/user-select';
+import { InspectorSelect, StaffSelect } from '@/components/user-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
@@ -51,6 +51,13 @@ const schema = z.object({
   // Delegate to operation (coordinating) office
   operation_org_id: z.number().int().positive().nullable(),
   operation_coordinator_id: z.number().int().positive().nullable().optional(),
+
+  inspectors: z.array(
+    z.object({
+      user_id: z.number().min(1, { message: 'Inspector is required' }),
+      assignment_type_id: z.number().min(1, { message: 'Discipline is required' }),
+    })
+  ),
 
   skill_id: z.number().int().positive().nullable().optional(),
 
@@ -170,7 +177,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
           <DialogInnerContent className={'relative p-0'}>
             <Form {...form}>
               <div className={'px-6 py-4'}>
-                <Accordion type={'multiple'} defaultValue={['basic', 'client-po-vendor-equipment']}>
+                <Accordion type={'multiple'} defaultValue={['basic']}>
                   <AccordionItem value={'basic'}>
                     <AccordionTrigger>
                       <AssignmentSectionHead>Basic Information</AssignmentSectionHead>
@@ -246,7 +253,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       />
 
                       {i_am_the_operation_office ? null : (
-                        <div className={'bg-background col-span-12 grid grid-cols-1 gap-6 rounded-md border p-6'}>
+                        <div className={'bg-background col-span-12 grid grid-cols-1 gap-6 rounded-md border p-6 ring-4 ring-muted'}>
                           <FormField
                             render={({ field }) => {
                               return (

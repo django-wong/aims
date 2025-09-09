@@ -27,7 +27,7 @@ type UseTableOptions<T> = Omit<TableOptions<T>, 'data' | 'getCoreRowModel' | 'ge
 };
 
 export interface BaseTableData {
-  id: number | string;
+  [key: string]: any;
 }
 
 function reloadReducer(state: number) {

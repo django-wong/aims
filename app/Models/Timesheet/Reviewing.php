@@ -26,5 +26,8 @@ class Reviewing implements Status
         }
         $timesheet->status = Timesheet::REVIEWING;
         $timesheet->save();
+        $timesheet->assignment->operation_coordinator->notify(
+            new \App\Notifications\TimesheetSubmitted($timesheet)
+        );
     }
 }

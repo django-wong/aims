@@ -99,9 +99,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Reports
     Route::controller(ReportController::class)->prefix('reports')->group(function () {
-        Route::get('hours-entry-all', 'hours_entry_all')->name('reports.hours-entry-all');
-        Route::get('hours-entry-bie-local', 'hours_entry_bie_local')->name('reports.hours-entry-bie-local');
-        Route::get('hours-entry-other', 'hours_entry_other')->name('reports.hours-entry-other');
+        Route::get('hours-entry', 'hours_entry')->name('reports.hours-entry');
+        Route::get('hours-log', 'hours_log')->name('reports.hours-log');
         Route::get('field-operatives-manhour-summary', 'field_operatives_manhour_summary')->name('reports.field-operatives-manhour-summary');
         Route::get('invoice-required', 'invoice_required')->name('reports.invoice-required');
         Route::get('man-hours', 'man_hours')->name('reports.man-hours');

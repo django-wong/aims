@@ -105,4 +105,14 @@ class ReportController extends Controller
             ]
         ]);
     }
+
+    public function hours_entry(Request $request)
+    {
+        return inertia('reports/hours-entry');
+    }
+
+    public function hours_log()
+    {
+        return inertia('reports/hours-log');
+    }
 }

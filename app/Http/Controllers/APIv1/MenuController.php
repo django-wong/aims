@@ -123,26 +123,19 @@ class MenuController
                 'icon' => 'blocks',
             ],
             [
-                'name' => 'Hours Entry - All',
-                'url' => route('reports.hours-entry-all'),
-                'icon' => 'file-clock',
-                'children' => [
-                    [
-                        'name' => 'BIE Local',
-                        'url' => route('reports.hours-entry-bie-local'),
-                        'icon' => 'folder',
-                    ],
-                    [
-                        'name' => 'Others',
-                        'url' => route('reports.hours-entry-bie-local'),
-                        'icon' => 'folder',
-                    ]
-                ]
+                'name' => 'Hours Entry',
+                'url' => route('reports.hours-entry'),
+                'icon' => 'calendar-days'
+            ],
+            [
+                'name' => 'Hours Log',
+                'url' => route('reports.hours-log'),
+                'icon' => 'calendar-clock'
             ],
             [
                 'name' => 'Man-hours summary',
                 'url' => route('reports.man-hours'),
-                'icon' => 'clock-plus',
+                'icon' => 'clock-fading',
                 'children' => [
                     [
                         'name' => 'Local',

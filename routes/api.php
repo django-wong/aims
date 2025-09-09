@@ -76,6 +76,10 @@ Route::middleware('auth')->group(function () {
     Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
 
+
+    // Reports
+    Route::get('reports/hours-entry', [\App\Http\Controllers\APIv1\ReportController::class, 'hours_entry']);
+
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);
 
