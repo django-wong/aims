@@ -17,6 +17,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
+            'previous_title' => 'nullable|string|max:255',
             'project_id' => 'required|exists:projects,id',
             'quote_id' => 'nullable|exists:quotes,id',
 
@@ -98,6 +99,7 @@ class StoreRequest extends FormRequest
         return $this->only([
             'project_id',
             'title',
+            'previous_title',
             'quote_id',
             'budget',
             // 'hourly_rate',

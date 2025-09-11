@@ -17,10 +17,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { ProjectSelect } from '@/components/project-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
+  previous_title: zod.string().optional().nullable(),
   project_id: zod.number(),
   budget: zod.coerce.number().min(1, 'Budget must be positive'),
 
@@ -36,6 +37,7 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
   const form = useReactiveForm<PurchaseOrder>({
     ...useResource<PurchaseOrder>('/api/v1/purchase-orders', {
       title: '',
+      previous_title: '',
       budget: 0,
       // hourly_rate: 0,
       currency: 'AUD',
@@ -60,6 +62,12 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
 
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (props.value) {
+      form.reset(props.value);
+    }
+  }, [props.value])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
@@ -79,6 +87,17 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
                     </VFormField>
                   }}
                   name={'title'}
+                />
+              </div>
+
+              <div className={'col-span-12'}>
+                <FormField
+                  render={({ field }) => {
+                    return <VFormField required label={'Previous Work Order Number'}>
+                      <Input value={field.value || ''} onChange={field.onChange}/>
+                    </VFormField>
+                  }}
+                  name={'previous_title'}
                 />
               </div>
 
