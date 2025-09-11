@@ -65,7 +65,7 @@ export function ColumnToggle() {
 }
 
 const tableVariants = cva(
-  "overflow-hidden rounded-md border-muted relative",
+  "overflow-hidden rounded-md border-muted relative mx-1",
   {
     variants: {
       variant: {
