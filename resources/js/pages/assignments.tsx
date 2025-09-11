@@ -219,8 +219,8 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
 }
 
 const po_column: ColumnDef<Assignment> = {
-    accessorKey: 'po',
-    header: 'PO',
+    accessorKey: 'purchase_order_id',
+    header: 'Work Order',
     cell: ({ row }) => {
       return (
         <Link href={route('purchase-orders.edit', { id: row.original.purchase_order?.id })} className={'underline'}>

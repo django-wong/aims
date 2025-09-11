@@ -34,8 +34,6 @@ return new class extends Migration
             $table->date('close_date')->nullable();
             $table->date('final_invoice_date')->nullable();
 
-            $table->string('i_e_a')->nullable();
-
             // budget
             $table->decimal('budgeted_hours', 8, 2)->nullable()->comment('Total budgeted hours for the assignment, can not beyond the purchase order');
             $table->decimal('budgeted_travel', 10, 2)->nullable()->comment('Hourly rate for the assignment');

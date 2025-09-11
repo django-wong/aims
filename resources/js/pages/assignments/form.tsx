@@ -22,7 +22,7 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { InspectorSelect, StaffSelect } from '@/components/user-select';
+import { StaffSelect } from '@/components/user-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
@@ -71,7 +71,7 @@ const schema = z.object({
   close_date: z.string().nullable().optional(),
   final_invoice_date: z.string().nullable().optional(),
 
-  i_e_a: z.string().nullable().optional(),
+  // i_e_a: z.string().nullable().optional(),
 
   attachments: z.array(z.file()).nullable().optional(),
 
@@ -406,10 +406,10 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                   </AccordionItem>
                   <AccordionItem value={'equipment'}>
                     <AccordionTrigger>
-                      <AssignmentSectionHead>Equipment / I-E-A</AssignmentSectionHead>
+                      <AssignmentSectionHead>Equipment</AssignmentSectionHead>
                     </AccordionTrigger>
                     <AccordionContent className={'grid grid-cols-12 gap-6'}>
-                      <div className={'col-span-6'}>
+                      <div className={'col-span-12'}>
                         <FormField
                           control={form.control}
                           render={({ field }) => {
@@ -423,30 +423,30 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         />
                       </div>
 
-                      <div className={'col-span-6'}>
-                        <FormField
-                          control={form.control}
-                          render={({ field }) => (
-                            <VFormField label={'I/E/A'}>
-                              <Select onValueChange={field.onChange} value={field.value || ''}>
-                                <SelectTrigger className={'bg-background w-full'}>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="I">I</SelectItem>
-                                  <SelectItem value="E">E</SelectItem>
-                                  <SelectItem value="A">A</SelectItem>
-                                  <SelectItem value="IE">IE</SelectItem>
-                                  <SelectItem value="EA">EA</SelectItem>
-                                  <SelectItem value="IA">IA</SelectItem>
-                                  <SelectItem value="IEA">IEA</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </VFormField>
-                          )}
-                          name={'i_e_a'}
-                        />
-                      </div>
+                      {/*<div className={'col-span-6'}>*/}
+                      {/*  <FormField*/}
+                      {/*    control={form.control}*/}
+                      {/*    render={({ field }) => (*/}
+                      {/*      <VFormField label={'I/E/A'}>*/}
+                      {/*        <Select onValueChange={field.onChange} value={field.value || ''}>*/}
+                      {/*          <SelectTrigger className={'bg-background w-full'}>*/}
+                      {/*            <SelectValue />*/}
+                      {/*          </SelectTrigger>*/}
+                      {/*          <SelectContent>*/}
+                      {/*            <SelectItem value="I">I</SelectItem>*/}
+                      {/*            <SelectItem value="E">E</SelectItem>*/}
+                      {/*            <SelectItem value="A">A</SelectItem>*/}
+                      {/*            <SelectItem value="IE">IE</SelectItem>*/}
+                      {/*            <SelectItem value="EA">EA</SelectItem>*/}
+                      {/*            <SelectItem value="IA">IA</SelectItem>*/}
+                      {/*            <SelectItem value="IEA">IEA</SelectItem>*/}
+                      {/*          </SelectContent>*/}
+                      {/*        </Select>*/}
+                      {/*      </VFormField>*/}
+                      {/*    )}*/}
+                      {/*    name={'i_e_a'}*/}
+                      {/*  />*/}
+                      {/*</div>*/}
 
                       <div className={'col-span-12'}>
                         <FormField

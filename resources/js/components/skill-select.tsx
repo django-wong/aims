@@ -10,6 +10,7 @@ export const SkillSelect = createSelect<Skill>({
       <div className={'flex items-center justify-between gap-2'}>
         <span title={item.description || ''} className={'flex-grow line-clamp-1 overflow-hidden'}>{item.description}</span>
         <Badge variant={'secondary'}>{item.code}</Badge>
+        <Badge variant={'secondary'}>{item.i_e_a}</Badge>
       </div>
     );
   },
