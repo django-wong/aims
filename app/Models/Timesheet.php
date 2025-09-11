@@ -39,7 +39,7 @@ class Timesheet extends Model
         'id', 'created_at', 'updated_at', 'deleted_at'
     ];
 
-    public function casts()
+    public function casts(): array
     {
         return [
             'date' => 'date',
@@ -50,6 +50,7 @@ class Timesheet extends Model
             'contract_holder_approved_at' => 'datetime',
             'client_approved_at' => 'datetime',
             'invoiced_at' => 'datetime',
+            'client_reminder_sent_at' => 'datetime'
         ];
     }
 

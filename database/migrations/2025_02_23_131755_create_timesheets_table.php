@@ -37,6 +37,7 @@ return new class extends Migration
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('contract_holder_approved_at')->nullable();
             $table->timestamp('client_approved_at')->nullable();
+            $table->timestamp('client_reminder_sent_at')->nullable();
 
             // The invoiced timestamps for invoices that goes to contractor and client
             $table->foreignId('contractor_invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
