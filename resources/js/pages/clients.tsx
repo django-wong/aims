@@ -16,7 +16,7 @@ import { BreadcrumbItem, Client } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { EllipsisVertical, Plus, Trash2 } from 'lucide-react';
+import { EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
 import { startTransition, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -44,10 +44,18 @@ function ClientAction(props: { client: Client }) {
           <Link href={route('clients.edit', { id: props.client.id })}>
             <DropdownMenuItem>
               View Details
-              <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem variant={'destructive'}
+          <Link href={route('impersonate', { id: props.client.user_id })}>
+            <DropdownMenuItem>
+              Impersonate
+              <DropdownMenuShortcut>
+                <ScanFace className={'size-4'} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem
+            variant={'destructive'}
             disabled={true}
             onClick={() => {
               fetch(route('clients.destroy', { id: props.client.id })).then((res) => {
@@ -59,7 +67,7 @@ function ClientAction(props: { client: Client }) {
           >
             Delete
             <DropdownMenuShortcut>
-              <Trash2/>
+              <Trash2 />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -130,17 +138,13 @@ export default function Clients() {
     {
       accessorKey: 'actions',
       header: () => {
-        return (
-          <div className={'flex justify-end'}>
-            Actions
-          </div>
-        )
+        return <div className={'flex justify-end'}>Actions</div>;
       },
-      cell: ({ row }) =>
+      cell: ({ row }) => (
         <div className={'flex justify-end'}>
           <ClientAction client={row.original} />
         </div>
-      ,
+      ),
     },
   ];
 
