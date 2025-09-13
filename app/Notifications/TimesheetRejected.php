@@ -7,9 +7,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
-class TimesheetSubmitted extends Notification
+class TimesheetRejected extends Notification
 {
     use Queueable;
 
@@ -38,31 +37,25 @@ class TimesheetSubmitted extends Notification
     {
         $message = (new MailMessage)
             ->view('email')
-            ->subject('Timesheet submitted by inspector and waiting for your review')
-            ->greeting('Hello')
-            ->line("The inspector {$this->timesheet->user->name} has submitted a timesheet for assignment {$this->timesheet->assignment->reference_number}, please review and take the necessary actions.")
-            ->line(
-                new HtmlString(
-                    view(
-                        'timesheets.summary', [
-                            'timesheet' => $this->timesheet
-                        ]
-                    )
-                )
-            )
+            ->line("Your timesheet for assignment {$this->timesheet->assignment->reference_number} has been rejected. Please review and make necessary changes.")
+            ->line('Rejection Reason: ' . $this->timesheet->rejection_reason)
             ->action(
                 'View Assignment', route('assignments.edit', $this->timesheet->assignment_id)
             );
 
-        if ($operation_coordinator = $this->timesheet->assignment->operation_coordinator) {
-            if ($operation_coordinator->is($notifiable)) {
-                $coordinator = $this->timesheet->assignment->coordinator;
-                if ($coordinator) {
-                    $message->cc(
-                        $coordinator->email, $coordinator->name
-                    );
-                }
-            }
+        $assignment = $this->timesheet->assignment;
+
+        if ($assignment->coordinator) {
+            $message->cc(
+                $assignment->coordinator->email, $assignment->coordinator->name
+            );
+        }
+
+        if ($assignment->operation_coordinator) {
+            $message->cc(
+                $assignment->operation_coordinator->email,
+                $assignment->operation_coordinator->name
+            );
         }
 
         return $message;

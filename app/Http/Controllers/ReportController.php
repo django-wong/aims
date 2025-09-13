@@ -121,15 +121,7 @@ class ReportController extends Controller
     {
         $year = $request->get('year', date('Y'));
 
-        $type = $request->get('type', 'all');
-
         $org_id = auth()->user()->user_role->org_id;
-
-        $condition = match ($type) {
-            'local' => "and assignments.org_id = {$org_id}",
-            'others' => "and assignments.operation_org_id = {$org_id}",
-            default => '',
-        };
 
         $data = DB::select("
             with monthly_usage as (select
@@ -142,14 +134,14 @@ class ReportController extends Controller
             left join assignments on timesheets.assignment_id = assignments.id
             left join projects on assignments.project_id = projects.id
             left join clients on projects.client_id = clients.id
-            where year(timesheet_items.date) = ? {$condition}
+            where year(timesheet_items.date) = ? and (assignments.org_id = ? or assignments.operation_org_id = ?)
             group by clients.id, month)
             select
                 client_name,
                 client_group,
                 JSON_OBJECTAGG(month, hours) as monthly_hours
             from monthly_usage group by client_name, client_group;
-        ", [$year]);
+        ", [$year, $org_id, $org_id]);
 
         return inertia('reports/man-hours', [
             'data' => array_map(function ($item) {
@@ -175,5 +167,12 @@ class ReportController extends Controller
     public function man_hours_monthly_by_year_and_office()
     {
         return inertia('reports/man-hours-monthly-by-year-and-office');
+    }
+
+    public function invoice_required()
+    {
+        return inertia('under-construction', [
+            'title' => 'Invoice Required Report',
+        ]);
     }
 }

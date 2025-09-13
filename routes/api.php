@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
     // Timesheets
     Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
+    Route::post('timesheets/{timesheet}/reject', [TimesheetController::class, 'reject']);
 
 
     // Reports

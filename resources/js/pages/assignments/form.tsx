@@ -57,7 +57,7 @@ const schema = z.object({
       user_id: z.number().min(1, { message: 'Inspector is required' }),
       assignment_type_id: z.number().min(1, { message: 'Discipline is required' }),
     })
-  ),
+  ).nullable().optional(),
 
   skill_id: z.number().int().positive().nullable().optional(),
 

@@ -186,7 +186,7 @@ export default function Edit(props: EditProps) {
                   <Timesheets
                     assignment={props.assignment}
                     filters={{
-                      'filter[status]': '> 0',
+                      // 'filter[status]': '> 0',
                     }}
                   />
                 </div>

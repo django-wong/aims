@@ -1,8 +1,6 @@
 import { DataTable } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useQueryParam } from '@/hooks/use-query-param';
 import { useTable } from '@/hooks/use-table';
 import Layout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -34,8 +32,6 @@ export default function ManHours(props: ManhourProps) {
     defaultData: props.data,
   });
 
-  const [type, setType] = useQueryParam('type', 'all');
-
   return (
     <Layout breadcrumbs={breadcrumbs}>
       <Head title="man-hours" />
@@ -45,7 +41,6 @@ export default function ManHours(props: ManhourProps) {
             <Link
               href={route('reports.man-hours', {
                 year: props.previous_year,
-                type: type,
               })}
             >
               <Button variant={'outline'}>
@@ -53,9 +48,7 @@ export default function ManHours(props: ManhourProps) {
               </Button>
             </Link>
 
-            <Link href={route('reports.man-hours', {
-              type: type,
-            })}>
+            <Link href={route('reports.man-hours')}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant={'outline'}>
@@ -71,7 +64,6 @@ export default function ManHours(props: ManhourProps) {
               <Link
                 href={route('reports.man-hours', {
                   year: props.next_year,
-                  type: type,
                 })}
               >
                 <Button variant={'outline'}>
@@ -80,40 +72,6 @@ export default function ManHours(props: ManhourProps) {
               </Link>
             ) : null}
           </div>
-          <Tabs value={type}>
-            <TabsList>
-              <TabsTrigger value={'all'} asChild>
-                <Link
-                  href={route('reports.man-hours', {
-                    year: props.year,
-                    type: 'all',
-                  })}
-                >
-                  All
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value={'local'} asChild>
-                <Link
-                  href={route('reports.man-hours', {
-                    year: props.year,
-                    type: 'local',
-                  })}
-                >
-                  Local
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value={'others'}>
-                <Link
-                  href={route('reports.man-hours', {
-                    year: props.year,
-                    type: 'others',
-                  })}
-                >
-                  Others
-                </Link>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
         </div>
         <DataTable table={table} pagination={false} />
       </div>

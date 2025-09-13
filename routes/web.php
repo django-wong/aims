@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Timesheets
     Route::get('timesheets', [TimesheetController::class, 'index'])->name('timesheets');
+    Route::get('timesheets/{timesheet}', [TimesheetController::class, 'edit'])->name('timesheets.edit');
     Route::post('timesheets/capture', [TimesheetController::class, 'capture'])->name('timesheets.capture');
     Route::get('timesheets/captured', [TimesheetController::class, 'captured'])->name('timesheets.captured');
 

@@ -36,7 +36,9 @@ class TimesheetIsWaitingForClientApproval extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        $first_responder = $this->timesheet->assignment->operation_coordinator ?? $this->timesheet->assignment->coordinator;
+
+        $message = (new MailMessage)
             ->view('email')
             ->subject('Timesheet is waiting for your approval')
             ->greeting('Hello')
@@ -58,6 +60,12 @@ class TimesheetIsWaitingForClientApproval extends Notification
                     ]
                 )
             );
+
+        if ($first_responder) {
+            $message->replyTo($first_responder->email, $first_responder->name);
+        }
+
+        return $message;
     }
 
     /**

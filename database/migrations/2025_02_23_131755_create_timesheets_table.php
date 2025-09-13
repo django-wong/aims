@@ -26,18 +26,26 @@ return new class extends Migration
             $table->unsignedTinyInteger('status')->default(0)->index()->comment(
                 'Status of the timesheet:
                  0 = draft,
-                 1 = reviewing,
-                 2 = approved - waiting for contract holder approval
-                 3 = contract holder approved - waiting for client approval,
-                 4 = client approved - waiting for invoicing,
-                 5 = invoiced'
+                 1 = reviewing
+                 2 = approved - waiting for client approval
+                 3 = client approved - waiting for invoicing,
+                 4 = invoiced',
             );
 
-            $table->timestamp('signed_off_at')->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->timestamp('contract_holder_approved_at')->nullable();
+            $table->boolean('rejected')->default(false);
+            $table->text('rejection_reason')->nullable();
+
+            $table->boolean('late')->default(false)->comment('Is the timesheet late?');
+            $table->unsignedTinyInteger('issue_code')->nullable();
+
+            // 0 = draft, 1 = submitted, 2 =
+
+            $table->timestamp('signed_off_at')->nullable()->comment('When did inspector sign off (accept) the timesheet');
+
+            $table->timestamp('submitted_at')->nullable()->comment('When did the inspector submit the timesheet for review');
+            $table->timestamp('approved_at')->nullable()->comment('When did the coordinator approve the timesheet');
             $table->timestamp('client_approved_at')->nullable();
-            $table->timestamp('client_reminder_sent_at')->nullable();
+            $table->timestamp('client_reminder_sent_at')->nullable()->comment('Timesheet and report reminder for client, it should be sent 2 days after approved_at ');
 
             // The invoiced timestamps for invoices that goes to contractor and client
             $table->foreignId('contractor_invoice_id')->nullable()->constrained('invoices')->onDelete('set null');

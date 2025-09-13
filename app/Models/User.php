@@ -17,6 +17,7 @@ use Lab404\Impersonate\Models\Impersonate;
  * @property int      $id
  * @property string   $email
  * @property Client   $client
+ * @property string    $name
  */
 class User extends Authenticatable
 {

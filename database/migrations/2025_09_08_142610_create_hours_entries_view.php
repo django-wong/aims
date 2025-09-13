@@ -15,6 +15,7 @@ return new class extends Migration
             CREATE OR REPLACE VIEW hours_entries AS
                select assignments.id                                               as assignment_id,
                assignments.org_id                                                  as org_id,
+               assignments.operation_org_id                                        as operation_org_id,
                assignments.reference_number                                        as reference_number,
                min(assignment_inspectors.created_at)                               as issued_at,
                users.name                                                          as inspector_name,

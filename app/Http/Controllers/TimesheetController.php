@@ -37,4 +37,12 @@ class TimesheetController extends Controller
     {
         return inertia('timesheets');
     }
+
+    public function edit(Timesheet $timesheet)
+    {
+        return inertia('timesheets/edit', [
+            'assignment' => $timesheet->assignment,
+            'timesheet' => $timesheet,
+        ]);
+    }
 }

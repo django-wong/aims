@@ -14,14 +14,9 @@ class ReportController
     //
     public function hours_entry(Request $request)
     {
-        return HoursEntry::query()->tap(function (Builder $query) use ($request) {
-            $org = $request->user()->user_role->org_id;
-            match ($request->input('type')) {
-                'others' => $query->where('org_id', '!=', $org),
-                'local' => $query->where('org_id', $org),
-                default => null,
-            };
-        })->paginate();
+        return HoursEntry::query()
+            ->whereAny(['org_id', 'operation_org_id'], $request->user()->user_role->org_id)
+            ->paginate();
     }
 
     public function hours_log()
@@ -39,6 +34,8 @@ class ReportController
         ];
 
         $qb = QueryBuilder::for(HoursLog::class);
+
+        $qb->whereAny(['org_id', 'operation_org_id'], auth()->user()->user_role->org_id);
 
         $qb->allowedFilters([
             AllowedFilter::callback('keywords', function (Builder $query, $value) use ($columns) {

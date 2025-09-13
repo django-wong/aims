@@ -23,6 +23,7 @@ class ClientFactory extends Factory
         return [
             'business_name' => $this->faker->company,
             'notes' => $this->faker->paragraph,
+            'code' => strtoupper($this->faker->bothify('???###')),
             'user_id' => User::factory(),
             'org_id' => Org::factory(),
             'address_id' => Address::factory(),

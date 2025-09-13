@@ -4,15 +4,14 @@ import { CheckIcon } from 'lucide-react';
 import axios from 'axios';
 import { useTableApi } from '@/components/data-table-2';
 import { useIsClient } from '@/hooks/use-role';
+import { TimesheetStatus } from '@/types';
 
 export function ClientApprove() {
   const timesheet = useTimesheet();
   const table = useTableApi();
   const isClient = useIsClient();
 
-  console.info(timesheet);
-
-  if (timesheet?.status !== 3 || !isClient) {
+  if (!isClient || timesheet?.status !== TimesheetStatus.Approved) {
     return null;
   }
 

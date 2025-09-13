@@ -3,7 +3,7 @@
 namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
-use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
+use App\Notifications\TimesheetIsWaitingForClientApproval;
 
 /**
  * Operation office has approved the timesheet, now it's waiting for contract holder office approval.
@@ -13,7 +13,7 @@ class Approved implements Status
 
     public function next(Timesheet $timesheet): ?string
     {
-        return ContractHolderApproved::class;
+        return ClientApproved::class;
     }
 
     public function prev(Timesheet $timesheet): ?string
@@ -39,7 +39,7 @@ class Approved implements Status
         $client = $timesheet->assignment?->project?->client;
         foreach ([$client?->coordinator, $client?->reviewer] as $notifiable) {
             $notifiable?->notify(
-                new TimesheetIsWaitingForContractorOfficeApproval($timesheet)
+                new TimesheetIsWaitingForClientApproval($timesheet)
             );
         }
     }

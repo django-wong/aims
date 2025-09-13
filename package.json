@@ -72,6 +72,8 @@
         "concurrently": "^9.0.1",
         "date-fns": "^4.1.0",
         "dayjs": "^1.11.13",
+        "echarts": "^6.0.0",
+        "echarts-for-react": "^3.0.2",
         "globals": "^15.14.0",
         "laravel-vite-plugin": "^1.0",
         "lodash": "^4.17.21",

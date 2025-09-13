@@ -16,13 +16,15 @@ return new class extends Migration
             select timesheets.id as timesheet_id,
                    clients.id    as client_id
             from timesheets
-                 left join assignments on timesheets.assignment_id = assignments.id
-                 left join projects on assignments.project_id = projects.id
-                 left join clients on projects.client_id = clients.id
-            where timesheets.status = 3
-              and clients.invoice_reminder is not null
-              and timesheets.contract_holder_approved_at is not null
-              and timesheets.client_reminder_send_at is null;
+                     left join assignments on timesheets.assignment_id = assignments.id
+                     left join projects on assignments.project_id = projects.id
+                     left join clients on projects.client_id = clients.id
+            where timesheets.status = 2
+              and timesheets.deleted_at is null
+              and assignments.close_date is not null
+              and timesheets.approved_at is not null
+              and timesheets.client_reminder_sent_at is null
+              and TIMESTAMPDIFF(DAY, timesheets.approved_at, now()) >= 2;
         ");
     }
 

@@ -1,11 +1,11 @@
-import { LucideIcon } from 'lucide-react';
 import { MainNavItem } from '@/components/nav-main';
+import { LucideIcon } from 'lucide-react';
 
 export interface DialogFormProps<T = BaseModel, R = T> {
   children?: React.ReactNode;
   onSubmit: (data: R) => void;
-  value?: T | null
-  open?: boolean
+  value?: T | null;
+  open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asChild?: boolean;
 }
@@ -42,8 +42,8 @@ export type FlashMessageType = 'message' | 'error';
 export interface SharedData {
   menu: {
     main: {
-      [key: string]: MainNavItem
-    }
+      [key: string]: MainNavItem;
+    };
   };
   name: string;
   quote: { message: string; author: string };
@@ -85,8 +85,8 @@ export interface User extends BaseModel {
   email: string;
   avatar?: string;
   email_verified_at: string | null;
-  user_role?: UserRole
-  inspector_profile?: InspectorProfile
+  user_role?: UserRole;
+  inspector_profile?: InspectorProfile;
   address_id: number | null;
   address?: Address;
   skills?: Skill[];
@@ -115,7 +115,7 @@ export interface Address extends BaseModel {
   state: string;
   zip: string;
   country: string;
-  full_address?: string|null; // Computed from other fields
+  full_address?: string | null; // Computed from other fields
 }
 
 export interface Model {
@@ -324,7 +324,7 @@ export type PagedResponse<T = Record<string, unknown>> = {
   total: number;
   last_page: number;
   first_page: number;
-}
+};
 
 export interface Vendor extends BaseModel {
   org_id: number;
@@ -333,7 +333,7 @@ export interface Vendor extends BaseModel {
   business_name: string;
   address_id: number | null;
   address?: Address;
-  notes: string | null
+  notes: string | null;
 }
 
 export interface Comment<T = unknown> extends BaseModel {
@@ -341,7 +341,7 @@ export interface Comment<T = unknown> extends BaseModel {
   private: boolean;
   commentable_type: string;
   commentable_id: number;
-  commentable?: T
+  commentable?: T;
   user_id: number;
   user?: User;
   attachments?: Attachment<Comment>[];
@@ -350,9 +350,9 @@ export interface Comment<T = unknown> extends BaseModel {
 export interface Attachment<T = unknown> extends BaseModel {
   attachable_type: string;
   attachable_id: number;
-  attachable?: T
+  attachable?: T;
   name: string;
-  mime_type: string|null;
+  mime_type: string | null;
   path: string;
   disk: string;
   size: number;
@@ -362,9 +362,19 @@ export enum TimesheetStatus {
   Draft = 0,
   Reviewing = 1,
   Approved = 2,
-  ContractHolderApproved = 3,
-  ClientApproved = 4,
-  Invoiced = 5
+  ClientApproved = 3,
+  Invoiced = 4,
+}
+
+export enum Role {
+  System = 1,
+  Admin = 2,
+  Finance = 3,
+  PM = 4,
+  Inspector = 5,
+  Client = 6,
+  Vendor = 7,
+  Staff = 8,
 }
 
 export interface Timesheet extends BaseModel {
@@ -378,11 +388,16 @@ export interface Timesheet extends BaseModel {
   mileage_unit: string;
   currency: string;
 
-  start: string // YYYY-MM-DD
+  start: string; // YYYY-MM-DD
   end: string; // YYYY-MM-DD
 
   hours: number;
+
   status: TimesheetStatus;
+  rejected: boolean;
+  rejection_reason: string | null;
+  issue_code: number;
+
   travel_distance: number;
   timesheet_items?: TimesheetItem[];
   timesheet_items_count?: number;
@@ -392,17 +407,17 @@ export interface TimesheetReport extends BaseModel {
   timesheet_id: number;
   type: string;
   is_closed: boolean;
-  attachment?: Attachment
-  doc_no: string|null;
-  rev: string|null;
-  visit_date: string|null;
-  report_no: string|null;
-  vendor_id: number|null;
+  attachment?: Attachment;
+  doc_no: string | null;
+  rev: string | null;
+  visit_date: string | null;
+  report_no: string | null;
+  vendor_id: number | null;
   raised_by: string;
-  rev_date: string|null;
-  closed_or_rev_by_id: number|null;
-  closed_or_rev_by?: User|null;
-  closed_date: string|null;
+  rev_date: string | null;
+  closed_or_rev_by_id: number | null;
+  closed_or_rev_by?: User | null;
+  closed_date: string | null;
 }
 
 export interface TimesheetItem extends BaseModel {
@@ -467,7 +482,7 @@ export interface UserSkill extends BaseModel {
   user_id: number;
   skill_id: number;
   skill?: Skill;
-  user?: User
+  user?: User;
 }
 
 export interface AssignmentInspector extends BaseModel {

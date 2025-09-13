@@ -25,6 +25,7 @@ class MenuController
                         'name' => 'Dashboard',
                         'icon' => 'house',
                         'url' => route('dashboard'),
+                        'badge' => Timesheet::query()->pending()->count()
                     ],
                 ] : []),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE, UserRole::INSPECTOR],[
@@ -69,8 +70,7 @@ class MenuController
                     'timesheets' => [
                         'name' => 'Timesheets',
                         'icon' => 'clock',
-                        'url' => route('timesheets'),
-                        'badge' => Timesheet::query()->pending()->count()
+                        'url' => route('timesheets')
                     ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF], [
@@ -138,7 +138,7 @@ class MenuController
                 'icon' => 'clock-fading',
                 'children' => [
                     [
-                        'name' => 'By Year (All, Local, and Others)',
+                        'name' => 'By Year',
                         'icon' => 'folder',
                         'url' => route('reports.man-hours-2')
                     ],

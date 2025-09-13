@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Notifications\AssignmentHasBeenIssued;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,17 +14,21 @@ use Illuminate\Support\Facades\App;
 
 
 /**
- * @property Project       $project
- * @property int|null      $operation_org_id
- * @property int           $org_id
- * @property Org           $org
- * @property Org|null      $operation_org
- * @property PurchaseOrder $purchase_order
- * @property mixed         $id
- * @property int|mixed     $status
- * @property User|null     $operation_coordinator
- * @property string        $reference_number
- * @property Collection<Attachment>         $attachments
+ * @property Project                $project
+ * @property int|null                        $operation_org_id
+ * @property int                             $org_id
+ * @property Org                             $org
+ * @property Org|null                        $operation_org
+ * @property PurchaseOrder                   $purchase_order
+ * @property mixed                           $id
+ * @property int|mixed                       $status
+ * @property User|null                       $operation_coordinator
+ * @property string                          $reference_number
+ * @property Collection<Attachment>          $attachments
+ * @property Collection<AssignmentInspector> $assignment_inspectors
+ * @property User                            $coordinator
+ * @property boolean                         $delegated
+ * @property User|null                           $first_responder
  */
 class Assignment extends Model implements Commentable, Attachable
 {

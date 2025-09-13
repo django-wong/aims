@@ -22,12 +22,13 @@ class Draft implements Status
      */
     public function next(Timesheet $timesheet): ?string
     {
-        $operation_org_id = $timesheet->assignment->operation_org_id;
-        if (! empty($operation_org_id) && $operation_org_id !== $timesheet->assignment->org_id) {
-            // Send to operation office for review first
-            return Reviewing::class;
-        }
-        return Approved::class;
+        return Reviewing::class;
+
+        // $operation_org_id = $timesheet->assignment->operation_org_id;
+        // if (! empty($operation_org_id) && $operation_org_id !== $timesheet->assignment->org_id) {
+        //     // Send to operation office for review first
+        // }
+        // return Approved::class;
     }
 
     public function transition(Timesheet $timesheet): void

@@ -12,7 +12,7 @@ class TimesheetStatus
             Timesheet::DRAFT => new Draft(),
             Timesheet::REVIEWING => new Reviewing(),
             Timesheet::APPROVED => new Approved(),
-            Timesheet::CONTRACT_HOLDER_APPROVED => new ContractHolderApproved(),
+            // Timesheet::CONTRACT_HOLDER_APPROVED => new ContractHolderApproved(),
             Timesheet::CLIENT_APPROVED => new ClientApproved(),
             Timesheet::INVOICED => new Invoiced()
         };

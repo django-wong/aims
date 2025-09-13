@@ -43,8 +43,10 @@ const timesheetItemSchema = z.object({
   work_hours: number,
   travel_hours: number,
   report_hours: number,
-  days: number,
+
+  // days: number,
   overnights: number,
+
   travel_distance: number,
 
   hotel: number,
@@ -156,22 +158,22 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                 <div className={'col-span-12 md:col-span-6'}>
                   <div>
                     <div className={'grid grid-cols-12 gap-4'}>
-                      <div className={'col-span-6'}>
-                        <FormField
-                          control={form.control}
-                          render={({ field }) => {
-                            return (
-                              <>
-                                <VFormField label={'Days'}>
-                                  <Input placeholder={'Day'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                </VFormField>
-                              </>
-                            );
-                          }}
-                          name={'days'}
-                        />
-                      </div>
-                      <div className={'col-span-6'}>
+                      {/*<div className={'col-span-6'}>*/}
+                      {/*  <FormField*/}
+                      {/*    control={form.control}*/}
+                      {/*    render={({ field }) => {*/}
+                      {/*      return (*/}
+                      {/*        <>*/}
+                      {/*          <VFormField label={'Days'}>*/}
+                      {/*            <Input placeholder={'Day'} min={0} type={'number'} value={field.value} onChange={field.onChange} />*/}
+                      {/*          </VFormField>*/}
+                      {/*        </>*/}
+                      {/*      );*/}
+                      {/*    }}*/}
+                      {/*    name={'days'}*/}
+                      {/*  />*/}
+                      {/*</div>*/}
+                      <div className={'col-span-12'}>
                         <FormField
                           control={form.control}
                           render={({ field }) => {

@@ -16,7 +16,6 @@ import { useIsClient } from '@/hooks/use-role';
 import { useTable } from '@/hooks/use-table';
 import { cn, timesheet_range } from '@/lib/utils';
 import { TimesheetStatus } from '@/pages/timesheets/status';
-import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { AssignmentProvider, useAssignment } from '@/providers/assignment-provider';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
 import { Assignment, Timesheet } from '@/types';
@@ -24,10 +23,11 @@ import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { EllipsisVerticalIcon, PenIcon } from 'lucide-react';
-import { startTransition, useDeferredValue, useState } from 'react';
+import { startTransition, useState } from 'react';
 import { ClientApprove } from '../timesheets/client-approve';
 import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';
 import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
+import { TimesheetEditContent } from '@/pages/timesheets/edit';
 
 interface TimesheetsProps {
   assignment?: Assignment;
@@ -46,7 +46,6 @@ const assignment_column: ColumnDef<Timesheet> = {
 
 export function Timesheets(props: TimesheetsProps) {
   const [timesheet, setTimesheet] = useState<Timesheet | null>();
-  const deferred_timesheet = useDeferredValue(timesheet);
   const assignment = useAssignment();
   const isClient = useIsClient();
 
@@ -82,7 +81,9 @@ export function Timesheets(props: TimesheetsProps) {
       header: 'Status',
       cell: ({ row }) =>
         <span className={cn('timesheet-status', `timesheet-status-${row.original.status}`)}>
-          <TimesheetStatus status={row.original.status} />
+          <TimesheetProvider value={row.original}>
+            <TimesheetStatus status={row.original.status} />
+          </TimesheetProvider>
         </span>
     },
     {
@@ -138,13 +139,13 @@ export function Timesheets(props: TimesheetsProps) {
       >
         <DialogContent className={'sm:max-w-5xl'}>
           <DialogHeader>
-            <DialogTitle>Timesheet Items</DialogTitle>
+            <DialogTitle>Timesheet Details</DialogTitle>
             <DialogDescription>Reviewing timesheet items for the period of {timesheet ? timesheet_range(timesheet) : 'N/A'}.</DialogDescription>
           </DialogHeader>
           <DialogInnerContent>
             {timesheet ? (
               <TimesheetProvider value={timesheet}>
-                <TimesheetItems timesheet={timesheet || deferred_timesheet!} />
+                <TimesheetEditContent/>
               </TimesheetProvider>
             ) : null}
           </DialogInnerContent>

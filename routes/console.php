@@ -13,3 +13,12 @@ Artisan::command('inspire', function () {
 
 
 Schedule::job(new RemindClientForPendingApprovalTimesheet)->hourly();
+
+if (\Illuminate\Support\Facades\Schema::hasTable('orgs')) {
+    \App\Models\Org::query()->each(function ($org) {
+        Schedule::call(function () {
+            // Check for any missing timesheets for open assignments from the previous week.
+
+        })->weeklyOn(1, '10:00')->timezone($org->timezone);
+    });
+}

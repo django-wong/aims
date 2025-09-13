@@ -46,6 +46,7 @@ return new class extends Migration
                 IF(assignments.close_date is null, 'open', 'closed') as status,
                 assignments.close_date as close_date,
                 assignments.org_id as org_id,
+                assignments.operation_org_id as operation_org_id,
                 orgs.name as org_name,
                 'TODO' as client_invoice_number,
                 'TODO' as contractor_invoice_number,

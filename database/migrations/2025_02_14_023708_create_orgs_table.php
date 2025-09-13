@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('code')->unique();
             $table->foreignId('address_id')->nullable()->index()->constrained();
+            $table->string('timezone')->default('Australia/Perth');
             $table->timestamps();
             $table->softDeletes();
         });

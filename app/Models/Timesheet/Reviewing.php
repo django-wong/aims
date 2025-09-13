@@ -24,10 +24,18 @@ class Reviewing implements Status
         if (empty($timesheet->signed_off_at)) {
             $timesheet->signed_off_at = now();
         }
+
         $timesheet->status = Timesheet::REVIEWING;
         $timesheet->save();
-        $timesheet->assignment->operation_coordinator->notify(
-            new \App\Notifications\TimesheetSubmitted($timesheet)
-        );
+
+        $assignment = $timesheet->assignment;
+
+        $coordinator = $assignment->operation_coordinator ?? $assignment->coordinator;
+
+        if ($coordinator) {
+            $coordinator->notify(
+                new \App\Notifications\TimesheetSubmitted($timesheet)
+            );
+        }
     }
 }

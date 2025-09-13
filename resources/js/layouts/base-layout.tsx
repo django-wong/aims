@@ -17,9 +17,9 @@ export function BaseLayout({ children }: { children: React.ReactNode }) {
         auth.impersonating && (
           <>
             <div className={'z-10 h-[2px] bg-primary top-0 fixed w-full shadow-md'}></div>
-            <div className={'z-10 rounded-b-sm px-4 text-sm bg-primary border-primary text-primary-foreground text-center'}>
-              <Link className={'flex items-center gap-2'} href={route('leave-impersonation')}>
-                <Undo2Icon className={'size-4'}/> Leave impersonation mode
+            <div className={'z-10 rounded-b-sm px-2 text-xs py-1 bg-primary border-primary text-primary-foreground text-center'}>
+              <Link className={'flex items-center gap-1'} href={route('leave-impersonation')}>
+                <Undo2Icon className={'size-3'}/> Leave impersonation mode
               </Link>
             </div>
           </>

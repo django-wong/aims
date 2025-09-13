@@ -3,11 +3,7 @@ import { useTable } from '@/hooks/use-table';
 import Layout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useSearchParams } from '@/hooks/use-search-params';
-import { useQueryParam } from '@/hooks/use-query-param';
 import { Input } from '@/components/ui/input';
-import { startTransition } from 'react';
 
 const breadcrumbs = [
   {
@@ -22,37 +18,15 @@ const breadcrumbs = [
 
 export default function HoursEntryPage(props: { title: string; data: any[] }) {
 
-  const [tab, setTab] = useQueryParam('tab', 'all');
-
   const table = useTable<HoursEntry>('/api/v1/reports/hours-entry', {
     columns: columns
   });
-
-
-  function onTabChange(tab: string) {
-    startTransition(() => {
-      setTab(tab);
-      table.setPageIndex(1);
-      table.setSearchParams((params) => {
-        params.set('type', tab);
-        return params;
-      });
-    })
-  }
 
 
   return (
     <Layout breadcrumbs={breadcrumbs}>
       <Head title={props.title} />
       <div className="flex flex-col px-6 gap-6">
-        <Tabs value={tab} onValueChange={onTabChange}>
-          <TabsList>
-            <TabsTrigger value={'all'}>All</TabsTrigger>
-            <TabsTrigger value={'local'}>Local</TabsTrigger>
-            <TabsTrigger value={'others'}>Others</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
         <DataTable
           left={
             <>

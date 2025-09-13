@@ -3,16 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assignment;
-use App\Models\AssignmentInspector;
 use App\Models\UserRole;
-use App\Notifications\AssignmentHasBeenIssued;
-use App\Notifications\TimesheetIsWaitingForContractorOfficeApproval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Vite;
 
 class AssignmentController extends Controller
 {
@@ -67,10 +62,6 @@ class AssignmentController extends Controller
             'end' => $end,
             'user_id' => auth()->id(),
         ]);
-
-        if ($request->has('preview_contractor_notification')) {
-            return (new TimesheetIsWaitingForContractorOfficeApproval($timesheet))->toMail(auth()->user());
-        }
 
         return inertia('assignments/record', [
             'assignment' => $assignment,

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Filters\OperatorFilter;
+use App\Http\Requests\APIv1\RejectTimesheetRequest;
 use App\Models\Timesheet;
 use App\Models\UserRole;
+use App\Notifications\TimesheetRejected;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -29,6 +31,17 @@ class TimesheetController extends Controller
         return [
             'message' => 'You have successfully signed off the timesheet.',
             'data' => $timesheet
+        ];
+    }
+
+    public function reject(Timesheet $timesheet, RejectTimesheetRequest $request)
+    {
+        $timesheet->reject($request->input('rejection_reason'));
+
+        $timesheet->user->notify(new TimesheetRejected($timesheet));
+
+        return [
+            'message' => 'You have rejected the timesheet.',
         ];
     }
 
