@@ -32,6 +32,8 @@ return new class extends Migration
                  4 = invoiced',
             );
 
+            $table->unsignedTinyInteger('previous_status')->comment('The previous status before rejection, to allow reverting back')->nullable();
+
             $table->boolean('rejected')->default(false);
             $table->text('rejection_reason')->nullable();
 

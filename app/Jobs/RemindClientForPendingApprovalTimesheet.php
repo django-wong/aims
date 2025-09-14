@@ -8,6 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use App\Notifications\ClientReminderForPendingApprovalTimesheet;
 
+/**
+ * Email reminder to clients to approve reports after 2 days from submission from BIE office
+ */
 class RemindClientForPendingApprovalTimesheet implements ShouldQueue
 {
     use Queueable;

@@ -1,17 +1,21 @@
-import AppLayout from '@/layouts/app-layout';
-import { Assignment, BreadcrumbItem, Timesheet } from '@/types';
-import { AssignmentProvider } from '@/providers/assignment-provider';
-import { TimesheetProvider, useTimesheet } from '@/providers/timesheet-provider';
-import { Head, Link } from '@inertiajs/react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
-import { useQueryParam } from '@/hooks/use-query-param';
-import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
-import { TimesheetStatus } from '@/pages/timesheets/status';
+import { TwoColumnLayout73 } from '@/components/main-content';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQueryParam } from '@/hooks/use-query-param';
+import AppLayout from '@/layouts/app-layout';
 import { formatDate } from '@/lib/helpers';
 import { TimesheetIssue } from '@/pages/timesheets/issue';
+import { RejectionDetails } from '@/pages/timesheets/rejection-details';
 import { ReportLate } from '@/pages/timesheets/report-late';
+import { TimesheetStatus } from '@/pages/timesheets/status';
+import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
+import { AssignmentProvider } from '@/providers/assignment-provider';
+import { TimesheetProvider, useTimesheet } from '@/providers/timesheet-provider';
+import { Assignment, BreadcrumbItem, Timesheet } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { ClientApprove } from '@/pages/timesheets/client-approve';
+import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';
+import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
 
 interface EditTimesheetProps {
   timesheet: Timesheet;
@@ -40,14 +44,20 @@ export default function EditTimesheet(props: EditTimesheetProps) {
 
   return (
     <>
-      <AppLayout breadcrumbs={breadcrumbs}>
-        <Head title={'Edit Timesheet'} />
-        <AssignmentProvider value={props.assignment}>
-          <TimesheetProvider value={props.timesheet}>
+      <AssignmentProvider value={props.assignment}>
+        <TimesheetProvider value={props.timesheet}>
+          <AppLayout
+            pageAction={
+              <>
+                <ClientApprove/>
+                <ContractorHolderApprove/>
+                <CoordinationOfficeApprove/>
+              </>
+            }
+            breadcrumbs={breadcrumbs}>
+            <Head title={'Edit Timesheet'} />
             <TwoColumnLayout73
-              left={
-                <TimesheetEditContent/>
-              }
+              left={<TimesheetEditContent />}
               right={
                 <>
                   <Info>
@@ -66,39 +76,45 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                           {props.timesheet.user?.name}
                         </Link>
                       </InfoLine>
+                      <InfoLine label={'Coordinator'}>
+                        {[props.assignment.coordinator?.name, props.assignment.operation_coordinator?.name].filter(Boolean).join(', ') || 'N/A'}
+                      </InfoLine>
+
                       <InfoLine label={'Status'}>
                         <TimesheetStatus status={props.timesheet.status} />
                       </InfoLine>
-                      <InfoLine label={'Coordinator'}>
-                        {
-                          [props.assignment.coordinator?.name, props.assignment.operation_coordinator?.name].filter(Boolean).join(', ') || 'N/A'
-                        }
-                      </InfoLine>
+
+                      {props.timesheet.rejected ? (
+                        <InfoLine label={'Rejection Reason'} className={'text-red-600'}>
+                          {props.timesheet.rejection_reason}
+                        </InfoLine>
+                      ) : null}
                     </div>
                     <InfoHead>Usage</InfoHead>
                     <div>
                       <InfoLine label={'Total Hours'}>{props.timesheet.hours}</InfoLine>
                       <InfoLine label={'Travel Distance'}>{props.timesheet.travel_distance}</InfoLine>
-                      <InfoLine label={'Cost'}>
-                        {props.timesheet.cost}
-                      </InfoLine>
+                      <InfoLine label={'Cost'}>{props.timesheet.cost}</InfoLine>
                     </div>
                     <InfoHead>Issue & Problem</InfoHead>
                     <div>
-                      <InfoLine className={'items-center'} label={'Report Late'}><ReportLate/></InfoLine>
-                      <InfoLine label={'Problem'}><TimesheetIssue/></InfoLine>
+                      <InfoLine className={'items-center'} label={'Report Late'}>
+                        <ReportLate />
+                      </InfoLine>
+                      <InfoLine label={'Problem'}>
+                        <TimesheetIssue />
+                      </InfoLine>
                     </div>
                   </Info>
                 </>
               }
             />
-          </TimesheetProvider>
-        </AssignmentProvider>
-      </AppLayout>
+          </AppLayout>
+        </TimesheetProvider>
+      </AssignmentProvider>
     </>
   );
 }
-
 
 export function TimesheetEditContent() {
   const [tab, setTab] = useQueryParam('timesheet-edit-tab', 'workhours');
@@ -111,12 +127,10 @@ export function TimesheetEditContent() {
           <TabsTrigger value={'workhours'}>Work hours & Report</TabsTrigger>
           <TabsTrigger value={'activity-log'}>Activity Log</TabsTrigger>
         </TabsList>
-        <TabsContent value={'workhours'}>
+        <TabsContent value={'workhours'} className={'space-y-6'}>
           <TimesheetItems timesheet={timesheet!} />
         </TabsContent>
-        <TabsContent value={'activity-log'}>
-          Logs coming soon...
-        </TabsContent>
+        <TabsContent value={'activity-log'}>Logs coming soon...</TabsContent>
       </Tabs>
     </>
   );

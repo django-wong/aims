@@ -94,6 +94,9 @@ return new class extends Migration
             // Notes
             $table->longText('notes')->nullable()->comment('Notes of the assignment');
             $table->longText('special_notes')->nullable();
+            $table->index(['org_id', 'first_visit_date']);
+            $table->index(['org_id', 'operation_org_id', 'project_id']);
+
             $table->timestamps();
         });
     }

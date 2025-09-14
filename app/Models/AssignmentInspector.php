@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int                              $user_id
  * @property \Illuminate\Support\Carbon|mixed $acked_at
  * @property string                           $signature_base64
- * @property Assignment                            $assignment
+ * @property Assignment                       $assignment
+ * @property User                             $user
+ * @property int                            $id
  */
 class AssignmentInspector extends Model
 {

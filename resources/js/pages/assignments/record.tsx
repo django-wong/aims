@@ -196,7 +196,7 @@ export default function Record(props: RecordProps) {
                                   <>
                                     <LogYourTime timesheet={props.timesheet} />
                                     <SignOffForm onConfirm={signoff}>
-                                      <Button variant={'destructive'} disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
+                                      <Button variant={'primary'} disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
                                         <SendIcon />
                                         Submit for Approval
                                       </Button>
@@ -218,12 +218,12 @@ export default function Record(props: RecordProps) {
                       <InfoHead>Details</InfoHead>
                       <div>
                         <InfoLine label={'BIE Reference Number'}>
-                          <Badge>{props.assignment.reference_number ?? 'N/A'}</Badge>
+                          <Badge variant={'outline'}>{props.assignment.reference_number ?? 'N/A'}</Badge>
                         </InfoLine>
                         <InfoLine label={'Client Name'}>{props.assignment.project?.client?.business_name}</InfoLine>
                         <InfoLine label={'Project'}>{props.assignment.project?.title}</InfoLine>
                         <InfoLine label={'Discipline'}>
-                          <Badge>{props.inspection.assignment_type?.name}</Badge>
+                          <Badge variant={'outline'}>{props.inspection.assignment_type?.name}</Badge>
                         </InfoLine>
                         <InfoLine label={'Vendor'}>{props.assignment.vendor?.name}</InfoLine>
                         {props.assignment.sub_vendor && <InfoLine label={'Sub Vendor'}>{props.assignment.sub_vendor?.name}</InfoLine>}
@@ -385,7 +385,9 @@ export default function Record(props: RecordProps) {
                           open={showSpecialNotes}
                           onOpenChange={setShowSpecialNotes}
                           className={'sm:max-w-4xl'}
-                          trigger={<Button className={'w-full'}>View</Button>}
+                          trigger={
+                            <Button variant={'primary'} className={'w-full'}>View</Button>
+                          }
                           description={'Read this carefully before starting work on this assignment.'}
                           title={'Special Notes'}
                         >
@@ -421,7 +423,7 @@ function LogYourTime(props: LogYourTimeProps) {
           table.reload();
         }}
       >
-        <Button>
+        <Button variant={'outline'}>
           <Plus />
           Log your work
         </Button>

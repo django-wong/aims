@@ -25,6 +25,7 @@ import { TimesheetItemProvider } from '@/providers/timesheet-item-provider';
 import { TimesheetItemAttachments } from '@/pages/timesheets/timesheet-item-attachments';
 import { TimesheetReportProvider } from '@/providers/timesheet-report-provider';
 import { TimesheetReportForm } from '@/pages/assignments/assignment-report-form';
+import { RejectionDetails } from '@/pages/timesheets/rejection-details';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -134,7 +135,8 @@ export function TimesheetItems(props: TimesheetItemsProps) {
   });
 
   return (
-    <>
+    <div className={'flex flex-col gap-6'}>
+      <RejectionDetails />
       <DataTable {...props.datatable} table={table} pagination={false} />
       <div>
         <Accordion type={'multiple'} className={'w-full'} defaultValue={['inspection-report']}>
@@ -143,7 +145,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
           <TimesheetReports timesheet={props.timesheet!} type={'hse-report'} label={'HSE Report'} />
         </Accordion>
       </div>
-    </>
+    </div>
   );
 }
 

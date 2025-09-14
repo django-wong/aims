@@ -104,6 +104,7 @@ class Timesheet extends Model
     public function reject($message): void
     {
         $this->update([
+            'previous_status' => $this->status,
             'status' => Timesheet::DRAFT,
             'rejected' => true,
             'rejection_reason' => $message,

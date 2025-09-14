@@ -154,7 +154,13 @@ class TimesheetController extends Controller
     {
         Gate::authorize('approve', $timesheet);
 
+        start:
         $status = Timesheet\TimesheetStatus::make($timesheet);
+
+        if ($status->is(Timesheet\Draft::class)) {
+            $status->next()->transition($timesheet);
+            goto start;
+        }
 
         $next = $status->next();
 
