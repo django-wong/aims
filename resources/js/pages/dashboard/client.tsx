@@ -37,7 +37,7 @@ export default function ClientDashboard() {
             <div className={'grid gap-4'}>
               <Timesheets
                 filters={{
-                  'filter[status]': '= 3',
+                  'filter[status]': '= 2',
                 }}
               />
             </div>

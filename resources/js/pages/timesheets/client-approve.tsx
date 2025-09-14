@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useTableApi } from '@/components/data-table-2';
 import { useIsClient } from '@/hooks/use-role';
 import { TimesheetStatus } from '@/types';
+import { RejectButton } from '@/pages/timesheets/reject-button';
 
 export function ClientApprove() {
   const timesheet = useTimesheet();
@@ -28,6 +29,7 @@ export function ClientApprove() {
         <CheckIcon />
         Approve
       </Button>
+      <RejectButton />
     </>
   );
 }

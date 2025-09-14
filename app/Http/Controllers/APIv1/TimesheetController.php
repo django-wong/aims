@@ -108,7 +108,7 @@ class TimesheetController extends Controller
                             'projects.client_id', auth()->user()->client->id
                         );
                 }
-            )->where('timesheets.status', '>', Timesheet::APPROVED);
+            )->where('timesheets.status', '>=', Timesheet::APPROVED);
         }
 
         $query

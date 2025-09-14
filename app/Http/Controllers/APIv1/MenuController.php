@@ -28,7 +28,7 @@ class MenuController
                         'badge' => Timesheet::query()->pending()->count()
                     ],
                 ] : []),
-                ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE, UserRole::INSPECTOR],[
+                ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE],[
                     'clients' => [
                         'name' => 'Clients',
                         'icon' => 'book-user',
