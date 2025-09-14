@@ -42,7 +42,7 @@ class TimesheetController extends Controller
     {
         return inertia('timesheets/edit', [
             'assignment' => $timesheet->assignment,
-            'timesheet' => $timesheet,
+            'timesheet' => $timesheet->load(['user', 'assignment.coordinator', 'assignment.operation_coordinator']),
         ]);
     }
 }

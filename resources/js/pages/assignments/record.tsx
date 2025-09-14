@@ -15,7 +15,7 @@ import { BaseLayout } from '@/layouts/base-layout';
 import { timesheet_range } from '@/lib/utils';
 import { AssignmentAttachments } from '@/pages/assignments/assignment-attachments';
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
-import { TimesheetItemActions, TimesheetItems } from '@/pages/timesheets/timesheet-items';
+import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { AssignmentProvider } from '@/providers/assignment-provider';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
 import { Assignment, AssignmentInspector, SharedData, Timesheet, TimesheetStatus } from '@/types';
@@ -146,9 +146,6 @@ export default function Record(props: RecordProps) {
                       </TabsContent>
                       <TabsContent value={'timesheet'} className={'relative flex flex-1 flex-col gap-4'}>
                         <TimesheetItems
-                          actions={(value) => {
-                            return <TimesheetItemActions editable={editable} value={value} />;
-                          }}
                           timesheet={props.timesheet}
                           assignment={props.assignment}
                           datatable={{

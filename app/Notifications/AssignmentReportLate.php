@@ -17,7 +17,7 @@ class AssignmentReportLate extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Assignment $assignment, private AssignmentInspector $inspector)
+    public function __construct(private Assignment $assignment, private User $inspector)
     {
         //
     }

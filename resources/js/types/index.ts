@@ -396,7 +396,7 @@ export interface Timesheet extends BaseModel {
   status: TimesheetStatus;
   rejected: boolean;
   rejection_reason: string | null;
-  issue_code: number;
+  issue_code: number|string;
 
   travel_distance: number;
   timesheet_items?: TimesheetItem[];

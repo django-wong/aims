@@ -75,7 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::get('assignments/{assignment}/daily-usage', [AssignmentController::class, 'daily_usage']);
 
     // Timesheets
-    Route::post('timesheets/{id}/sign-off', [TimesheetController::class, 'signOff']);
+    Route::post('timesheets/{timesheet}/sign-off', [TimesheetController::class, 'sign_off']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
     Route::post('timesheets/{timesheet}/reject', [TimesheetController::class, 'reject']);
 

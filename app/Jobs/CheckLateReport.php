@@ -8,7 +8,6 @@ use App\Models\Timesheet;
 use App\Notifications\AssignmentReportLate;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Ramsey\Uuid\Type\Time;
 
 class CheckLateReport implements ShouldQueue
 {
@@ -33,19 +32,13 @@ class CheckLateReport implements ShouldQueue
 
         $assignments->each(function (Assignment $assignment) {
             $assignment->assignment_inspectors->each(function ($inspector) use ($assignment) {
-
-                $start_of_last_week = now($this->org->timezone)->subWeek()->startOfWeek();
-
                 /**
                  * @var Timesheet|null $timesheet
                  */
-                $timesheet = $assignment->timesheets()
-                    ->where('user_id', $inspector->user_id)->where('status', '>', Timesheet::DRAFT)->whereDate('start', $start_of_last_week)
-                    ->first();
-
+                $start_of_last_week = now($this->org->timezone)->subWeek()->startOfWeek();
+                $timesheet = $assignment->timesheets()->where('user_id', $inspector->user_id)->where('status', '>', Timesheet::DRAFT)->whereDate('start', $start_of_last_week)->first();
                 if ($timesheet) {
-                    $exists = $timesheet->timesheet_reports()->where('type', 'inspection-report')->exists();
-                    if ($exists) {
+                    if ($timesheet->timesheet_reports()->where('type', 'inspection-report')->exists()) {
                         return;
                     }
                 }
@@ -53,6 +46,10 @@ class CheckLateReport implements ShouldQueue
                 $assignment->coordinator->notify(
                     new AssignmentReportLate($assignment, $inspector)
                 );
+
+                if ($timesheet) {
+                    $timesheet->update(['late' => true]);
+                }
             });
         });
     }

@@ -96,7 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Inspectors
     Route::get('inspectors', [InspectorController::class, 'index'])->name('inspectors');
-    Route::get('inspectors/{id}/edit', [InspectorController::class, 'edit']);
+    Route::get('inspectors/{id}/edit', [InspectorController::class, 'edit'])->name('inspectors.edit');
 
     // Reports
     Route::controller(ReportController::class)->prefix('reports')->group(function () {

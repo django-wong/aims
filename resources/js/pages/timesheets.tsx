@@ -10,9 +10,9 @@ import { ProjectSelect } from '@/components/project-select';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import axios from 'axios';
-import { FileIcon, ScrollTextIcon, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { GenerateFromSelectedTimesheets } from '@/pages/invoices/generate-from-selected-timesheets';
+import { Link } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -27,7 +27,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns: ColumnDef<Timesheet>[] = [
   {
-    accessorKey: 'assignment.referebce_number',
+    accessorKey: 'inspector_name',
+    header: 'Inspector',
+    cell: ({ row }) => {
+      return <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>
+        {row.original.inspector_name}
+      </Link>;
+    },
+  },
+  {
+    accessorKey: 'assignment.reference_number',
     header: 'Assignment',
     cell: ({ row }) => {
       return row.original.assignment?.reference_number || 'N/A';

@@ -54,7 +54,7 @@ export function Timesheets(props: TimesheetsProps) {
     {
       accessorKey: 'inspector',
       header: 'Inspector',
-      cell: ({ row }) => <span>{row.original.user?.name}</span>,
+      cell: ({ row }) => <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>{row.original.user?.name}</Link>,
     },
     {
       accessorKey: 'range',

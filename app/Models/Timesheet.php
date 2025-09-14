@@ -23,6 +23,8 @@ use Illuminate\Support\Carbon;
  * @property int                                                         $user_id
  * @property int                                                         $assignment_id
  * @property \Illuminate\Support\Carbon|mixed                            $approved_at
+ * @property boolean                                                     $late
+ * @property User                                                       $user
  */
 class Timesheet extends Model
 {
@@ -45,6 +47,7 @@ class Timesheet extends Model
             'date' => 'date',
             'start' => 'date',
             'end' => 'date',
+            'late' => 'boolean',
             'signed_off_at' => 'datetime',
             'submitted_at' => 'datetime',
             'approved_at' => 'datetime',

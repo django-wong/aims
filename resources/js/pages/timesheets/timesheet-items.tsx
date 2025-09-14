@@ -21,9 +21,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTimesheet } from '@/providers/timesheet-provider';
 import { TimesheetItemProvider } from '@/providers/timesheet-item-provider';
 import { TimesheetItemAttachments } from '@/pages/timesheets/timesheet-item-attachments';
+import { TimesheetReportProvider } from '@/providers/timesheet-report-provider';
+import { TimesheetReportForm } from '@/pages/assignments/assignment-report-form';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -51,8 +52,8 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     },
     {
       accessorKey: 'days',
-      header: 'Days & Overnights',
-      cell: ({ row }) => `${row.original.days} / ${row.original.overnights}`,
+      header: 'Overnights',
+      cell: ({ row }) => `${row.original.overnights}`,
     },
     {
       accessorKey: 'travel_distance',
@@ -98,22 +99,19 @@ export function TimesheetItems(props: TimesheetItemsProps) {
           </TimesheetItemProvider>
         </div>
       ),
-    }
-  ];
-
-  if (typeof props.actions === 'function') {
-    const action: ColumnDef<TimesheetItem> = {
+    },
+    {
       accessorKey: 'actions',
       header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
       size: 150,
       enablePinning: true,
       cell: ({ row }) => {
-        return <TableCellWrapper last>{props.actions?.(row.original)}</TableCellWrapper>;
+        return <TableCellWrapper last>
+          <TimesheetItemActions value={row.original}/>
+        </TableCellWrapper>;
       },
-    };
-
-    columns.push(action);
-  }
+    }
+  ];
 
   const table = useTable<TimesheetItem>('/api/v1/timesheet-items', {
     selectable: false,
@@ -151,7 +149,6 @@ export function TimesheetItems(props: TimesheetItemsProps) {
 
 interface TimesheetItemActionsProps {
   value: TimesheetItem;
-  editable: boolean;
 }
 
 export function TimesheetItemActions(props: TimesheetItemActionsProps) {
@@ -165,7 +162,7 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
     <>
       <div className={'flex items-center justify-end gap-2'}>
         <TimesheetItemForm value={props.value} onSubmit={onSubmit} asChild>
-          <Button variant={'secondary'} size={'sm'} disabled={!props.editable}>
+          <Button variant={'secondary'} size={'sm'}>
             <PencilIcon />
           </Button>
         </TimesheetItemForm>
@@ -182,8 +179,6 @@ interface TimesheetReportsProps {
 }
 
 function TimesheetReports(props: TimesheetReportsProps) {
-  const timesheet = useTimesheet();
-
   const api = usePagedGetApi<TimesheetReport>('/api/v1/timesheet-reports', {
     searchParams: new URLSearchParams({
       'timesheet_id': String(props.timesheet.id),
@@ -223,55 +218,66 @@ function TimesheetReports(props: TimesheetReportsProps) {
         <AccordionContent>
           <div className={'flex justify-start gap-4'}>
             {(api.data || []).map((report, index) => (
-              <AttachmentItem
-                attachment={report.attachment!}
-                key={index}
-                actions={(
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size={'icon'} variant={'ghost'}>
-                        <EllipsisVerticalIcon/>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className={'max-w-56'} align={'start'} side={'right'}>
-                      <DropdownMenuLabel>{report.attachment?.name}</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => {window.open(route('attachments.download', { id: report.attachment?.id }))}}>
-                        Download
-                        <DropdownMenuShortcut>
-                          <DownloadIcon/>
-                        </DropdownMenuShortcut>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator></DropdownMenuSeparator>
-                      <DropdownMenuItem variant={'destructive'} onClick={() => deleteReport(report)}>
-                        Delete
-                        <DropdownMenuShortcut>
-                          <Trash2Icon/>
-                        </DropdownMenuShortcut>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              />
+              <TimesheetReportProvider value={report} key={index}>
+                <AttachmentItem
+                  attachment={report.attachment!}
+                  key={index}
+                  actions={(
+                    <>
+                      <TimesheetReportForm value={report} onSubmit={() => {}}>
+                        <Button size={'sm'} variant={'ghost'}>
+                          <PencilIcon/>
+                        </Button>
+                      </TimesheetReportForm>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size={'sm'} variant={'ghost'}>
+                            <EllipsisVerticalIcon/>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className={'w-56'} align={'start'} side={'right'}>
+                          <DropdownMenuLabel>{report.attachment?.name}</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => {window.open(route('attachments.download', { id: report.attachment?.id }))}}>
+                            Download
+                            <DropdownMenuShortcut>
+                              <DownloadIcon/>
+                            </DropdownMenuShortcut>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator></DropdownMenuSeparator>
+                          <DropdownMenuItem variant={'destructive'} onClick={() => deleteReport(report)}>
+                            Delete
+                            <DropdownMenuShortcut>
+                              <Trash2Icon/>
+                            </DropdownMenuShortcut>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </>
+                  )}
+                />
+              </TimesheetReportProvider>
             ))}
-            {
-              timesheet?.status && (timesheet?.status > 0) ? null : (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <AttachmentRoot className={'w-32 bg-secondary/20 aspect-[3/3] border-dashed flex flex-col items-center justify-center hover:bg-background'}>
-                      <label>
-                        <div>
-                          <PlusIcon size={32}/>
-                        </div>
-                        <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
-                      </label>
-                    </AttachmentRoot>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Upload .xlsx .pdf .docs or image files.
-                  </TooltipContent>
-                </Tooltip>
-              )
-            }
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AttachmentRoot className={'bg-secondary/20 border-dashed flex flex-col items-center justify-center hover:bg-background'}>
+                  <label>
+                    <div>
+                      <PlusIcon size={32}/>
+                    </div>
+                    <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
+                  </label>
+                </AttachmentRoot>
+              </TooltipTrigger>
+              <TooltipContent>
+                Upload .xlsx .pdf .docs or image files.
+              </TooltipContent>
+            </Tooltip>
+
+            {/*{*/}
+            {/*  timesheet?.status && (timesheet?.status > 0) ? null : (*/}
+            {/*  )*/}
+            {/*}*/}
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -286,12 +292,12 @@ interface AttachmentItemProps {
 }
 
 export function AttachmentItem(props: AttachmentItemProps) {
-  return <AttachmentRoot onClick={() => {window.open(route('attachments.download', { id: props.attachment?.id }))}}>
+  return <AttachmentRoot>
     <div className={'flex-grow flex items-center justify-center relative'}>
       {
-        props.children ?? (<FileTextIcon/>)
+        props.children ?? (<FileTextIcon size={48}/>)
       }
-      <div className={'top-0 right-0 absolute'} onClick={(event) => { event.stopPropagation(); event.preventDefault(); }}>
+      <div className={'top-2 right-2 absolute flex gap-1'}>
         { props.actions }
       </div>
     </div>
@@ -305,7 +311,7 @@ export function AttachmentItem(props: AttachmentItemProps) {
 }
 
 export function AttachmentRoot(props: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('w-48 h-32 rounded-lg border flex flex-col hover:bg-accent cursor-pointer', props.className)}>
+  return <div {...props} className={cn('w-48 h-48 rounded-lg border flex flex-col hover:bg-accent/30 cursor-pointer', props.className)}>
     {props.children}
   </div>;
 }

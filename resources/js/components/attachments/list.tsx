@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AttachableProvider } from '@/providers/attachable-provider';
 import { UploadForm } from '@/components/attachments/upload-form';
-import { UploadIcon } from 'lucide-react';
+import { CloudUploadIcon, TrashIcon, UploadIcon } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AttachmentListProps {
   onUploadComplete?: () => void;
@@ -86,5 +87,25 @@ const columns: ColumnDef<Attachment>[] = [
         </Badge>
       </TableCellWrapper>
     )
+  },
+  {
+    accessorKey: 'actions',
+    header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
+    cell: () => (
+      <TableCellWrapper last className={'flex gap-2 justify-end'}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant={'outline'} size={'sm'}>
+              <CloudUploadIcon/>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Upload a replacement file
+          </TooltipContent>
+        </Tooltip>
+        <Button variant={'destructive'} size={'sm'}><TrashIcon/></Button>
+      </TableCellWrapper>
+    )
   }
 ]
+

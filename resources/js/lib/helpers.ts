@@ -30,10 +30,7 @@ export const throttle = (func: (...args: unknown[]) => void, limit: number): ((.
  * @param wait - The delay in milliseconds.
  * @returns A debounced version of the provided function.
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
-  wait: number,
-): (...args: Parameters<T>) => void {
+export function debounce<T extends (...args: unknown[]) => unknown>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: number | null = null;
 
   return function (...args: Parameters<T>): void {
@@ -82,13 +79,16 @@ export const getInitials = (name: string | null | undefined, count?: number): st
  * @param input - A date string or timestamp to format.
  * @returns A string formatted as "Month Day, Year".
  */
-export function formatDate(input: Date | string | number): string {
-  const date = new Date(input);
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
+export function formatDate(
+  input: Date | string | number,
+  options: any = {
+    month: 'numeric',
     day: 'numeric',
     year: 'numeric',
-  });
+  },
+): string {
+  const date = new Date(input);
+  return date.toLocaleDateString(navigator.language, options);
 }
 
 /**
@@ -123,7 +123,6 @@ export function formatCurrency(amount: number, currency: string = 'USD', locale:
     currency,
   }).format(amount);
 }
-
 
 /**
  * Constructs an absolute URL for media assets.

@@ -25,7 +25,7 @@ export function InfoHead({ children, right }: PropsWithChildren<{right?: React.R
 export function InfoLineLabel({ children, icon }: PropsWithChildren<{icon?: IconName}>) {
   return (
     <>
-      <h4 className={'text-muted-foreground flex justify-start gap-1 items-center text-sm flex-shrink-0'}>
+      <h4 className={'text-muted-foreground flex justify-start gap-1 items-center flex-shrink-0 origin-left scale-90'}>
         { icon ? (
           <DynamicIcon name={icon} className={'w-4 h-4 mr-1'} />
         ) : null}
@@ -53,11 +53,11 @@ export function InfoLine({
   className?: string;
 }) {
   return (
-    <div className={`flex justify-between items-start gap-2 ${className} flex-wrap min-h-8`}>
+    <div className={cn(`transition-all hover:bg-muted/60 hover:rounded-sm -mx-2 px-2 py-1 flex justify-between items-start gap-2 flex-wrap`, className)}>
       <InfoLineLabel icon={icon}>
         {label}
       </InfoLineLabel>
-      <InfoLineValue className={'text-right'}>
+      <InfoLineValue className={'flex justify-end text-right'}>
         {children}
       </InfoLineValue>
     </div>

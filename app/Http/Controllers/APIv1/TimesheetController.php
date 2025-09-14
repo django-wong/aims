@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Filters\OperatorFilter;
 use App\Http\Requests\APIv1\RejectTimesheetRequest;
+use App\Http\Requests\APIv1\UpdateTimesheetRequest;
 use App\Models\Timesheet;
 use App\Models\UserRole;
 use App\Notifications\TimesheetRejected;
@@ -15,16 +16,27 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class TimesheetController extends Controller
 {
-    public function signOff(string $id)
+    /**
+     * Sign off by inspector for a specific timesheet
+     * @param string $id
+     * @return array
+     */
+    public function sign_off(Timesheet $timesheet)
     {
-        $timesheet = Timesheet::query()->with('assignment')->findOrFail($id);
-
         Gate::authorize('update', $timesheet);
 
         $status = Timesheet\TimesheetStatus::make($timesheet);
 
         if ($status->is(Timesheet\Draft::class)) {
+            if (empty($timesheet->signed_off_at)) {
+                $deadline = Carbon::parse($timesheet->start, $timesheet->assignment->org->timezone)->startOfWeek()->addWeek()->setTime(10, 0);
+                if (now($timesheet->assignment->org->timezone)->greaterThan($deadline)) {
+                    $timesheet->late = true;
+                }
+            }
             $timesheet->signed_off_at = Carbon::now();
+            $timesheet->save();
+
             $status->next()?->transition($timesheet);
         }
 
@@ -100,10 +112,13 @@ class TimesheetController extends Controller
         }
 
         $query
+            ->leftJoin('users', 'timesheets.user_id', '=', 'users.id')
             ->leftJoin('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
-            ->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id');
+            ->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id')
+            ->leftJoin('vendors as sub_vendor', 'sub_vendor.id', '=', 'assignments.sub_vendor_id')
+            ->leftJoin('vendors as main_vendor', 'main_vendor.id', '=', 'assignments.vendor_id');
 
-        $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency');
+        $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency', 'users.name as inspector_name');
 
         return $query->paginate();
     }
@@ -116,6 +131,16 @@ class TimesheetController extends Controller
                 'assignment', 'assignment.project', 'assignment.project.client', 'timesheet_items', 'timesheet_items.user'
             ])
         ]);
+    }
+
+    public function update(UpdateTimesheetRequest $request, Timesheet $timesheet)
+    {
+        $updated = $timesheet->update($request->input());
+
+        return [
+            'message' => $updated ? 'Timesheet updated successfully.' : 'No changes made to the timesheet.',
+            'data' => $timesheet
+        ];
     }
 
     public function destroy(Timesheet $timesheet)

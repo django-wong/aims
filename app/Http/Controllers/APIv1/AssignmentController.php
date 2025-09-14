@@ -289,7 +289,9 @@ class AssignmentController extends Controller
 
         $query = TimesheetReport::query()
             ->whereIn('timesheet_id', function (QueryBuilder $query) use ($assignment) {
-                $query->select('id')->from('timesheets')->where('status', '>', Timesheet::DRAFT)->where('assignment_id', $assignment->id);
+                $query->select('id')->from('timesheets')->where(function (QueryBuilder $query) {
+                    $query->where('status', '>', Timesheet::DRAFT)->orWhere('rejected', true);
+                })->where('assignment_id', $assignment->id);
             });
 
         $query->with([
