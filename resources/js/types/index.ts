@@ -396,7 +396,7 @@ export interface Timesheet extends BaseModel {
   status: TimesheetStatus;
   rejected: boolean;
   rejection_reason: string | null;
-  issue_code: number|string;
+  issue_code: number | string;
 
   travel_distance: number;
   timesheet_items?: TimesheetItem[];
@@ -522,4 +522,25 @@ export interface Certificate extends BaseModel {
   title: string;
   issued_at: string | null; // YYYY-MM-DD format
   expires_at: string | null; // YYYY-MM-DD format
+}
+
+export interface LateReport extends BaseModel {
+  timesheet_id: number;
+  reference_number: string;
+  assignment_id: number;
+  org_id: number;
+  operation_org_id: number;
+  org_name: string;
+  operation_org_name: string;
+  inspector_name: string;
+  inspector_id: number;
+  report_required: number;
+  issue_code: number;
+  earliest_visit_date: string;
+  report_no: string | null;
+  client_business_name: string;
+  client_id: number;
+  project_id: number;
+  target: number;
+  days_to_report: number;
 }

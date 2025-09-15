@@ -21,7 +21,7 @@ const ISSUES = [
   ['12', 'Vendot error / info. not supplied'],
 ];
 
-function describeTimesheetIssue(code: string | null | number) {
+export function describeTimesheetIssue(code: string | null | number) {
   const issue = ISSUES.find(([value]) => value === String(code));
   if (!issue) {
     return 'No Issue';

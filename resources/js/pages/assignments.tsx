@@ -34,6 +34,7 @@ import { ClientSelect } from '@/components/client-select';
 import { useIsClient } from '@/hooks/use-role';
 import dayjs from 'dayjs';
 import { HideFromClient } from '@/components/hide-from-client';
+import { TableFilter } from '@/components/table/filter';
 
 export const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -272,14 +273,14 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     {
       id: 'client_code',
       accessorKey: 'client_code',
-      header: 'Client Code',
+      header: () => <TableFilter>
+        Client Code
+      </TableFilter>,
       cell: ({ row }) => {
         return (
-          <>
-            <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
-              {row.original.project?.client?.code}
-            </Link>
-          </>
+          <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
+            {row.original.project?.client?.code}
+          </Link>
         );
       },
     },

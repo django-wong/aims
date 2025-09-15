@@ -17,8 +17,8 @@ class OrgFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->company,
-            'code' => $this->faker->unique()->lexify('???'),
+            'name' => $this->faker->country(),
+            'code' => $this->faker->countryCode(),
             'timezone' => 'Australia/Perth'
         ];
     }

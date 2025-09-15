@@ -12,6 +12,8 @@ import { Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
 import { AttachmentItem } from '@/pages/timesheets/timesheet-items';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useQueryParam } from '@/hooks/use-query-param';
 
 const schema = z.object({
   content: z.string().min(1, 'Comment cannot be empty'),
@@ -28,6 +30,9 @@ interface CommentsProps {
 }
 
 export function Comments(props: CommentsProps) {
+
+  const [onlyAttachments, setOnlyAttachments] = useQueryParam('only_attachments', '0')
+
   const table = usePagedGetApi<Comment>('/api/v1/comments', {
     searchParams: new URLSearchParams({
       commentable_type: props.commentableType,
@@ -35,6 +40,7 @@ export function Comments(props: CommentsProps) {
       per_page: '999',
       include: 'attachments,user',
       sort: '-created_at',
+      'filter[attachments]': onlyAttachments,
     }),
   });
 
@@ -73,7 +79,7 @@ export function Comments(props: CommentsProps) {
   return (
     <>
       <div className={'flex flex-col gap-4'}>
-        <div className={''}>
+        <div className={'p-4 border rounded-lg bg-muted'}>
           <Form {...form} watch={form.watch}>
             <div className={'flex flex-col gap-4'}>
               <FormField
@@ -145,44 +151,54 @@ export function Comments(props: CommentsProps) {
           </Form>
         </div>
 
-        <Accordion type={'multiple'} defaultValue={['comments']}>
-          <AccordionItem value={'attachments'}>
-            <AccordionTrigger>All files in comments (click to expand)</AccordionTrigger>
-            <AccordionContent>
-              <div className={'flex gap-4 items-center justify-start overflow-x-auto pb-1'}>
-                {
-                  (table.data || []).reduce<Attachment[]>((attachments, item) => {
-                    if (item.attachments) {
-                      attachments.push(...item.attachments);
-                    }
-                    return attachments;
-                  }, []).map((attachment, index) => {
-                    return (
-                      <AttachmentItem attachment={attachment} key={index}/>
-                    );
-                  })
-                }
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <div>
+          <Label>
+            <Switch checked={onlyAttachments === '1'} onCheckedChange={(checked) => {
+              setOnlyAttachments(checked ? '1' : '0')
+            }}/> Filter comments with attachment
+          </Label>
+        </div>
+
 
         {table.data && table.data.length ? (
-          <div className={'grid gap-8 rounded-lg'}>
-            {table.data.map((comment, index) => (
-              <div key={`comment:${index}`} className={'grid gap-4 border-t pt-4'}>
-                <p className={'flex w-full items-center justify-start gap-2 text-sm'}>
-                  <strong>{comment.user?.name ?? 'Anonymous'}</strong>
-                  <span className={'flex-grow inline-flex items-center justify-end gap-2'}>
-                    {comment.private ? <Lock className={'size-4'} /> : null}
-                    <span className={'text-muted-foreground text-xs'}>{new Date(comment.created_at).toLocaleString()}</span>
-                  </span>
-                </p>
-                <p>{comment.content}</p>
-                <Attachments attachments={comment.attachments} />
-              </div>
-            ))}
-          </div>
+          <>
+            <Accordion type={'multiple'} defaultValue={['comments']}>
+              <AccordionItem value={'attachments'}>
+                <AccordionTrigger>All files in comments (click to expand)</AccordionTrigger>
+                <AccordionContent>
+                  <div className={'flex gap-4 items-center justify-start overflow-x-auto pb-1'}>
+                    {
+                      (table.data || []).reduce<Attachment[]>((attachments, item) => {
+                        if (item.attachments) {
+                          attachments.push(...item.attachments);
+                        }
+                        return attachments;
+                      }, []).map((attachment, index) => {
+                        return (
+                          <AttachmentItem attachment={attachment} key={index}/>
+                        );
+                      })
+                    }
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <div className={'grid gap-8 rounded-lg'}>
+              {table.data.map((comment, index) => (
+                <div key={`comment:${index}`} className={'grid gap-2 border-t pt-4'}>
+                  <p className={'flex w-full items-center justify-start gap-2 text-sm'}>
+                    <span className={'font-bold'}>{comment.user?.name ?? 'Anonymous'}</span>
+                    <span className={'flex-grow inline-flex items-center justify-end gap-2'}>
+                      {comment.private ? <Lock className={'size-4'} /> : null}
+                      <span className={'text-muted-foreground text-xs'}>{new Date(comment.created_at).toLocaleString()}</span>
+                    </span>
+                  </p>
+                  <p>{comment.content}</p>
+                  <Attachments attachments={comment.attachments} />
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <p className={'text-muted-foreground py-6 text-center text-sm'}>No comments yet. Be the first to comment!</p>
         )}
@@ -210,7 +226,7 @@ function Attachments(props: { attachments?: Attachment[] }) {
 
 function AttachmentDownload(props: { attachment: Attachment }) {
   return (
-    <a href={route('attachments.download', { id: props.attachment.id })} target={'_blank'} className={'inline-flex items-center gap-1 text-sm'}>
+    <a href={route('attachments.download', { id: props.attachment.id })} target={'_blank'} className={'inline-flex items-center gap-1 text-sm border py-1 px-2 rounded-lg'}>
       <Paperclip className={'size-4'} />
       {props.attachment.name}
     </a>

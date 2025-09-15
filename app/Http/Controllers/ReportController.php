@@ -175,4 +175,9 @@ class ReportController extends Controller
             'title' => 'Invoice Required Report',
         ]);
     }
+
+    public function reports_late()
+    {
+        return inertia('reports/reports-late');
+    }
 }

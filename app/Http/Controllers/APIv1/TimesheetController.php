@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Filters\OperatorFilter;
+use App\Http\Requests\APIv1\ApproveTimesheetRequest;
 use App\Http\Requests\APIv1\RejectTimesheetRequest;
+use App\Http\Requests\APIv1\SignOffTimesheetRequest;
 use App\Http\Requests\APIv1\UpdateTimesheetRequest;
 use App\Models\Timesheet;
 use App\Models\UserRole;
@@ -11,6 +13,7 @@ use App\Notifications\TimesheetRejected;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -21,7 +24,7 @@ class TimesheetController extends Controller
      * @param string $id
      * @return array
      */
-    public function sign_off(Timesheet $timesheet)
+    public function sign_off(SignOffTimesheetRequest $request, Timesheet $timesheet)
     {
         Gate::authorize('update', $timesheet);
 
@@ -34,8 +37,15 @@ class TimesheetController extends Controller
                     $timesheet->late = true;
                 }
             }
-            $timesheet->signed_off_at = Carbon::now();
-            $timesheet->save();
+
+            DB::transaction(function () use ($timesheet, $request) {
+                $timesheet->signed_off_at = Carbon::now();
+                $timesheet->save();
+                $timesheet->signatures()->updateOrCreate(
+                    ['timesheet_id' => $timesheet->id],
+                    ['inspector_signature' => $request->input('signature_base64')]
+                );
+            });
 
             $status->next()?->transition($timesheet);
         }
@@ -150,7 +160,7 @@ class TimesheetController extends Controller
         ]);
     }
 
-    public function approve(Timesheet $timesheet)
+    public function approve(ApproveTimesheetRequest $request, Timesheet $timesheet)
     {
         Gate::authorize('approve', $timesheet);
 

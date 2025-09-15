@@ -70,7 +70,7 @@ class Timesheet extends Model
      * @param Builder $query
      * @return Builder
      */
-    public function scopePending(Builder $query)
+    public function scopePending(Builder $query): Builder
     {
         return $query->where(function (Builder $query) {
             // As a coordinator, I want to see timesheets that need my approval
@@ -115,5 +115,10 @@ class Timesheet extends Model
         ]);
 
         $this->fireModelEvent('rejected');
+    }
+
+    public function signatures()
+    {
+        return $this->hasOne(TimesheetSignature::class);
     }
 }

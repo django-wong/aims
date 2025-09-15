@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/hours-entry', [ReportController::class, 'hours_entry']);
     Route::get('reports/hours-log', [ReportController::class, 'hours_log']);
     Route::get('reports/man-hours-by-year', ManHoursByYearController::class);
+    Route::get('reports/late-reports', [\App\Http\Controllers\APIv1\Reports\LateReportController::class, 'index']);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);

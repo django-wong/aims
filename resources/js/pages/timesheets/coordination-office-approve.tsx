@@ -1,16 +1,12 @@
 import { useTimesheet } from '@/providers/timesheet-provider';
-import { Button } from '@/components/ui/button';
-import { CheckIcon } from 'lucide-react';
-import axios from 'axios';
-import { useTableApi } from '@/components/data-table-2';
 import { useRole } from '@/hooks/use-role';
 import { useAuth } from '@/hooks/use-auth';
 import { Role, TimesheetStatus } from '@/types';
 import { RejectButton } from '@/pages/timesheets/reject-button';
+import { ApproveTimesheetForm } from '@/pages/timesheets/contractor-holder-approve';
 
 export function CoordinationOfficeApprove() {
   const timesheet = useTimesheet();
-  const table = useTableApi();
 
   const role = useRole();
   const auth = useAuth();
@@ -27,19 +23,10 @@ export function CoordinationOfficeApprove() {
     return null;
   }
 
-  function approve() {
-    axios.post(`/api/v1/timesheets/${timesheet!.id}/approve`).then(() => {
-      if (table) {
-        table.reload();
-      }
-    });
-  }
+
   return (
     <>
-      <Button variant={'primary'} onClick={approve} size={'sm'} className={'coordination-office-approve-button'}>
-        <CheckIcon />
-        Approve
-      </Button>
+      <ApproveTimesheetForm/>
       <RejectButton />
     </>
   );

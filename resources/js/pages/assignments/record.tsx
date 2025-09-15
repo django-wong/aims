@@ -7,7 +7,7 @@ import { SizeAwareBuilder } from '@/components/size-aware-builder';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQueryParam } from '@/hooks/use-query-param';
@@ -17,7 +17,7 @@ import { AssignmentAttachments } from '@/pages/assignments/assignment-attachment
 import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { AssignmentProvider } from '@/providers/assignment-provider';
-import { TimesheetProvider } from '@/providers/timesheet-provider';
+import { TimesheetProvider, useTimesheet } from '@/providers/timesheet-provider';
 import { Assignment, AssignmentInspector, SharedData, Timesheet, TimesheetStatus } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useLocalStorage } from '@uidotdev/usehooks';
@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { startTransition, useRef, useState } from 'react';
 import SignaturePad, { SignatureCanvas } from 'react-signature-canvas';
+import { Loading } from '@/components/ui/loading';
 
 interface RecordProps {
   assignment: Assignment;
@@ -56,16 +57,6 @@ export default function Record(props: RecordProps) {
   const [showSpecialNotes, setShowSpecialNotes] = useState(requireSignature || !specialNotesHasBeenRead);
 
   const [hash, setHash] = useQueryParam('tab', 'timesheet');
-
-  function signoff() {
-    axios.post('/api/v1/timesheets/' + props.timesheet.id + '/sign-off').then((response) => {
-      if (response.data) {
-        startTransition(() => {
-          router.reload();
-        });
-      }
-    });
-  }
 
   const editable = props.timesheet?.status === TimesheetStatus.Draft;
 
@@ -195,7 +186,7 @@ export default function Record(props: RecordProps) {
                                 {editable && (
                                   <>
                                     <LogYourTime timesheet={props.timesheet} />
-                                    <SignOffForm onConfirm={signoff}>
+                                    <SignOffForm>
                                       <Button variant={'primary'} disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
                                         <SendIcon />
                                         Submit for Approval
@@ -438,27 +429,54 @@ interface SignOffFormProps {
 }
 
 function SignOffForm(props: SignOffFormProps) {
+  const signaturepad = useRef<SignatureCanvas>(null);
   const [open, setOpen] = useState(false);
-  function onClick() {
-    setOpen(false);
-    props.onConfirm?.();
+  const timesheet = useTimesheet();
+  const [loading, setLoading] = useState(false);
+
+  function signoff() {
+    if (signaturepad.current!.isEmpty()) {
+      return;
+    }
+    setLoading(true);
+    axios.post('/api/v1/timesheets/' + timesheet!.id + '/sign-off', {
+      signature_base64: signaturepad.current?.toDataURL(),
+    }).then((response) => {
+      setOpen(false);
+      props.onConfirm?.();
+      if (response.data) {
+        startTransition(() => {
+          router.reload();
+        });
+      }
+    }).finally(() => {
+      setLoading(false);
+    });
   }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Sign Off</DialogTitle>
+          <DialogDescription>
+            Don't forget to upload your weekly inspection report if applicable. Your timesheet will be signed off and no further changes can be made.
+          </DialogDescription>
         </DialogHeader>
-        <p className={'text-sm'}>
-          Don't forget to upload your weekly inspection report if applicable. Your timesheet will be signed off and no further changes can be made.
-        </p>
+        <p>Please sign in the space bellow</p>
+        <div className={'border bg-muted'}>
+          <SizeAwareBuilder
+            className={'aspect-video w-full'}
+            builder={(size) => <SignaturePad ref={signaturepad} canvasProps={{ ...size }} />}
+          />
+        </div>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant={'outline'}>Cancel</Button>
           </DialogClose>
-          <Button variant={'destructive'} onClick={onClick}>
-            Sign Off
+          <Button disabled={loading} variant={'destructive'} onClick={signoff}>
+            <Loading show={loading}/> Sign Off
           </Button>
         </DialogFooter>
       </DialogContent>

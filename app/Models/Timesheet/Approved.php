@@ -4,6 +4,7 @@ namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
 use App\Notifications\TimesheetIsWaitingForClientApproval;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Operation office has approved the timesheet, now it's waiting for contract holder office approval.
@@ -31,10 +32,17 @@ class Approved implements Status
             $timesheet->signed_off_at = now();
         }
 
-        $timesheet->approved_at = now();
+        DB::transaction(function () use ($timesheet) {
+            $timesheet->approved_at = now();
+            $timesheet->status = Timesheet::APPROVED;
+            $timesheet->save();
 
-        $timesheet->status = Timesheet::APPROVED;
-        $timesheet->save();
+            $timesheet->signatures()->updateOrCreate([
+                'timesheet_id' => $timesheet->id,
+            ], [
+                'coordinator_signature' => request('signature_base64'),
+            ]);
+        });
 
         $client = $timesheet->assignment?->project?->client;
         foreach ([$client?->coordinator, $client?->reviewer] as $notifiable) {

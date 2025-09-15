@@ -6,10 +6,24 @@ use App\Http\Requests\APIv1\Comments\IndexRequest;
 use App\Http\Requests\APIv1\Comments\StoreRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class CommentController extends Controller
 {
+    protected function allowedFilters()
+    {
+        return [
+            AllowedFilter::callback('attachments', function (Builder $query, $value) {
+                if ($value === '1') {
+                    $query->whereHas('attachments');
+                }
+            })
+        ];
+    }
+
     protected function allowedIncludes()
     {
         return [
@@ -56,7 +70,7 @@ class CommentController extends Controller
          */
         $comment = $commentable->comments()->create($request->basic());
 
-        if (! empty($attachments = $request->file('attachments'))) {
+        if (!empty($attachments = $request->file('attachments'))) {
             foreach ($attachments as $attachment) {
                 Attachment::store(
                     $attachment, attachable: $comment

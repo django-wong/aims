@@ -5,7 +5,6 @@ import { useQueryParam } from '@/hooks/use-query-param';
 import AppLayout from '@/layouts/app-layout';
 import { formatDate } from '@/lib/helpers';
 import { TimesheetIssue } from '@/pages/timesheets/issue';
-import { RejectionDetails } from '@/pages/timesheets/rejection-details';
 import { ReportLate } from '@/pages/timesheets/report-late';
 import { TimesheetStatus } from '@/pages/timesheets/status';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
