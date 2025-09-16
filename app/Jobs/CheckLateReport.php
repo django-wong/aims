@@ -49,16 +49,17 @@ class CheckLateReport implements ShouldQueue
 
                 if ($timesheet) {
                     $timesheet->update(['late' => true]);
-                } else {
-                    $assignment->timesheets()->create([
-                        'user_id' => $inspector->user_id,
-                        'org_id' => $this->org->id,
-                        'late' => true,
-                        'start' => $start_of_last_week,
-                        'end' => $start_of_last_week->copy()->endOfWeek(),
-                        'status' => Timesheet::DRAFT,
-                    ]);
+                    return;
                 }
+
+                $assignment->timesheets()->create([
+                    'user_id' => $inspector->user_id,
+                    'org_id' => $this->org->id,
+                    'late' => true,
+                    'start' => $start_of_last_week,
+                    'end' => $start_of_last_week->copy()->endOfWeek(),
+                    'status' => Timesheet::DRAFT,
+                ]);
             });
         });
     }

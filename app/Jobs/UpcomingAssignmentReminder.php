@@ -18,6 +18,13 @@ class UpcomingAssignmentReminder implements ShouldQueue
      */
     public function __construct(private readonly Org|null $org = null)
     {
+    }
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
+    {
         Assignment::query()->tap(function (Builder $query) {
             if ($this->org) {
                 $query->where('org_id', $this->org->id);
@@ -35,13 +42,5 @@ class UpcomingAssignmentReminder implements ShouldQueue
                 }
             });
         });
-    }
-
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
-    {
-        //
     }
 }

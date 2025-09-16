@@ -14,6 +14,7 @@ import { Budgets } from '@/pages/purchase-orders/budgets';
 import { PurchaseOrderProvider } from '@/providers/purchasr-order-provider';
 import { PurchaseOrderForm } from '@/pages/purchase-orders/form';
 import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
+import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -29,6 +30,7 @@ export default function PurchaseOrderEditPage(props: Props) {
   const [tab, setTab] = useQueryParam('tab', 'overview');
 
   return (
+    <PurchaseOrderProvider value={props.purchase_order}>
     <Layout
       pageAction={
         <PurchaseOrderForm value={props.purchase_order} onSubmit={() => {router.reload()}}>
@@ -139,6 +141,7 @@ export default function PurchaseOrderEditPage(props: Props) {
                     </span>
                   )}
                 </InfoLine>
+                <UsageAlertGaugeChart/>
               </div>
               <InfoHead>Overall Usage</InfoHead>
               <UsageRadarChart/>
@@ -147,6 +150,7 @@ export default function PurchaseOrderEditPage(props: Props) {
         }
       />
     </Layout>
+    </PurchaseOrderProvider>
   );
 }
 
