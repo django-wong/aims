@@ -18,7 +18,7 @@ return new class extends Migration
                    assignments.delegated         as delegated,
                    timesheets.client_approved_at as client_approved_at
             from timesheets
-            left join app.assignments on timesheets.assignment_id = assignments.id
+            left join assignments on timesheets.assignment_id = assignments.id
             where deleted_at is null and ((contractor_invoice_id is null and assignments.delegated = 1) or client_invoice_id is null) and client_approved_at is not null;
         ");
     }

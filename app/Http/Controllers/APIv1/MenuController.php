@@ -133,7 +133,7 @@ class MenuController
                 'icon' => 'calendar-clock'
             ],
             [
-                'name' => 'Man-hours summary',
+                'name' => 'Man-hours',
                 'url' => route('reports.man-hours'),
                 'icon' => 'clock-fading',
                 'children' => [

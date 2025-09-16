@@ -8,4 +8,9 @@ trait HasManyTimesheetReport
     {
         return $this->hasMany(TimesheetReport::class);
     }
+
+    public function inspection_report()
+    {
+        return $this->hasOne(TimesheetReport::class)->where('report_type', 'inspection-report');
+    }
 }
