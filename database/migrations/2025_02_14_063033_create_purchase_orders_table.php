@@ -35,6 +35,16 @@ return new class extends Migration
                 'CASE WHEN budgeted_hours > 0 THEN total_hours / budgeted_hours ELSE 0 END'
             );
 
+            // Usage of hours
+            $table->decimal('travel_usage')->storedAs(
+                'CASE WHEN budgeted_mileage > 0 THEN total_mileage / budgeted_mileage ELSE 0 END'
+            );
+
+            // Usage of hours
+            $table->decimal('budget_usage')->storedAs(
+                'CASE WHEN budget > 0 THEN total_cost / budget ELSE 0 END'
+            );
+
             foreach (['first', 'second', 'final'] as $stage) {
                 $table->unsignedInteger($stage.'_alert_threshold')->default(70);
                 $table->timestamp($stage.'_alert_at')->nullable();
