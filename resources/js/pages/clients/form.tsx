@@ -21,13 +21,14 @@ import { Circle, LocationEdit } from 'lucide-react';
 import { StaffSelect } from '@/components/user-select';
 import AvatarUpload from '@/components/file-upload/avatar-upload';
 import { useEffect, useState } from 'react';
+import { QuickNewStaffButton } from '@/pages/clients/quick-new-staff-button';
 
 const schema = z.object({
   business_name: z.string().min(1, 'Business name is required'),
-  client_group: z.string().optional().nullable(),
-  code: z.string().optional().nullable(),
-  coordinator_id: z.number().nullable().optional(),
-  reviewer_id: z.number().nullable().optional(),
+  client_group: z.string(),
+  code: z.string(),
+  coordinator_id: z.number().optional().nullable(),
+  reviewer_id: z.number().optional().nullable(),
   logo_url: z.string().optional().nullable(),
   logo: z.file().optional(),
   address: z.null().or(
@@ -41,13 +42,13 @@ const schema = z.object({
   invoice_reminder: z.coerce.number().min(1).max(30).nullable(),
 }).superRefine((data, context) => {
   // Logo is required if no logo_url is provided
-  if (!data.logo_url && !data.logo) {
-    context.addIssue({
-      code: 'custom',
-      message: 'Logo is required',
-      path: ['logo'],
-    })
-  }
+  // if (!data.logo_url && !data.logo) {
+  //   context.addIssue({
+  //     code: 'custom',
+  //     message: 'Logo is required',
+  //     path: ['logo'],
+  //   })
+  // }
 });
 
 export function ClientForm(props: DialogFormProps<Client>) {
@@ -196,6 +197,9 @@ export function ClientForm(props: DialogFormProps<Client>) {
                       <StaffSelect
                         value={field.value}
                         onValueChane={(value) => field.onChange(value)}
+                        createButton={
+                          <QuickNewStaffButton/>
+                        }
                       />
                     </VFormField>
                   }}
@@ -209,6 +213,9 @@ export function ClientForm(props: DialogFormProps<Client>) {
                       <StaffSelect
                         value={field.value}
                         onValueChane={(value) => field.onChange(value)}
+                        createButton={
+                          <QuickNewStaffButton/>
+                        }
                       />
                     </VFormField>
                   }}
@@ -248,10 +255,10 @@ export function ClientForm(props: DialogFormProps<Client>) {
                   }}
                 />
               </div>
-              <div className={'col-span-4'}>
+              <div className={'col-span-12'}>
                 <FormField
                   render={({ field }) => {
-                    return <VFormField label={'Invoice Reminder'}>
+                    return <VFormField label={'Invoice Reminder'} description={'System will send reminder to client if no action was taken within the set days'}>
                       <Input
                         type={'number'}
                         min={1}
@@ -269,7 +276,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                 <FormField
                   render={({ field }) => {
                     return <VFormField label={'Notes'}>
-                      <Textarea value={field.value} onChange={field.onChange} className={'min-h-[150px]'} placeholder={'Notes'}/>
+                      <Textarea value={field.value} onChange={field.onChange} className={'min-h-[150px]'}/>
                     </VFormField>
                   }}
                   name={'notes'}

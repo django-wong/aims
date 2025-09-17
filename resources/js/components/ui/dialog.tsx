@@ -5,9 +5,10 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 
 type DialogContext = {
+  dialog: HTMLElement | null;
   childOpen: boolean;
   setChildOpen: (open: boolean) => void;
   parent?: DialogContext
@@ -24,27 +25,45 @@ function Dialog({
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   const [childOpen, setChildOpen] = useState(false);
   const parent = useDialog();
-  if (props.open != undefined) {
-    if (parent) {
-      if (parent.childOpen !== props.open) {
-        parent?.setChildOpen(props.open);
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (props.open != undefined) {
+      if (parent) {
+        if (parent.childOpen !== props.open) {
+          parent?.setChildOpen(props.open);
+        }
       }
     }
-  }
+  }, [props.open])
+
   return (
-    <DialogContext.Provider
+    <DialogContext
       value={{
         childOpen,
         setChildOpen,
-        parent
+        parent,
+        dialog: ref.current
       }}>
-      <DialogPrimitive.Root onOpenChange={(open) => {
-        parent?.setChildOpen(open);
-        if (onOpenChange) {
-          onOpenChange(open);
-        }
-      }} data-slot="dialog" {...props} />
-    </DialogContext.Provider>
+      <div style={{ display: 'contents' }} ref={ref}>
+        <DialogPrimitive.Root
+          onOpenChange={(open) => {
+            if (parent) {
+              if (parent.childOpen !== open) {
+                parent?.setChildOpen(open);
+                console.info('22222222222');
+              }
+            }
+            if (onOpenChange) {
+              onOpenChange(open);
+            }
+          }}
+          {...props}
+          data-slot="dialog"
+        />
+      </div>
+    </DialogContext>
   );
 }
 

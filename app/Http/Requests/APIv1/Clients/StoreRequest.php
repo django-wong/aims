@@ -22,7 +22,7 @@ class StoreRequest extends FormRequest
             'coordinator_id' => 'nullable|exists:users,id',
             'reviewer_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string|max:1000',
-            'logo' => 'required|image|max:2048', // 2MB max size for the logo
+            'logo' => 'image|max:2048', // 2MB max size for the logo
             'invoice_reminder' => 'nullable|integer|min:0|max:30',
             'address' => 'nullable|array',
             'address.country' => 'string|max:255',

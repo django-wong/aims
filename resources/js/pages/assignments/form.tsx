@@ -37,6 +37,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Label } from '@/components/ui/label';
 import { usePage } from '@inertiajs/react';
 import { Switch } from '@/components/ui/switch';
+import { QuickNewContactButton } from '@/pages/contacts/quick-new-contact-button';
 
 const schema = z.object({
   reference_number: z.string().min(1, 'Reference number is required').max(30, 'Reference number must be at most 30 characters'),
@@ -582,17 +583,27 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         render={({ field }) => (
                           <VFormField
                             label={'Contact Person'}
-                            className={'col-span-6'}
+                            className={'col-span-12'}
                             description={"Contact person at the main vendor's side for visit coordination, set up in the vendor contacts if needed."}
                           >
-                            <ContactSelect
-                              onValueChane={field.onChange}
-                              value={field.value || null}
-                              params={{
-                                contactable_type: 'vendor',
-                                contactable_id: form.watch('vendor_id'),
-                              }}
-                            />
+                            {form.watch('vendor_id') ? (
+                              <ContactSelect
+                                onValueChane={field.onChange}
+                                value={field.value || null}
+                                params={{
+                                  contactable_type: 'vendor',
+                                  contactable_id: form.watch('vendor_id'),
+                                }}
+                                createButton={
+                                  <QuickNewContactButton
+                                    contactable_type='vendor'
+                                    contactable_id={form.watch('vendor_id') || undefined}
+                                  />
+                                }
+                              />
+                            ) : (
+                              <p>[Select the main vendor to enable this option]</p>
+                            )}
                           </VFormField>
                         )}
                         name={'visit_contact_id'}

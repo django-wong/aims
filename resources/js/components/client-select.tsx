@@ -2,7 +2,7 @@ import { Model, Client } from '@/types';
 import { Button } from './ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { cn } from '@/utils/cn';
 import { usePagedGetApi } from '@/hooks/use-get-api';
@@ -10,6 +10,24 @@ import { usePagedGetApi } from '@/hooks/use-get-api';
 interface CreateSelectProps<T> extends Pick<SelectPopupProps<T>, 'getItemLabel' | 'getKeywords'> {
   api: string
   searchParams?: URLSearchParams;
+}
+
+interface SelectContextProps<T> {
+  api: ReturnType<typeof usePagedGetApi<T>>
+  onValueChange: (value: number|null) => void;
+  onDataChange?: (data: T|null) => void;
+  open: boolean;
+  setOpen:  React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const SelectContext = React.createContext<SelectContextProps<any>|null>(null);
+
+export function useSelectContext<T>() {
+  const context = React.useContext(SelectContext);
+  if (context) {
+    return context as SelectContextProps<T>;
+  }
+  return null;
 }
 
 export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
@@ -35,14 +53,22 @@ export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
 
     const [open, setOpen] = useState<boolean>(false);
     return (
-      <SelectPopup
-        getItemLabel={options.getItemLabel}
-        getKeywords={options.getKeywords}
-        data={api.data || []}
-        open={open}
-        setOpen={setOpen}
-        {...props}
-      />
+      <SelectContext value={{
+        api,
+        onValueChange: props.onValueChane,
+        onDataChange: props.onDataChange,
+        setOpen,
+        open
+      }}>
+        <SelectPopup
+          getItemLabel={options.getItemLabel}
+          getKeywords={options.getKeywords}
+          data={api.data || []}
+          open={open}
+          setOpen={setOpen}
+          {...props}
+        />
+      </SelectContext>
     );
   };
 }
@@ -80,7 +106,7 @@ export interface SelectPopupProps<T> extends SelectProps<T> {
 }
 
 export function SelectPopup<T extends Model>({
- getKeywords, open, setOpen, getItemLabel, placeholder, data, value, onValueChane, onDataChange, ...props
+ getKeywords, open, setOpen, getItemLabel, placeholder, data, value, onValueChane, onDataChange, createButton, ...props
 }: SelectPopupProps<T>) {
   function renderTrigger(item?: T) {
     if (typeof props.renderTrigger === 'function') {
@@ -138,10 +164,10 @@ export function SelectPopup<T extends Model>({
             </CommandGroup>
           </CommandList>
         </Command>
-        {props.createButton && (
+        {createButton && (
           <div className={'text-muted-foreground border-t px-2 py-1 text-center text-xs'}>
             Not data found?&nbsp;
-            <span className={'text-foreground underline'}>{props.createButton}</span>
+            <span className={'text-foreground underline'}>{createButton}</span>
           </div>
         )}
       </PopoverContent>

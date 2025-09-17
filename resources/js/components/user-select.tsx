@@ -8,7 +8,7 @@ export const StaffSelect = createSelect<User>({
   searchParams: new URLSearchParams({
     'filter[role]': '8',
     'sort': 'name',
-  })
+  }),
 });
 
 

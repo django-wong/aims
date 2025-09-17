@@ -14,15 +14,17 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { VFormField } from '@/components/vform';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
-import { DialogFormProps, User } from '@/types';
+import { DialogFormProps, User, UserRoleEnum } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Circle } from 'lucide-react';
 import zod from 'zod';
 import { RoleSelect } from '@/components/role-select';
 import { useExternalState } from '@/hooks/use-external-state';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-type UserFormProps = DialogFormProps<User>;
+type UserFormProps = DialogFormProps<User> & {
+  role?: UserRoleEnum
+};
 
 const updateSchema = zod.object({
   method: zod.literal('update'),
@@ -60,7 +62,7 @@ export function UserForm(props: UserFormProps) {
       password: '123123123',
       password_confirmation: '123123123',
       ...props.value,
-      role: props.value?.user_role?.role,
+      role: props.role || props.value?.user_role?.role,
       method: (props.value && props.value.id) ? 'update' : 'create' as any,
     }),
     resolver: zodResolver(schema),
@@ -69,7 +71,6 @@ export function UserForm(props: UserFormProps) {
   const isUpdate = !!(props.value && props.value.id);
 
   function save() {
-    console.info(form.getValues());
     form.submit().then(async (response) => {
       if (response) {
         props.onSubmit(response.data);
@@ -87,7 +88,7 @@ export function UserForm(props: UserFormProps) {
     }
   }, [props.value])
 
-  const [open, setOpen] = useExternalState(props.open || false);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -164,7 +165,7 @@ export function UserForm(props: UserFormProps) {
                       render={({field}) => {
                         return (
                           <VFormField required label={'Role'}>
-                            <RoleSelect disabled={isUpdate} onValueChane={field.onChange} value={field.value}/>
+                            <RoleSelect disabled={!!(isUpdate || props.role)} onValueChane={field.onChange} value={field.value}/>
                           </VFormField>
                         )
                       }}
@@ -216,4 +217,8 @@ export function UserForm(props: UserFormProps) {
       </Dialog>
     </>
   );
+}
+
+export function UserFormContent() {
+
 }

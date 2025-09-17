@@ -1,10 +1,11 @@
 import { MainNavItem } from '@/components/nav-main';
 import { LucideIcon } from 'lucide-react';
+import { DeepPartial } from 'react-hook-form';
 
 export interface DialogFormProps<T = BaseModel, R = T> {
   children?: React.ReactNode;
   onSubmit: (data: R) => void;
-  value?: T | null;
+  value?: DeepPartial<T> | null;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asChild?: boolean;
@@ -54,6 +55,17 @@ export interface SharedData {
   };
 
   [key: string]: unknown;
+}
+
+export enum UserRoleEnum {
+  System = 1,
+  Admin = 2,
+  Finance = 3,
+  PM = 4,
+  Inspector = 5,
+  Client = 6,
+  Vendor = 7,
+  Staff = 8,
 }
 
 export interface UserRole extends BaseModel {
