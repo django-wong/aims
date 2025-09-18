@@ -23,7 +23,8 @@ const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
   previous_title: zod.string().optional().nullable(),
   project_id: zod.number(),
-  budget: zod.coerce.number().min(1, 'Budget must be positive'),
+
+  // budget: zod.coerce.number().min(1, 'Budget must be positive'),
 
   mileage_unit: zod.enum(['miles', 'km']).optional(),
   currency: zod.string().min(1, 'Currency is required'),
@@ -113,22 +114,22 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
                 />
               </div>
 
-              <div className={'col-span-12'}>
-                <FormField
-                  render={({ field }) => {
-                    return <VFormField required label={'Budget ($)'}>
-                      <Input
-                        type="number"
-                        step="100"
-                        min="0"
-                        value={field.value || ''}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </VFormField>
-                  }}
-                  name={'budget'}
-                />
-              </div>
+              {/*<div className={'col-span-12'}>*/}
+              {/*  <FormField*/}
+              {/*    render={({ field }) => {*/}
+              {/*      return <VFormField required label={'Budget ($)'}>*/}
+              {/*        <Input*/}
+              {/*          type="number"*/}
+              {/*          step="100"*/}
+              {/*          min="0"*/}
+              {/*          value={field.value || ''}*/}
+              {/*          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}*/}
+              {/*        />*/}
+              {/*      </VFormField>*/}
+              {/*    }}*/}
+              {/*    name={'budget'}*/}
+              {/*  />*/}
+              {/*</div>*/}
 
               <div className={'col-span-6'}>
                 <FormField

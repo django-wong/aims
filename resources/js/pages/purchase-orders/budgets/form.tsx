@@ -24,12 +24,13 @@ import { useState } from 'react';
 
 const schema = zod.object({
   purchase_order_id: zod.coerce.number().optional(),
-  assignment_type_id: zod.coerce.number().min(1, 'Assignment Type is required'),
+  assignment_type_id: zod.coerce.number().min(1, 'Description is required'),
   rate_code: zod.string().min(1),
-  hourly_rate: zod.coerce.number().min(1),
-  budgeted_hours: zod.coerce.number().min(1),
-  travel_rate: zod.coerce.number().min(1),
-  budgeted_mileage: zod.coerce.number().min(1),
+  hourly_rate: zod.coerce.number().min(0),
+  budgeted_hours: zod.coerce.number().min(0),
+  travel_rate: zod.coerce.number().min(0),
+  budgeted_mileage: zod.coerce.number().min(0),
+  budgeted_expenses: zod.coerce.number().min(0),
 });
 
 export function BudgetForm(props: DialogFormProps<Budget>) {
@@ -39,10 +40,11 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
       rate_code: '',
       purchase_order_id: po?.id,
       assignment_type_id: 0,
-      hourly_rate: 0,
-      budgeted_hours: 0,
-      travel_rate: 0.5,
-      budgeted_mileage: 0,
+      // hourly_rate: 0,
+      // budgeted_hours: 0,
+      // travel_rate: 0,
+      // budgeted_mileage: 0,
+      // budgeted_expenses: 0,
       ...props.value,
       method: (props.value && props.value.id) ? 'update' : 'create' as any,
     }),
@@ -95,7 +97,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <VFormField required label={'Assignment Type'}>
+                          <VFormField required label={'Discipline'}>
                             <AssignmentTypeSelect disabled={!!props.value} onValueChane={(value) => field.onChange(value)} value={field.value}/>
                           </VFormField>
                         );
@@ -128,7 +130,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <VFormField required label={'Budgeted Hours'}>
+                          <VFormField required label={'Travel Rate'}>
                             <Input
                               type="number"
                               step="10"
@@ -140,30 +142,29 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                           </VFormField>
                         );
                       }}
-                      name={'budgeted_hours'}
+                      name={'travel_rate'}
                     />
                   </div>
-                  <div className={'col-span-6'}>
+                  <div className={'col-span-4'}>
                     <FormField
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <VFormField required label={'Travel Rate'}>
+                          <VFormField required label={'Budgeted Hours'}>
                             <Input
                               type="number"
                               step="10"
                               min="0"
                               value={field.value?.toString() ?? ''}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                              placeholder={'0.50'}
                             />
                           </VFormField>
                         );
                       }}
-                      name={'travel_rate'}
+                      name={'budgeted_hours'}
                     />
                   </div>
-                  <div className={'col-span-6'}>
+                  <div className={'col-span-4'}>
                     <FormField
                       control={form.control}
                       render={({ field }) => {
@@ -175,12 +176,30 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                               min="0"
                               value={field.value?.toString() ?? ''}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
-                              placeholder={'0.00'}
                             />
                           </VFormField>
                         );
                       }}
                       name={'budgeted_mileage'}
+                    />
+                  </div>
+                  <div className={'col-span-4'}>
+                    <FormField
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <VFormField required label={'Budgeted Expenses'}>
+                            <Input
+                              type="number"
+                              step="10"
+                              min="0"
+                              value={field.value?.toString() ?? ''}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || null)}
+                            />
+                          </VFormField>
+                        );
+                      }}
+                      name={'budgeted_expenses'}
                     />
                   </div>
                 </Form>

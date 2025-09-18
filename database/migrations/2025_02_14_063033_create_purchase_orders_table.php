@@ -22,28 +22,29 @@ return new class extends Migration
             $table->string('mileage_unit', 10, 2)->default('km')->comment('km or miles');
             $table->string('currency', 3)->default('AUD');
 
-            $table->decimal('total_hours', 10, 2)->default(0.00);
-            $table->decimal('total_mileage', 10, 2)->default(0.00);
-            $table->decimal('total_cost', 15, 2)->default(0.00);
-
-            $table->decimal('budget', 15, 2)->default(0.00);
+            /**
+             * Calculated fields - these are calculated from related tables (timesheets, expenses, budgets)
+             * and stored here for performance reasons.
+             */
+            $table->decimal('total_hours', 10, 2)->default(0.00)->comment('Calculated');
+            $table->decimal('total_mileage', 10, 2)->default(0.00)->comment('Calculated');
+            $table->decimal('total_cost', 15, 2)->default(0.00)->comment('Calculated');
             $table->decimal('budgeted_hours', 10, 2)->default(0.00);
             $table->decimal('budgeted_mileage', 10, 2)->default(0.00);
+            $table->decimal('budgeted_expenses', 15, 2)->default(0.00);
+            $table->decimal('budget', 15, 2)->default(0.00)->comment('The total budget including hours, mileage and expenses. Calculated from budgets table');
 
-            // Usage of hours
-            $table->decimal('usage')->storedAs(
-                'CASE WHEN budgeted_hours > 0 THEN total_hours / budgeted_hours ELSE 0 END'
-            );
-
-            // Usage of hours
-            $table->decimal('travel_usage')->storedAs(
-                'CASE WHEN budgeted_mileage > 0 THEN total_mileage / budgeted_mileage ELSE 0 END'
-            );
-
-            // Usage of hours
-            $table->decimal('budget_usage')->storedAs(
-                'CASE WHEN budget > 0 THEN total_cost / budget ELSE 0 END'
-            );
+            /**
+             * Stored generated columns for usage percentages
+             * These are calculated as:
+             * - usage = total_hours / budgeted_hours
+             * - travel_usage = total_mileage / budgeted_mileage
+             * - budget_usage = total_cost / budget
+             * If budgeted_hours, budgeted_mileage or budget is 0, the usage is set to 0 to avoid division by zero.
+             */
+            $table->decimal('usage')->storedAs('CASE WHEN budgeted_hours > 0 THEN total_hours / budgeted_hours ELSE 0 END');
+            $table->decimal('travel_usage')->storedAs('CASE WHEN budgeted_mileage > 0 THEN total_mileage / budgeted_mileage ELSE 0 END');
+            $table->decimal('budget_usage')->storedAs('CASE WHEN budget > 0 THEN total_cost / budget ELSE 0 END');
 
             foreach (['first', 'second', 'final'] as $stage) {
                 $table->unsignedInteger($stage.'_alert_threshold')->default(70);

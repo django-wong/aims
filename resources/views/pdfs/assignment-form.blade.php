@@ -27,7 +27,7 @@
         <tr>
             <td class="title">Inspector:</td>
             <td>{{ $assignment_inspector?->user?->name ?? '' }}</td>
-            <td class="title">Assignment Type:</td>
+            <td class="title">Discipline:</td>
             <td>{{ $assignment_inspector?->assignment_type?->name ?? '' }}</td>
         </tr>
         <tr>

@@ -16,13 +16,17 @@ return new class extends Migration
         DB::unprepared('
             CREATE PROCEDURE IF NOT EXISTS calculate_budget_by_id(IN $purchase_order_id BIGINT)
             BEGIN
-                DECLARE $total_budgeted_hours, $total_budgeted_mileage DECIMAL(10, 2);
+                DECLARE $total_budgeted_hours, $total_budgeted_mileage, $total_budgeted_expenses, $total_budget DECIMAL(10, 2);
                 SELECT
                     SUM(budgeted_hours),
-                    SUM(budgeted_mileage)
+                    SUM(budgeted_mileage),
+                    SUM(budgeted_expenses),
+                    SUM(budget)
                 INTO
                     $total_budgeted_hours,
-                    $total_budgeted_mileage
+                    $total_budgeted_mileage,
+                    $total_budgeted_expenses,
+                    $total_budget
                 FROM budgets
                 WHERE
                     budgets.purchase_order_id = $purchase_order_id AND deleted_at IS NULL;
@@ -30,7 +34,9 @@ return new class extends Migration
                 UPDATE purchase_orders
                     SET
                         budgeted_hours = IFNULL($total_budgeted_hours, 0),
-                        budgeted_mileage = IFNULL($total_budgeted_mileage, 0)
+                        budgeted_mileage = IFNULL($total_budgeted_mileage, 0),
+                        budgeted_expenses = IFNULL($total_budgeted_expenses, 0),
+                        budget = IFNULL($total_budget, 0)
                 WHERE id = $purchase_order_id;
             END;
 
