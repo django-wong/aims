@@ -21,7 +21,7 @@ class StoreRequest extends FormRequest
             'project_id' => 'required|exists:projects,id',
             'quote_id' => 'nullable|exists:quotes,id',
 
-            'budget' => 'required|numeric|min:0|max:999999999999.99',
+            // 'budget' => 'required|numeric|min:0|max:999999999999.99',
 
             'currency' => 'nullable|string|size:3',
             'mileage_unit' => 'nullable|string|in:km,miles',
