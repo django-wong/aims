@@ -18,6 +18,7 @@ class StoreBudgetRequest extends FormRequest
             'hourly_rate' => 'nullable|numeric|min:0',
             'budgeted_mileage' => 'nullable|numeric|min:0',
             'budgeted_hours' => 'nullable|numeric|min:0',
+            'budgeted_expenses' => 'nullable|numeric|min:0',
             'assignment_type_id' => 'nullable|exists:assignment_types,id',
         ];
     }
