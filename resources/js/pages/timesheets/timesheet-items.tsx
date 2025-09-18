@@ -26,6 +26,7 @@ import { TimesheetItemAttachments } from '@/pages/timesheets/timesheet-item-atta
 import { TimesheetReportProvider } from '@/providers/timesheet-report-provider';
 import { TimesheetReportForm } from '@/pages/assignments/assignment-report-form';
 import { RejectionDetails } from '@/pages/timesheets/rejection-details';
+import { PopoverConfirm } from '@/components/popover-confirm';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -160,6 +161,12 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
     table.reload();
   }
 
+  function deleteItem() {
+    axios.delete(`/api/v1/timesheet-items/${props.value.id}`).then(() => {
+      table.reload();
+    })
+  }
+
   return (
     <>
       <div className={'flex items-center justify-end gap-2'}>
@@ -168,6 +175,13 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
             <PencilIcon />
           </Button>
         </TimesheetItemForm>
+        <PopoverConfirm
+          message={'Are you sure to delete this record?'}
+          onConfirm={deleteItem}>
+          <Button variant={'destructive'} size={'sm'}>
+            <Trash2Icon />
+          </Button>
+        </PopoverConfirm>
       </div>
     </>
   );

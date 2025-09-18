@@ -20,7 +20,7 @@ export function PopoverConfirm(props: PopoverConfirmProps) {
       <Popover open={props.open} onOpenChange={props.onOpenChange}>
         <PopoverTrigger asChild={props.asChild}>{props.children}</PopoverTrigger>
         <PopoverPrimitive.Portal>
-          <PopoverContent side={props.side} align={props.align} className="w-80">
+          <PopoverContent side={props.side} align={props.align} className="w-80 p-4">
             <div className={'grid gap-4'}>
               <div className={'grid gap-2'}>
                 <h4 className={'leading-none font-bold'}>

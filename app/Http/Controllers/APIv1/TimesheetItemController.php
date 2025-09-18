@@ -148,8 +148,12 @@ class TimesheetItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TimesheetItem $timesheetItem)
+    public function destroy(TimesheetItem $timesheet_item)
     {
-        //
+        $timesheet_item->delete();
+
+        return response()->json([
+            'message' => 'Timesheet item deleted successfully',
+        ]);
     }
 }
