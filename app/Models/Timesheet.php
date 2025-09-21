@@ -53,7 +53,8 @@ class Timesheet extends Model
             'approved_at' => 'datetime',
             'client_approved_at' => 'datetime',
             'invoiced_at' => 'datetime',
-            'client_reminder_sent_at' => 'datetime'
+            'client_reminder_sent_at' => 'datetime',
+            'expenses' => 'decimal:2',
         ];
     }
 

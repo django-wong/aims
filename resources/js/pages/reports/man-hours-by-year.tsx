@@ -49,11 +49,11 @@ const columns: ColumnDef<ManHoursByYear>[] = [
     header: 'Business Name',
     cell: info => info.getValue(),
   },
-  {
-    accessorKey: 'client_group',
-    header: 'Client Group',
-    cell: info => info.getValue(),
-  },
+  // {
+  //   accessorKey: 'client_group',
+  //   header: 'Client Group',
+  //   cell: info => info.getValue(),
+  // },
   {
     accessorKey: 'total_hours',
     header: 'Total Hours',

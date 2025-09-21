@@ -1,6 +1,6 @@
 import { DataTable } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { useTable } from '@/hooks/use-table';

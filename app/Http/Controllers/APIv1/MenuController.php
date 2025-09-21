@@ -146,11 +146,6 @@ class MenuController
                         'name' => 'Monthly By Year',
                         'icon' => 'folder',
                         'url' => route('reports.man-hours-3')
-                    ],
-                    [
-                        'name' => 'Monthly By Year and Office',
-                        'icon' => 'folder',
-                        'url' => route('reports.man-hours-4')
                     ]
                 ]
             ],

@@ -610,3 +610,5 @@ export interface TimesheetDetail extends Timesheet {
   coordinator_name: string;
   operation_coordinator_name: string;
 }
+
+export type Month = 'jan' | 'feb' | 'mar' | 'apr' | 'may' | 'jun' | 'jul' | 'aug' | 'sep' | 'oct' | 'nov' | 'dec';

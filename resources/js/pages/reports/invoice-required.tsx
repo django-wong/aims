@@ -90,5 +90,10 @@ const columns: ColumnDef<TimesheetDetail>[] = [
         {row.getValue('travel_distance')} {row.original.mileage_unit}
       </span>
     ),
+  },
+  {
+    accessorKey: 'expenses',
+    header: 'Expenses',
+    cell: ({ row }) => <span>{row.getValue('expenses')}</span>,
   }
 ];

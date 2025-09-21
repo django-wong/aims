@@ -33,9 +33,8 @@ export default function ApprovalEfficiencyPage(props: ApprovalEfficiencyProps) {
 
   return (
     <Layout breadcrumbs={breadcrumbs}>
-      <Head title="Approval Efficiency" />
-      <div className={'grid gap-4 px-6'}>
-        <Alert icon={'warning'} variant={'warning'}>
+      <div className={'grid gap-6 px-6'}>
+        <Alert>
           <AlertIcon>
             <CircleAlertIcon />
           </AlertIcon>

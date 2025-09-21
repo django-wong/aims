@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/late-reports', [\App\Http\Controllers\APIv1\Reports\LateReportController::class, 'index']);
     Route::get('reports/approval-efficiency', [\App\Http\Controllers\APIv1\Reports\ApprovalEfficiencyController::class, 'index']);
     Route::get('reports/invoice-required', [InvoiceRequiredController::class, 'index']);
+    Route::get('reports/man-hours-monthly-by-year', [\App\Http\Controllers\APIv1\Reports\ManHoursMonthlyByYearController::class, 'index']);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);

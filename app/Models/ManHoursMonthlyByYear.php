@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TimesheetDetail extends Model
+class ManHoursMonthlyByYear extends View
 {
     use DynamicPagination;
 
     protected function casts(): array
     {
         return [
-            'expenses' => 'decimal:2',
+            'monthly_hours' => 'json',
+            'year' => 'float',
+            'total_hours' => 'float',
         ];
     }
 }
