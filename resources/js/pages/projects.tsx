@@ -111,6 +111,20 @@ const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => row.original.client?.business_name || 'Unknown',
   },
   {
+    accessorKey: 'commission_rate',
+    header: 'Commission %',
+    cell: ({ row }) => {
+      return <div>{row.original.commission_rate ?? 'N/A'}</div>;
+    }
+  },
+  {
+    accessorKey: 'process_fee_rate',
+    header: 'Process Fee %',
+    cell: ({ row }) => {
+      return <div>{row.original.process_fee_rate ?? 'N/A'}</div>;
+    }
+  },
+  {
     accessorKey: 'actions',
     header: () => {
       return <TableCellWrapper last>Actions</TableCellWrapper>;

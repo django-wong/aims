@@ -176,6 +176,8 @@ export interface Project extends BaseModel {
   project_type?: ProjectType;
   client_id: number | null;
   client?: Client;
+  process_fee_rate: number | null;
+  commission_rate: number | null;
 }
 
 export interface AssignmentType extends BaseModel {

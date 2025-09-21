@@ -98,6 +98,12 @@ export default function ProjectEdit(props: { project: Project }) {
               <InfoLine icon={'info'} label={'Project Type'}>
                 {props.project.project_type?.name || 'N/A'}
               </InfoLine>
+              <InfoLine icon={'info'} label={'Commission Rate'}>
+                {props.project.commission_rate}%
+              </InfoLine>
+              <InfoLine icon={'info'} label={'Process fee'}>
+                {props.project.process_fee_rate}%
+              </InfoLine>
             </div>
             <Divider className={'my-2'} />
             <InfoHead>Client</InfoHead>

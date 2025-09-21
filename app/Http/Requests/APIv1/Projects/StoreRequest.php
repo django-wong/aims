@@ -25,6 +25,8 @@ class StoreRequest extends FormRequest
             'project_type_id' => 'nullable|integer|exists:project_types,id',
             'client_id' => 'nullable|integer|exists:clients,id',
             'title' => 'required|string|max:255',
+            'commission_rate' => 'nullable|numeric|min:0',
+            'process_fee_rate' => 'nullable|numeric|min:0'
         ];
     }
 

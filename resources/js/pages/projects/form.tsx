@@ -24,9 +24,10 @@ import { ProjectTypeSelect } from '@/components/project-type-select';
 
 const schema = zod.object({
   title: zod.string().min(1, 'Title is required'),
-
   project_type_id: zod.number(),
   client_id: zod.number(),
+  commission_rate: zod.coerce.number().min(0),
+  process_fee_rate: zod.coerce.number().min(0)
 });
 
 export function ProjectForm(props: DialogFormProps<Project>) {
@@ -35,6 +36,8 @@ export function ProjectForm(props: DialogFormProps<Project>) {
       title: '',
       project_type_id: null,
       client_id: null,
+      commission_rate: 7.5,
+      process_fee_rate: 5.0,
       ...props.value
     })),
     resolver: zodResolver(schema) as any,
@@ -95,11 +98,35 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                 <FormField
                   control={form.control}
                   render={({field}) => {
-                    return <VFormField label={'Client'} className={'col-span-12 sm:col-span-6'}>
+                    return <VFormField required label={'Client'} className={'col-span-12 sm:col-span-6'}>
                       <ClientSelect onValueChane={field.onChange} value={field.value}/>
                     </VFormField>;
                   }}
                   name={'client_id'}
+                />
+                <FormField
+                  control={form.control}
+                  render={({field}) => {
+                    return <VFormField
+                      required
+                      description={'Apply to all delegated assignments of the project'}
+                      label={'Commission %'} className={'col-span-12 sm:col-span-6'}>
+                      <Input type={'number'} onChange={field.onChange} value={field.value ?? ''}/>
+                    </VFormField>;
+                  }}
+                  name={'commission_rate'}
+                />
+                <FormField
+                  control={form.control}
+                  render={({field}) => {
+                    return <VFormField
+                      required
+                      description={'Apply to each expenses'}
+                      label={'Process fee %'} className={'col-span-12 sm:col-span-6'}>
+                      <Input type={'number'} onChange={field.onChange} value={field.value ?? ''}/>
+                    </VFormField>;
+                  }}
+                  name={'process_fee_rate'}
                 />
               </div>
             </Form>
