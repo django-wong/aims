@@ -42,7 +42,15 @@ class BudgetController extends Controller
     public function index(IndexRequest $request)
     {
         return $this->getQueryBuilder()->tap(function (Builder  $query) use ($request) {
-            $query->where('purchase_order_id', $request->input('purchase_order_id'));
+            $query->leftJoin('purchase_orders', 'purchase_orders.id', '=', 'budgets.purchase_order_id')
+                ->select(
+                    'budgets.*',
+                    'purchase_orders.mileage_unit as mileage_unit',
+                    'purchase_orders.currency as currency'
+                );
+            $query->where(
+                'purchase_order_id', $request->input('purchase_order_id')
+            );
         })->paginate();
     }
 

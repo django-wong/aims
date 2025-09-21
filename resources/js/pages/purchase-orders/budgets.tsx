@@ -101,7 +101,16 @@ export function Budgets() {
       minSize: 140,
       maxSize: 160,
       cell: ({ row }) => {
-        return `${row.original.budgeted_mileage} mi`;
+        return `${row.original.budgeted_mileage}${row.original.mileage_unit ?? ""}`;
+      },
+    },
+    {
+      accessorKey: 'budgeted_expenses',
+      header: 'Budgeted Expenses',
+      minSize: 140,
+      maxSize: 160,
+      cell: ({ row }) => {
+        return `$${row.original.budgeted_expenses}`;
       },
     },
     {
