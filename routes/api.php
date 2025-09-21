@@ -19,6 +19,7 @@ use App\Http\Controllers\APIv1\ProjectController;
 use App\Http\Controllers\APIv1\ProjectTypeController;
 use App\Http\Controllers\APIv1\PurchaseOrderController;
 use App\Http\Controllers\APIv1\ReportController;
+use App\Http\Controllers\APIv1\Reports\InvoiceRequiredController;
 use App\Http\Controllers\APIv1\Reports\ManHoursByYearController;
 use App\Http\Controllers\APIv1\SkillController;
 use App\Http\Controllers\APIv1\TimesheetController;
@@ -85,6 +86,8 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/hours-log', [ReportController::class, 'hours_log']);
     Route::get('reports/man-hours-by-year', ManHoursByYearController::class);
     Route::get('reports/late-reports', [\App\Http\Controllers\APIv1\Reports\LateReportController::class, 'index']);
+    Route::get('reports/approval-efficiency', [\App\Http\Controllers\APIv1\Reports\ApprovalEfficiencyController::class, 'index']);
+    Route::get('reports/invoice-required', [InvoiceRequiredController::class, 'index']);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);

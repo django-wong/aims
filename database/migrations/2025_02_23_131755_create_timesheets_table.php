@@ -22,6 +22,7 @@ return new class extends Migration
             // Updated by triggers
             $table->integer('hours')->default(0)->comment('Total hours worked');
             $table->integer('travel_distance')->default(0)->comment('Total kilometers/miles traveled');
+            $table->decimal('expenses', 10)->default(0.00)->comment('Total expenses claimed');
             $table->decimal('cost', 10)->default(0.00)->comment('Total cost for the timesheet, computed from the mileage, hourly rate, and any additional expenses');
 
             $table->unsignedTinyInteger('status')->default(0)->index()->comment(

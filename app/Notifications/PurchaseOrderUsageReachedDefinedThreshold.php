@@ -36,9 +36,9 @@ class PurchaseOrderUsageReachedDefinedThreshold extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Work order usage alert')
+            ->subject('Work Order Usage has exceeded your alert threshold')
             ->greeting('Hello')
-            ->line('This is an alert that your work order "'.$this->purchase_order->title.'" has reached the defined usage threshold. Please review the work order to ensure that you stay within budget.')
+            ->line('This is an alert that your work order "'.$this->purchase_order->title.'" has exceeded the defined usage threshold. Please review the work order to ensure that you stay within budget.')
             ->line('Threshold: '.$this->purchase_order->{$this->stage.'_alert_threshold'}.'%')
             ->line('Hours: '.$this->purchase_order->total_hours.' / '.$this->purchase_order->budgeted_hours)
             ->action(

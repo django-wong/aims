@@ -559,3 +559,54 @@ export interface LateReport extends BaseModel {
   target: number;
   days_to_report: number;
 }
+
+
+export interface ApprovalEfficiency extends BaseModel {
+  client_name: string;
+  client_group_name: string;
+  client_code: string;
+  org_id: number;
+  client_id: number;
+  avg_hours: number;
+  max_hours: number;
+  min_hours: number;
+  total_approval_in_last_year: number;
+}
+
+
+export interface TimesheetDetail extends Timesheet {
+  inspector_name: string;
+  reference_number: Assignment['reference_number'];
+  previous_reference_number: Assignment['previous_reference_number'];
+  org_id: number;
+  operation_org_id: number;
+  main_vendor_id: number;
+  sub_vendor_id: number;
+  project_id: number;
+  coordinator_id: number;
+  operation_coordinator_id: number;
+  skill_id: number;
+  project_title: string;
+  client_id: number;
+  client_business_name: string;
+  client_group: string;
+  client_code: string;
+  purchase_order_title: string;
+  purchase_order_previous_title: string;
+  currency: string;
+  travel_unit: string;
+
+  // TODO: Consider remove the reference to purchase order
+  budgeted_hours: number;
+  budgeted_mileage: number;
+  budgeted_expenses: number;
+
+  skill_code: string;
+  i_e_a: string;
+  org_name: string;
+  operation_org_name: string;
+  main_vendor_name: string;
+  sub_vendor_name: string;
+  coordinator_name: string;
+  operation_coordinator_name: string;
+}

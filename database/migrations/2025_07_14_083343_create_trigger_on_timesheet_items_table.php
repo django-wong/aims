@@ -39,6 +39,7 @@ return new class extends Migration
                     SET
                         hours = IFNULL($hours, 0),
                         travel_distance = IFNULL($travel_distance, 0),
+                        expenses = IFNULL($total_expense, 0),
                         cost = IFNULL($cost, 0) + IFNULL($travel_cost, 0) + IFNULL($total_expense, 0)
                     WHERE id = $timesheet_id;
             END;

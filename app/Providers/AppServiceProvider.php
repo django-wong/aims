@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\CurrentOrg;
+use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Auth\Access\Gate;
@@ -53,6 +55,14 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::directive('qr', function ($expression) {
             return "<?php echo (new \chillerlan\QRCode\QRCode())->render($expression); ?>";
+        });
+
+        $this->app->scoped(CurrentOrg::class, function () {
+            $org_id = auth()->user()?->user_role?->org_id;
+            if ($org_id) {
+                return Org::query()->find($org_id);
+            }
+            return new Org();
         });
     }
 }

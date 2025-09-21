@@ -171,13 +171,16 @@ class ReportController extends Controller
 
     public function invoice_required()
     {
-        return inertia('under-construction', [
-            'title' => 'Invoice Required Report',
-        ]);
+        return inertia('reports/invoice-required');
     }
 
     public function reports_late()
     {
         return inertia('reports/reports-late');
+    }
+
+    public function approval_efficiency()
+    {
+        return inertia('reports/approval-efficiency');
     }
 }

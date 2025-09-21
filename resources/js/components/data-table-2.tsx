@@ -1,18 +1,28 @@
+import { Empty } from '@/components/empty';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { computedStyle } from '@/components/ui/table-cell-wrapper';
+import { useDebouncer } from '@/hooks/use-debounced';
 import { BaseTableData, useTable } from '@/hooks/use-table';
+import { cn } from '@/lib/utils';
 import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronUp, LoaderCircle, RefreshCcwIcon } from 'lucide-react';
-import * as React from 'react';
-import { cn } from '@/lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
-import { Empty } from '@/components/empty';
-import { useDebouncer } from '@/hooks/use-debounced';
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronUp,
+  DownloadIcon,
+  LoaderCircle,
+  RefreshCcwIcon,
+} from 'lucide-react';
+import * as React from 'react';
 
 interface DataTableProps<T extends BaseTableData> {
   containerClassName?: string;
@@ -64,22 +74,17 @@ export function ColumnToggle() {
   );
 }
 
-const tableVariants = cva(
-  "overflow-hidden rounded-md border-muted relative mx-1",
-  {
-    variants: {
-      variant: {
-        default:
-          "ring-muted ring-4",
-        clean:
-          "",
-      }
+const tableVariants = cva('overflow-hidden rounded-md border-muted relative mx-1', {
+  variants: {
+    variant: {
+      default: 'ring-muted ring-4',
+      clean: '',
     },
-    defaultVariants: {
-      variant: "default"
-    },
-  }
-)
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 export function DataTable<T extends BaseTableData>({ variant, table, ...props }: DataTableProps<T> & VariantProps<typeof tableVariants>) {
   const showPagination = props.pagination === undefined || props.pagination;
@@ -255,8 +260,23 @@ export function TableRefresher() {
   return (
     <>
       <Button variant={'outline'} size={'icon'} onClick={() => debounce(() => table.reload())}>
-        <RefreshCcwIcon className={table.loading ? 'animate-spin' : ''}/>
+        <RefreshCcwIcon className={table.loading ? 'animate-spin' : ''} />
       </Button>
     </>
+  );
+}
+
+export function ExportButton() {
+  const table = useTableApi();
+  return (
+    <Button
+      variant={'outline'}
+      onClick={() => {
+        alert('Not implemented yet.');
+      }}
+    >
+      <DownloadIcon />
+      Export
+    </Button>
   );
 }

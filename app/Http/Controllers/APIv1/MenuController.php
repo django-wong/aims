@@ -164,6 +164,11 @@ class MenuController
                 'url' => route('reports.reports-late'),
                 'icon' => 'file-warning',
             ],
+            [
+                'name' => 'Approval Efficiency',
+                'url' => route('reports.approval-efficiency'),
+                'icon' => 'gauge',
+            ],
         ];
     }
 }

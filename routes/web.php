@@ -109,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('man-hours-monthly-by-year', 'man_hours_monthly_by_year')->name('reports.man-hours-3');
         Route::get('man-hours-monthly-by-year-and-office', 'man_hours_monthly_by_year_and_office')->name('reports.man-hours-4');
         Route::get('reports-late', 'reports_late')->name('reports.reports-late');
+        Route::get('approval-efficiency', 'approval_efficiency')->name('reports.approval-efficiency');
     });
 
     Route::get('system-configuration', SystemConfiguration::class)->name('system-configuration');

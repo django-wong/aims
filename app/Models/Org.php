@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string  $timezone
  */
-class Org extends Model
+class Org extends Model implements CurrentOrg
 {
     /** @use HasFactory<\Database\Factories\OrgFactory> */
     use HasFactory, HasManyAssignments, BelongsToAddress;
