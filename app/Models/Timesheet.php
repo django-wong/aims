@@ -121,4 +121,22 @@ class Timesheet extends Model
     {
         return $this->hasOne(TimesheetSignature::class);
     }
+
+    /**
+     * Load additional data for the timesheet.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeExtend(Builder $query)
+    {
+        $query
+            ->leftJoin('users', 'timesheets.user_id', '=', 'users.id')
+            ->leftJoin('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
+            ->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id')
+            ->leftJoin('vendors as sub_vendor', 'sub_vendor.id', '=', 'assignments.sub_vendor_id')
+            ->leftJoin('vendors as main_vendor', 'main_vendor.id', '=', 'assignments.vendor_id');
+
+        return $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency', 'users.name as inspector_name');
+    }
 }

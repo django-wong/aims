@@ -12,6 +12,7 @@ use App\Models\UserRole;
 use App\Notifications\TimesheetRejected;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -21,6 +22,7 @@ class TimesheetController extends Controller
 {
     /**
      * Sign off by inspector for a specific timesheet
+     *
      * @param string $id
      * @return array
      */
@@ -85,8 +87,32 @@ class TimesheetController extends Controller
             AllowedFilter::exact('assignment_id'),
             'hours',
             'travel_distance',
-            AllowedFilter::callback('keywords', function (Builder $query, $value) {}),
-            AllowedFilter::custom('status', new OperatorFilter(), 'timesheets.status')
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                $query->whereIn('assignment_id', function (QueryBuilder $query) use ($value) {
+                    $query->select('id')
+                        ->from('assignment_details')
+                        ->whereAny([
+                            'project_title',
+                            'client_business_name',
+                            'client_code',
+                            'purchase_order_title',
+                            'purchase_order_previous_title',
+                            'skill_code',
+                            'main_vendor_name',
+                            'sub_vendor_name',
+                            'coordinator_name',
+                            'operation_coordinator_name'
+                        ], 'like', "%$value%");
+                });
+            }),
+            AllowedFilter::custom('status', new OperatorFilter(), 'timesheets.status'),
+            AllowedFilter::callback('purchase_order_id', function (Builder $query, $value) {
+                $query->whereIn('assignment_id', function (QueryBuilder $query) use ($value) {
+                    $query->select('id')
+                        ->from('assignments')
+                        ->where('purchase_order_id', $value);
+                });
+            })
         ];
     }
 
@@ -105,30 +131,21 @@ class TimesheetController extends Controller
     {
         Gate::authorize('viewAny', Timesheet::class);
 
-        $query = $this->getQueryBuilder()->visible()->defaultSort('-created_at');
+        $query = $this->getQueryBuilder()->extend()->visible()->defaultSort('-created_at');
 
         if (auth()->user()->isRole(UserRole::CLIENT)) {
             $query->whereIn(
                 'timesheets.id', function ($q) {
-                    $q->select('timesheets.id')
-                        ->from('timesheets')
-                        ->join('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
-                        ->join('projects', 'assignments.project_id', '=', 'projects.id')
-                        ->where(
-                            'projects.client_id', auth()->user()->client->id
-                        );
-                }
+                $q->select('timesheets.id')
+                    ->from('timesheets')
+                    ->join('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
+                    ->join('projects', 'assignments.project_id', '=', 'projects.id')
+                    ->where(
+                        'projects.client_id', auth()->user()->client->id
+                    );
+            }
             )->where('timesheets.status', '>=', Timesheet::APPROVED);
         }
-
-        $query
-            ->leftJoin('users', 'timesheets.user_id', '=', 'users.id')
-            ->leftJoin('assignments', 'timesheets.assignment_id', '=', 'assignments.id')
-            ->leftJoin('purchase_orders', 'assignments.purchase_order_id', '=', 'purchase_orders.id')
-            ->leftJoin('vendors as sub_vendor', 'sub_vendor.id', '=', 'assignments.sub_vendor_id')
-            ->leftJoin('vendors as main_vendor', 'main_vendor.id', '=', 'assignments.vendor_id');
-
-        $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency', 'users.name as inspector_name');
 
         return $query->paginate();
     }

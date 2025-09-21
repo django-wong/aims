@@ -7,9 +7,21 @@ use App\Models\Budget;
 use App\Models\PurchaseOrder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class BudgetController extends Controller
 {
+    protected function allowedFilters()
+    {
+        return [
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                if ($value) {
+                    $query->where('rate_code', 'like', "%$value%");
+                }
+            }),
+        ];
+    }
+
     protected function allowedIncludes()
     {
         return [

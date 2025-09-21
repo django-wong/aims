@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int   $org_id
- * @property int $id
+ * @property int     $org_id
+ * @property int     $id
+ * @property float   $usage
+ * @property int     $total_hours
+ * @property int     $budgeted_hours
+ * @property Project $project
+ * @property string   $title
  */
 class PurchaseOrder extends Model implements Commentable
 {
@@ -18,6 +23,15 @@ class PurchaseOrder extends Model implements Commentable
     protected $guarded = [
         'id', 'created_at', 'updated_at'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'first_alert_at'  => 'datetime',
+            'second_alert_at' => 'datetime',
+            'final_alert_at'  => 'datetime'
+        ];
+    }
 
     protected static function booted()
     {

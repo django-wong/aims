@@ -11,6 +11,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { PencilIcon, Plus, TrashIcon } from 'lucide-react';
 import { BudgetForm } from './budgets/form';
+import { useState } from 'react';
 
 function BudgetActions(props: { budget: Budget }) {
   const table = useTableApi();
@@ -125,13 +126,25 @@ export function Budgets() {
     },
   });
 
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
+
   const onSubmit = () => {
     table.reload();
   };
 
   return (
     <DataTable
-      left={<Input placeholder={'Search'} className={'max-w-[200px]'} />}
+      left={<Input value={keywords} placeholder={'Search'} className={'max-w-[200px]'} onChange={(event) => {
+        setKeywords(event.target.value);
+        table.setSearchParams((params) => {
+          if (event.target.value) {
+            params.set('filter[keywords]', event.target.value);
+          } else {
+            params.delete('filter[keywords]');
+          }
+          return params;
+        })
+      }}/>}
       right={
         <BudgetForm onSubmit={onSubmit}>
           <Button>

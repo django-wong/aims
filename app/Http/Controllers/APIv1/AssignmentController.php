@@ -8,6 +8,7 @@ use App\Http\Requests\APIv1\Assignments\UpdateRequest;
 use App\Http\Requests\APIv1\DeleteAssignmentRequest;
 use App\Http\Requests\APIv1\RejectAssignmentRequest;
 use App\Models\Assignment;
+use App\Models\AssignmentDetail;
 use App\Models\Comment;
 use App\Models\Org;
 use App\Models\Project;

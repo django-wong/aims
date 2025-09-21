@@ -92,7 +92,7 @@ class Assignment extends Model implements Commentable, Attachable
 
             $query->where(function (Builder $query) use ($id) {
                 $query->where('org_id', $id)->orWhere(function (Builder $query) use ($id) {
-                    $query->where('operation_org_id', $id)->where('assignments.status', '>=', self::ISSUED);
+                    $query->where('operation_org_id', $id)->where('status', '>=', self::ISSUED);
                 });
             });
 

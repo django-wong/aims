@@ -34,10 +34,6 @@ return new class extends Migration
             $table->date('close_date')->nullable();
             $table->date('final_invoice_date')->nullable();
 
-            // budget
-            $table->decimal('budgeted_hours', 8, 2)->nullable()->comment('Total budgeted hours for the assignment, can not beyond the purchase order');
-            $table->decimal('budgeted_travel', 10, 2)->nullable()->comment('Hourly rate for the assignment');
-
             // status
             $table->unsignedTinyInteger('status')->default(0)->comment(
                 '0 = Draft, 1 = Issued, 2 = Rejected, 3 = Accepted, 4 = Assigned, 5 = Partial Acked, 6 = Acked, 7 = Open, 8 = Closed'

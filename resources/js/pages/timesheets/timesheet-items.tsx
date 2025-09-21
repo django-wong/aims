@@ -204,6 +204,8 @@ function TimesheetReports(props: TimesheetReportsProps) {
     })
   });
 
+  const can_add_more = props.type === 'inspection-report' ? (api.data || []).length < 1 : true;
+
   function onChange(event:  React.ChangeEvent<HTMLInputElement>) {
     for (const file of (event.target.files || [])) {
       const formData = new FormData();
@@ -274,26 +276,23 @@ function TimesheetReports(props: TimesheetReportsProps) {
               </TimesheetReportProvider>
             ))}
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <AttachmentRoot className={'bg-secondary/20 border-dashed flex flex-col items-center justify-center hover:bg-background'}>
-                  <label>
-                    <div>
-                      <PlusIcon size={32}/>
-                    </div>
-                    <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
-                  </label>
-                </AttachmentRoot>
-              </TooltipTrigger>
-              <TooltipContent>
-                Upload .xlsx .pdf .docs or image files.
-              </TooltipContent>
-            </Tooltip>
-
-            {/*{*/}
-            {/*  timesheet?.status && (timesheet?.status > 0) ? null : (*/}
-            {/*  )*/}
-            {/*}*/}
+            { can_add_more ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AttachmentRoot className={'bg-secondary/20 border-dashed flex flex-col items-center justify-center hover:bg-background'}>
+                    <label>
+                      <div>
+                        <PlusIcon size={32}/>
+                      </div>
+                      <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
+                    </label>
+                  </AttachmentRoot>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Upload .xlsx .pdf .docs or image files.
+                </TooltipContent>
+              </Tooltip>
+            ) : null }
           </div>
         </AccordionContent>
       </AccordionItem>

@@ -28,6 +28,7 @@ import { ClientApprove } from '../timesheets/client-approve';
 import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';
 import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
 import { TimesheetEditContent } from '@/pages/timesheets/edit';
+import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 
 interface TimesheetsProps {
   assignment?: Assignment;
@@ -102,6 +103,7 @@ export function Timesheets(props: TimesheetsProps) {
   ];
 
   const table = useTable<Timesheet>('/api/v1/timesheets', {
+    selectable: true,
     columns,
     defaultParams: {
       ...props.filters,
@@ -128,7 +130,16 @@ export function Timesheets(props: TimesheetsProps) {
 
   return (
     <>
-      <DataTable left={<ColumnToggle />} right={<TableRefresher />} table={table} />
+      <DataTable
+        left={
+          <>
+            <ColumnToggle />
+            <CreateInvoiceButton/>
+          </>
+        }
+        right={<TableRefresher />}
+        table={table}
+      />
       <Dialog
         open={!!timesheet}
         onOpenChange={(open) => {
@@ -168,7 +179,7 @@ interface TimesheetActionsProps {
 
 function TimesheetActions(props: TimesheetActionsProps) {
   return (
-    <div className={'flex items-center space-x-2'}>
+    <div className={'flex items-center gap-2'}>
 
       <TimesheetProvider value={props.timesheet}>
         <ClientApprove/>

@@ -204,6 +204,8 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
 
   // Computed on the fly
   usage: number;
+  travel_usage: number;
+  budget_usage: number;
 
   budget: number;
   hourly_rate: number;
@@ -402,6 +404,7 @@ export interface Timesheet extends BaseModel {
 
   start: string; // YYYY-MM-DD
   end: string; // YYYY-MM-DD
+  week: string // YYYY-WW
 
   hours: number;
 

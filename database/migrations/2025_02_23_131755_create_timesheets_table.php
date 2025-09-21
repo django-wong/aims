@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->date('start');
             $table->date('end');
+            $table->string('week')->storedAs("DATE_FORMAT(start, '%x-W%v')")->index()->comment('Year and week number, e.g. 2023-W05');
 
             // Updated by triggers
             $table->integer('hours')->default(0)->comment('Total hours worked');

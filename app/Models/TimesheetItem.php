@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\MonitorPurchaseOrderUsage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -25,5 +26,10 @@ class TimesheetItem extends Model implements Attachable
         ];
     }
 
-    // ....
+    protected static function booted()
+    {
+        static::saved(function (TimesheetItem $item) {
+            MonitorPurchaseOrderUsage::dispatch($item->timesheet->assignment->purchase_order);
+        });
+    }
 }

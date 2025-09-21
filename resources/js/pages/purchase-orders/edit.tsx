@@ -5,7 +5,7 @@ import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Comments } from '@/components/comments';
-import { DollarSignIcon, InfoIcon, MessagesSquareIcon, PencilIcon } from 'lucide-react';
+import { ClockIcon, DollarSignIcon, InfoIcon, MessagesSquareIcon, PencilIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { DailyHoursUsage } from '@/pages/purchase-orders/daily-usage';
 import { Overview } from '@/pages/purchase-orders/overview';
@@ -15,6 +15,7 @@ import { PurchaseOrderProvider } from '@/providers/purchasr-order-provider';
 import { PurchaseOrderForm } from '@/pages/purchase-orders/form';
 import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
 import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
+import { Timesheets } from '@/pages/assignments/timesheets';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -52,7 +53,11 @@ export default function PurchaseOrderEditPage(props: Props) {
               </TabsTrigger>
               <TabsTrigger value={'rates'}>
                 <DollarSignIcon />
-                <span className={'hidden lg:inline'}>Rates</span>
+                <span className={'hidden lg:inline'}>Rate & Budgets</span>
+              </TabsTrigger>
+              <TabsTrigger value={'timesheets'}>
+                <ClockIcon/>
+                <span className={'hidden lg:inline'}>Timesheets</span>
               </TabsTrigger>
               <TabsTrigger value={'comments'}>
                 <MessagesSquareIcon />
@@ -72,6 +77,9 @@ export default function PurchaseOrderEditPage(props: Props) {
               <PurchaseOrderProvider value={props.purchase_order}>
                 <Budgets/>
               </PurchaseOrderProvider>
+            </TabsContent>
+            <TabsContent value={'timesheets'}>
+              <Timesheets filters={{'filter[purchase_order_id]': props.purchase_order.id}}/>
             </TabsContent>
           </Tabs>
         }

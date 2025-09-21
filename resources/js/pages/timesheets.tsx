@@ -50,6 +50,13 @@ const columns: ColumnDef<Timesheet>[] = [
     },
   },
   {
+    accessorKey: 'week',
+    header: 'Week',
+    cell: ({ row }) => {
+      return `${row.original.week}`;
+    }
+  },
+  {
     accessorKey: 'hours',
     header: 'Total Hours',
     cell: ({ row }) => {
@@ -76,7 +83,7 @@ const columns: ColumnDef<Timesheet>[] = [
       return (
         <Tooltip>
           <TooltipTrigger>
-            <Badge variant="secondary">{row.original.timesheet_items_count || 0}</Badge>
+            <Badge variant="secondary">{row.original.timesheet_items?.length || 0}</Badge>
           </TooltipTrigger>
           <TooltipContent>
             <div>
