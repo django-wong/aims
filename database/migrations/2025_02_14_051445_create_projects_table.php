@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title')->index();
             $table->string('number')->nullable()->index()->comment('YYYY-REGION-XXXX where YYYY is the year, REGION is the region code like AUS, and XXXX is a sequential number');
 
-            $table->decimal('commission_rate', 5)->default(7.5)->comment('The commission rate as a percentage (e.g., 5.00 for 5%)');
+            $table->decimal('commission_rate')->default(7.5)->comment('The commission rate as a percentage (e.g., 5.00 for 5%)');
             $table->decimal('process_fee_rate')->default(0.00)->comment('The processing fee rate for all expenses as a percentage (e.g., 2.50 for 2.5%)');
 
             $table->timestamps();

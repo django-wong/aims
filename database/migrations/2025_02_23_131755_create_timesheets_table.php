@@ -23,7 +23,9 @@ return new class extends Migration
             $table->integer('hours')->default(0)->comment('Total hours worked');
             $table->integer('travel_distance')->default(0)->comment('Total kilometers/miles traveled');
             $table->decimal('expenses', 10)->default(0.00)->comment('Total expenses claimed');
-            $table->decimal('cost', 10)->default(0.00)->comment('Total cost for the timesheet, computed from the mileage, hourly rate, and any additional expenses');
+            $table->decimal('cost', 10)->default(0.00)->comment('Total cost for the timesheet, computed from the travel distance, hours spend, and any additional expenses');
+            $table->decimal('hour_cost', 10)->default(0.00)->comment('Cost for hours spend');
+            $table->decimal('travel_cost', 10)->default(0.00)->comment('Cost for travel distance');
 
             $table->unsignedTinyInteger('status')->default(0)->index()->comment(
                 'Status of the timesheet:

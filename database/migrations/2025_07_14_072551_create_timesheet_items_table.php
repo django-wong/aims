@@ -28,7 +28,7 @@ return new class extends Migration
             )->comment('Total hours calculated from individual components');
             $table->decimal('hourly_rate', 10, 2)->default(0.00)->comment('Rate per hour for work');
             $table->decimal('cost', 10, 2)->storedAs(
-                'work_hours * hourly_rate + travel_hours * hourly_rate + report_hours * hourly_rate'
+                '(work_hours + travel_hours + report_hours) * hourly_rate'
             );
 
             // Maybe not needed as we can calculate how many days the inspectors worked for the assignment

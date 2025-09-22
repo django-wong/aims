@@ -6,6 +6,7 @@ use App\Http\Requests\APIv1\CreateInvoicesFromTimesheetsRequest;
 use App\Models\Client;
 use App\Models\CurrentOrg;
 use App\Models\Invoice;
+use App\Models\InvoiceDetail;
 use App\Models\Org;
 use App\Models\Timesheet;
 use App\Models\TimesheetDetail;
@@ -24,15 +25,30 @@ class InvoiceController extends Controller
             AllowedFilter::callback('type', function (Builder $query, $value) {
                 match ($value) {
                     'inbound' => $query->whereMorphedTo('invoiceable', auth()->user()->user_role->org),
-                    'outbound' => $query->where('invoices.org_id', auth()->user()->user_role->org_id),
+                    'outbound' => $query->where('invoice_details.org_id', auth()->user()->user_role->org_id),
                 };
-            })->default('outbound')
+            })->default('outbound'),
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                if ($value) {
+                    $query->whereAny([
+                        'purchase_order_title',
+                        'invoiceable_org_name',
+                        'invoiceable_client_business_name',
+                        'project_title',
+                    ], 'like', "%$value%");
+                }
+            })
         ];
     }
 
     protected function allowedIncludes()
     {
         return ['invoiceable', 'purchase_order'];
+    }
+
+    protected function getModel(): string
+    {
+        return InvoiceDetail::class;
     }
 
     /**
@@ -42,29 +58,7 @@ class InvoiceController extends Controller
     {
         Gate::authorize('viewAny', Invoice::class);
 
-        $query = $this->getQueryBuilder();
-
-        $query
-            ->select([
-                'invoices.*',
-                'purchase_orders.title as purchase_order_title',
-                'clients.business_name as client_business_name',
-                'invoiceable.name as org_name',
-                'invoiceable.code as org_code',
-                'projects.title as project_title',
-                'projects.commission_rate as commission_rate',
-                'projects.process_fee_rate as process_fee_rate'
-            ])
-            ->leftJoin('purchase_orders', 'invoices.purchase_order_id', '=', 'purchase_orders.id')
-            ->leftJoin('projects', 'purchase_orders.project_id', '=', 'projects.id')
-            ->leftJoin('clients', function (JoinClause $query) {
-                $query->on('invoices.invoiceable_id', '=', 'clients.id')->where('invoices.invoiceable_type', '=', Client::class);
-            })
-            ->leftJoin('orgs as invoiceable', function (JoinClause $query) {
-                $query->on('invoices.invoiceable_id', '=', 'invoiceable.id')->where('invoices.invoiceable_type', '=', Org::class);
-            });
-
-        return $query->paginate();
+        return $this->getQueryBuilder()->paginate();
     }
 
     /**

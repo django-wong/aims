@@ -5,7 +5,6 @@ import { BreadcrumbItem, Invoice } from '@/types';
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -20,13 +19,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { SegmentedControl, SegmentedControlList, SegmentedControlTrigger } from '@/components/ui/segmented-control';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { useQueryParam } from '@/hooks/use-query-param';
+import { InvoiceStatus } from '@/pages/invoices/invoice-status';
 import { Invoiceable } from '@/pages/invoices/invoiceable';
 import { InvoiceProvider } from '@/providers/invoice-provider';
-import { EllipsisVertical, House, Inbox, Mail, MessageSquare, Send } from 'lucide-react';
-import { InvoiceStatus } from '@/pages/invoices/invoice-status';
+import { EllipsisVertical, Inbox, Mail, MessageSquare, Send } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -53,15 +53,15 @@ const columns: ColumnDef<Invoice>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
       return (
         <InvoiceProvider value={row.original}>
-          <InvoiceStatus/>
+          <InvoiceStatus />
         </InvoiceProvider>
       );
-    }
+    },
   },
   {
     accessorKey: 'action',
@@ -80,9 +80,11 @@ export default function Page() {
   const table = useTable<Invoice>('api/v1/invoices', {
     columns,
     defaultParams: {
-      'include': 'invoiceable'
+      include: 'invoiceable',
     },
   });
+
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -90,12 +92,15 @@ export default function Page() {
         <DataTable
           left={
             <>
-              <SegmentedControl value={table.searchParams.get('filter[type]') || 'outbound'} onValueChange={(value) => {
-                table.setSearchParams((params) => {
-                  params.set('filter[type]', value);
-                  return params;
-                })
-              }}>
+              <SegmentedControl
+                value={table.searchParams.get('filter[type]') || 'outbound'}
+                onValueChange={(value) => {
+                  table.setSearchParams((params) => {
+                    params.set('filter[type]', value);
+                    return params;
+                  });
+                }}
+              >
                 <SegmentedControlList>
                   <SegmentedControlTrigger value={'outbound'}>
                     <Send size={16} />
@@ -107,6 +112,22 @@ export default function Page() {
                   </SegmentedControlTrigger>
                 </SegmentedControlList>
               </SegmentedControl>
+              <Input
+                placeholder={'Search...'}
+                className={'w-[200px]'}
+                value={keywords}
+                onChange={({ target: { value } }) => {
+                  setKeywords(value);
+                  table.setSearchParams((params) => {
+                    if (value) {
+                      params.set('filter[keywords]', value);
+                    } else {
+                      params.delete('filter[keywords]');
+                    }
+                    return params;
+                  });
+                }}
+              />
             </>
           }
           table={table}
