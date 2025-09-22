@@ -35,7 +35,7 @@ class Timesheet extends Model
     const INVOICED = 4;
 
     /** @use HasFactory<TimesheetFactory> */
-    use HasFactory, BelongsToAssignment, HasManyTimesheetItems, BelongsToUser, HasManyTimesheetReport;
+    use HasFactory, BelongsToAssignment, HasManyTimesheetItems, BelongsToUser, HasManyTimesheetReport, DynamicPagination;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'
@@ -139,5 +139,22 @@ class Timesheet extends Model
             ->leftJoin('vendors as main_vendor', 'main_vendor.id', '=', 'assignments.vendor_id');
 
         return $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency', 'users.name as inspector_name');
+    }
+
+    public function getInvoiceable($to_org_id = null): Client|Org|null
+    {
+        if (is_null($to_org_id)) {
+            $to_org_id = auth()->user()->user_role->org_id;
+        }
+
+        if (empty($to_org_id)) {
+            throw new \Exception('You must provide an org_id or be logged in to determine the invoiceable entity.');
+        }
+
+        if ($this->assignment->org_id === $to_org_id) {
+            return $this->assignment->project->client;
+        }
+
+        return $this->assignment->operation_org_id === $to_org_id ? $this->assignment->org : null;
     }
 }

@@ -13,6 +13,7 @@ import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { Link } from '@inertiajs/react';
+import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -152,11 +153,11 @@ export default function Timesheets() {
               />
             </>
           }
-          // right={
-          //   <>
-          //     <GenerateFromSelectedTimesheets/>
-          //   </>
-          // }
+          right={
+            <>
+              <CreateInvoiceButton/>
+            </>
+          }
         />
         <div></div>
       </div>

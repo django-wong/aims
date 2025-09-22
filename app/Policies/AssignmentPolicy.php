@@ -102,4 +102,18 @@ class AssignmentPolicy
     {
         return $user->user_role->org_id === $assignment->operation_org_id;
     }
+
+    public function invoice(User $user, Assignment $assignment)
+    {
+        if ($user->user_role->org_id === $assignment->org_id || $assignment->operation_org_id === $user->user_role->org_id) {
+            return in_array($user->user_role->role, [
+                UserRole::PM,
+                UserRole::ADMIN,
+                UserRole::FINANCE,
+                UserRole::STAFF
+            ]);
+        }
+
+        return Response::deny('You don\'t have permission to create invoice.');
+    }
 }

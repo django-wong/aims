@@ -6,27 +6,41 @@ import { UserRoleEnum } from '@/types';
 import { DialogClose } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { Loading } from '@/components/ui/loading';
+import axios from 'axios';
+import { router } from '@inertiajs/react';
 
 export function CreateInvoiceButton() {
   const table = useTableApi();
   const role = useRole();
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   if (!role || [UserRoleEnum.Staff, UserRoleEnum.Admin, UserRoleEnum.PM, UserRoleEnum.Finance].indexOf(role) === -1) {
     return null;
   }
 
-  if (table.getSelectedRowModel().rows.length === 0) {
+  if (table.selections.length === 0) {
     return null;
   }
 
   function submit() {
     setLoading(true);
+    axios.post('/api/v1/invoices/from-timesheets', {
+      timesheets: table.selections
+    }).then((response) => {
+      if (response) {
+        router.visit(route('invoices'));
+      }
+    }).finally(() => {
+      setLoading(false);
+    })
   }
 
   return (
     <DialogWrapper
-      trigger={<Button>Create Invoice ({table.getSelectedRowModel().rows.length})</Button>}
+      open={open}
+      onOpenChange={setOpen}
+      trigger={<Button>Create Invoice ({table.selections.length})</Button>}
       title={'Create Invoice'}
       description={'Create invoice from selected timesheets'}
       footer={
@@ -41,7 +55,10 @@ export function CreateInvoiceButton() {
         </>
       }
     >
-      <p>Your invoice will be issued to contract holder office if the assignment was delegated to you. <br/><br/> Predefined intercompany commission may apply.</p>
+      <div className={'grid gap-4 text-center'}>
+        <p>Timesheets that belong to the same work order will be included in one invoice.</p>
+        <p className={'text-muted-foreground'}>Predefined intercompany commission may apply.</p>
+      </div>
     </DialogWrapper>
   );
 }

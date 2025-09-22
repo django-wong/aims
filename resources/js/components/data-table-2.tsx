@@ -184,6 +184,7 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
         {showPagination && (
           <div className="flex items-center justify-between">
             <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+              Page {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}. &nbsp;&nbsp;
               {table.selectable ? (
                 <>
                   {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -273,6 +274,7 @@ export function ExportButton() {
       variant={'outline'}
       onClick={() => {
         alert('Not implemented yet.');
+        console.info(table);
       }}
     >
       <DownloadIcon />

@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
         'budgets' => BudgetController::class,
         'skills' => SkillController::class,
         'user-skills' => UserSkillController::class,
+        'invoices' => \App\Http\Controllers\APIv1\InvoiceController::class,
     ]);
 
     // Users
@@ -97,4 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::get('purchase-orders/{purchase_order}/calculate-gross-margins', [PurchaseOrderController::class, 'calculate_gross_margins']);
     Route::get('purchase-orders/{purchase_order}/overview', [PurchaseOrderController::class, 'overview']);
     Route::get('purchase-orders/{purchase_order}/daily-usage', [PurchaseOrderController::class, 'daily_usage']);
+
+    // Invoice
+    Route::post('invoices/from-timesheets', [\App\Http\Controllers\APIv1\InvoiceController::class, 'from_timesheets'])->name('invoices.from_timesheets');
 });

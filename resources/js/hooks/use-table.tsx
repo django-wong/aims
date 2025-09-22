@@ -91,6 +91,9 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     manualSorting: true,
     getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
+    getRowId: (row) => {
+      return row.id;
+    },
     defaultColumn: {
       enableSorting: false,
     },
@@ -201,6 +204,12 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     loading,
     searchParams,
     setSearchParams,
+
+    // Selected row id across all pages
+    selections: Object.entries(table.getState().rowSelection).map(
+      ([key, value]) => (value ? key : null)
+    ).filter((item) => item !== null) as string[],
+
     selectable,
     params,
     setParams,

@@ -326,9 +326,18 @@ export type Invoiceable = {
     }
 );
 
-interface InvoiceBase extends BaseModel {
-  assignment_id: number;
-  assignment?: Assignment;
+export enum InvoiceStatusEnum {
+  Draft = 0,
+  Sent = 1,
+  Paid = 2,
+  Overdue = 3,
+  Cancelled = 4,
+}
+
+export interface InvoiceBase extends BaseModel {
+  purchase_order_id: number;
+  batch_id: string;
+  status: InvoiceStatusEnum;
 }
 
 export type Invoice = InvoiceBase & Invoiceable;
