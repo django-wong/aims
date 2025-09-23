@@ -11,6 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
@@ -27,6 +28,8 @@ import { Invoiceable } from '@/pages/invoices/invoiceable';
 import { InvoiceProvider } from '@/providers/invoice-provider';
 import { EllipsisVertical, Inbox, Mail, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from '@inertiajs/react';
+import { formatCurrency, formatDateTime } from '@/lib/helpers';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -40,6 +43,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const columns: ColumnDef<Invoice>[] = [
+  {
+    accessorKey: 'id',
+    header: 'ID',
+    size: 80,
+    cell: ({ row }) => {
+      return <TableCellWrapper>
+        <Link href={route('invoices.edit', row.original.id)} className={'link'}>
+          {row.original.id}
+        </Link>
+      </TableCellWrapper>;
+    }
+  },
   {
     accessorKey: 'invoiceable_id',
     header: 'Invoiceable',
@@ -62,6 +77,65 @@ const columns: ColumnDef<Invoice>[] = [
         </InvoiceProvider>
       );
     },
+  },
+  {
+    accessorKey: 'project_title',
+    header: 'Project',
+    cell: ({row}) => {
+      return <TableCellWrapper>
+        <Link href={route('projects.edit', row.original.project_id)} className={'link'}>
+          {row.original.project_title || '—'}
+        </Link>
+      </TableCellWrapper>;
+    }
+  },
+  {
+    accessorKey: 'purchase_order_title',
+    header: 'Purchase Order',
+    cell: ({row}) => {
+      return <TableCellWrapper>
+        <Link href={route('purchase-orders.edit', row.original.purchase_order_id)} className={'link'}>
+          {row.original.purchase_order_title || '—'}
+        </Link>
+      </TableCellWrapper>;
+    }
+  },
+  {
+    accessorKey: 'hours',
+    header: 'Hours',
+    cell: ({ row }) => {
+      return <TableCellWrapper>{row.original.hours}h</TableCellWrapper>;
+    }
+  },
+  {
+    accessorKey: 'travel_distance',
+    header: 'Travel',
+    cell: ({ row }) => {
+      return <TableCellWrapper>{row.original.travel_distance}</TableCellWrapper>;
+    }
+  },
+  {
+    accessorKey: 'expenses',
+    header: 'Expenses',
+    cell: ({ row }) => {
+      return <TableCellWrapper>
+        {formatCurrency(row.original.expenses)}
+      </TableCellWrapper>;
+    }
+  },
+  {
+    accessorKey: 'cost',
+    header: 'Total Amount',
+    cell: ({ row }) => {
+      return <TableCellWrapper>{formatCurrency(row.original.cost)}</TableCellWrapper>;
+    }
+  },
+  {
+    accessorKey: 'created_at',
+    header: 'Created At',
+    cell: ({ row }) => {
+      return <TableCellWrapper>{formatDateTime(row.original.created_at)}</TableCellWrapper>;
+    }
   },
   {
     accessorKey: 'action',
@@ -142,36 +216,16 @@ export function InvoiceActions() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" size={'sm'}>
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        {/*<DropdownMenuLabel>My Account</DropdownMenuLabel>*/}
-        {/*<DropdownMenuSeparator />*/}
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            View Details
-            <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Duplicate
-            <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Edit
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
           <DropdownMenuItem className={'text-red-500'} disabled={true}>
             Delete
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>View Assignment</DropdownMenuItem>
-          <DropdownMenuItem>View Project</DropdownMenuItem>
-          <DropdownMenuItem>View Client</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -183,12 +237,6 @@ export function InvoiceActions() {
                   Email
                   <DropdownMenuShortcut>
                     <Mail />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  SMS
-                  <DropdownMenuShortcut>
-                    <MessageSquare />
                   </DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuSubContent>

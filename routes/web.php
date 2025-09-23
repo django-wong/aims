@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Invoices
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'edit'])->name('invoices.edit');
 
     // Clients
     Route::get('clients', [ClientController::class, 'index'])->name('clients');

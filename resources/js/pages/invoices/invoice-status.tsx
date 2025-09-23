@@ -6,33 +6,33 @@ import React from 'react';
 
 const invoiceStatus: {
   [key in InvoiceStatusEnum]: {
-    color: string;
+    className: string;
     label: string;
     badge_variant: React.ComponentProps<typeof Badge>['variant']
   }
 } = {
   [InvoiceStatusEnum.Draft]: {
-    color: 'gray',
+    className: '',
     label: 'Draft',
     badge_variant: 'outline',
   },
   [InvoiceStatusEnum.Sent]: {
-    color: 'blue',
+    className: 'border-blue-300 bg-blue-50',
     label: 'Sent',
     badge_variant: 'outline',
   },
   [InvoiceStatusEnum.Paid]: {
-    color: 'green',
+    className: 'border-green-300 bg-green-50',
     label: 'Paid',
     badge_variant: 'default',
   },
   [InvoiceStatusEnum.Overdue]: {
-    color: 'red',
+    className: 'border-amber-300 bg-amber-50',
     label: 'Overdue',
     badge_variant: 'destructive',
   },
   [InvoiceStatusEnum.Cancelled]: {
-    color: 'yellow',
+    className: 'border-red-300 bg-red-50',
     label: 'Cancelled',
     badge_variant: 'outline',
   }
@@ -55,7 +55,7 @@ export function InvoiceStatus() {
   const options = invoiceStatus[invoice.status];
 
   return (
-    <Badge className={cn(options.label.toLowerCase())}>
+    <Badge variant={'outline'} className={cn(options.label.toLowerCase(), options.className)}>
       {options.label}
     </Badge>
   );

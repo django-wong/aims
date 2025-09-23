@@ -415,7 +415,7 @@ export interface Timesheet extends BaseModel {
 
   start: string; // YYYY-MM-DD
   end: string; // YYYY-MM-DD
-  week: string // YYYY-WW
+  week: string; // YYYY-WW
 
   hours: number;
 
@@ -571,7 +571,6 @@ export interface LateReport extends BaseModel {
   days_to_report: number;
 }
 
-
 export interface ApprovalEfficiency extends BaseModel {
   client_name: string;
   client_group_name: string;
@@ -583,7 +582,6 @@ export interface ApprovalEfficiency extends BaseModel {
   min_hours: number;
   total_approval_in_last_year: number;
 }
-
 
 export interface TimesheetDetail extends Timesheet {
   inspector_name: string;

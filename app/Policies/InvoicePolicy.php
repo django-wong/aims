@@ -26,4 +26,9 @@ class InvoicePolicy
             UserRole::SYSTEM
         ]);
     }
+
+    public function view(User $user):bool
+    {
+        return true;
+    }
 }

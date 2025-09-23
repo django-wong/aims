@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\JoinClause;
 
-class Invoice extends Model
+class Invoice extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\InvoiceFactory> */
-    use HasFactory, BelongsToPurchaseOrder, DynamicPagination;
+    use HasFactory, BelongsToPurchaseOrder, DynamicPagination, HasManyComments;
 
     const DRAFT = 0;
     const SENT = 1;

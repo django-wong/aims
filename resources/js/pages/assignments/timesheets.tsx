@@ -18,7 +18,6 @@ import { cn, timesheet_range } from '@/lib/utils';
 import { TimesheetStatus } from '@/pages/timesheets/status';
 import { AssignmentProvider, useAssignment } from '@/providers/assignment-provider';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
-import { Assignment, Timesheet } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
@@ -29,9 +28,9 @@ import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-ap
 import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
 import { TimesheetEditContent } from '@/pages/timesheets/edit';
 import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
+import { Timesheet } from '@/types';
 
 interface TimesheetsProps {
-  assignment?: Assignment;
   filters?: Record<string, any>;
 }
 
@@ -93,7 +92,7 @@ export function Timesheets(props: TimesheetsProps) {
         return <div className={'flex items-center justify-end'}>Actions</div>;
       },
       cell: ({ row }) => (
-        <AssignmentProvider value={row.original.assignment || props.assignment || assignment}>
+        <AssignmentProvider value={row.original.assignment || assignment}>
           <div className={'flex items-center justify-end'}>
             <TimesheetActions timesheet={row.original} onViewDetailsClick={setTimesheet} />
           </div>
@@ -107,11 +106,6 @@ export function Timesheets(props: TimesheetsProps) {
     columns,
     defaultParams: {
       ...props.filters,
-      ...(props.assignment
-        ? {
-            'filter[assignment_id]': String(props.assignment?.id),
-          }
-        : null),
       include: 'user,assignment',
       sort: '-start',
     },

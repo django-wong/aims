@@ -84,6 +84,14 @@ class TimesheetController extends Controller
     protected function allowedFilters()
     {
         return [
+            AllowedFilter::callback('invoice_id', function (Builder $query, $value) {
+                if ($value) {
+                    $query->whereAny([
+                        'client_invoice_id',
+                        'contractor_invoice_id'
+                    ], $value);
+                }
+            }),
             AllowedFilter::exact('assignment_id'),
             'hours',
             'travel_distance',

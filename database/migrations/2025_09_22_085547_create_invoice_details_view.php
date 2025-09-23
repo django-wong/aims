@@ -15,6 +15,8 @@ return new class extends Migration
             CREATE OR REPLACE VIEW invoice_details AS
             select invoices.*,
                    purchase_orders.title            as purchase_order_title,
+                   purchase_orders.currency         as currency,
+                   purchase_orders.mileage_unit     as travel_unit,
                    invoiceable.name                 as invoiceable_org_name,
                    invoiceable_client.business_name as invoiceable_client_business_name,
                    COUNT(timesheets.id)             as timesheet_count,

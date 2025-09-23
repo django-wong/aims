@@ -8,12 +8,21 @@ import { useState } from 'react';
 import { Loading } from '@/components/ui/loading';
 import axios from 'axios';
 import { router } from '@inertiajs/react';
+import { useInvoice } from '@/providers/invoice-provider';
 
 export function CreateInvoiceButton() {
+  const invoice = useInvoice();
+
+
   const table = useTableApi();
   const role = useRole();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Only show the button when there's no invoice (on assignment timesheets page), user has the right role, and there are selected timesheets
+  if (invoice) {
+    return null;
+  }
 
   if (!role || [UserRoleEnum.Staff, UserRoleEnum.Admin, UserRoleEnum.PM, UserRoleEnum.Finance].indexOf(role) === -1) {
     return null;
@@ -56,7 +65,7 @@ export function CreateInvoiceButton() {
       }
     >
       <div className={'grid gap-4 text-center'}>
-        <p>Timesheets that belong to the same work order will be included in one invoice.</p>
+        <p>Timesheets that belong to the same work order will be included in one invoice, and will be ignored if it's already invoiced.</p>
         <p className={'text-muted-foreground'}>Predefined intercompany commission may apply.</p>
       </div>
     </DialogWrapper>

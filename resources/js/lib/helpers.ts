@@ -99,13 +99,13 @@ export function formatDate(
  */
 export function formatDateTime(input: Date | string | number): string {
   const date = new Date(input);
-  return date.toLocaleString('en-US', {
-    month: 'long',
+  return date.toLocaleString(navigator.language, {
+    month: 'numeric',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    hour12: true,
+    hour12: false,
   });
 }
 

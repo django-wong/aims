@@ -53,7 +53,8 @@ export function InfoLine({
   className?: string;
 }) {
   return (
-    <div className={cn(`transition-all hover:bg-muted/60 hover:rounded-sm -mx-2 px-2 py-1 flex justify-between items-start gap-2 flex-wrap`, className)}>
+    // transition-all hover:bg-muted/60 hover:rounded-sm -mx-2 px-2 py-1
+    <div className={cn(`flex justify-between py-1 items-start gap-2 flex-wrap`, className)}>
       <InfoLineLabel icon={icon}>
         {label}
       </InfoLineLabel>

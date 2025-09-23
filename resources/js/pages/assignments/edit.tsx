@@ -184,9 +184,8 @@ export default function Edit(props: EditProps) {
               <TabsContent value={'timesheets'}>
                 <div className={'grid gap-4'}>
                   <Timesheets
-                    assignment={props.assignment}
                     filters={{
-                      // 'filter[status]': '> 0',
+                      'filter[assignment_id]': String(props.assignment?.id)
                     }}
                   />
                 </div>
