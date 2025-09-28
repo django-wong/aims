@@ -42,14 +42,11 @@ class HandleInertiaRequests extends Middleware
             'menu' => app('App\Http\Controllers\APIv1\MenuController')->index($request),
             ...parent::share($request),
             'name' => config('app.name'),
-            'quote' => [
-                'message' => trim($message),
-                'author' => trim($author)
-            ],
             'auth' => [
                 'user' => $request->user()?->load('user_role'),
                 'org' => $request->user()?->org,
-                'impersonating' => $request->user()?->isImpersonated() ?? false
+                'impersonating' => $request->user()?->isImpersonated() ?? false,
+                'client' => $request->user()?->client
             ],
             'flash' => [
                 'message' => $request->session()->get('message'),

@@ -1,6 +1,6 @@
 import Layout from '@/layouts/app-layout';
 import { BreadcrumbItem, PurchaseOrder } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine } from '@/components/info';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,6 +16,7 @@ import { PurchaseOrderForm } from '@/pages/purchase-orders/form';
 import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
 import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
 import { Timesheets } from '@/pages/assignments/timesheets';
+import { formatDate, formatDateTime } from '@/lib/helpers';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -98,26 +99,44 @@ export default function PurchaseOrderEditPage(props: Props) {
                     </InfoLine>
                   )
                 }
-                <InfoLine label={'Project'} icon={'library-big'}>
-                  {props.purchase_order.project?.title || '--'}
-                </InfoLine>
-                <InfoLine label={'Client'} icon={'user'}>
-                  {props.purchase_order.project?.client?.business_name || 'No client assigned'}
-                </InfoLine>
+                {
+                  props.purchase_order.project_id ? (
+                    <InfoLine label={'Project'} icon={'library-big'}>
+                      <Link className={'link'} href={route('projects.edit', props.purchase_order.project_id)}>
+                        {props.purchase_order.project?.title || '--'}
+                      </Link>
+                    </InfoLine>
+                  ) : null
+                }
+
+                {
+                  props.purchase_order.project?.client_id ? (
+                    <InfoLine label={'Client'} icon={'user'}>
+                      <Link className={'link'} href={route('clients.edit', props.purchase_order.project?.client_id)}>
+                        {props.purchase_order.project?.client?.business_name || 'N/A'}
+                      </Link>
+                    </InfoLine>
+                  ) : null
+                }
+
                 <InfoLine label={'Created'} icon={'calendar'}>
-                  {new Date(props.purchase_order.created_at).toLocaleDateString()}
+                  {formatDateTime(props.purchase_order.created_at)}
                 </InfoLine>
+
                 <InfoLine label={'Last Updated'} icon={'clock'}>
-                  {new Date(props.purchase_order.updated_at).toLocaleDateString()}
+                  {formatDateTime(props.purchase_order.updated_at)}
                 </InfoLine>
+
                 <InfoLine label={'Budget'} icon={'dollar-sign'}>
                   ${props.purchase_order.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </InfoLine>
+
                 <InfoLine label={'Budgeted Hours'} icon={'dollar-sign'}>
                   {props.purchase_order.budgeted_hours} hrs
                 </InfoLine>
+
                 <InfoLine label={'Budgeted Mileage'} icon={'car'}>
-                  {props.purchase_order.budgeted_mileage} Unit
+                  {props.purchase_order.budgeted_mileage} {props.purchase_order.mileage_unit}
                 </InfoLine>
               </div>
             </Info>

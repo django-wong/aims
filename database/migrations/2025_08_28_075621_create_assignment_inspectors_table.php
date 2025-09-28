@@ -24,6 +24,8 @@ return new class extends Migration
             $table->decimal('travel_rate', 10)->default(0.5);
 
             $table->timestamps();
+
+            $table->unique(['assignment_id', 'user_id'], 'unique_assignment_user');
         });
     }
 

@@ -21,10 +21,11 @@ class TimesheetItemFactory extends Factory
         return [
             'timesheet_id' => Timesheet::factory(),
             'user_id' => User::factory(),
-            'item_number' => $this->faker->unique()->numerify('ITEM-###'),
+            'item_number' => $this->faker->numerify('ITEM-###'),
             'date' => $this->faker->date(),
             'week_number' => $this->faker->numberBetween(1, 53),
 
+            // TODO: This should from purchase order budget
             'hourly_rate' => $this->faker->randomFloat(2, 10, 100),
             'work_hours' => $this->faker->numberBetween(-8, 8),
             'travel_hours' => $this->faker->numberBetween(0, 4),
@@ -33,7 +34,7 @@ class TimesheetItemFactory extends Factory
             'days' => $this->faker->numberBetween(0, 7),
             'overnights' => $this->faker->numberBetween(0, 3),
 
-            'travel_distance' => $this->faker->numberBetween(-100, 100),
+            'travel_distance' => $this->faker->optional()->numberBetween(0, 100) ?? 0,
             'travel_rate' => $this->faker->randomFloat(2, 1, 5),
 
             'hotel' => $this->faker->randomFloat(2, 0, 500),

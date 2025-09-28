@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TimesheetDetail extends Model
+class TimesheetDetail extends Timesheet
 {
     use DynamicPagination;
 
-    protected function casts(): array
+    public function casts(): array
     {
         return [
             'expenses' => 'decimal:2',
+            ...parent::casts()
         ];
     }
 }

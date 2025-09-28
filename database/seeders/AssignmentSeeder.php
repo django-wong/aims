@@ -23,6 +23,7 @@ class AssignmentSeeder extends Seeder
      */
     public function run(): void
     {
+        $vendors = Vendor::query()->get();
         /**
          * @var Project $project
          */
@@ -30,6 +31,7 @@ class AssignmentSeeder extends Seeder
             Assignment::factory(1)
                 ->recycle(AssignmentType::query()->get())
                 ->recycle($project)
+                ->recycle($vendors->random())
                 ->recycle($project->org)
                 ->recycle($project->purchase_orders)
                 ->create();

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string  $timezone
  */
-class Org extends Model implements CurrentOrg
+class Org extends Model implements CurrentOrg, Invoiceable
 {
     /** @use HasFactory<\Database\Factories\OrgFactory> */
     use HasFactory, HasManyAssignments, BelongsToAddress;
@@ -22,5 +22,15 @@ class Org extends Model implements CurrentOrg
     public static function current(): ?self
     {
         return auth()->user()->org;
+    }
+
+    public function getInvoiceName(): string
+    {
+        return $this->name;
+    }
+
+    public function getInvoiceAddress(): ?string
+    {
+        return $this->address->full_address ?? null;
     }
 }

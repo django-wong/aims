@@ -1,34 +1,16 @@
 import { ColumnToggle, DataTable, TableRefresher } from '@/components/data-table-2';
-import { DialogInnerContent } from '@/components/dialog-inner-content';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useIsClient } from '@/hooks/use-role';
 import { useTable } from '@/hooks/use-table';
 import { cn, timesheet_range } from '@/lib/utils';
 import { TimesheetStatus } from '@/pages/timesheets/status';
-import { AssignmentProvider, useAssignment } from '@/providers/assignment-provider';
+import { AssignmentProvider } from '@/providers/assignment-provider';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import axios from 'axios';
-import { EllipsisVerticalIcon, PenIcon } from 'lucide-react';
-import { startTransition, useState } from 'react';
-import { ClientApprove } from '../timesheets/client-approve';
-import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';
-import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
-import { TimesheetEditContent } from '@/pages/timesheets/edit';
+
 import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 import { Timesheet } from '@/types';
+import { TimesheetActions } from '@/pages/timesheets';
 
 interface TimesheetsProps {
   filters?: Record<string, any>;
@@ -45,16 +27,19 @@ const assignment_column: ColumnDef<Timesheet> = {
 };
 
 export function Timesheets(props: TimesheetsProps) {
-  const [timesheet, setTimesheet] = useState<Timesheet | null>();
-  const assignment = useAssignment();
   const isClient = useIsClient();
 
   const columns: ColumnDef<Timesheet>[] = [
     ...(isClient ? [assignment_column] : []),
     {
+      accessorKey: 'id',
+      header: '#',
+      cell: ({ row }) => <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>{row.original.id}</Link>,
+    },
+    {
       accessorKey: 'inspector',
       header: 'Inspector',
-      cell: ({ row }) => <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>{row.original.user?.name}</Link>,
+      cell: ({ row }) => <>{row.original.user?.name}</>,
     },
     {
       accessorKey: 'range',
@@ -72,9 +57,38 @@ export function Timesheets(props: TimesheetsProps) {
       cell: ({ row }) => <span>{row.getValue('travel_distance')} {row.original.mileage_unit}</span>,
     },
     {
+      accessorKey: 'expenses',
+      header: 'Expenses',
+      cell: ({ row }) => <span>${row.getValue('expenses')}</span>,
+    },
+    {
       accessorKey: 'cost',
-      header: 'Cost',
+      header: 'Total Cost',
       cell: ({ row }) => <span>${row.getValue('cost')}</span>,
+    },
+    {
+      accessorKey: 'client_invoice_id',
+      header: 'Client Invoice',
+      cell: ({ row }) => {
+        if (row.original.client_invoice_id) {
+          return (
+            <Link className={'link'} href={route('invoices.edit', row.original.client_invoice_id)}>#{row.original.client_invoice_id}</Link>
+          );
+        }
+        return '';
+      },
+    },
+    {
+      accessorKey: 'contractor_invoice_id',
+      header: 'Invoice',
+      cell: ({ row }) => {
+        if (row.original.contractor_invoice_id) {
+          return (
+            <Link className={'link'} href={route('invoices.edit', row.original.contractor_invoice_id)}>#{row.original.contractor_invoice_id}</Link>
+          );
+        }
+        return '';
+      },
     },
     {
       accessorKey: 'status',
@@ -91,11 +105,12 @@ export function Timesheets(props: TimesheetsProps) {
       header: () => {
         return <div className={'flex items-center justify-end'}>Actions</div>;
       },
+      enablePinning: true,
       cell: ({ row }) => (
-        <AssignmentProvider value={row.original.assignment || assignment}>
-          <div className={'flex items-center justify-end'}>
-            <TimesheetActions timesheet={row.original} onViewDetailsClick={setTimesheet} />
-          </div>
+        <AssignmentProvider value={row.original.assignment ?? null}>
+          <TimesheetProvider value={row.original}>
+            <TimesheetActions/>
+          </TimesheetProvider>
         </AssignmentProvider>
       ),
     },
@@ -104,23 +119,19 @@ export function Timesheets(props: TimesheetsProps) {
   const table = useTable<Timesheet>('/api/v1/timesheets', {
     selectable: true,
     columns,
+    initialState: {
+      columnPinning: {
+        right: [
+          'actions'
+        ]
+      }
+    },
     defaultParams: {
       ...props.filters,
       include: 'user,assignment',
       sort: '-start',
     },
   });
-
-  function approve() {
-    if (timesheet) {
-      axios.post(`/api/v1/timesheets/${timesheet.id}/approve`).then(() => {
-        startTransition(() => {
-          table.reload();
-          setTimesheet(null);
-        });
-      });
-    }
-  }
 
   return (
     <>
@@ -134,77 +145,6 @@ export function Timesheets(props: TimesheetsProps) {
         right={<TableRefresher />}
         table={table}
       />
-      <Dialog
-        open={!!timesheet}
-        onOpenChange={(open) => {
-          if (!open) {
-            setTimesheet(null);
-          }
-        }}
-      >
-        <DialogContent className={'sm:max-w-5xl'}>
-          <DialogHeader>
-            <DialogTitle>Timesheet Details</DialogTitle>
-            <DialogDescription>Reviewing timesheet items for the period of {timesheet ? timesheet_range(timesheet) : 'N/A'}.</DialogDescription>
-          </DialogHeader>
-          <DialogInnerContent>
-            {timesheet ? (
-              <TimesheetProvider value={timesheet}>
-                <TimesheetEditContent/>
-              </TimesheetProvider>
-            ) : null}
-          </DialogInnerContent>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant={'outline'}>Close</Button>
-            </DialogClose>
-            <Button onClick={approve}>Approve</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
-  );
-}
-
-interface TimesheetActionsProps {
-  timesheet: Timesheet;
-  onViewDetailsClick?: (item: Timesheet) => void;
-}
-
-function TimesheetActions(props: TimesheetActionsProps) {
-  return (
-    <div className={'flex items-center gap-2'}>
-
-      <TimesheetProvider value={props.timesheet}>
-        <ClientApprove/>
-        <ContractorHolderApprove/>
-        <CoordinationOfficeApprove/>
-      </TimesheetProvider>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild onClick={(event) => event.stopPropagation()} className={'cursor-pointer'}>
-          <Button variant={'secondary'} size={'sm'}>
-            <EllipsisVerticalIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align={'end'} side={'bottom'}>
-          <DropdownMenuLabel>
-            <div className={'flex items-center justify-between'}>
-              <span>Timesheet</span>
-              <span>#{props.timesheet.id}</span>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => props.onViewDetailsClick?.(props.timesheet)}>
-              View Details
-              <DropdownMenuShortcut>
-                <PenIcon />
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
   );
 }

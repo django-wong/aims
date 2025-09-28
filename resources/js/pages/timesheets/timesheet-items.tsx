@@ -27,6 +27,7 @@ import { TimesheetReportProvider } from '@/providers/timesheet-report-provider';
 import { TimesheetReportForm } from '@/pages/assignments/assignment-report-form';
 import { RejectionDetails } from '@/pages/timesheets/rejection-details';
 import { PopoverConfirm } from '@/components/popover-confirm';
+import { formatCurrency, formatDate } from '@/lib/helpers';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -40,7 +41,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     {
       accessorKey: 'date',
       header: 'Date',
-      cell: ({ row }) => new Date(row.original.date || Date.now()).toLocaleDateString(),
+      cell: ({ row }) => formatDate(row.original.date),
       enablePinning: true,
     },
     {
@@ -52,6 +53,18 @@ export function TimesheetItems(props: TimesheetItemsProps) {
         </>
       ),
     },
+    // {
+    //   accessorKey: 'hourly_rate',
+    //   header: () => {
+    //     return (
+    //       <Tooltip>
+    //         <TooltipTrigger>Hourly Rate</TooltipTrigger>
+    //         <TooltipContent>The actual hourly rate at the time when inspector log the work.</TooltipContent>
+    //       </Tooltip>
+    //     )
+    //   },
+    //   cell: ({ row }) => formatCurrency(row.original.hourly_rate),
+    // },
     {
       accessorKey: 'days',
       header: 'Overnights',
@@ -65,7 +78,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     // {
     //   accessorKey: 'travel_rate',
     //   header: 'Travel Rate',
-    //   cell: ({ row }) => row.original.travel_rate.toFixed(2),
+    //   cell: ({ row }) => formatCurrency(row.original.travel_rate),
     // },
     {
       accessorKey: 'expenses',

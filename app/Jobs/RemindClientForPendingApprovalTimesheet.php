@@ -26,6 +26,7 @@ class RemindClientForPendingApprovalTimesheet implements ShouldQueue
             );
             $reminder->timesheet->client_reminder_sent_at = now();
             $reminder->timesheet->save();
+            sleep(1);
         }
     }
 }

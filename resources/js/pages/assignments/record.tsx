@@ -18,7 +18,7 @@ import { TimesheetItemForm } from '@/pages/timesheet-items/form';
 import { TimesheetItems } from '@/pages/timesheets/timesheet-items';
 import { AssignmentProvider } from '@/providers/assignment-provider';
 import { TimesheetProvider, useTimesheet } from '@/providers/timesheet-provider';
-import { Assignment, AssignmentInspector, SharedData, Timesheet, TimesheetStatus } from '@/types';
+import { Assignment, AssignmentInspector, SharedData, Timesheet, TimesheetStatus, UserRoleEnum } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import axios from 'axios';
@@ -37,6 +37,7 @@ import {
 import { startTransition, useRef, useState } from 'react';
 import SignaturePad, { SignatureCanvas } from 'react-signature-canvas';
 import { Loading } from '@/components/ui/loading';
+import { useRole } from '@/hooks/use-role';
 
 interface RecordProps {
   assignment: Assignment;
@@ -185,7 +186,7 @@ export default function Record(props: RecordProps) {
                               <div className={'flex items-center justify-end gap-2'}>
                                 {editable && (
                                   <>
-                                    <LogYourTime timesheet={props.timesheet} />
+                                    <LogYourTime />
                                     <SignOffForm>
                                       <Button variant={'primary'} disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
                                         <SendIcon />
@@ -400,23 +401,34 @@ export default function Record(props: RecordProps) {
   );
 }
 
-interface LogYourTimeProps {
-  timesheet: Timesheet;
-}
-
-function LogYourTime(props: LogYourTimeProps) {
+export function LogYourTime() {
+  const timesheet = useTimesheet();
   const table = useTableApi();
+  const role = useRole();
+
+  if (!timesheet) {
+    return null;
+  }
+
+  if ([UserRoleEnum.PM, UserRoleEnum.Admin, UserRoleEnum.Inspector, UserRoleEnum.Staff].indexOf(role as any) === -1) {
+    return null;
+  }
+
   return (
     <div className={'flex items-center justify-end gap-4'}>
       <TimesheetItemForm
-        timesheet={props.timesheet}
+        timesheet={timesheet}
         onSubmit={() => {
-          table.reload();
+          if (table) {
+            table?.reload();
+          } else {
+            window.location.reload();
+          }
         }}
       >
         <Button variant={'outline'}>
           <Plus />
-          Log your work
+          Log work hour
         </Button>
       </TimesheetItemForm>
     </div>

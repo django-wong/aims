@@ -34,5 +34,8 @@ echo "Start dev server..."
 pm2 start "npm run dev" --name "dev-server" --no-autorestart
 
 
+echo "Laravel scheduler starting..."
+pm2 start "php artisan schedule:work" --name "laravel-scheduler" --no-autorestart
+
 echo "Starting..."
 /usr/local/bin/apache2-foreground

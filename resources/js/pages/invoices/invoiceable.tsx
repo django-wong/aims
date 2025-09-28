@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { useInvoice } from '@/providers/invoice-provider';
 import { HouseIcon, UserIcon } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 export function Invoiceable() {
   const invoice = useInvoice();
@@ -12,7 +13,10 @@ export function Invoiceable() {
   if (invoice.invoiceable_type === 'App\\Models\\Client') {
     return (
       <Badge variant={'outline'}>
-        <UserIcon /> {invoice?.invoiceable?.business_name}
+        <UserIcon />
+        <Link href={route('clients.edit', invoice.invoiceable_id)} className={'link'}>
+          {invoice?.invoiceable?.business_name}
+        </Link>
       </Badge>
     );
   }

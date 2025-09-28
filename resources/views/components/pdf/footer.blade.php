@@ -2,7 +2,7 @@
     @if($slot->isEmpty())
         <table style="padding:0; margin: 0; border-collapse: collapse; width: 100%;">
             <tr>
-                <td class="left">Generated at {{ date('d/m/Y H:i') }}</td>
+                <td class="left">Generated at {{ date('d/m/Y H:i:s') }}</td>
                 <td class="right">
                     {{"BIE Group - ".date('Y')}}
                 </td>

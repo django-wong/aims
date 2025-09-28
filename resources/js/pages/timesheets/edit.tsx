@@ -3,7 +3,7 @@ import { TwoColumnLayout73 } from '@/components/main-content';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQueryParam } from '@/hooks/use-query-param';
 import AppLayout from '@/layouts/app-layout';
-import { formatDate } from '@/lib/helpers';
+import { formatCurrency, formatDate } from '@/lib/helpers';
 import { TimesheetIssue } from '@/pages/timesheets/issue';
 import { ReportLate } from '@/pages/timesheets/report-late';
 import { TimesheetStatus } from '@/pages/timesheets/status';
@@ -15,6 +15,9 @@ import { Head, Link } from '@inertiajs/react';
 import { ClientApprove } from '@/pages/timesheets/client-approve';
 import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';
 import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
+import { LogYourTime } from '@/pages/assignments/record';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { HideFromClient } from '@/components/hide-from-client';
 
 interface EditTimesheetProps {
   timesheet: Timesheet;
@@ -51,6 +54,9 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                 <ClientApprove/>
                 <ContractorHolderApprove/>
                 <CoordinationOfficeApprove/>
+                <HideFromClient>
+                  <LogYourTime/>
+                </HideFromClient>
               </>
             }
             breadcrumbs={breadcrumbs}>
@@ -83,6 +89,26 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                         <TimesheetStatus status={props.timesheet.status} />
                       </InfoLine>
 
+                      {
+                        props.timesheet.client_invoice_id ? (
+                          <InfoLine label={'Client Invoice'}>
+                            <Link href={route('invoices.edit', props.timesheet.client_invoice_id)} className={'link'}>
+                              View
+                            </Link>
+                          </InfoLine>
+                        ) : null
+                      }
+
+                      {
+                        props.timesheet.contractor_invoice_id ? (
+                          <InfoLine label={'Client Invoice'}>
+                            <Link href={route('invoices.edit', props.timesheet.contractor_invoice_id)} className={'link'}>
+                              View
+                            </Link>
+                          </InfoLine>
+                        ) : null
+                      }
+
                       {props.timesheet.rejected ? (
                         <InfoLine label={'Rejection Reason'} className={'text-red-600'}>
                           {props.timesheet.rejection_reason}
@@ -92,18 +118,33 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                     <InfoHead>Usage</InfoHead>
                     <div>
                       <InfoLine label={'Total Hours'}>{props.timesheet.hours}</InfoLine>
-                      <InfoLine label={'Travel Distance'}>{props.timesheet.travel_distance}</InfoLine>
-                      <InfoLine label={'Cost'}>{props.timesheet.cost}</InfoLine>
-                    </div>
-                    <InfoHead>Issue & Problem</InfoHead>
-                    <div>
-                      <InfoLine className={'items-center'} label={'Report Late'}>
-                        <ReportLate />
+                      <InfoLine label={'Rate'}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            {formatCurrency(props.timesheet.hourly_rate)}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            This is the latest hourly rate for the assignment. It may differ from the actual rate due to adjustments.
+                          </TooltipContent>
+                        </Tooltip>
                       </InfoLine>
-                      <InfoLine label={'Problem'}>
-                        <TimesheetIssue />
-                      </InfoLine>
+                      <InfoLine label={'Hour Cost'}>{formatCurrency(props.timesheet.hour_cost)}</InfoLine>
+                      <InfoLine label={'Travel Distance'}>{props.timesheet.travel_distance} {props.timesheet.travel_unit}</InfoLine>
+                      <InfoLine label={'Travel Rate'}>{formatCurrency(props.timesheet.travel_rate)}</InfoLine>
+                      <InfoLine label={'Expenses'}>{formatCurrency(props.timesheet.expenses)}</InfoLine>
+                      <InfoLine label={'Cost'}>{formatCurrency(props.timesheet.cost)}</InfoLine>
                     </div>
+                    <HideFromClient>
+                      <InfoHead>Issue & Problem</InfoHead>
+                      <div>
+                        <InfoLine className={'items-center'} label={'Report Late'}>
+                          <ReportLate />
+                        </InfoLine>
+                        <InfoLine label={'Problem'}>
+                          <TimesheetIssue />
+                        </InfoLine>
+                      </div>
+                    </HideFromClient>
                   </Info>
                 </>
               }

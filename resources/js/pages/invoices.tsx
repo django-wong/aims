@@ -1,35 +1,22 @@
-import { ColumnToggle, DataTable } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Invoice } from '@/types';
 
 import { useTable } from '@/hooks/use-table';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { SegmentedControl, SegmentedControlList, SegmentedControlTrigger } from '@/components/ui/segmented-control';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { InvoiceStatus } from '@/pages/invoices/invoice-status';
 import { Invoiceable } from '@/pages/invoices/invoiceable';
 import { InvoiceProvider } from '@/providers/invoice-provider';
-import { EllipsisVertical, Inbox, Mail, MessageSquare, Send } from 'lucide-react';
+import { Inbox, Send } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { formatCurrency, formatDateTime } from '@/lib/helpers';
+import { HideFromClient } from '@/components/hide-from-client';
+import { InvoiceActions } from '@/pages/client-invoices';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -50,7 +37,7 @@ const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => {
       return <TableCellWrapper>
         <Link href={route('invoices.edit', row.original.id)} className={'link'}>
-          {row.original.id}
+          #{row.original.id}
         </Link>
       </TableCellWrapper>;
     }
@@ -140,11 +127,13 @@ const columns: ColumnDef<Invoice>[] = [
   {
     accessorKey: 'action',
     header: () => <TableCellWrapper last>Action</TableCellWrapper>,
-    cell: () => {
+    cell: ({ row }) => {
       return (
-        <TableCellWrapper last>
-          <InvoiceActions />
-        </TableCellWrapper>
+        <InvoiceProvider value={row.original}>
+          <TableCellWrapper last>
+            <InvoiceActions />
+          </TableCellWrapper>
+        </InvoiceProvider>
       );
     },
   },
@@ -166,26 +155,30 @@ export default function Page() {
         <DataTable
           left={
             <>
-              <SegmentedControl
-                value={table.searchParams.get('filter[type]') || 'outbound'}
-                onValueChange={(value) => {
-                  table.setSearchParams((params) => {
-                    params.set('filter[type]', value);
-                    return params;
-                  });
-                }}
-              >
-                <SegmentedControlList>
-                  <SegmentedControlTrigger value={'outbound'}>
-                    <Send size={16} />
-                    Outbound
-                  </SegmentedControlTrigger>
-                  <SegmentedControlTrigger value={'inbound'}>
-                    <Inbox size={16} />
-                    Inbound
-                  </SegmentedControlTrigger>
-                </SegmentedControlList>
-              </SegmentedControl>
+              <HideFromClient>
+                <SegmentedControl
+                  value={table.searchParams.get('filter[type]') || 'outbound'}
+                  onValueChange={(value) => {
+                    table.setSearchParams((params) => {
+                      params.set('filter[type]', value);
+                      return params;
+                    });
+                  }}
+                >
+                  <SegmentedControlList>
+                    <HideFromClient>
+                      <SegmentedControlTrigger value={'outbound'}>
+                        <Send size={16} />
+                        Outbound
+                      </SegmentedControlTrigger>
+                    </HideFromClient>
+                    <SegmentedControlTrigger value={'inbound'}>
+                      <Inbox size={16} />
+                      Inbound
+                    </SegmentedControlTrigger>
+                  </SegmentedControlList>
+                </SegmentedControl>
+              </HideFromClient>
               <Input
                 placeholder={'Search...'}
                 className={'w-[200px]'}
@@ -209,41 +202,5 @@ export default function Page() {
         />
       </div>
     </AppLayout>
-  );
-}
-
-export function InvoiceActions() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size={'sm'}>
-          <EllipsisVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuGroup>
-          <DropdownMenuItem className={'text-red-500'} disabled={true}>
-            Delete
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Send Notice</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>
-                  Email
-                  <DropdownMenuShortcut>
-                    <Mail />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }

@@ -64,5 +64,9 @@ class AppServiceProvider extends ServiceProvider
             }
             return new Org();
         });
+
+        Blade::directive('money', function ($expression) {
+            return "<?php echo number_format($expression, 2); ?>";
+        });
     }
 }

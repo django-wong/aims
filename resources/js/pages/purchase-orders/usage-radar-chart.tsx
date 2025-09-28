@@ -21,7 +21,6 @@ export function UsageRadarChart() {
 
   return (
     <div className={'bg-muted/40 pt-8'}>
-      <p className={'text-center'}>demo</p>
       <ChartContainer config={chartConfig} className={'mx-auto max-h-[300px]'}>
         <RadarChart data={chartData}>
           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />

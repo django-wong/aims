@@ -12,7 +12,7 @@ class VendorSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Vendor::factory(15)
+        \App\Models\Vendor::factory(13)
             ->recycle(\App\Models\Org::query()->get())
             ->create();
     }

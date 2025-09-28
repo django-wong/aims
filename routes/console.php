@@ -2,26 +2,15 @@
 
 use App\Jobs\CheckLateReport;
 use App\Jobs\RemindClientForPendingApprovalTimesheet;
+use App\Jobs\RemindForPendingInvoice;
 use App\Jobs\UpcomingAssignmentReminder;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Models\Org;
 use Illuminate\Support\Facades\Schedule;
-
-Artisan::command('inspire', function () {
-    $this->comment(
-        Inspiring::quote()
-    );
-})->purpose('Display an inspiring quote');
+use Illuminate\Support\Facades\Schema;
 
 
-
-/*
- * Email reminder to clients to approve reports after 2 days from submission from BIE office
- */
-Schedule::job(new RemindClientForPendingApprovalTimesheet)->hourly();
-
-if (\Illuminate\Support\Facades\Schema::hasTable('orgs')) {
-    \App\Models\Org::query()->each(function ($org) {
+if (Schema::hasTable('orgs')) {
+    Org::query()->each(function ($org) {
         /**
          * Weekly Notification Report issue to coordinators on missing reports not submitted by inspectors by 10 am on
          * Mondays (Deadline)
@@ -36,3 +25,15 @@ if (\Illuminate\Support\Facades\Schema::hasTable('orgs')) {
         Schedule::job(new UpcomingAssignmentReminder($org))->dailyAt(10)->timezone($org->timezone);
     });
 }
+
+/*
+ * Email reminder to clients to approve reports after 2 days from submission from BIE office
+ */
+Schedule::job(new RemindClientForPendingApprovalTimesheet)->hourly();
+
+/**
+ * Email reminder to clients on pending invoices after X days from invoice sent date
+ * X is configurable per client, default to 7 days
+ * For invoices issued to contract holders, the reminder is sent after 7 days.
+ */
+Schedule::job(new RemindForPendingInvoice())->everyMinute();

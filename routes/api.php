@@ -101,4 +101,10 @@ Route::middleware('auth')->group(function () {
 
     // Invoice
     Route::post('invoices/from-timesheets', [\App\Http\Controllers\APIv1\InvoiceController::class, 'from_timesheets'])->name('invoices.from_timesheets');
+    Route::post('invoices/{invoice}/send', [\App\Http\Controllers\APIv1\InvoiceController::class, 'send'])->name('invoices.send');
+    Route::get('invoices/{invoice}/pdf', [\App\Http\Controllers\APIv1\InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    Route::get('invoices/{invoice}/pdf/breakdown', [\App\Http\Controllers\APIv1\InvoiceController::class, 'pdf_breakdown'])->name('invoices.pdf.breakdown');
+    Route::post('invoices/{invoice}/approve', [\App\Http\Controllers\APIv1\InvoiceController::class, 'approve'])->name('invoices.approve');
+    Route::post('invoices/{invoice}/reject', [\App\Http\Controllers\APIv1\InvoiceController::class, 'reject'])->name('invoices.reject');
+    Route::post('invoices/{invoice}/create-client-invoice', [\App\Http\Controllers\APIv1\InvoiceController::class, 'create_client_invoice'])->name('invoices.create_client_invoice');
 });

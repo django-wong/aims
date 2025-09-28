@@ -65,9 +65,8 @@ export function ApproveTimesheetForm() {
   return (
     <DialogWrapper
       trigger={
-        <Button variant={'primary'} size={'sm'} className={'contractor-holder-approve-button'}>
+        <Button variant={'primary'} size={'sm'} className={'contractor-holder-approve-button'} title={"Approve the timesheet"}>
           <CheckIcon />
-          Approve
         </Button>
       }
       title={'Approve the timesheet'}

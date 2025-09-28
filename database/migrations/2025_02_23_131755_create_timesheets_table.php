@@ -47,8 +47,6 @@ return new class extends Migration
             // 0 = draft, 1 = submitted, 2 =
 
             $table->timestamp('signed_off_at')->nullable()->comment('When did inspector sign off (accept) the timesheet');
-
-            $table->timestamp('submitted_at')->nullable()->comment('When did the inspector submit the timesheet for review');
             $table->timestamp('approved_at')->nullable()->comment('When did the coordinator approve the timesheet');
             $table->timestamp('client_approved_at')->nullable();
             $table->timestamp('client_reminder_sent_at')->nullable()->comment('Timesheet and report reminder for client, it should be sent 2 days after approved_at ');

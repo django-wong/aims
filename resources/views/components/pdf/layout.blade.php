@@ -29,7 +29,7 @@
             border: 1px solid #bbb;
             padding: 4px;
         }
-        .table td.head {
+        .table td.head, .table tr.head {
             background-color: #eee; font-weight: bold;
         }
         .table td.title {

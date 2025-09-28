@@ -63,7 +63,6 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
   const form = useReactiveForm<Record, TimesheetItem>({
     ...useResource('/api/v1/timesheet-items', {
       timesheet_id: props.timesheet?.id,
-      date: dayjs(props.timesheet?.start || Date.now()).toISOString(),
       ...props.value,
     }),
     resolver: zodResolver(timesheetItemSchema) as any,
@@ -83,10 +82,10 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
       startTransition(() => {
         if (response) {
           props.onSubmit?.(response.data);
-          form.reset();
-          setOpen(false);
-          router.reload();
         }
+        form.reset();
+        setOpen(false);
+        router.reload();
       });
     });
   }
@@ -97,8 +96,8 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Timesheet</DialogTitle>
-            <DialogDescription>Please be sure to fill in correctly the timesheet for this assignment.</DialogDescription>
+            <DialogTitle>Log work hour</DialogTitle>
+            <DialogDescription>Please be sure to fill in correctly the work hour for this timesheet.</DialogDescription>
           </DialogHeader>
           <DialogInnerContent>
             <div className={'grid grid-cols-12 gap-4'}>

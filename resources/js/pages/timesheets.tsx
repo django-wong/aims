@@ -8,12 +8,17 @@ import { ColumnDef } from '@tanstack/react-table';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { ProjectSelect } from '@/components/project-select';
 import { Badge } from '@/components/ui/badge';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
+import { ClientApprove } from '@/pages/timesheets/client-approve';
+import { ContractorHolderApprove } from '@/pages/timesheets/contractor-holder-approve';
+import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-office-approve';
+import { AssignmentProvider } from '@/providers/assignment-provider';
+import { TimesheetProvider, useTimesheet } from '@/providers/timesheet-provider';
+import { Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { Link } from '@inertiajs/react';
-import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -31,9 +36,11 @@ const columns: ColumnDef<Timesheet>[] = [
     accessorKey: 'inspector_name',
     header: 'Inspector',
     cell: ({ row }) => {
-      return <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>
-        {row.original.inspector_name}
-      </Link>;
+      return (
+        <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>
+          {row.original.inspector_name}
+        </Link>
+      );
     },
   },
   {
@@ -55,7 +62,7 @@ const columns: ColumnDef<Timesheet>[] = [
     header: 'Week',
     cell: ({ row }) => {
       return `${row.original.week}`;
-    }
+    },
   },
   {
     accessorKey: 'hours',
@@ -77,6 +84,30 @@ const columns: ColumnDef<Timesheet>[] = [
       center: true,
     },
   },
+  {
+      accessorKey: 'client_invoice_id',
+      header: 'Client Invoice',
+      cell: ({ row }) => {
+        if (row.original.client_invoice_id) {
+          return (
+            <Link className={'link'} href={route('invoices.edit', row.original.client_invoice_id)}>#{row.original.client_invoice_id}</Link>
+          );
+        }
+        return '';
+      },
+    },
+    {
+      accessorKey: 'contractor_invoice_id',
+      header: 'Invoice',
+      cell: ({ row }) => {
+        if (row.original.contractor_invoice_id) {
+          return (
+            <Link className={'link'} href={route('invoices.edit', row.original.contractor_invoice_id)}>#{row.original.contractor_invoice_id}</Link>
+          );
+        }
+        return '';
+      },
+    },
   {
     accessorKey: 'timesheet_items',
     header: 'Submissions',
@@ -112,13 +143,15 @@ const columns: ColumnDef<Timesheet>[] = [
   },
   {
     accessorKey: 'actions',
-    header: () => (
-      <TableCellWrapper last>
-        Actions
-      </TableCellWrapper>
-    ),
+    header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
     cell: ({ row }) => {
-      return <TimesheetActions timesheet={row.original} />;
+      return (
+        <AssignmentProvider value={row.original.assignment ?? null}>
+          <TimesheetProvider value={row.original}>
+            <TimesheetActions />
+          </TimesheetProvider>
+        </AssignmentProvider>
+      );
     },
   },
 ];
@@ -155,7 +188,7 @@ export default function Timesheets() {
           }
           right={
             <>
-              <CreateInvoiceButton/>
+              <CreateInvoiceButton />
             </>
           }
         />
@@ -165,26 +198,32 @@ export default function Timesheets() {
   );
 }
 
-interface TimesheetActionsProps {
-  timesheet: Timesheet;
-}
-
-export function TimesheetActions(props: TimesheetActionsProps) {
+export function TimesheetActions() {
   const table = useTableApi();
+
+  const timesheet = useTimesheet();
+
+  if (!timesheet) {
+    return null;
+  }
+
   return (
     <div className={'flex items-center justify-end gap-2'}>
+      <ClientApprove />
+      <ContractorHolderApprove />
+      <CoordinationOfficeApprove />
       <PopoverConfirm
         asChild
         message={'Are you sure you want to delete this timesheet?'}
         onConfirm={() => {
-          axios.delete('/api/v1/timesheets/' + props.timesheet.id).then(() => {
+          axios.delete('/api/v1/timesheets/' + timesheet!.id).then(() => {
             table.reload();
           });
         }}
         side={'bottom'}
         align={'end'}
       >
-        <Button variant="secondary" size="sm">
+        <Button variant="outline" size="sm">
           <Trash2 />
         </Button>
       </PopoverConfirm>

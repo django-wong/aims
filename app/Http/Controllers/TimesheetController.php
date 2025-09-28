@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Timesheets\CaptureRequest;
 use App\Models\Timesheet;
+use App\Models\TimesheetDetail;
 use Illuminate\Http\Request;
 use function Aws\filter;
 
@@ -42,7 +43,7 @@ class TimesheetController extends Controller
     {
         return inertia('timesheets/edit', [
             'assignment' => $timesheet->assignment,
-            'timesheet' => $timesheet->load(['user', 'assignment.coordinator', 'assignment.operation_coordinator']),
+            'timesheet' => TimesheetDetail::query()->with(['user', 'assignment.coordinator', 'assignment.operation_coordinator'])->find($timesheet->id),
         ]);
     }
 }

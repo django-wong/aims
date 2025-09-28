@@ -2,24 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Assignment;
-use App\Models\AssignmentType;
-use App\Models\Project;
-use App\Models\ProjectType;
-use App\Models\Timesheet;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
+use Laravel\Telescope\Telescope;
 
 class DatabaseSeeder extends Seeder
 {
+    use WithoutModelEvents;
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
+        Telescope::stopRecording();
         $this->call([
             AssignmentTypeSeeder::class,
             UserSeeder::class,
@@ -31,6 +26,7 @@ class DatabaseSeeder extends Seeder
             BudgetSeeder::class,
             VendorSeeder::class,
             AssignmentSeeder::class,
+            AssignmentInspectorSeeder::class,
             TimesheetSeeder::class,
             TimesheetItemSeeder::class,
             ContactSeeder::class,

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Project;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,11 +14,11 @@ class PurchaseOrderSeeder extends Seeder
     public function run(): void
     {
         // Create a purchase order for each project
-        foreach (\App\Models\Project::all() as $project) {
+        Project::query()->each(function (Project $project) {
             \App\Models\PurchaseOrder::factory()
                 ->recycle($project)
                 ->recycle($project->org)
                 ->create();
-        }
+        });
     }
 }

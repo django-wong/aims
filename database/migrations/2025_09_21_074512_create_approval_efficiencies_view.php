@@ -26,7 +26,8 @@ return new class extends Migration
                      left join assignments on timesheets.assignment_id = assignments.id
                      left join projects on assignments.project_id = projects.id
                      left join clients on projects.client_id = clients.id
-            where timesheets.submitted_at is not null
+            where timesheets.approved_at is not null
+              and timesheets.client_approved_at is not null
               and timesheets.deleted_at is null
               and timesheets.start > (now() - interval 365 day)
             group by client_id, org_id;

@@ -273,9 +273,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     {
       id: 'client_code',
       accessorKey: 'client_code',
-      header: () => <TableFilter>
-        Client Code
-      </TableFilter>,
+      header: () => <TableFilter>Client Code</TableFilter>,
       cell: ({ row }) => {
         return (
           <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
@@ -360,21 +358,13 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     {
       accessorKey: 'notes',
       header: 'Notes',
-      cell: ({ row }) => (
-        <div className={'max-w-[300px] line-clamp-1 text-ellipsis'}>
-          {row.original.notes}
-        </div>
-      ),
+      cell: ({ row }) => <div className={'line-clamp-1 max-w-[300px] text-ellipsis'}>{row.original.notes}</div>,
     },
     // po_delivery_date
     {
       accessorKey: 'po_delivery_date',
       header: 'PO Delivery Date',
-      cell: ({ row }) => (
-        row.original.po_delivery_date
-          ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY')
-          : '-'
-      ),
+      cell: ({ row }) => (row.original.po_delivery_date ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY') : '-'),
     },
     // budgeted hours
     {
@@ -383,9 +373,9 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       cell: ({ row }) => row.original.purchase_order?.budgeted_hours,
     },
     {
-      accessorKey: 'budgeted_travel',
+      accessorKey: 'budgeted_mileage',
       header: 'Budgeted Travel',
-      cell: ({ row }) => row.original.purchase_order?.budgeted_travel,
+      cell: ({ row }) => `${row.original.purchase_order?.budgeted_mileage}${row.original.purchase_order?.mileage_unit}`,
     },
     {
       accessorKey: 'is_closed',

@@ -26,7 +26,7 @@
                     @endif
                     {{ $slot }}
                     <p style="font-size:1rem;line-height:2;margin-top:1rem;margin-bottom:1rem">
-                        Best,<br />- BIE Group
+                        Best,<br />BIE Group
                     </p>
                     <x-email.divider />
                     <img alt="BIE Group" height="auto" src="{{ url('/logo.png') }}" style="width:2rem;display:block;outline:none;border:none;text-decoration:none;-webkit-filter:grayscale(100%);filter:grayscale(100%);margin:20px 0"/>

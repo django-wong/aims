@@ -17,13 +17,11 @@ class BudgetSeeder extends Seeder
     {
         $assignment_types = AssignmentType::all();
         $purchase_orders = PurchaseOrder::all();
-        foreach ($assignment_types as $assignment_type) {
-            foreach ($purchase_orders as $purchase_order) {
-                Budget::factory()
-                    ->for($assignment_type, 'assignment_type')
-                    ->for($purchase_order, 'purchase_order')
-                    ->create();
-            }
+        foreach ($purchase_orders as $purchase_order) {
+            Budget::factory()
+                ->recycle($assignment_types)
+                ->for($purchase_order, 'purchase_order')
+                ->create();
         }
     }
 }

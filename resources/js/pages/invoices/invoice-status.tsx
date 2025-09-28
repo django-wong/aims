@@ -18,7 +18,17 @@ const invoiceStatus: {
   },
   [InvoiceStatusEnum.Sent]: {
     className: 'border-blue-300 bg-blue-50',
-    label: 'Sent',
+    label: 'Wait for Approval',
+    badge_variant: 'outline',
+  },
+  [InvoiceStatusEnum.Rejected]: {
+    className: 'border-amber-300 bg-amber-50',
+    label: 'Rejected',
+    badge_variant: 'outline',
+  },
+  [InvoiceStatusEnum.Approved]: {
+    className: 'border-blue-300 bg-blue-50',
+    label: 'Approved',
     badge_variant: 'outline',
   },
   [InvoiceStatusEnum.Paid]: {

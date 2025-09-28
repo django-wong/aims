@@ -4,15 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property integer    $org_id
  * @property User|null  $coordinator
  * @property int|null   $address_id
  * @property User       $user
- * @property User|null $reviewer
+ * @property User|null  $reviewer
+ * @property Org        $org
+ * @property int $id
  */
-class Client extends Model implements Contactable
+class Client extends Model implements Contactable, Invoiceable
 {
     /** @use HasFactory<\Database\Factories\ClientFactory> */
     use HasFactory, DynamicPagination, BelongsToOrg, BelongsToUser, HasManyContact, BelongsToAddress, HasManyContact;
@@ -26,8 +29,18 @@ class Client extends Model implements Contactable
         return $this->belongsTo(User::class, 'reviewer_id');
     }
 
-    public function coordinator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function coordinator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'coordinator_id');
+    }
+
+    public function getInvoiceName(): string
+    {
+        return $this->business_name;
+    }
+
+    public function getInvoiceAddress(): ?string
+    {
+        return $this->address->full_address ?? null;
     }
 }

@@ -19,6 +19,7 @@ export interface Auth {
   user?: User;
   org?: Org;
   impersonating: boolean;
+  client: Client|null // Only when login as a client
 }
 
 export interface BreadcrumbItem {
@@ -329,9 +330,11 @@ export type Invoiceable = {
 export enum InvoiceStatusEnum {
   Draft = 0,
   Sent = 1,
-  Paid = 2,
-  Overdue = 3,
-  Cancelled = 4,
+  Rejected = 2,
+  Approved = 3,
+  Paid = 4,
+  Overdue = 5,
+  Cancelled = 6,
 }
 
 export interface InvoiceBase extends BaseModel {
@@ -418,6 +421,16 @@ export interface Timesheet extends BaseModel {
   week: string; // YYYY-WW
 
   hours: number;
+
+  contractor_invoice_id: number | null;
+  contractor_invoice?: Invoice|null
+  client_invoice_id: number | null;
+  client_invoice?: Invoice|null
+
+  signed_off_at: string | null;
+  approved_at: string | null;
+  client_approved_at: string | null;
+  client_reminder_sent_at: string | null;
 
   status: TimesheetStatus;
   rejected: boolean;

@@ -5,8 +5,6 @@ import { CheckIcon, CircleDashedIcon, XIcon } from 'lucide-react';
 import { useTimesheet } from '@/providers/timesheet-provider';
 
 export function TimesheetStatus(props: { status: Timesheet['status'] }) {
-  const timesheet = useTimesheet();
-
   switch (props.status) {
     case 0:
       return (

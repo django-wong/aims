@@ -13,6 +13,7 @@ import { Loading } from '@/components/ui/loading';
 import { router } from '@inertiajs/react';
 import { VFormField } from '@/components/vform';
 import { useTableApi } from '@/components/data-table-2';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const schema = z.object({
   rejection_reason: z.string().min(5, 'Rejection reason must be at least 5 characters'),
@@ -46,9 +47,8 @@ export function RejectButton() {
         open={open}
         onOpenChange={setOpen}
         trigger={
-          <Button variant={'destructive'} size={'sm'} className={'contractor-holder-approve-button'}>
+          <Button variant={'destructive'} size={'sm'} className={'contractor-holder-approve-button'} title={"Reject the timesheet"}>
             <XIcon />
-            Reject
           </Button>
         }
         title={'Reject the timesheet'}

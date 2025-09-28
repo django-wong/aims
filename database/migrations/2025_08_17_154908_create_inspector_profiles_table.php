@@ -26,6 +26,8 @@ return new class extends Migration
             $table->longText('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique('user_id');
         });
     }
 

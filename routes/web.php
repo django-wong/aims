@@ -87,8 +87,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/leave-impersonation', function (Request $request) {
         Auth::user()->leaveImpersonation();
         $request->session()->remove('password_hash_web');
-        return redirect()
-            ->route('dashboard');
+        $return_to = $request->session()->pull('return_to', route('dashboard'));
+        return redirect($return_to);
     })->name('leave-impersonation');
 
     Route::get('notification-of-inspection', function () {
@@ -114,6 +114,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('system-configuration', SystemConfiguration::class)->name('system-configuration');
+
+    // Invoices
+    Route::get('invoices/{invoice}/{preview}', [InvoiceController::class, 'preview'])->name('invoices.preview');
 
     // Fallback to 404 page for undefined routes
     Route::inertia('{any}', '404');

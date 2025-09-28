@@ -20,10 +20,11 @@ class BudgetFactory extends Factory
             'assignment_type_id' => \App\Models\AssignmentType::factory(),
             'purchase_order_id' => \App\Models\PurchaseOrder::factory(),
             'rate_code' => $this->faker->word,
-            'hourly_rate' => $this->faker->randomFloat(2, 50, 200),
+            'hourly_rate' => $this->faker->randomFloat(2, 50, 100),
             'budgeted_hours' => $this->faker->randomFloat(2, 10, 100),
-            'travel_rate' => $this->faker->randomFloat(2, 0.1, 1.0),
-            'budgeted_mileage' => $this->faker->randomFloat(2, 0, 500),
+            'travel_rate' => $this->faker->randomFloat(2, 5, 10),
+            'budgeted_mileage' => $this->faker->randomFloat(2, 100, 500),
+            'budgeted_expenses' => $this->faker->randomFloat(2, 1000, 2000),
         ];
     }
 }

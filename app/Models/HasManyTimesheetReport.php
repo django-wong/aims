@@ -11,6 +11,6 @@ trait HasManyTimesheetReport
 
     public function inspection_report()
     {
-        return $this->hasOne(TimesheetReport::class)->where('report_type', 'inspection-report');
+        return $this->hasOne(TimesheetReport::class)->where('type', 'inspection-report');
     }
 }

@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('state')->nullable()->comment('State, province, or region like California, Ontario, Henan etc.');
             $table->string('zip')->nullable()->comment('Postal code or ZIP code');
             $table->string('country')->nullable();
+            $table->string('full_address')->storedAs(
+                "TRIM(CONCAT_WS(', ', address_line_1, address_line_2, address_line_3, suburb, city, state, zip, country))"
+            );
             $table->float('latitude', 10, 6)->nullable();
             $table->float('longitude', 10, 6)->nullable();
             $table->timestamps();

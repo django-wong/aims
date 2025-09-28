@@ -14,12 +14,12 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (Client::query()->cursor() as $client) {
+        Client::query()->each(function (Client $client) {
             Project::factory(2)
                 ->recycle(ProjectType::query()->get())
                 ->recycle($client->org)
                 ->recycle($client)
                 ->create();
-        }
+        });
     }
 }

@@ -69,7 +69,7 @@ class TimesheetItemController extends Controller
          */
         $assignment_inspector = $request->timesheet()->assignment->assignment_inspectors()
             ->firstWhere(
-                'user_id', $request->validated('on_behalf_of_user_id', auth()->id())
+                'user_id', $request->timesheet()->user_id
             );
 
         if (empty($assignment_inspector)) {
@@ -85,38 +85,50 @@ class TimesheetItemController extends Controller
             ], 422);
         }
 
-        $date = $request->validated('date');
+        if (empty($assignment_inspector->user->inspector_profile->hourly_rate) || empty($assignment_inspector->user->inspector_profile->travel_rate)) {
+            return response()->json([
+                'message' =>
+                    'The inspector does not have hourly and/or travel rate set in their profile',
+            ], 422);
 
-        if (! empty($request->validated('dates'))) {
-            $date = $request->validated('dates')[0];
         }
 
-        $record = DB::transaction(function () use ($request, $assignment_inspector, $date) {
-            $record = $request->timesheet()->timesheet_items()->create([
-                ...array_filter($request->validated(), function ($value) {
-                    return $value !== null;
-                }),
-                'date' => $date,
-                'user_id' => $assignment_inspector->user_id,
-                'hourly_rate' => $assignment_inspector->hourly_rate,
-                'travel_rate' => $assignment_inspector->travel_rate,
-            ]);
+        $dates = $request->validated('dates', [$request->validated('date')]);
 
-            $request->saveAttachments($record);
+        $data = [
+            ...array_filter($request->validated(), function ($value) {
+                return $value !== null;
+            }),
+            'hourly_rate' => $assignment_inspector->hourly_rate,
+            'travel_rate' => $assignment_inspector->travel_rate,
+            'pay_rate' => $assignment_inspector->user->inspector_profile->hourly_rate,
+            'pay_travel_rate' => $assignment_inspector->user->inspector_profile->travel_rate,
+        ];
+
+        $record = DB::transaction(function () use ($request, $assignment_inspector, $dates, $data) {
+            for ($i = 0; $i < count($dates); $i++) {
+                $date = $dates[$i];
+
+                $record = $request->timesheet()->timesheet_items()->updateOrCreate([
+                    'user_id' => $assignment_inspector->user_id,
+                    'date' => $date,
+                ], $data);
+
+                if ($i === 0) {
+                    $request->saveAttachments($record);
+                }
+            }
 
             return $record;
         });
 
-        for ($i = 1; $i < count($request->validated('dates', [])); $i++) {
-            $date = $request->validated('dates')[$i];
-            $replicate = $record->replicate();
-            $replicate->date = $date;
-            $replicate->save();
-        }
 
         return [
             'message' => 'Timesheet item created successfully',
-            'data' => $record->load(['timesheet', 'attachments']),
+            'data' => $record->load([
+                'timesheet',
+                'attachments'
+            ]),
         ];
     }
 

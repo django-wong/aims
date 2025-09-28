@@ -24,8 +24,13 @@ class UserController
         }
 
         Auth::user()->impersonate($user);
-        $request->session()->remove('password_hash_web');
 
+        $request->session()->remove('password_hash_web');
+        $request->session()->put('return_to', url()->previous());
+
+        if ($request->has('redirect_to')) {
+            return redirect($request->get('redirect_to'));
+        }
         return redirect()->route('dashboard');
     }
 

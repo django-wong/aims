@@ -21,6 +21,7 @@ import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
 import { ClientPermissionProvider, ClientProvider, useClientPermission } from '@/providers/client-provider';
 import { Badge } from '@/components/ui/badge';
+import { Impersonate } from '@/pages/clients/impersonate';
 
 interface ClientEditProps {
   client: Client;
@@ -71,6 +72,7 @@ export default function Edit(props: ClientEditProps) {
                     <UserRoundPen/> Edit
                   </Button>
                 </ClientForm>
+                <Impersonate userId={props.client.user_id}/>
               </>
             ) : <Badge variant={'destructive'}>Read Only</Badge>
           }

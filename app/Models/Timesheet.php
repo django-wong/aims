@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property int                                                         $assignment_id
  * @property \Illuminate\Support\Carbon|mixed                            $approved_at
  * @property boolean                                                     $late
- * @property User                                                       $user
+ * @property User                                                        $user
  */
 class Timesheet extends Model
 {
@@ -77,21 +77,21 @@ class Timesheet extends Model
             // As a coordinator, I want to see timesheets that need my approval
             $query->orWhere(function (Builder $query) {
                 $query
-                    ->whereIn('assignment_id', fn (QueryBuilder $query) => $query->select('id')->from('assignments')->where('coordinator_id', auth()->id()))
+                    ->whereIn('assignment_id', fn(QueryBuilder $query) => $query->select('id')->from('assignments')->where('coordinator_id', auth()->id()))
                     ->where('status', Timesheet::APPROVED);
             });
 
             // As an operation coordinator, I want to see timesheets that need my review
             $query->orWhere(function (Builder $query) {
                 $query
-                    ->whereIn('assignment_id', fn (QueryBuilder $query) => $query->select('id')->from('assignments')->where('operation_coordinator_id', auth()->id()))
+                    ->whereIn('assignment_id', fn(QueryBuilder $query) => $query->select('id')->from('assignments')->where('operation_coordinator_id', auth()->id()))
                     ->where('status', Timesheet::REVIEWING);
             });
 
             // As a client, I want to see timesheets that need my approval
             $query->orWhere(function (Builder $query) {
                 $query
-                    ->whereIn('assignment_id', fn (QueryBuilder $query) => $query->select('assignments.id')->from('assignments')->leftJoin('projects', 'assignments.project_id', '=', 'projects.id')->where('projects.client_id', auth()->user()->client?->id ?? 0))
+                    ->whereIn('assignment_id', fn(QueryBuilder $query) => $query->select('assignments.id')->from('assignments')->leftJoin('projects', 'assignments.project_id', '=', 'projects.id')->where('projects.client_id', auth()->user()->client?->id ?? 0))
                     ->where('status', Timesheet::APPROVED);
             });
         });
@@ -109,7 +109,7 @@ class Timesheet extends Model
             'status' => Timesheet::DRAFT,
             'rejected' => true,
             'rejection_reason' => $message,
-            'submitted_at' => null,
+            'signed_off_at' => null,
             'approved_at' => null,
             'client_approved_at' => null,
             'client_reminder_sent_at' => null,
@@ -156,5 +156,17 @@ class Timesheet extends Model
         }
 
         return $this->assignment->operation_org_id === $to_org_id ? $this->assignment->org : null;
+    }
+
+    public function scopeInvoice(Builder $query, Invoice $invoice): Builder
+    {
+        return $query->where(function (Builder $query) use ($invoice) {
+            $query->where(
+                $invoice->invoiceable_type === Client::class
+                    ? 'client_invoice_id'
+                    : 'contractor_invoice_id',
+                $invoice->id
+            );
+        });
     }
 }

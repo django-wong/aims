@@ -31,7 +31,7 @@ class UserRoleSeeder extends Seeder
             ])
             ->create();
 
-        UserRole::factory(2)
+        UserRole::factory(10)
             ->recycle($org)
             ->state([
                 'role' => UserRole::INSPECTOR
