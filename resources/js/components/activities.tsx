@@ -1,4 +1,3 @@
-import { useTable } from '@/hooks/use-table';
 import { usePagedGetApi } from '@/hooks/use-get-api';
 import { ActivityLog } from '@/types';
 import { formatDateTime } from '@/lib/helpers';
