@@ -25,7 +25,7 @@ export function CreateClientInvoice() {
   if (invoice && invoice.invoiceable_type === 'App\\Models\\Org' && invoice.invoiceable_id === org?.id ) {
     return (
       <>
-        <PopoverConfirm side={'bottom'} align={'end'} message={'Are you sure to create client facing invoice from this one?'} onConfirm={create}>
+        <PopoverConfirm asChild side={'bottom'} align={'end'} message={'Are you sure to create client facing invoice from this one?'} onConfirm={create}>
           <Button>Create client invoice from this</Button>
         </PopoverConfirm>
       </>

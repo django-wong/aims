@@ -48,12 +48,20 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function daily_usage(string $purchase_order)
+    public function daily_usage(Request $request, string $purchase_order)
     {
-        $usages = PurchaseOrderDailyUsage::query()->where('purchase_order_id', $purchase_order)->where('date', '>=', now()->subMonth())->get();
+        $range = match ($request->get('range')) {
+            'last_1_week' => '1 week',
+            'last_2_weeks' => '2 weeks',
+            'last_3_months' => '2 months',
+            'last_12_months' => '12 months',
+            default => '1 month',
+        };
 
+        $start = now()->sub($range);
         $end = now();
-        $start = now()->subMonth();
+
+        $usages = PurchaseOrderDailyUsage::query()->where('purchase_order_id', $purchase_order)->where('date', '>=', $start)->get();
 
         $data = [];
 

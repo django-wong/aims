@@ -1,0 +1,30 @@
+.purchase-orders {
+  table {
+    tbody {
+      tr {
+        td:first-child:before {
+          content: ' ';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+        }
+      }
+      tr:has(.on-track) {
+        td:first-child:before {
+          border-left: 4px solid rgba(227, 253, 218, 0.65);
+        }
+      }
+      tr:has(.at-risk) {
+        td:first-child:before {
+          border-left: 4px solid rgba(255, 246, 199, 0.65);
+        }
+      }
+      tr:has(.over-budget) {
+        td:first-child:before {
+          border-left: 4px solid rgba(246, 201, 201, 0.65);
+        }
+      }
+    }
+  }
+}

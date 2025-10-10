@@ -54,10 +54,16 @@ class TimesheetReportController extends Controller
             'raised_by' => $request->user()->name,
         ]);
 
-        Attachment::store(
+        $attachment = Attachment::store(
             file: $request->file('attachment'),
             attachable: $report
         );
+
+        activity()->on($request->timesheet())->withProperties([
+            'attachments' => [
+                $attachment->toArray()
+            ]
+        ])->log('Uploaded report');
 
         return [
             'message' => 'Timesheet report created successfully.',

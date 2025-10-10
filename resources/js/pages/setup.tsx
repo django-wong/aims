@@ -107,7 +107,6 @@ function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
                           label={'Name'}>
                           <Input
                             {...field}
-                            id="name"
                             type="text"
                           />
                         </VFormField>
@@ -159,7 +158,10 @@ function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
                       />
                     </div>
 
-                    <h3 className="text-lg font-semibold">Initial User</h3>
+                    <div>
+                      <h3 className="text-lg font-semibold">Initial User</h3>
+                      <p className={'text-sm text-muted-foreground'}>This user will hava the admin role for this office.</p>
+                    </div>
 
                     <div>
                       <div className="grid grid-cols-2 gap-4">

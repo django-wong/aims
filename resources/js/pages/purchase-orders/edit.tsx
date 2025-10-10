@@ -17,6 +17,7 @@ import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
 import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
 import { Timesheets } from '@/pages/assignments/timesheets';
 import { formatDate, formatDateTime } from '@/lib/helpers';
+import { Card } from '@/components/ui/card';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -185,7 +186,10 @@ function OverviewContent(props: { purchase_order: PurchaseOrder }) {
   return (
     <div className="space-y-6">
       <PurchaseOrderProvider value={props.purchase_order}>
-        <Overview/>
+        <Card className={'p-4'}>
+          <h3 className={'font-bold'}>Monthly Usage</h3>
+          <Overview/>
+        </Card>
         <DailyHoursUsage/>
       </PurchaseOrderProvider>
     </div>

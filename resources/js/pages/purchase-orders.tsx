@@ -8,13 +8,14 @@ import { ColumnDef } from '@tanstack/react-table';
 import { InfoIcon, Plus, Trash2Icon } from 'lucide-react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import { useState } from 'react';
-import { Progress } from '@/components/ui/progress';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import axios from 'axios';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { useDebouncer } from '@/hooks/use-debounced';
+import { PurchaseOrderProgress } from '@/pages/purchase-orders/progress';
+import './purchase-orders/index.css';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   const table = useTableApi();
@@ -116,7 +117,7 @@ const columns: ColumnDef<PurchaseOrder>[] = [
     maxSize: 150,
     cell: ({ row }) => {
       return (
-        <Progress value={row.original.usage * 100}/>
+        <PurchaseOrderProgress value={row.original.usage}/>
       );
     }
   },
@@ -176,7 +177,7 @@ export default function PurchaseOrdersPage() {
       }
     >
       <Head title="Work Orders" />
-      <div className="px-6">
+      <div className="px-6 purchase-orders">
         <DataTable
           left={
             <Input value={keywords} onChange={(event) => onKeywordsChange(event.target.value)} className={'w-[200px]'} placeholder={'Search...'}/>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CurrentOrg;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\UserRole;
@@ -12,12 +13,14 @@ use Illuminate\Support\Facades\Gate;
 class InvoiceController extends Controller
 {
     //
-    public function index()
+    public function index(CurrentOrg $org)
     {
         if (auth()->user()->isRole(UserRole::CLIENT)) {
             return inertia('client-invoices');
         }
-        return inertia('invoices');
+        return inertia('invoices', [
+            'pending_count' => Invoice::query()->whereMorphedTo('invoiceable', $org)->where('status', Invoice::SENT)->count()
+        ]);
     }
 
     public function edit(Invoice $invoice)

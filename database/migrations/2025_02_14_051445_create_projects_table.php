@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->decimal('commission_rate')->default(7.5)->comment('The commission rate as a percentage (e.g., 5.00 for 5%)');
             $table->decimal('process_fee_rate')->default(0.00)->comment('The processing fee rate for all expenses as a percentage (e.g., 2.50 for 2.5%)');
-
+            $table->decimal('tax_rate')->default(10.00)->comment('The tax rate as a percentage (e.g., 10.00 for 10%)');
             $table->timestamps();
             $table->softDeletes();
 

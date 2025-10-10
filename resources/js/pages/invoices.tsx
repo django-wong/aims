@@ -1,4 +1,4 @@
-import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
+import { ColumnToggle, DataTable } from '@/components/data-table-2';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Invoice } from '@/types';
 
@@ -17,6 +17,7 @@ import { Link } from '@inertiajs/react';
 import { formatCurrency, formatDateTime } from '@/lib/helpers';
 import { HideFromClient } from '@/components/hide-from-client';
 import { InvoiceActions } from '@/pages/client-invoices';
+import { Badge } from '@/components/ui/badge';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -139,7 +140,11 @@ const columns: ColumnDef<Invoice>[] = [
   },
 ];
 
-export default function Page() {
+interface ClientPageProps {
+  pending_count?: number;
+}
+
+export default function Page(props: ClientPageProps) {
   const table = useTable<Invoice>('api/v1/invoices', {
     columns,
     defaultParams: {
@@ -175,6 +180,9 @@ export default function Page() {
                     <SegmentedControlTrigger value={'inbound'}>
                       <Inbox size={16} />
                       Inbound
+                      {
+                        props.pending_count ? <Badge>{props.pending_count}</Badge> : null
+                      }
                     </SegmentedControlTrigger>
                   </SegmentedControlList>
                 </SegmentedControl>

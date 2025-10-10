@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { usePurchaseOrder } from '@/providers/purchasr-order-provider';
 import axios from 'axios';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useQueryParam } from '@/hooks/use-query-param';
 
 export const description = "An interactive line chart"
 
@@ -54,22 +55,10 @@ export function DailyHoursUsage() {
   const purchase_order = usePurchaseOrder();
 
   const [data, setData] = useState<ChartData[]>(() => {
-    // // Initialize with empty data for the past 30 days
-    // const initialData: ChartData[] = []
-    // const today = new Date()
-    // for (let i = 29; i >= 0; i--) {
-    //   const date = new Date(today)
-    //   date.setDate(today.getDate() - i)
-    //   initialData.push({
-    //     date: date.toISOString().split("T")[0],
-    //     hours: 0,
-    //     travel_distance: 0,
-    //     total_expense: 0,
-    //   })
-    // }
-    // return initialData
     return [];
   });
+
+  const [range, setRange] = useQueryParam('overview-range', 'last_1_month');
 
   const total = React.useMemo(
     () => ({
@@ -82,34 +71,37 @@ export function DailyHoursUsage() {
 
 
   useEffect(() => {
-    axios.get(`/api/v1/purchase-orders/${purchase_order?.id}/daily-usage`).then((response) => {
+    axios.get(`/api/v1/purchase-orders/${purchase_order?.id}/daily-usage`, {
+      params: {
+        range: range
+      }
+    }).then((response) => {
       if (response) {
         setData(response.data['data']);
       }
     })
-  }, [purchase_order?.id])
+  }, [purchase_order?.id, range])
 
   return (
     <Card className="py-4 sm:py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-          {/*<CardTitle className={'line-clamp-1'}>Daily Usage</CardTitle>*/}
-          {/*<CardDescription className={'line-clamp-1'}>*/}
-          {/*  Showing in last month across all assignments including unapproved.*/}
-          {/*</CardDescription>*/}
-
-
-          {/* Select between daily, weekly, and monthly */}
-          <Select defaultValue='last_30_days'>
+          <Select value={range} onValueChange={setRange}>
             <SelectTrigger className="w-auto">
               <SelectValue placeholder="Select a type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="last_30_days">
-                Last 30 Days
+              <SelectItem value="last_1_week">
+                Last 1 Week
               </SelectItem>
-              <SelectItem value="last_8_weeks">
-                Last 8 Weeks
+              <SelectItem value="last_2_weeks">
+                Last 2 Weeks
+              </SelectItem>
+              <SelectItem value="last_1_month">
+                Last 1 Month
+              </SelectItem>
+              <SelectItem value="last_3_months">
+                Last 3 Months
               </SelectItem>
               <SelectItem value="last_12_months">
                 Last 12 Months

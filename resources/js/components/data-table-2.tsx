@@ -32,6 +32,7 @@ interface DataTableProps<T extends BaseTableData> {
   right?: React.ReactNode;
   head?: React.ReactNode;
   onRowClick?: (row: Row<T>) => void;
+  render?: (table: React.ReactNode) => React.ReactNode;
   pagination?: boolean;
 }
 
@@ -89,6 +90,8 @@ const tableVariants = cva('overflow-hidden rounded-md border-muted relative mx-1
 export function DataTable<T extends BaseTableData>({ variant, table, ...props }: DataTableProps<T> & VariantProps<typeof tableVariants>) {
   const showPagination = props.pagination === undefined || props.pagination;
 
+  const render = props.render || ((table) => table);
+
   return (
     <TableContext value={table}>
       <div className={cn('grid grid-cols-1 gap-6', props.className)}>
@@ -101,86 +104,14 @@ export function DataTable<T extends BaseTableData>({ variant, table, ...props }:
 
         {props.head}
 
-        <div className={cn(tableVariants({ variant }), props.containerClassName)}>
-          <Table
-            bottom={
-              <>
-                {table.getRowModel().rows.length ? null : (
-                  <div className={'sticky left-0 flex w-full items-center justify-center overflow-hidden p-8'}>
-                    {table.initialLoaded ? (
-                      <Empty>
-                        <p className={'text-lg font-bold'}>No data founds.</p>
-                        <p className={'text-muted-foreground'}>
-                          Your search did not match any data. Please{' '}
-                          <span
-                            className={'cursor-pointer font-semibold underline'}
-                            onClick={() => {
-                              table.reload();
-                            }}
-                          >
-                            try again
-                          </span>{' '}
-                          or create new one.
-                        </p>
-                      </Empty>
-                    ) : (
-                      <span className={'text-muted-foreground inline-flex items-center gap-2'}>
-                        <LoaderCircle className={'animate-spin'} /> Loading...
-                      </span>
-                    )}
-                  </div>
-                )}
-              </>
-            }
-          >
-            <TableHeader className={'sticky top-0 z-10'}>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header, index) => (
-                    <TableHead
-                      onClick={header.column.getToggleSortingHandler()}
-                      key={`${index}:${header.id}`}
-                      className={cn('pin-' + (header.column.getIsPinned() || 'none'), 'bg-muted border-r py-2 last:border-r-0')}
-                      style={{ ...computedStyle(header.column) }}
-                    >
-                      <div className={'flex items-center'}>
-                        <div className={'flex-grow'}>
-                          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                        </div>
-                        <div className={'flex-shrink-0'}>
-                          {header.column.getIsSorted() ? (
-                            header.column.getIsSorted() === 'desc' ? (
-                              <ChevronDown className="ml-1 inline-block h-4 w-4" />
-                            ) : (
-                              <ChevronUp className="ml-1 inline-block h-4 w-4" />
-                            )
-                          ) : null}
-                        </div>
-                      </div>
-                    </TableHead>
-                  ))}
-                </tr>
-              ))}
-            </TableHeader>
-            <TableBody className="hover:bg-muted **:data-[slot=table-cell]:first:w-8">
-              {table.getRowModel().rows?.length
-                ? table.getRowModel().rows.map((row) => (
-                    <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className={cn('pin-' + (cell.column.getIsPinned() || 'none'), 'bg-background border-r last:border-r-0')}
-                          style={{ ...computedStyle(cell.column) }}
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                : null}
-            </TableBody>
-          </Table>
-        </div>
+        {
+          render(
+            <div className={cn(tableVariants({ variant }), props.containerClassName)}>
+              <TableAdapter onRowClick={props.onRowClick} />
+            </div>
+          )
+        }
+
         {showPagination && (
           <div className="flex items-center justify-between">
             <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
@@ -280,5 +211,90 @@ export function ExportButton() {
       <DownloadIcon />
       Export
     </Button>
+  );
+}
+
+export function TableAdapter(props: { onRowClick?: (row: Row<any>) => void }) {
+  const table = useTableApi();
+
+  return (
+    <Table
+      bottom={
+        <>
+          {table.getRowModel().rows.length ? null : (
+            <div className={'sticky left-0 flex w-full items-center justify-center overflow-hidden p-8'}>
+              {table.initialLoaded ? (
+                <Empty>
+                  <p className={'text-lg font-bold'}>No data founds.</p>
+                  <p className={'text-muted-foreground'}>
+                    Your search did not match any data. Please{' '}
+                    <span
+                      className={'cursor-pointer font-semibold underline'}
+                      onClick={() => {
+                        table.reload();
+                      }}
+                    >
+                      try again
+                    </span>{' '}
+                    or create new one.
+                  </p>
+                </Empty>
+              ) : (
+                <span className={'text-muted-foreground inline-flex items-center gap-2'}>
+                  <LoaderCircle className={'animate-spin'} /> Loading...
+                </span>
+              )}
+            </div>
+          )}
+        </>
+      }
+    >
+      <TableHeader className={'sticky top-0 z-10'}>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header, index) => (
+              <TableHead
+                onClick={header.column.getToggleSortingHandler()}
+                key={`${index}:${header.id}`}
+                className={cn('pin-' + (header.column.getIsPinned() || 'none'), 'bg-muted border-r py-2 last:border-r-0')}
+                style={{ ...computedStyle(header.column) }}
+              >
+                <div className={'flex items-center'}>
+                  <div className={'flex-grow'}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </div>
+                  <div className={'flex-shrink-0'}>
+                    {header.column.getIsSorted() ? (
+                      header.column.getIsSorted() === 'desc' ? (
+                        <ChevronDown className="ml-1 inline-block h-4 w-4" />
+                      ) : (
+                        <ChevronUp className="ml-1 inline-block h-4 w-4" />
+                      )
+                    ) : null}
+                  </div>
+                </div>
+              </TableHead>
+            ))}
+          </tr>
+        ))}
+      </TableHeader>
+      <TableBody className="hover:bg-muted **:data-[slot=table-cell]:first:w-8">
+        {table.getRowModel().rows?.length
+          ? table.getRowModel().rows.map((row) => (
+              <TableRow onClick={() => props.onRowClick?.(row)} key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className={cn('pin-' + (cell.column.getIsPinned() || 'none'), 'bg-background border-r last:border-r-0')}
+                    style={{ ...computedStyle(cell.column) }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          : null}
+      </TableBody>
+    </Table>
   );
 }

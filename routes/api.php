@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\APIv1\ActivityController;
 use App\Http\Controllers\APIv1\AssignmentController;
 use App\Http\Controllers\APIv1\AssignmentInspectorController;
 use App\Http\Controllers\APIv1\AssignmentTypeController;
@@ -47,6 +48,7 @@ Route::middleware('auth')->group(function () {
         'attachments' => AttachmentController::class,
         'project-types' => ProjectTypeController::class,
         'certificates' => CertificateController::class,
+        'activities' => ActivityController::class,
         'certificate-types' => CertificateTypeController::class,
         'certificate-techniques' => CertificateTechniqueController::class,
         'certificate-levels' => CertificateLevelController::class,

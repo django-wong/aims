@@ -117,6 +117,8 @@ class TimesheetItemController extends Controller
                 if ($i === 0) {
                     $request->saveAttachments($record);
                 }
+
+                activity()->performedOn($request->timesheet())->withProperties($record->toArray())->log('Logged time');
             }
 
             return $record;
@@ -149,6 +151,8 @@ class TimesheetItemController extends Controller
             $request->validated()
         );
 
+        activity()->on($timesheet_item->timesheet)->withProperties($timesheet_item->getChanges())->log('Updated timesheet item');
+
         $request->saveAttachments($timesheet_item);
 
         return [
@@ -163,6 +167,8 @@ class TimesheetItemController extends Controller
     public function destroy(TimesheetItem $timesheet_item)
     {
         $timesheet_item->delete();
+
+        activity()->performedOn($timesheet_item->timesheet)->withProperties($timesheet_item->getAttributes())->log('Deleted timesheet item');
 
         return response()->json([
             'message' => 'Timesheet item deleted successfully',

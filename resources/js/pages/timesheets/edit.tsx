@@ -18,6 +18,7 @@ import { CoordinationOfficeApprove } from '@/pages/timesheets/coordination-offic
 import { LogYourTime } from '@/pages/assignments/record';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HideFromClient } from '@/components/hide-from-client';
+import { Activities } from '@/components/activities';
 
 interface EditTimesheetProps {
   timesheet: Timesheet;
@@ -160,6 +161,11 @@ export function TimesheetEditContent() {
   const [tab, setTab] = useQueryParam('timesheet-edit-tab', 'workhours');
 
   const timesheet = useTimesheet();
+
+  if (!timesheet) {
+    return null;
+  }
+
   return (
     <>
       <Tabs value={tab} onValueChange={setTab} className={'gap-6'}>
@@ -170,7 +176,9 @@ export function TimesheetEditContent() {
         <TabsContent value={'workhours'} className={'space-y-6'}>
           <TimesheetItems timesheet={timesheet!} />
         </TabsContent>
-        <TabsContent value={'activity-log'}>Logs coming soon...</TabsContent>
+        <TabsContent value={'activity-log'}>
+          <Activities subject_type={'timesheet'} subject_id={timesheet.id}/>
+        </TabsContent>
       </Tabs>
     </>
   );

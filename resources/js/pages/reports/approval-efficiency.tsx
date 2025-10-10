@@ -8,6 +8,9 @@ import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { CircleAlertIcon } from 'lucide-react';
 import { startTransition, useState } from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQueryParam } from '@/hooks/use-query-param';
+import { ApprovalEfficiencyChart } from '@/pages/reports/approval-efficiency-chart';
 
 interface ApprovalEfficiencyProps {
   [key: string]: unknown;
@@ -31,9 +34,11 @@ export default function ApprovalEfficiencyPage(props: ApprovalEfficiencyProps) {
 
   const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
 
+  const [tab, setTab] = useQueryParam('tab', 'table');
+
   return (
     <Layout breadcrumbs={breadcrumbs}>
-      <div className={'grid gap-6 px-6'}>
+      <div className={'flex-1 flex flex-col gap-6 px-6 overflow-hidden'}>
         <Alert>
           <AlertIcon>
             <CircleAlertIcon />
@@ -66,8 +71,17 @@ export default function ApprovalEfficiencyPage(props: ApprovalEfficiencyProps) {
             />
           }
           table={table}
+          render={(table) => {
+            return tab === 'table' ? table : <ApprovalEfficiencyChart/>;
+          }}
           right={
             <>
+              <Tabs value={tab} onValueChange={setTab}>
+                <TabsList>
+                  <TabsTrigger value={'table'}>Table</TabsTrigger>
+                  <TabsTrigger value={'chart'}>Chart</TabsTrigger>
+                </TabsList>
+              </Tabs>
               <ExportButton/>
               <ColumnToggle/>
             </>

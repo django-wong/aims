@@ -634,3 +634,19 @@ export interface TimesheetDetail extends Timesheet {
 }
 
 export type Month = 'jan' | 'feb' | 'mar' | 'apr' | 'may' | 'jun' | 'jul' | 'aug' | 'sep' | 'oct' | 'nov' | 'dec';
+
+export interface ActivityLog<T = unknown> extends BaseModel {
+  log_name: string;
+  description: string;
+  subject_type: string;
+  subject?: T;
+  event: string|null;
+  subject_id: number|string;
+  causer_type: string;
+  causer_id: number|string;
+  causer?: User;
+  properties: Record<string, any> | null;
+  batch_uuid: string|null;
+  created_at: string;
+  updated_at: string;
+}

@@ -218,7 +218,7 @@ export function InvoiceActions() {
       <RejectButton/>
       {
         editable ? (
-          <PopoverConfirm message={'Are you sure to delete this invoice?'} onConfirm={destroy}>
+          <PopoverConfirm asChild message={'Are you sure to delete this invoice?'} onConfirm={destroy}>
             <Button variant={'destructive'} size={'sm'}>
               <Trash2Icon/>
             </Button>

@@ -172,6 +172,12 @@ class TimesheetController extends Controller
     {
         $updated = $timesheet->update($request->input());
 
+        activity()->performedOn($timesheet)
+            ->withProperties($timesheet->getChanges())
+            ->log(
+                'Updated timesheet'
+            );
+
         return [
             'message' => $updated ? 'Timesheet updated successfully.' : 'No changes made to the timesheet.',
             'data' => $timesheet
@@ -200,6 +206,8 @@ class TimesheetController extends Controller
         $next = $status->next();
 
         $next?->transition($timesheet);
+
+        activity()->performedOn($timesheet)->log('Approved timesheet');
 
         return response()->json([
             'message' => 'You have approved the timesheet.',

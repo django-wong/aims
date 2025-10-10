@@ -42,7 +42,7 @@ export function DeleteInvoice() {
   }
 
   return (
-    <PopoverConfirm align={'end'} side={'bottom'} message={'Are you sure to deletet this invocie? This can not be undone.'} onConfirm={destroy}>
+    <PopoverConfirm asChild align={'end'} side={'bottom'} message={'Are you sure to deletet this invocie? This can not be undone.'} onConfirm={destroy}>
       <Button variant={'destructive'}>Delete</Button>
     </PopoverConfirm>
   );
