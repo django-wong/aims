@@ -28,10 +28,16 @@ return new class extends Migration
              */
             $table->decimal('total_hours', 10, 2)->default(0.00)->comment('Calculated');
             $table->decimal('total_mileage', 10, 2)->default(0.00)->comment('Calculated');
+
+            $table->decimal('hour_cost', 15, 2)->default(0.00)->comment('Calculated');
+            $table->decimal('travel_cost', 15, 2)->default(0.00)->comment('Calculated');
+            $table->decimal('expenses', 15, 2)->default(0.00)->comment('Calculated');
             $table->decimal('total_cost', 15, 2)->default(0.00)->comment('Calculated');
+
             $table->decimal('budgeted_hours', 10, 2)->default(0.00);
             $table->decimal('budgeted_mileage', 10, 2)->default(0.00);
             $table->decimal('budgeted_expenses', 15, 2)->default(0.00);
+
             $table->decimal('budget', 15, 2)->default(0.00)->comment('The total budget including hours, mileage and expenses. Calculated from budgets table');
 
             /**

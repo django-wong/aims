@@ -71,7 +71,7 @@ class MenuController
                         'name' => 'Timesheets',
                         'icon' => 'clock',
                         'url' => route('timesheets'),
-                        'badge' => Timesheet::query()->pending()->count()
+                        // 'badge' => Timesheet::query()->pending()->count()
                     ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF], [
@@ -86,7 +86,7 @@ class MenuController
                         'name' => 'Invoices',
                         'icon' => 'scroll-text',
                         'url' => route('invoices'),
-                        'badge' => Invoice::query()->pending()->count()
+                        // 'badge' => Invoice::query()->pending()->count()
                     ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM], [

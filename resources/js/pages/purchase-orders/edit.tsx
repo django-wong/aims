@@ -16,8 +16,10 @@ import { PurchaseOrderForm } from '@/pages/purchase-orders/form';
 import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
 import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
 import { Timesheets } from '@/pages/assignments/timesheets';
-import { formatDate, formatDateTime } from '@/lib/helpers';
+import { formatCurrency, formatDate, formatDateTime } from '@/lib/helpers';
 import { Card } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -127,17 +129,30 @@ export default function PurchaseOrderEditPage(props: Props) {
                 <InfoLine label={'Last Updated'} icon={'clock'}>
                   {formatDateTime(props.purchase_order.updated_at)}
                 </InfoLine>
-
-                <InfoLine label={'Budget'} icon={'dollar-sign'}>
-                  ${props.purchase_order.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <InfoHead>Budget vs Usage</InfoHead>
+              <div>
+                <InfoLine label={'Overall Budget'} icon={'dollar-sign'}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      {formatCurrency(props.purchase_order.budget)} <span className={'text-muted-foreground text-sm'}>vs</span> {formatCurrency(props.purchase_order.total_cost)}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Including hours, travel, and expenses.
+                    </TooltipContent>
+                  </Tooltip>
                 </InfoLine>
 
-                <InfoLine label={'Budgeted Hours'} icon={'dollar-sign'}>
-                  {props.purchase_order.budgeted_hours} hrs
+                <InfoLine label={'Hours'} icon={'clock'}>
+                  {props.purchase_order.budgeted_hours} <span className={'text-muted-foreground text-sm'}>vs</span> {props.purchase_order.total_hours} hrs
                 </InfoLine>
 
-                <InfoLine label={'Budgeted Mileage'} icon={'car'}>
-                  {props.purchase_order.budgeted_mileage} {props.purchase_order.mileage_unit}
+                <InfoLine label={'Mileage'} icon={'car'}>
+                  {props.purchase_order.budgeted_mileage} <span className={'text-muted-foreground text-sm'}>vs</span> {props.purchase_order.total_mileage} {props.purchase_order.mileage_unit}
+                </InfoLine>
+
+                <InfoLine label={'Expenses'} icon={'dollar-sign'}>
+                  {formatCurrency(props.purchase_order.budgeted_expenses)} <span className={'text-muted-foreground text-sm'}>vs</span> {formatCurrency(props.purchase_order.expenses)}
                 </InfoLine>
               </div>
             </Info>

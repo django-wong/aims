@@ -40,8 +40,7 @@ class TimesheetItemFactory extends Factory
             'hotel' => $this->faker->randomFloat(2, 0, 500),
             'meals' => $this->faker->randomFloat(2, 0, 200),
             'rail_or_airfare' => $this->faker->randomFloat(2, 0, 1000),
-            'other' => $this->faker->randomFloat(2, 0, 300),
-            'approved' => $this->faker->boolean(),
+            'other' => $this->faker->randomFloat(2, 0, 300)
         ];
     }
 }
