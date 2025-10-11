@@ -9,6 +9,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MagicLinkController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SystemConfiguration;
@@ -55,9 +56,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('vendors/{vendor}', [VendorController::class, 'edit'])
         ->name('vendors.edit');
 
-    // Quotes - Not implemented yet
-    Route::inertia('quotes', '404')->name('quotes');
-
     // Assignments
     Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments');
     Route::get('assignments/{id}', [AssignmentController::class, 'edit'])->name('assignments.edit');
@@ -77,9 +75,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders');
     Route::get('purchase-orders/{id}', [PurchaseOrderController::class, 'edit'])->name('purchase-orders.edit');
 
-    Route::get('quotations', function () {
-        return Inertia::render('404');
-    })->name('quotations');
+    // Quotations
+    Route::get('quotations', [QuoteController::class, 'index'])->name('quotations');
+    Route::get('quotations/{quote}', [QuoteController::class, 'edit'])->name('quotations.edit');
 
     // Users & Impersonation
     Route::get('users', [UserController::class, 'index'])->name('users');

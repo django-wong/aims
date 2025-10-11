@@ -19,7 +19,7 @@ export interface Auth {
   user?: User;
   org?: Org;
   impersonating: boolean;
-  client: Client|null // Only when login as a client
+  client: Client | null; // Only when login as a client
 }
 
 export interface BreadcrumbItem {
@@ -157,10 +157,6 @@ export interface Client extends BaseModel {
   address?: Address;
   notes: string | null;
   invoice_reminder: number | null;
-}
-
-interface Quote extends BaseModel {
-  title: string;
 }
 
 export interface ProjectType extends BaseModel {
@@ -423,9 +419,9 @@ export interface Timesheet extends BaseModel {
   hours: number;
 
   contractor_invoice_id: number | null;
-  contractor_invoice?: Invoice|null
+  contractor_invoice?: Invoice | null;
   client_invoice_id: number | null;
-  client_invoice?: Invoice|null
+  client_invoice?: Invoice | null;
 
   signed_off_at: string | null;
   approved_at: string | null;
@@ -640,13 +636,34 @@ export interface ActivityLog<T = unknown> extends BaseModel {
   description: string;
   subject_type: string;
   subject?: T;
-  event: string|null;
-  subject_id: number|string;
+  event: string | null;
+  subject_id: number | string;
   causer_type: string;
-  causer_id: number|string;
+  causer_id: number | string;
   causer?: User;
   properties: Record<string, any> | null;
-  batch_uuid: string|null;
+  batch_uuid: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Quote extends BaseModel {
+  org_id: number;
+  suffix: string | null;
+  serial_number: string;
+  title: string | null;
+  client_id: number | null;
+  client?: Client | null;
+  client_ref: string | null;
+  i_e_a: string;
+  details: string | null;
+  controlling_org_id: number | null;
+  received_date: string | null;
+  pass_to_user: string | null;
+  type: string;
+  due_date: string;
+  despatched_date: string;
+  status: number;
+  notes: string | null;
+  quote_client_id: number | null;
 }

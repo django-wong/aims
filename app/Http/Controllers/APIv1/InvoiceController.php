@@ -230,8 +230,9 @@ class InvoiceController extends Controller
 
                 $timesheet->update([
                     $invoiceable instanceof Org ? 'contractor_invoice_id' : 'client_invoice_id' => $invoice->id,
-                    // 'status' => Timesheet::INVOICED,
                 ]);
+
+                activity()->on($timesheet)->withProperties($timesheet->getChanges())->log('Added to invoice');
             }
         });
 

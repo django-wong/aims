@@ -19,7 +19,7 @@ use Illuminate\Database\Query\JoinClause;
  * @property int                              $org_id
  * @property string|null                      $rejection_reason
  * @property int                              $id
- * @property int                            $purchase_order_id
+ * @property int                              $purchase_order_id
  */
 class Invoice extends Model implements Commentable
 {
@@ -42,6 +42,18 @@ class Invoice extends Model implements Commentable
             'sent_at' => 'datetime',
             'reminder_sent_at' => 'datetime',
         ];
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query) {
+            if (auth()->user()->isRole(UserRole::CLIENT)) {
+                $invoiceable = auth()->user()->client;
+            } else {
+                $invoiceable = auth()->user()->user_role->org;
+            }
+            $query->whereMorphedTo('invoiceable', $invoiceable)->where('status', Invoice::SENT);
+        });
     }
 
     public function invoiceable(): \Illuminate\Database\Eloquent\Relations\MorphTo

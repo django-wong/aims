@@ -1,4 +1,4 @@
-import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath, DeepPartial } from 'react-hook-form';
+import { useForm, FieldValues, UseFormProps, SubmitErrorHandler, FieldPath, DeepPartial, DefaultValues } from 'react-hook-form';
 import React, { useState } from 'react';
 import { defaultHeaders } from '@/utils/utils';
 import { BaseModel } from '@/types';
@@ -148,6 +148,13 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
     },
     validate: (cb: (data: T) => void, ecb?: SubmitErrorHandler<T>) => {
       form.handleSubmit(cb, ecb)();
-    }
+    },
+    resetAll: (value?: DefaultValues<T> | null) => {
+      form.reset(value || undefined, {
+        keepDefaultValues: false,
+        keepValues: false,
+        keepDirtyValues: false,
+      });
+    },
   };
 }

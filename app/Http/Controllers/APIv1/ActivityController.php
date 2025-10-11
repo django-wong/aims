@@ -15,8 +15,12 @@ class ActivityController extends Controller
 
     public function index(IndexActivityRequest $request)
     {
-        return $this->getQueryBuilder()->with('causer', function (MorphTo $query) {
-            $query->select(['id', 'name']);
-        })->orderBy('created_at', 'desc')->paginate();
+        return $this->getQueryBuilder()
+            ->whereMorphedTo('subject', $request->subject())
+            ->with('causer', function (MorphTo $query) {
+                $query->select(['id', 'name']);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate();
     }
 }

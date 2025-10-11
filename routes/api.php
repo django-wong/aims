@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
         'skills' => SkillController::class,
         'user-skills' => UserSkillController::class,
         'invoices' => \App\Http\Controllers\APIv1\InvoiceController::class,
+        'quotes' => \App\Http\Controllers\APIv1\QuoteController::class,
     ]);
 
     // Users
@@ -92,6 +93,7 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/approval-efficiency', [\App\Http\Controllers\APIv1\Reports\ApprovalEfficiencyController::class, 'index']);
     Route::get('reports/invoice-required', [InvoiceRequiredController::class, 'index']);
     Route::get('reports/man-hours-monthly-by-year', [\App\Http\Controllers\APIv1\Reports\ManHoursMonthlyByYearController::class, 'index']);
+    Route::get('reports/monthly-revenue', \App\Http\Controllers\APIv1\Reports\MonthlyRevenueController::class);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);

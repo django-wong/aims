@@ -14,15 +14,16 @@ return new class extends Migration
         Schema::create('quotes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('org_id')->constrained('orgs');
-            $table->string('suffix')->nullable();
             $table->string('serial_number')->index();
-            $table->string('title')->storedAs('CONCAT_WS("-", suffix, serial_number)');
+            $table->string('suffix')->nullable();
+            $table->string('title')->storedAs("CONCAT(serial_number, IF(suffix IS NOT NULL AND suffix != '', CONCAT('-', suffix), ''))")->index();
             $table->foreignId('client_id')->nullable()->index();
+            $table->string('client_ref')->nullable();
             $table->string('i_e_a')->default('i');
             $table->text('details')->nullable();
             $table->foreignId('controlling_org_id')->nullable()->constrained('orgs');
-            $table->timestamp('received_at')->nullable();
-            $table->foreignId('pass_to_user_id')->nullable()->constrained('users');
+            $table->date('received_date')->nullable();
+            $table->string('pass_to_user')->nullable();
             $table->string('type')->nullable();
             $table->date('due_date')->nullable();
             $table->date('despatched_date')->nullable();

@@ -34,37 +34,33 @@ export default function ProjectEdit(props: { project: Project }) {
     },
   ];
 
-  const [tab, setTab] = useQueryParam('tab', 'details');
+  const [tab, setTab] = useQueryParam('tab', 'assignments');
 
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <ProjectForm value={props.project} onSubmit={() => {router.reload()}}>
-          <Button variant={'secondary'}>
-            <PencilIcon/>
-            Edit
-          </Button>
-        </ProjectForm>
+        <HideFromClient>
+          <ProjectForm value={props.project} onSubmit={() => {router.reload()}}>
+            <Button variant={'secondary'}>
+              <PencilIcon/>
+              Edit
+            </Button>
+          </ProjectForm>
+        </HideFromClient>
       }>
       <TwoColumnLayout73
         left={
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className={'mb-4'}>
-              <TabsTrigger value={'details'}>
-                <InfoIcon/>
-                <span className={'hidden lg:inline'}>Details</span>
-              </TabsTrigger>
               <TabsTrigger value={'assignments'}>
                 <ContactIcon/>
                 <span className={'hidden lg:inline'}>Assignments</span>
               </TabsTrigger>
-              <HideFromClient>
-                <TabsTrigger value={'nois'}>
-                  <TargetIcon/>
-                  <span className={'hidden lg:inline'}>NOIs</span>
-                </TabsTrigger>
-              </HideFromClient>
+              <TabsTrigger value={'nois'}>
+                <TargetIcon/>
+                <span className={'hidden lg:inline'}>NOIs</span>
+              </TabsTrigger>
               <HideFromClient>
                 <TabsTrigger value={'comments'}>
                   <MessagesSquareIcon/>
@@ -72,40 +68,31 @@ export default function ProjectEdit(props: { project: Project }) {
                 </TabsTrigger>
               </HideFromClient>
             </TabsList>
-            <TabsContent value={'details'}>
-              <Content project={props.project}>TODO: Show project details</Content>
-            </TabsContent>
             <TabsContent value={'assignments'}>{content}</TabsContent>
             <HideFromClient>
               <TabsContent value={'comments'}>
                 <Comments commentableType={'Project'} commentableId={props.project.id} />
               </TabsContent>
             </HideFromClient>
-            <HideFromClient>
-              <TabsContent value={'nois'}>
-                TODO: Notification of inspections
-              </TabsContent>
-            </HideFromClient>
+            <TabsContent value={'nois'}>
+              TODO: Notification of inspections
+            </TabsContent>
           </Tabs>
         }
         right={
           <Info>
             <InfoHead>Information</InfoHead>
             <div>
-              <InfoLine icon={'text'} label={'Title'}>
-                {props.project.title}
-              </InfoLine>
-              <InfoLine icon={'info'} label={'Project Type'}>
-                {props.project.project_type?.name || 'N/A'}
-              </InfoLine>
-              <InfoLine icon={'info'} label={'Commission Rate'}>
-                {props.project.commission_rate}%
-              </InfoLine>
-              <InfoLine icon={'info'} label={'Process fee'}>
-                {props.project.process_fee_rate}%
-              </InfoLine>
+              <InfoLine icon={'text'} label={'Title'}>{props.project.title}</InfoLine>
+              <InfoLine icon={'info'} label={'Project Type'}>{props.project.project_type?.name || 'N/A'}</InfoLine>
+              <HideFromClient>
+                <InfoLine icon={'info'} label={'Commission Rate'}>{props.project.commission_rate}%</InfoLine>
+                <InfoLine icon={'info'} label={'Process fee'}>{props.project.process_fee_rate}%</InfoLine>
+              </HideFromClient>
             </div>
-            <Divider className={'my-2'} />
+
+            <Divider/>
+
             <InfoHead>Client</InfoHead>
             <div>
               <InfoLine icon={'user-2'} label={'Client'}>
@@ -115,8 +102,11 @@ export default function ProjectEdit(props: { project: Project }) {
                 {props.project.client?.coordinator?.name || 'N/A'}
               </InfoLine>
             </div>
-            <InfoHead>Client Notes</InfoHead>
-            <InfoLineValue>{props.project.client?.notes || 'N/A'}</InfoLineValue>
+
+            <HideFromClient>
+              <InfoHead>Client Notes</InfoHead>
+              <InfoLineValue>{props.project.client?.notes || 'N/A'}</InfoLineValue>
+            </HideFromClient>
           </Info>
         }
       />

@@ -37,12 +37,20 @@ class TimesheetController extends Controller
                 $deadline = Carbon::parse($timesheet->start, $timesheet->assignment->org->timezone)->startOfWeek()->addWeek()->setTime(10, 0);
                 if (now($timesheet->assignment->org->timezone)->greaterThan($deadline)) {
                     $timesheet->late = true;
+                    activity()->causedByAnonymous()->on($timesheet)->log('Marked as late');
                 }
             }
 
             DB::transaction(function () use ($timesheet, $request) {
                 $timesheet->signed_off_at = Carbon::now();
                 $timesheet->save();
+
+                foreach ([$timesheet, $timesheet->assignment] as $subject) {
+                    activity()
+                        ->on($subject)
+                        ->withProperties($timesheet->getChanges())->log('Signed off timesheet');
+                }
+
                 $timesheet->signatures()->updateOrCreate(
                     ['timesheet_id' => $timesheet->id],
                     ['inspector_signature' => $request->input('signature_base64')]
@@ -63,6 +71,16 @@ class TimesheetController extends Controller
         $timesheet->reject($request->input('rejection_reason'));
 
         $timesheet->user->notify(new TimesheetRejected($timesheet));
+
+        foreach ([$timesheet, $timesheet->assignment] as $subject) {
+            activity()
+                ->on($subject)
+                ->withProperties([
+                    'reason' => $request->input('rejection_reason'),
+                    'timesheet_id' => $timesheet->id,
+                ])
+                ->log('Rejected timesheet');
+        }
 
         return [
             'message' => 'You have rejected the timesheet.',
@@ -207,7 +225,9 @@ class TimesheetController extends Controller
 
         $next?->transition($timesheet);
 
-        activity()->performedOn($timesheet)->log('Approved timesheet');
+        foreach ([$timesheet, $timesheet->assignment] as $subject) {
+            activity()->on($subject)->withProperties($timesheet->getChanges())->log('Approved timesheet');
+        }
 
         return response()->json([
             'message' => 'You have approved the timesheet.',

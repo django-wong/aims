@@ -4,7 +4,9 @@ namespace App\Policies;
 
 use App\Models\Quote;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Gate;
 
 class QuotePolicy
 {
@@ -21,7 +23,12 @@ class QuotePolicy
      */
     public function view(User $user, Quote $quote): bool
     {
-        return false;
+        return $quote->org_id == $user->user_role->org_id && $user->isAnyRole([
+            UserRole::ADMIN,
+            UserRole::STAFF,
+            UserRole::PM,
+            UserRole::FINANCE
+        ]);
     }
 
     /**
@@ -29,7 +36,12 @@ class QuotePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAnyRole([
+            UserRole::ADMIN,
+            UserRole::STAFF,
+            UserRole::PM,
+            UserRole::FINANCE
+        ]);
     }
 
     /**
@@ -37,7 +49,7 @@ class QuotePolicy
      */
     public function update(User $user, Quote $quote): bool
     {
-        return false;
+        return $user->user_role->org_id === $quote->org_id && Gate::allows('create', Quote::class);
     }
 
     /**
@@ -45,7 +57,7 @@ class QuotePolicy
      */
     public function delete(User $user, Quote $quote): bool
     {
-        return false;
+        return $user->user_role->org_id === $quote->org_id && Gate::allows('create', Quote::class);
     }
 
     /**
@@ -61,6 +73,6 @@ class QuotePolicy
      */
     public function forceDelete(User $user, Quote $quote): bool
     {
-        return false;
+        return $this->delete($user, $quote);
     }
 }

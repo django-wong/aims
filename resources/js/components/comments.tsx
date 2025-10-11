@@ -12,7 +12,6 @@ import { Lock, MessageCircle, Paperclip } from 'lucide-react';
 import { z } from 'zod';
 import { AttachmentItem } from '@/pages/timesheets/timesheet-items';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useQueryParam } from '@/hooks/use-query-param';
 
 const schema = z.object({
@@ -79,7 +78,7 @@ export function Comments(props: CommentsProps) {
   return (
     <>
       <div className={'flex flex-col gap-4'}>
-        <div className={'p-4 border rounded-lg bg-muted'}>
+        <div className={''}>
           <Form {...form} watch={form.watch}>
             <div className={'flex flex-col gap-4'}>
               <FormField

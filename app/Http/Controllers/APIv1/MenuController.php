@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Models\Invoice;
 use App\Models\Timesheet;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
@@ -25,7 +26,6 @@ class MenuController
                         'name' => 'Dashboard',
                         'icon' => 'house',
                         'url' => route('dashboard'),
-                        'badge' => Timesheet::query()->pending()->count()
                     ],
                 ] : []),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE],[
@@ -70,12 +70,13 @@ class MenuController
                     'timesheets' => [
                         'name' => 'Timesheets',
                         'icon' => 'clock',
-                        'url' => route('timesheets')
+                        'url' => route('timesheets'),
+                        'badge' => Timesheet::query()->pending()->count()
                     ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF], [
                     'noi' => [
-                        'name' => 'NOI',
+                        'name' => 'Notification of Inspection (NOI)',
                         'icon' => 'contact',
                         'url' => route('notification-of-inspection'),
                     ]
@@ -85,6 +86,7 @@ class MenuController
                         'name' => 'Invoices',
                         'icon' => 'scroll-text',
                         'url' => route('invoices'),
+                        'badge' => Invoice::query()->pending()->count()
                     ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM], [

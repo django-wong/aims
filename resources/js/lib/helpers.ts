@@ -75,27 +75,24 @@ export const getInitials = (name: string | null | undefined, count?: number): st
 
 /**
  * Formats a date as a readable string in "Month Day, Year" format.
- *
- * @param input - A date string or timestamp to format.
- * @returns A string formatted as "Month Day, Year".
  */
 export function formatDate(
-  input: Date | string | number,
-  options: any = {
+  input: Date | string | number | null,
+  options: Intl.DateTimeFormatOptions = {
     month: 'numeric',
     day: 'numeric',
     year: 'numeric',
   },
 ): string {
+  if (!input) {
+    return '';
+  }
   const date = new Date(input);
   return date.toLocaleDateString(navigator.language, options);
 }
 
 /**
  * Formats a date and time as a readable string in "Month Day, Year, Hour:Minute AM/PM" format.
- *
- * @param input - A date string or timestamp to format.
- * @returns A string formatted as "Month Day, Year, Hour:Minute AM/PM".
  */
 export function formatDateTime(input: Date | string | number): string {
   const date = new Date(input);

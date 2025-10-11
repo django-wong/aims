@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { ColumnDef } from '@tanstack/react-table';
+import { AccessorKeyColumnDefBase, ColumnDef } from '@tanstack/react-table';
 import { EllipsisVertical, Eye, Plus, Trash2 } from 'lucide-react';
 
 import { ClientSelect } from '@/components/client-select';
@@ -23,6 +23,7 @@ import { ProjectForm } from '@/pages/projects/form';
 import { Project } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { HideFromClient } from '@/components/hide-from-client';
+import { useIsClient } from '@/hooks/use-role';
 
 const breadcrumbs = [
   {
@@ -115,7 +116,7 @@ const columns: ColumnDef<Project>[] = [
     header: 'Commission %',
     cell: ({ row }) => {
       return <div>{row.original.commission_rate ?? 'N/A'}</div>;
-    }
+    },
   },
   {
     accessorKey: 'process_fee_rate',
@@ -139,9 +140,17 @@ const columns: ColumnDef<Project>[] = [
   },
 ];
 
+const projectColumnsForClient = columns.filter((col) => ![
+  'client',
+  'commission_rate',
+  'process_fee_rate'
+].includes((col as AccessorKeyColumnDefBase<any>).accessorKey as string));
+
 export default function Projects() {
+  const isClient = useIsClient();
+
   const table = useTable<Project>('/api/v1/projects', {
-    columns: columns,
+    columns: isClient ? projectColumnsForClient : columns,
     defaultParams: {
       include: 'client,project_type',
     },
@@ -213,3 +222,5 @@ export default function Projects() {
     </AppLayout>
   );
 }
+
+

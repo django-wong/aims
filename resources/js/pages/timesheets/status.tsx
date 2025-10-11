@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Timesheet } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { CheckIcon, CircleDashedIcon, XIcon } from 'lucide-react';
+import { CheckIcon, CircleDashedIcon, LoaderCircleIcon, XIcon } from 'lucide-react';
 import { useTimesheet } from '@/providers/timesheet-provider';
 
 export function TimesheetStatus(props: { status: Timesheet['status'] }) {
@@ -26,7 +26,7 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       return (
         <StatusExplanation status={props.status}>
           <Badge variant="outline" className={'bg-blue-50 border-blue-200'}>
-            Waiting for Client Approval <RejectionBadge/>
+            Waiting for Client <RejectionBadge/>
           </Badge>
         </StatusExplanation>
       );
@@ -106,6 +106,10 @@ export function StatusMinimal(props: {status: Timesheet['status'], mininal: Time
 
       // return <XIcon size={size} className={'text-red-500'} />;
     }
+  }
+
+  if (props.status === props.mininal) {
+    return <LoaderCircleIcon size={size} className={'animate-spin'} />
   }
 
   return <CircleDashedIcon size={size} />

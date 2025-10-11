@@ -26,6 +26,8 @@ class ClientApproved implements Status
 
         $timesheet->client_approved_at = now();
         $timesheet->status = Timesheet::CLIENT_APPROVED;
+        $timesheet->rejected = false;
+        $timesheet->rejection_reason = '';
         $timesheet->save();
 
         $timesheet->assignment->project->client->coordinator?->notify(

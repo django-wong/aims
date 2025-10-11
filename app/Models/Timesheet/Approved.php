@@ -35,6 +35,8 @@ class Approved implements Status
         DB::transaction(function () use ($timesheet) {
             $timesheet->approved_at = now();
             $timesheet->status = Timesheet::APPROVED;
+            $timesheet->rejected = false;
+            $timesheet->rejection_reason = '';
             $timesheet->save();
 
             $timesheet->signatures()->updateOrCreate([

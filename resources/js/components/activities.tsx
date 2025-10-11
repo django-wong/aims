@@ -33,12 +33,12 @@ export function Activity(props: { data: ActivityLog }) {
       <div className={'flex items-center justify-between text-sm text-muted-foreground'}>
         <div className={'flex items-center gap-2'}>
           <Avatar className="h-8 w-8 rounded-lg grayscale border">
-            <AvatarImage src={props.data.causer?.avatar} alt={props.data.causer?.name} />
+            <AvatarImage src={props.data.causer?.avatar} alt={props.data.causer?.name ?? 'System'} />
             <AvatarFallback className="rounded-lg">
               {props.data.causer?.name.substring(0, 2)}
             </AvatarFallback>
           </Avatar>
-          <span className={'font-bold'}>{props.data.causer?.name}</span>
+          <span className={'font-bold'}>{props.data.causer?.name ?? 'System'}</span>
           {props.data.description}
         </div>
         <div>

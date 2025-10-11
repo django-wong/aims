@@ -83,31 +83,37 @@ export function DailyHoursUsage() {
   }, [purchase_order?.id, range])
 
   return (
-    <Card className="py-4 sm:py-0">
-      <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-          <Select value={range} onValueChange={setRange}>
-            <SelectTrigger className="w-auto">
-              <SelectValue placeholder="Select a type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="last_1_week">
-                Last 1 Week
-              </SelectItem>
-              <SelectItem value="last_2_weeks">
-                Last 2 Weeks
-              </SelectItem>
-              <SelectItem value="last_1_month">
-                Last 1 Month
-              </SelectItem>
-              <SelectItem value="last_3_months">
-                Last 3 Months
-              </SelectItem>
-              <SelectItem value="last_12_months">
-                Last 12 Months
-              </SelectItem>
-            </SelectContent>
-          </Select>
+    <Card className="py-4 sm:py-0 overflow-hidden">
+      <CardHeader className="flex flex-col items-stretch border-b !p-0 lg:flex-row gap-0">
+        <div className="flex flex-1 flex-col justify-start lg:justify-center gap-1 p-6">
+          <div className={'flex flex-col gap-4 lg:flex-row lg:items-center justify-between'}>
+            <div>
+              <div className={'font-bold'}>Total Claimed</div>
+              <div className={'text-muted-foreground'}>By inspectors including pending approval</div>
+            </div>
+            <Select value={range} onValueChange={setRange}>
+              <SelectTrigger className="w-auto">
+                <SelectValue placeholder="Select a type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="last_1_week">
+                  Last 1 Week
+                </SelectItem>
+                <SelectItem value="last_2_weeks">
+                  Last 2 Weeks
+                </SelectItem>
+                <SelectItem value="last_1_month">
+                  Last 1 Month
+                </SelectItem>
+                <SelectItem value="last_3_months">
+                  Last 3 Months
+                </SelectItem>
+                <SelectItem value="last_12_months">
+                  Last 12 Months
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex">
           {["hours", "travel_distance", 'total_expense'].map((key) => {
@@ -116,7 +122,7 @@ export function DailyHoursUsage() {
               <button
                 key={chart}
                 data-active={activeChart === chart}
-                className="data-[active=true]:bg-muted/50 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+                className="data-[active=true]:bg-muted/50 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left lg:border-t-0 first:border-l-0 lg:first:border-l border-l sm:px-8 sm:py-6"
                 onClick={() => setActiveChart(chart)}
               >
                 <span className="text-muted-foreground text-xs">

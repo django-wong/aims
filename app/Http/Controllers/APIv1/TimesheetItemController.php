@@ -118,7 +118,12 @@ class TimesheetItemController extends Controller
                     $request->saveAttachments($record);
                 }
 
-                activity()->performedOn($request->timesheet())->withProperties($record->toArray())->log('Logged time');
+                foreach ([$request->timesheet(), $request->timesheet()->assignment] as $subject) {
+                    activity()
+                        ->on($subject)
+                        ->withProperties($record->getAttributes())
+                        ->log('Logged time');
+                }
             }
 
             return $record;
@@ -147,17 +152,27 @@ class TimesheetItemController extends Controller
      */
     public function update(UpdateRequest $request, TimesheetItem $timesheet_item)
     {
-        $timesheet_item->update(
-            $request->validated()
-        );
+        DB::transaction(function () use ($request, $timesheet_item) {
+            $timesheet_item->update($request->validated());
 
-        activity()->on($timesheet_item->timesheet)->withProperties($timesheet_item->getChanges())->log('Updated timesheet item');
+            activity()
+                ->on($timesheet_item->timesheet)
+                ->withProperties([
+                    ...$timesheet_item->getChanges(),
+                    'date' => $timesheet_item->date,
+                ])
+                ->log('Updated timesheet item');
 
-        $request->saveAttachments($timesheet_item);
+            $request->saveAttachments($timesheet_item);
+        });
 
         return [
             'message' => 'Timesheet item updated successfully',
-            'data' => $timesheet_item->refresh()->load(['attachments'])
+            'data' => $timesheet_item
+                ->refresh()
+                ->load([
+                    'attachments'
+                ])
         ];
     }
 

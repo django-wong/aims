@@ -132,11 +132,13 @@ class AssignmentInspectorController extends Controller
         $assignment = $assignment_inspector->assignment;
 
         if ($assignment->status < Assignment::PARTIAL_ACKED) {
+            activity()->on($assignment)->log('Acknowledged');
             $assignment->status = Assignment::PARTIAL_ACKED;
         }
 
         if (! ($assignment->assignment_inspectors()->whereNull('acked_at')->exists())) {
             $assignment->status = Assignment::ACKED;
+            activity()->causedByAnonymous()->on($assignment)->log('All Inspectors Acknowledged');
         }
 
         $assignment->save();

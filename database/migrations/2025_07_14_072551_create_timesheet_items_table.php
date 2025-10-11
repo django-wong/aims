@@ -55,7 +55,7 @@ return new class extends Migration
             $table->decimal('pay_rate', 10, 2)->default(0.00)->comment('Pay rate per hour for the inspector');
             $table->decimal('pay_travel_rate', 10, 2)->default(0.00)->comment('Pay rate per distance unit for travel');
 
-            $table->boolean('approved')->default(false);
+            // $table->boolean('approved')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

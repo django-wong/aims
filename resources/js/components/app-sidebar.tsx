@@ -118,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem className={'py-2'}>
             <div className={'flex justify-between gap-4 items-center'}>
               <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-                <a href="#" className={'flex items-center gap-2'}>
+                <a href="/" className={'flex items-center gap-2'}>
                   <House className="!size-6" />
                   <span className="text-base font-semibold">{org?.name}</span>
                 </a>
@@ -150,7 +150,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={Object.values(main)} />
         <NavReports/>
-        {/*<NavSecondary items={data.navSecondary} className="mt-auto" />*/}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

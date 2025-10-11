@@ -186,10 +186,7 @@ function OverviewContent(props: { purchase_order: PurchaseOrder }) {
   return (
     <div className="space-y-6">
       <PurchaseOrderProvider value={props.purchase_order}>
-        <Card className={'p-4'}>
-          <h3 className={'font-bold'}>Monthly Usage</h3>
-          <Overview/>
-        </Card>
+        <Overview/>
         <DailyHoursUsage/>
       </PurchaseOrderProvider>
     </div>

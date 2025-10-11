@@ -213,13 +213,13 @@ export function InvoiceActions() {
   ].indexOf(role as any) !== -1;
 
   return (
-    <div className={'flex gap-2'}>
+    <div className={'flex gap-2 justify-end'}>
       <ApproveButton/>
       <RejectButton/>
       {
         editable ? (
           <PopoverConfirm asChild message={'Are you sure to delete this invoice?'} onConfirm={destroy}>
-            <Button variant={'destructive'} size={'sm'}>
+            <Button variant={'secondary'} size={'sm'}>
               <Trash2Icon/>
             </Button>
           </PopoverConfirm>
