@@ -11,6 +11,7 @@ export function MonthlyRevenue() {
     axios.get('/api/v1/reports/monthly-revenue').then(response => {
       setOption({
         tooltip: {
+          confine: true,
           axisPointer: {
             type: 'cross',
             animation: false,
@@ -30,6 +31,7 @@ export function MonthlyRevenue() {
           }
         },
         toolbox: {
+          padding: [0, 16, 0 ,0],
           feature: {
             saveAsImage: {}
           }

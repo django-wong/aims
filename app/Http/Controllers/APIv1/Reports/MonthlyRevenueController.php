@@ -16,7 +16,7 @@ class MonthlyRevenueController
 
         $data = TimesheetItem::query()
             ->select([
-                DB::raw("date_format(timesheet_items.date, '%Y-%m-%d') as month"),
+                DB::raw("date_format(timesheet_items.date, '%Y-%m') as month"),
                 DB::raw("SUM(timesheet_items.cost) as hour_cost"),
                 DB::raw("SUM(timesheet_items.travel_cost) as travel_cost"),
                 DB::raw("SUM((timesheet_items.hourly_rate - timesheet_items.pay_rate) * timesheet_items.hours) as hour_profit"),
@@ -34,7 +34,7 @@ class MonthlyRevenueController
         $results = [];
 
         while ($start->lessThanOrEqualTo($end)) {
-            $monthKey = $start->format('Y-m-d');
+            $monthKey = $start->format('Y-m');
             $monthData = $data->firstWhere('month', $monthKey);
 
             $results[] = [
@@ -45,7 +45,7 @@ class MonthlyRevenueController
                 'travel_profit' => $monthData->travel_profit ?? 0,
             ];
 
-            $start = $start->addDay();
+            $start = $start->addMonth();
         }
 
         return response()->json($results);

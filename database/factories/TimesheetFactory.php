@@ -31,6 +31,10 @@ class TimesheetFactory extends Factory
             Timesheet::CLIENT_APPROVED
         ]);
 
+        $signed_off_at = $status >= Timesheet::REVIEWING ? $this->faker->dateTimeBetween($start, $end) : null;
+        $approved_at = $status >= Timesheet::APPROVED ? $this->faker->dateTimeBetween($signed_off_at, $end) : null;
+        $client_approved_at = $status >= Timesheet::CLIENT_APPROVED ? $this->faker->dateTimeBetween($approved_at, $end) : null;
+        $client_reminder_sent_at = $status >= Timesheet::APPROVED && $this->faker->boolean ? $this->faker->dateTimeBetween($approved_at, $end) : null;
         return [
             'assignment_id' => Assignment::factory(),
             'user_id' => User::factory(),
@@ -39,10 +43,10 @@ class TimesheetFactory extends Factory
             'status' => $status,
             'late' => $this->faker->boolean(60),
             'issue_code' => $this->faker->randomElement([0, 1, 2, 3, 4]),
-            'signed_off_at' => $status >= Timesheet::REVIEWING ? $this->faker->dateTimeBetween($start, $end) : null,
-            'approved_at' => $status >= Timesheet::APPROVED ? $this->faker->dateTimeBetween($start, $end) : null,
-            'client_approved_at' => $status >= Timesheet::CLIENT_APPROVED ? $this->faker->dateTimeBetween($start, $end) : null,
-            'client_reminder_sent_at' => $status >= Timesheet::APPROVED && $this->faker->boolean ? $this->faker->dateTimeBetween($start, $end) : null,
+            'signed_off_at' => $signed_off_at,
+            'approved_at' => $approved_at,
+            'client_approved_at' => $client_approved_at,
+            'client_reminder_sent_at' => $client_reminder_sent_at,
         ];
     }
 }
