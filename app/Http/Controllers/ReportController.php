@@ -183,4 +183,9 @@ class ReportController extends Controller
     {
         return inertia('reports/approval-efficiency');
     }
+
+    public function skill_matrix()
+    {
+        return inertia('reports/skill-matrix');
+    }
 }

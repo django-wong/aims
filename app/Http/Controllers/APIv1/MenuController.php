@@ -152,6 +152,11 @@ class MenuController
                 ]
             ],
             [
+                'name' => 'Skill Matrix',
+                'url' => route('reports.skill-matrix'),
+                'icon' => 'hammer',
+            ],
+            [
                 'name' => 'Invoice Required',
                 'url' => route('reports.invoice-required'),
                 'icon' => 'receipt',

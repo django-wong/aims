@@ -38,7 +38,7 @@ const user_skills_columns: ColumnDef<UserSkill>[] = [
   },
   {
     accessorKey: 'i_e_a',
-    header: 'I/E/A',
+    header: 'I/E',
     cell: ({ row }) => {
       return <span className="capitalize">{row.original.skill?.i_e_a}</span>;
     },
