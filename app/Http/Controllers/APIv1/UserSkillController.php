@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\IndexUserSkillRequest;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\UserSkill;
@@ -43,9 +44,9 @@ class UserSkillController extends Controller
         ];
     }
 
-    public function index(Request $request, User $user)
+    public function index(IndexUserSkillRequest $request, User $user)
     {
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->where('user_id', $request->input('user_id'))->paginate();
     }
 
     public function store(Request $request)

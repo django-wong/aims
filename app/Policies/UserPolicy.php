@@ -64,4 +64,17 @@ class UserPolicy
         }
         return false;
     }
+
+    public function view(User $user, User $model): bool
+    {
+        if ($user->is($model)) {
+            return true;
+        }
+
+        return $user->user_role->org_id === $model->user_role->org_id && $user->isAnyRole([
+            UserRole::ADMIN,
+            UserRole::PM,
+            UserRole::STAFF
+        ]);
+    }
 }
