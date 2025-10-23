@@ -10,106 +10,97 @@ $inspector = \App\Models\AssignmentInspector::query()->with('assignment_type')->
 
 $assignment = \App\Models\AssignmentDetail::query()->find($timesheet->assignment_id);
 @endphp
-
-<x-pdf.table class="table">
+<table cellpadding="2">
     <tr>
-        <td rowspan="2" style="width: 25%; text-align: center;">
-            <img style="height: 100px; width: auto" src="{{ public_path('logo.png') }}"/>
+        <td style="width: 75%; text-align: left; vertical-align: top;">
+            <h1 style="font-size: 22px; font-weight: bold; line-height: 18px;">TIMESHEET</h1>
+            <p><strong>Assignment No:</strong> {{$assignment->id}} <br><strong>Inspector:</strong> {{$timesheet->user->name}} <br><strong>Discipline:</strong> {{$inspector->assignment_type->name}} <br><strong>Vendor / Sub vendor:</strong> {{$assignment->main_vendor_name}} / {{$assignment->sub_vendor_name}}</p>
         </td>
-        <td colspan="2" style="width: 50%; text-align: center; font-size: 24px; font-weight: bold">TIMESHEET</td>
-        <td rowspan="2" style="width: 25%; text-align: center;">
+        <td style="width: 25%; text-align: center; vertical-align: top;">
             @if($assignment->project->client->logo_url)
                 <img style="height: 100px; width: auto" src="{{ $assignment->project->client->logo_url }}"/>
             @else
-                {{ $assignment->project->client->business_name }}
+                For {{ $assignment->project->client->business_name }}
             @endif
         </td>
     </tr>
-    <tr>
-        <td colspan="2">
-            <strong>Assignment No:</strong> {{$assignment->id}} <br>
-            <strong>Inspector:</strong> {{$timesheet->user->name}} <br>
-            <strong>Discipline:</strong> {{$inspector->assignment_type->name}} <br>
-            <strong>Vendor / Sub vendor:</strong> {{$assignment->main_vendor_name}} / {{$assignment->sub_vendor_name}} <br>
-        </td>
-    </tr>
-    <tr>
-        <td>Date</td>
-        <td style="text-align: center">Hours</td>
-        <td style="text-align: center">Travel ({{$assignment?->purchase_order?->mileage_unit ?? 'km'}})</td>
-        <td style="text-align: center">Expenses ({{$assignment?->purchase_order?->currency}})</td>
-    </tr>
+</table>
+
+<p></p>
+
+<x-pdf.table class="table" style="margin-bottom: 20px;">
+    <x-pdf.table.row>
+        <x-pdf.table.cell style="font-weight: bold">Date</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center; font-weight: bold">Hours</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center; font-weight: bold">Travel ({{$assignment?->purchase_order?->travel_unit ?? 'km'}})</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center; font-weight: bold">Expenses ({{$assignment?->purchase_order?->currency}})</x-pdf.table.cell>
+    </x-pdf.table.row>
     @foreach($timesheet->timesheet_items as $item)
-    <tr>
-        <td>{{$item->date->format('d-m-Y')}}</td>
-        <td style="text-align: center">{{$item->hours}}</td>
-        <td style="text-align: center">{{$item->travel_distance}} {{$item->travel_unit}}</td>
-        <td style="text-align: center">{{ $timesheet->currency }} @money($item->total_expense)</td>
-    </tr>
+    <x-pdf.table.row>
+        <x-pdf.table.cell>{{$item->date->format('d-m-Y')}}</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center">{{$item->hours}}</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center">{{$item->travel_distance}} {{$item->travel_unit}}</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center">{{ $timesheet->currency }} @money($item->total_expense)</x-pdf.table.cell>
+    </x-pdf.table.row>
     @endforeach
-    <tr>
-        <td style="text-align: right; font-weight: bold">Total</td>
-        <td style="text-align: center">{{$timesheet->hours}}</td>
-        <td style="text-align: center">{{$timesheet->travel_distance}}</td>
-        <td style="text-align: center">{{$timesheet->expenses}}</td>
-    </tr>
-    <tr style="font-weight: bold">
-        <td>Place</td>
-        <td>Date</td>
-        <td colspan="2">Inspector</td>
-    </tr>
-    <tr>
-        <td>{{ $assignment->vendor?->name }}</td>
-        <td>{{$timesheet->signed_off_at?->format('d-m-Y')}}</td>
-        <td colspan="2">Print Name: {{$timesheet->user->name}}</td>
-    </tr>
-    <tr>
-        <td colspan="2"></td>
-        <td colspan="2" style="vertical-align: center">
-            Signed:  <br>
+    <x-pdf.table.row>
+        <x-pdf.table.cell style="font-weight: bold">Total</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center">{{$timesheet->hours}}</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center">{{$timesheet->travel_distance}}</x-pdf.table.cell>
+        <x-pdf.table.cell style="text-align: center">{{$timesheet->expenses}}</x-pdf.table.cell>
+    </x-pdf.table.row>
+</x-pdf.table>
+
+<p></p>
+
+<x-pdf.table class="table">
+    <x-pdf.table.row style="font-weight: bold">
+        <x-pdf.table.cell style="font-weight: bold">Place</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold">Date</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold">Inspector</x-pdf.table.cell>
+    </x-pdf.table.row>
+    <x-pdf.table.row>
+        <x-pdf.table.cell>{{ $assignment->vendor?->name }}</x-pdf.table.cell>
+        <x-pdf.table.cell>{{$timesheet->signed_off_at?->format('d-m-Y')}}</x-pdf.table.cell>
+        <x-pdf.table.cell>
+            <p>Print Name: {{$timesheet->user->name}}</p>
+            <p>Signed:  <br>
             @if(! empty($timesheet->signatures->inspector_signature))
                 <img style="height: 75px; width: auto" src="{{ $timesheet->signatures->inspector_signature }}"/>
-            @endif
-        </td>
-    </tr>
-
-    <tr style="font-weight: bold">
-        <td>Place</td>
-        <td>Date</td>
-        <td colspan="2">Reviewed and Approved By</td>
-    </tr>
-    <tr>
-        <td>{{ $assignment->operation_org->name ?? $assignment->org->name ?? '' }}</td>
-        <td>{{$timesheet->approved_at?->format('d-m-Y')}}</td>
-        <td colspan="2">Print Name: {{ $assignment->operation_coordinator?->name ?? $assignment->coordinator?->name ?? ''}}</td>
-    </tr>
-    <tr>
-        <td colspan="2"></td>
-        <td colspan="2" style="vertical-align: center">
-            Signed: <br>
+            @endif</p>
+        </x-pdf.table.cell>
+    </x-pdf.table.row>
+    <x-pdf.table.row style="font-weight: bold">
+        <x-pdf.table.cell style="font-weight: bold">Place</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold">Date</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold">Reviewed and Approved By</x-pdf.table.cell>
+    </x-pdf.table.row>
+    <x-pdf.table.row>
+        <x-pdf.table.cell>{{ $assignment->operation_org->name ?? $assignment->org->name ?? '' }}</x-pdf.table.cell>
+        <x-pdf.table.cell>{{$timesheet->approved_at?->format('d-m-Y')}}</x-pdf.table.cell>
+        <x-pdf.table.cell>
+            <p>Print Name: {{ $assignment->operation_coordinator?->name ?? $assignment->coordinator?->name ?? ''}}</p>
+            <p>Signed: <br>
             @if(! empty($timesheet->signatures?->coordinator_signature))
                 <img style="height: 75px; width: auto" src="{{ $timesheet->signatures?->coordinator_signature }}"/>
-            @endif
-        </td>
-    </tr>
+            @endif</p>
+        </x-pdf.table.cell>
+    </x-pdf.table.row>
 
-    <tr style="font-weight: bold">
-        <td>Place</td>
-        <td>Date</td>
-        <td colspan="2">Reviewed and Approved By {{$assignment->project->client->client_group}}</td>
-    </tr>
-    <tr>
-        <td>{{ $assignment->project->client->business_name }}</td>
-        <td>{{$timesheet->client_approved_at?->format('d-m-Y')}}</td>
-        <td colspan="2">Print Name: {{$assignment->project->client?->user?->name}}</td>
-    </tr>
-    <tr>
-        <td colspan="2"></td>
-        <td colspan="2" style="vertical-align: center">
-            Signed:  <br>
+    <x-pdf.table.row style="font-weight: bold">
+        <x-pdf.table.cell style="font-weight: bold">Place</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold">Date</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold">Reviewed and Approved By {{$assignment->project->client->client_group}}</x-pdf.table.cell>
+    </x-pdf.table.row>
+    <x-pdf.table.row>
+        <x-pdf.table.cell>{{ $assignment->project->client->business_name }}</x-pdf.table.cell>
+        <x-pdf.table.cell>{{$timesheet->client_approved_at?->format('d-m-Y')}}</x-pdf.table.cell>
+        <x-pdf.table.cell>
+            <p>Print Name: {{$assignment->project->client?->user?->name}}</p>
+            <p>Signed:  <br>
             @if(! empty($timesheet->signatures?->client_signature))
                 <img style="height: 75px; width: auto" src="{{ $timesheet->signatures?->client_signature }}"/>
-            @endif
-        </td>
-    </tr>
+            @endif</p>
+        </x-pdf.table.cell>
+    </x-pdf.table.row>
 </x-pdf.table>

@@ -19,6 +19,7 @@ import { LogYourTime } from '@/pages/assignments/record';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HideFromClient } from '@/components/hide-from-client';
 import { Activities } from '@/components/activities';
+import { FlashReportSent } from '@/pages/timesheets/flash-report-sent';
 
 interface EditTimesheetProps {
   timesheet: Timesheet;
@@ -136,8 +137,11 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                       <InfoLine label={'Cost'}>{formatCurrency(props.timesheet.cost)}</InfoLine>
                     </div>
                     <HideFromClient>
-                      <InfoHead>Issue & Problem</InfoHead>
+                      <InfoHead>Report & Problem</InfoHead>
                       <div>
+                        <InfoLine className={'items-center'} label={'Flash Report Sent'}>
+                          <FlashReportSent/>
+                        </InfoLine>
                         <InfoLine className={'items-center'} label={'Report Late'}>
                           <ReportLate />
                         </InfoLine>

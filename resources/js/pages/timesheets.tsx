@@ -19,6 +19,7 @@ import { TimesheetProvider, useTimesheet } from '@/providers/timesheet-provider'
 import { Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/helpers';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -76,9 +77,19 @@ const columns: ColumnDef<Timesheet>[] = [
   },
   {
     accessorKey: 'travel_distance',
-    header: 'Mileage',
+    header: 'Travel Distance',
     cell: ({ row }) => {
-      return `${row.original.travel_distance} km`;
+      return `${row.original.travel_distance}${row.original.assignment?.purchase_order?.travel_unit ?? ''}`;
+    },
+    meta: {
+      center: true,
+    },
+  },
+  {
+    accessorKey: 'expenses',
+    header: 'Expenses',
+    cell: ({ row }) => {
+      return formatCurrency(row.original.expenses);
     },
     meta: {
       center: true,
@@ -98,7 +109,7 @@ const columns: ColumnDef<Timesheet>[] = [
     },
     {
       accessorKey: 'contractor_invoice_id',
-      header: 'Invoice',
+      header: 'Contract Holder Invoice',
       cell: ({ row }) => {
         if (row.original.contractor_invoice_id) {
           return (
@@ -161,7 +172,7 @@ export default function Timesheets() {
     selectable: true,
     columns: columns,
     defaultParams: {
-      include: 'assignment.project.client,timesheet_items_count,timesheet_items.user',
+      include: 'assignment.purchase_order,assignment.project.client,timesheet_items_count,timesheet_items.user',
       sort: '-created_at',
     },
   });

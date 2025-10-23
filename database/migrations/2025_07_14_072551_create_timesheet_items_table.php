@@ -36,26 +36,20 @@ return new class extends Migration
             $table->integer('overnights')->default(0);
 
             // Travel
-            $table->integer('travel_distance')->default(0)->comment('Mileage traveled in km or miles');
+            $table->integer('travel_distance')->default(0);
             $table->integer('travel_rate')->default(0)->comment('Rate per distance unit for travel');
             $table->decimal('travel_cost', 10, 2)->storedAs(
                 'travel_distance * travel_rate'
             );
 
-
-            // Expenses
-            $table->decimal('hotel', 10, 2)->default(0.00);
-            $table->decimal('meals', 10, 2)->default(0.00);
-            $table->decimal('rail_or_airfare', 10, 2)->default(0.00);
-            $table->decimal('other', 10, 2)->default(0.00);
-            $table->decimal('total_expense', 10, 2)->storedAs(
-                'hotel + meals + rail_or_airfare + other'
-            );
+            $table->decimal('total_expense', 10, 2)->default(0)->comment('Calculated');
 
             $table->decimal('pay_rate', 10, 2)->default(0.00)->comment('Pay rate per hour for the inspector');
             $table->decimal('pay_travel_rate', 10, 2)->default(0.00)->comment('Pay rate per distance unit for travel');
 
-            // $table->boolean('approved')->default(false);
+            $table->decimal('hour_fee', 10, 2)->storedAs('(work_hours + travel_hours + report_hours) * pay_rate')->comment('Calculated pay for hours worked');
+            $table->decimal('travel_fee', 10, 2)->storedAs('travel_distance * pay_travel_rate')->comment('Calculated pay for travel');
+
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,17 +1,7 @@
 import { DataTable, useTableApi } from '@/components/data-table-2';
-import { Button } from '@/components/ui/button';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { useTable } from '@/hooks/use-table';
-import { TimesheetItemForm } from '@/pages/timesheet-items/form';
-import { Assignment, Attachment, Timesheet, TimesheetItem, TimesheetReport } from '@/types';
-import { ColumnDef } from '@tanstack/react-table';
-import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, FolderOpenIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
-import React, { ComponentProps } from 'react';
+import { PopoverConfirm } from '@/components/popover-confirm';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { usePagedGetApi } from '@/hooks/use-get-api';
-import axios from 'axios';
-import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,13 +11,24 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TimesheetItemProvider } from '@/providers/timesheet-item-provider';
-import { TimesheetItemAttachments } from '@/pages/timesheets/timesheet-item-attachments';
-import { TimesheetReportProvider } from '@/providers/timesheet-report-provider';
-import { TimesheetReportForm } from '@/pages/assignments/assignment-report-form';
-import { RejectionDetails } from '@/pages/timesheets/rejection-details';
-import { PopoverConfirm } from '@/components/popover-confirm';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { usePagedGetApi } from '@/hooks/use-get-api';
+import { useTable } from '@/hooks/use-table';
 import { formatCurrency, formatDate } from '@/lib/helpers';
+import { cn } from '@/lib/utils';
+import { TimesheetReportForm } from '@/pages/assignments/assignment-report-form';
+import { TimesheetItemForm } from '@/pages/timesheet-items/form';
+import { LogExpenseForm } from '@/pages/timesheet-items/log-expense-form';
+import { RejectionDetails } from '@/pages/timesheets/rejection-details';
+import { TimesheetItemAttachments } from '@/pages/timesheets/timesheet-item-attachments';
+import { TimesheetItemProvider } from '@/providers/timesheet-item-provider';
+import { TimesheetReportProvider } from '@/providers/timesheet-report-provider';
+import { Assignment, Attachment, Timesheet, TimesheetItem, TimesheetReport } from '@/types';
+import { ColumnDef } from '@tanstack/react-table';
+import axios from 'axios';
+import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, FolderOpenIcon, PencilIcon, PlusIcon, ReceiptCentIcon, Trash2Icon } from 'lucide-react';
+import React, { ComponentProps } from 'react';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -83,32 +84,32 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     {
       accessorKey: 'expenses',
       header: 'Hotel',
-      cell: ({ row }) => `$${row.original.hotel}`,
+      cell: ({ row }) => formatCurrency(row.original.expenses_by_type?.accommodation ?? 0),
     },
     {
       accessorKey: 'rail_or_airfare',
       header: 'Rail/Airfare',
-      cell: ({ row }) => `$${row.original.rail_or_airfare}`,
+      cell: ({ row }) => formatCurrency(row.original.expenses_by_type?.travel ?? 0),
     },
     {
       accessorKey: 'meals',
       header: 'Meals',
-      cell: ({ row }) => `$${row.original.meals}`,
+      cell: ({ row }) => formatCurrency(row.original.expenses_by_type?.meals ?? 0),
     },
     {
       accessorKey: 'other_expenses',
       header: 'Other',
-      cell: ({ row }) => `$${row.original.other}`,
+      cell: ({ row }) => formatCurrency(row.original.expenses_by_type?.other ?? 0),
     },
     {
       accessorKey: 'attachments',
       header: 'Attachments',
       cell: ({ row }) => (
-        <div className={'flex items-center gap-1 justify-start'}>
+        <div className={'flex items-center justify-start gap-1'}>
           <TimesheetItemProvider value={row.original}>
             <TimesheetItemAttachments onUploadComplete={table.reload}>
               <Button variant={'secondary'} size={'sm'}>
-                <FolderOpenIcon/> <span>({row.original.attachments_count})</span>
+                <FolderOpenIcon /> <span>({row.original.attachments_count})</span>
               </Button>
             </TimesheetItemAttachments>
           </TimesheetItemProvider>
@@ -121,11 +122,13 @@ export function TimesheetItems(props: TimesheetItemsProps) {
       size: 150,
       enablePinning: true,
       cell: ({ row }) => {
-        return <TableCellWrapper last>
-          <TimesheetItemActions value={row.original}/>
-        </TableCellWrapper>;
+        return (
+          <TableCellWrapper last>
+            <TimesheetItemActions value={row.original} />
+          </TableCellWrapper>
+        );
       },
-    }
+    },
   ];
 
   const table = useTable<TimesheetItem>('/api/v1/timesheet-items', {
@@ -133,7 +136,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
     defaultParams: {
       'filter[timesheet_id]': String(props.timesheet?.id ?? ''),
       'filter[assignment_id]': String(props.assignment?.id ?? ''),
-      'include': 'attachments_count',
+      include: 'attachments_count',
       sort: '-date',
     },
     initialState: {
@@ -177,29 +180,35 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
   function deleteItem() {
     axios.delete(`/api/v1/timesheet-items/${props.value.id}`).then(() => {
       table.reload();
-    })
+    });
   }
 
   return (
-    <>
+    <TimesheetItemProvider value={props.value}>
       <div className={'flex items-center justify-end gap-2'}>
+        <LogExpenseForm
+          onSubmit={() => {
+            table.reload();
+          }}
+        >
+          <Button variant={'secondary'} size={'sm'}>
+            <ReceiptCentIcon />
+          </Button>
+        </LogExpenseForm>
         <TimesheetItemForm value={props.value} onSubmit={onSubmit} asChild>
           <Button variant={'secondary'} size={'sm'}>
             <PencilIcon />
           </Button>
         </TimesheetItemForm>
-        <PopoverConfirm
-          message={'Are you sure to delete this record?'}
-          onConfirm={deleteItem}>
+        <PopoverConfirm message={'Are you sure to delete this record?'} asChild onConfirm={deleteItem}>
           <Button variant={'destructive'} size={'sm'}>
             <Trash2Icon />
           </Button>
         </PopoverConfirm>
       </div>
-    </>
+    </TimesheetItemProvider>
   );
 }
-
 
 interface TimesheetReportsProps {
   timesheet: Timesheet;
@@ -210,17 +219,17 @@ interface TimesheetReportsProps {
 function TimesheetReports(props: TimesheetReportsProps) {
   const api = usePagedGetApi<TimesheetReport>('/api/v1/timesheet-reports', {
     searchParams: new URLSearchParams({
-      'timesheet_id': String(props.timesheet.id),
+      timesheet_id: String(props.timesheet.id),
       'filter[type]': props.type,
-      'sort': '-created_at',
-      'include': 'attachment',
-    })
+      sort: '-created_at',
+      include: 'attachment',
+    }),
   });
 
   const can_add_more = props.type === 'inspection-report' ? (api.data || []).length < 1 : true;
 
-  function onChange(event:  React.ChangeEvent<HTMLInputElement>) {
-    for (const file of (event.target.files || [])) {
+  function onChange(event: React.ChangeEvent<HTMLInputElement>) {
+    for (const file of event.target.files || []) {
       const formData = new FormData();
       formData.append('timesheet_id', String(props.timesheet.id));
       formData.append('type', props.type);
@@ -229,7 +238,7 @@ function TimesheetReports(props: TimesheetReportsProps) {
       axios.post('/api/v1/timesheet-reports', formData).then(() => {
         api.refetch().then(() => {
           console.log('refetched');
-        })
+        });
       });
     }
   }
@@ -238,14 +247,16 @@ function TimesheetReports(props: TimesheetReportsProps) {
     axios.delete(`/api/v1/timesheet-reports/${item.id}`).then(() => {
       api.refetch().then(() => {
         console.log('refetched');
-      })
+      });
     });
   }
 
   return (
     <>
       <AccordionItem value={props.type}>
-        <AccordionTrigger>{props.label} ({(api.data || []).length})</AccordionTrigger>
+        <AccordionTrigger>
+          {props.label} ({(api.data || []).length})
+        </AccordionTrigger>
         <AccordionContent>
           <div className={'flex justify-start gap-4'}>
             {(api.data || []).map((report, index) => (
@@ -253,59 +264,61 @@ function TimesheetReports(props: TimesheetReportsProps) {
                 <AttachmentItem
                   attachment={report.attachment!}
                   key={index}
-                  actions={(
+                  actions={
                     <>
                       <TimesheetReportForm value={report} onSubmit={() => {}}>
                         <Button size={'sm'} variant={'ghost'}>
-                          <PencilIcon/>
+                          <PencilIcon />
                         </Button>
                       </TimesheetReportForm>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size={'sm'} variant={'ghost'}>
-                            <EllipsisVerticalIcon/>
+                            <EllipsisVerticalIcon />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className={'w-56'} align={'start'} side={'right'}>
                           <DropdownMenuLabel>{report.attachment?.name}</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => {window.open(route('attachments.download', { id: report.attachment?.id }))}}>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              window.open(route('attachments.download', { id: report.attachment?.id }));
+                            }}
+                          >
                             Download
                             <DropdownMenuShortcut>
-                              <DownloadIcon/>
+                              <DownloadIcon />
                             </DropdownMenuShortcut>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator></DropdownMenuSeparator>
                           <DropdownMenuItem variant={'destructive'} onClick={() => deleteReport(report)}>
                             Delete
                             <DropdownMenuShortcut>
-                              <Trash2Icon/>
+                              <Trash2Icon />
                             </DropdownMenuShortcut>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </>
-                  )}
+                  }
                 />
               </TimesheetReportProvider>
             ))}
 
-            { can_add_more ? (
+            {can_add_more ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <AttachmentRoot className={'bg-secondary/20 border-dashed flex flex-col items-center justify-center hover:bg-background'}>
+                  <AttachmentRoot className={'bg-secondary/20 hover:bg-background flex flex-col items-center justify-center border-dashed'}>
                     <label>
                       <div>
-                        <PlusIcon size={32}/>
+                        <PlusIcon size={32} />
                       </div>
                       <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
                     </label>
                   </AttachmentRoot>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Upload .xlsx .pdf .docs or image files.
-                </TooltipContent>
+                <TooltipContent>Upload .xlsx .pdf .docs or image files.</TooltipContent>
               </Tooltip>
-            ) : null }
+            ) : null}
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -314,32 +327,29 @@ function TimesheetReports(props: TimesheetReportsProps) {
 }
 
 interface AttachmentItemProps {
-  attachment: Attachment,
+  attachment: Attachment;
   children?: React.ReactNode;
   actions?: React.ReactNode;
 }
 
 export function AttachmentItem(props: AttachmentItemProps) {
-  return <AttachmentRoot>
-    <div className={'flex-grow flex items-center justify-center relative'}>
-      {
-        props.children ?? (<FileTextIcon size={48}/>)
-      }
-      <div className={'top-2 right-2 absolute flex gap-1'}>
-        { props.actions }
+  return (
+    <AttachmentRoot>
+      <div className={'relative flex flex-grow items-center justify-center'}>
+        {props.children ?? <FileTextIcon size={48} />}
+        <div className={'absolute top-2 right-2 flex gap-1'}>{props.actions}</div>
       </div>
-    </div>
-    <div className={'flex gap-2 p-2 bg-muted/50 border-t'}>
-      <span className={'flex-grow line-clamp-1 truncate'}>
-        { props.attachment?.name ?? 'No file name' }
-      </span>
-    </div>
-  </AttachmentRoot>;
-
+      <div className={'bg-muted/50 flex gap-2 border-t p-2'}>
+        <span className={'line-clamp-1 flex-grow truncate'}>{props.attachment?.name ?? 'No file name'}</span>
+      </div>
+    </AttachmentRoot>
+  );
 }
 
 export function AttachmentRoot(props: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('w-48 h-48 rounded-lg border flex flex-col hover:bg-accent/30 cursor-pointer', props.className)}>
-    {props.children}
-  </div>;
+  return (
+    <div {...props} className={cn('hover:bg-accent/30 flex h-48 w-48 cursor-pointer flex-col rounded-lg border', props.className)}>
+      {props.children}
+    </div>
+  );
 }

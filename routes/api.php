@@ -19,7 +19,6 @@ use App\Http\Controllers\APIv1\OrgController;
 use App\Http\Controllers\APIv1\ProjectController;
 use App\Http\Controllers\APIv1\ProjectTypeController;
 use App\Http\Controllers\APIv1\PurchaseOrderController;
-use App\Http\Controllers\APIv1\ReportController;
 use App\Http\Controllers\APIv1\Reports\InvoiceRequiredController;
 use App\Http\Controllers\APIv1\Reports\ManHoursByYearController;
 use App\Http\Controllers\APIv1\SkillController;
@@ -50,6 +49,7 @@ Route::middleware('auth')->group(function () {
         'certificates' => CertificateController::class,
         'activities' => ActivityController::class,
         'certificate-types' => CertificateTypeController::class,
+        'expenses' => \App\Http\Controllers\APIv1\ExpenseController::class,
         'certificate-techniques' => CertificateTechniqueController::class,
         'certificate-levels' => CertificateLevelController::class,
         'comments' => CommentController::class,
@@ -86,8 +86,8 @@ Route::middleware('auth')->group(function () {
 
 
     // Reports
-    Route::get('reports/hours-entry', [ReportController::class, 'hours_entry']);
-    Route::get('reports/hours-log', [ReportController::class, 'hours_log']);
+    Route::get('reports/hours-entry', \App\Http\Controllers\APIv1\Reports\HoursEntryController::class);
+    Route::get('reports/hours-log', \App\Http\Controllers\APIv1\Reports\HoursLogController::class);
     Route::get('reports/man-hours-by-year', ManHoursByYearController::class);
     Route::get('reports/late-reports', [\App\Http\Controllers\APIv1\Reports\LateReportController::class, 'index']);
     Route::get('reports/approval-efficiency', [\App\Http\Controllers\APIv1\Reports\ApprovalEfficiencyController::class, 'index']);

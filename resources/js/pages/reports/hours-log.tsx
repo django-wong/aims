@@ -91,10 +91,6 @@ interface HoursLog {
   contractor_invoice_number: string | number
   hour_cost: string | number
   travel_cost: string | number
-  meal: string | number
-  rail_or_airfare: string | number
-  hotel: string | number
-  other: string | number
   total_expense: string | number
   invoice_amount: string | number
   vat: string | number

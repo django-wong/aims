@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('half_day')->default(0.00);
             $table->decimal('full_day')->default(0.00);
             $table->decimal('overtime_multiplier')->default(1.50);
-            $table->decimal('mileage')->default(0.00);
+            $table->decimal('travel')->default(0.00);
             $table->timestamps();
         });
     }

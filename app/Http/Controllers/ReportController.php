@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InspectorSkillMatrix;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -186,6 +187,10 @@ class ReportController extends Controller
 
     public function skill_matrix()
     {
-        return inertia('reports/skill-matrix');
+        return inertia(
+            'reports/skill-matrix', [
+                'locations' => InspectorSkillMatrix::query()->select('state')->distinct()->orderBy('state')->pluck('state')->filter()->values(),
+            ]
+        );
     }
 }

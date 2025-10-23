@@ -147,8 +147,8 @@ export default function PurchaseOrderEditPage(props: Props) {
                   {props.purchase_order.budgeted_hours} <span className={'text-muted-foreground text-sm'}>vs</span> {props.purchase_order.total_hours} hrs
                 </InfoLine>
 
-                <InfoLine label={'Mileage'} icon={'car'}>
-                  {props.purchase_order.budgeted_mileage} <span className={'text-muted-foreground text-sm'}>vs</span> {props.purchase_order.total_mileage} {props.purchase_order.mileage_unit}
+                <InfoLine label={'Travel'} icon={'car'}>
+                  {props.purchase_order.budgeted_travel} <span className={'text-muted-foreground text-sm'}>vs</span> {props.purchase_order.total_travel} {props.purchase_order.travel_unit}
                 </InfoLine>
 
                 <InfoLine label={'Expenses'} icon={'dollar-sign'}>

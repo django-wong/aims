@@ -96,12 +96,12 @@ export function Budgets() {
       },
     },
     {
-      accessorKey: 'budgeted_mileage',
-      header: 'Budgeted Mileage',
+      accessorKey: 'budgeted_travel',
+      header: 'Budgeted Travel',
       minSize: 140,
       maxSize: 160,
       cell: ({ row }) => {
-        return `${row.original.budgeted_mileage}${row.original.mileage_unit ?? ""}`;
+        return `${row.original.budgeted_travel}${row.original.travel_unit ?? ""}`;
       },
     },
     {

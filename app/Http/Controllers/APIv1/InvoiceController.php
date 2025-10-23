@@ -17,6 +17,7 @@ use App\Models\UserRole;
 use App\Notifications\InvoiceApproved;
 use App\Notifications\InvoiceIssued;
 use App\Notifications\InvoiceRejected;
+use App\PDFs\BasePDF;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -48,6 +49,7 @@ class InvoiceController extends Controller
 
         $invoice->update([
             'status' => Invoice::APPROVED,
+            'approved_at' => now(),
             'signature_base64' => $request->validated('signature_base64'),
         ]);
 
@@ -64,6 +66,7 @@ class InvoiceController extends Controller
 
         $invoice->update([
             'status' => Invoice::REJECTED,
+            'rejected_at' => now(),
             'rejection_reason' => $request->validated('rejection_reason'),
         ]);
 
@@ -243,9 +246,9 @@ class InvoiceController extends Controller
 
     public function pdf(Invoice $invoice)
     {
-        return Pdf::loadView('pdfs.invoice', ['invoice' => InvoiceDetail::query()->find($invoice->id)])
-            ->setPaper('a4')
-            ->stream("invoice-{$invoice->id}.pdf");
+        $pdf = new \App\PDFs\Invoice($invoice);
+        $pdf->render();
+        return $pdf->Output("invoice-{$invoice->id}.pdf", 'I');
     }
 
     public function pdf_breakdown(Invoice $invoice)

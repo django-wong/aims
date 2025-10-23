@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
             // 'budget' => 'required|numeric|min:0|max:999999999999.99',
 
             'currency' => 'nullable|string|size:3',
-            'mileage_unit' => 'nullable|string|in:km,miles',
+            'travel_unit' => 'nullable|string|in:km,miles',
 
             'first_alert_threshold' => [
                 'nullable',
@@ -104,7 +104,7 @@ class StoreRequest extends FormRequest
             'budget',
             // 'hourly_rate',
             'currency',
-            'mileage_unit',
+            'travel_unit',
             'first_alert_threshold',
             'second_alert_threshold',
             'final_alert_threshold'

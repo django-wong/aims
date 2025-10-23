@@ -16,7 +16,7 @@ interface GrowthData {
 interface OverviewData {
   expense: GrowthData;
   approved_hours: GrowthData;
-  approved_mileage: GrowthData;
+  approved_travel: GrowthData;
   total_cost: GrowthData;
 }
 
@@ -73,14 +73,14 @@ export function Overview() {
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Approve Mileage</CardDescription>
+          <CardDescription>Approve Travel</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {
-              distance(data?.approved_mileage.current ?? 0, purchase_order?.mileage_unit ?? 'km')
+              distance(data?.approved_travel.current ?? 0, purchase_order?.travel_unit ?? 'km')
             }
           </CardTitle>
           <CardAction className={'self-end'}>
-            <GrowthRate value={data?.approved_mileage.growth ?? null}/>
+            <GrowthRate value={data?.approved_travel.growth ?? null}/>
           </CardAction>
         </CardHeader>
         <CardFooter className="hidden flex-col items-start gap-1.5 text-sm">

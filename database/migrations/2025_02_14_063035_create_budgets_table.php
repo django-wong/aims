@@ -20,11 +20,11 @@ return new class extends Migration
             $table->decimal('hourly_rate', 10);
             $table->decimal('budgeted_hours', 10);
             $table->decimal('travel_rate', 10)->default(0.5);
-            $table->decimal('budgeted_mileage', 10)->default(0);
+            $table->decimal('budgeted_travel', 10)->default(0);
             $table->decimal('budgeted_expenses', 15)->default(0);
 
             $table->decimal('budget', 15)->storedAs(
-                '(hourly_rate * budgeted_hours) + (travel_rate * budgeted_mileage) + budgeted_expenses'
+                '(hourly_rate * budgeted_hours) + (travel_rate * budgeted_travel) + budgeted_expenses'
             );
 
             $table->timestamps();

@@ -125,15 +125,15 @@ class MenuController
                 'icon' => 'blocks',
             ],
             [
-                'name' => 'Hours Entry',
+                'name' => 'Hours Entry Logs',
                 'url' => route('reports.hours-entry'),
                 'icon' => 'calendar-days'
             ],
-            [
-                'name' => 'Hours Log',
-                'url' => route('reports.hours-log'),
-                'icon' => 'calendar-clock'
-            ],
+            // [
+            //     'name' => 'Hours Log',
+            //     'url' => route('reports.hours-log'),
+            //     'icon' => 'calendar-clock'
+            // ],
             [
                 'name' => 'Man-hours',
                 'url' => route('reports.man-hours'),

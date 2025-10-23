@@ -23,7 +23,7 @@ class BudgetFactory extends Factory
             'hourly_rate' => $this->faker->randomFloat(2, 50, 100),
             'budgeted_hours' => $this->faker->randomFloat(2, 10, 100),
             'travel_rate' => $this->faker->randomFloat(2, 5, 10),
-            'budgeted_mileage' => $this->faker->randomFloat(2, 100, 500),
+            'budgeted_travel' => $this->faker->randomFloat(2, 100, 500),
             'budgeted_expenses' => $this->faker->randomFloat(2, 1000, 2000),
         ];
     }

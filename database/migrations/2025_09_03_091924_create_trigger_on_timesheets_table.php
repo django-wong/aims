@@ -17,7 +17,7 @@ return new class extends Migration
             CREATE PROCEDURE IF NOT EXISTS update_purchase_order_usage_by_timesheet_id(IN $assignment_id BIGINT)
             BEGIN
                 DECLARE $purchase_order_id BIGINT;
-                DECLARE $hours, $mileage, $total_cost, $hour_cost, $travel_cost, $expenses DECIMAL(10, 2);
+                DECLARE $hours, $travel, $total_cost, $hour_cost, $travel_cost, $expenses DECIMAL(10, 2);
 
                 SELECT purchase_order_id INTO $purchase_order_id FROM assignments WHERE id = $assignment_id;
 
@@ -30,7 +30,7 @@ return new class extends Migration
                     SUM(cost)
                 INTO
                     $hours,
-                    $mileage,
+                    $travel,
                     $hour_cost,
                     $travel_cost,
                     $expenses,
@@ -47,7 +47,7 @@ return new class extends Migration
                 UPDATE purchase_orders
                     SET
                         total_hours = IFNULL($hours, 0),
-                        total_mileage = IFNULL($mileage, 0),
+                        total_travel = IFNULL($travel, 0),
                         hour_cost = IFNULL($hour_cost, 0),
                         travel_cost = IFNULL($travel_cost, 0),
                         expenses = IFNULL($expenses, 0),

@@ -52,10 +52,6 @@ return new class extends Migration
                 'TODO' as contractor_invoice_number,
                 timesheet_items.cost as hour_cost,
                 timesheet_items.travel_cost as travel_cost,
-                timesheet_items.meals as meal,
-                timesheet_items.rail_or_airfare as rail_or_airfare,
-                timesheet_items.hotel as hotel,
-                timesheet_items.other as other,
                 timesheet_items.total_expense as total_expense,
                 'TODO' as invoice_amount,
                 'TODO' as vat

@@ -29,7 +29,7 @@ const schema = zod.object({
   hourly_rate: zod.coerce.number().min(0),
   budgeted_hours: zod.coerce.number().min(0),
   travel_rate: zod.coerce.number().min(0),
-  budgeted_mileage: zod.coerce.number().min(0),
+  budgeted_travel: zod.coerce.number().min(0),
   budgeted_expenses: zod.coerce.number().min(0),
 });
 
@@ -43,7 +43,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
       // hourly_rate: 0,
       // budgeted_hours: 0,
       // travel_rate: 0,
-      // budgeted_mileage: 0,
+      // budgeted_travel: 0,
       // budgeted_expenses: 0,
       ...props.value,
       method: (props.value && props.value.id) ? 'update' : 'create' as any,
@@ -169,7 +169,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <VFormField required label={'Budgeted Mileage'}>
+                          <VFormField required label={'Budgeted Travel'}>
                             <Input
                               type="number"
                               step="10"
@@ -180,7 +180,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
                           </VFormField>
                         );
                       }}
-                      name={'budgeted_mileage'}
+                      name={'budgeted_travel'}
                     />
                   </div>
                   <div className={'col-span-4'}>

@@ -129,6 +129,7 @@ export default function EditInvoicePage(props: EditInvoicePageProps) {
                   ) : (
                     <InfoLine label={'Commission Rate'}>{props.invoice.commission_rate}%</InfoLine>
                   )}
+                  <InfoLine label={'VAT'}>{props.invoice.tax_rate}%</InfoLine>
                   <InfoLine label={'Total'}>{formatCurrency(props.invoice.final_cost)}</InfoLine>
                 </div>
                 {props.invoice.status === InvoiceStatusEnum.Rejected ? (

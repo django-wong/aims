@@ -3,8 +3,10 @@
 namespace App\Policies;
 
 use App\Models\Expense;
+use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Gate;
 
 class ExpensePolicy
 {
@@ -21,7 +23,7 @@ class ExpensePolicy
      */
     public function view(User $user, Expense $expense): bool
     {
-        return false;
+        return $this->update($user, $expense);
     }
 
     /**
@@ -37,7 +39,7 @@ class ExpensePolicy
      */
     public function update(User $user, Expense $expense): bool
     {
-        return false;
+        return $user->user_role->org_id === $expense->timesheet->assignment->org_id && Gate::allows('create', Invoice::class);
     }
 
     /**
@@ -45,7 +47,7 @@ class ExpensePolicy
      */
     public function delete(User $user, Expense $expense): bool
     {
-        return false;
+        return $this->update($user, $expense);
     }
 
     /**

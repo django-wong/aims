@@ -41,7 +41,7 @@ class InspectorController extends Controller
 
     public function update(UpdateInspectorRequest $request, User $inspector)
     {
-        if (empty($request->validated('inspector_profile'))) {
+        if (! empty($request->validated('inspector_profile'))) {
             $inspector->inspector_profile()->update($request->validated('inspector_profile'));
         }
 

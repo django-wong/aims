@@ -87,7 +87,7 @@ const columns: ColumnDef<TimesheetDetail>[] = [
     header: 'Travel Distance',
     cell: ({ row }) => (
       <span>
-        {row.getValue('travel_distance')} {row.original.mileage_unit}
+        {row.getValue('travel_distance')} {row.original.travel_unit}
       </span>
     ),
   },

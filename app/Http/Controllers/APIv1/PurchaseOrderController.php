@@ -214,7 +214,7 @@ class PurchaseOrderController extends Controller
                     'growth' => Helpers::growth_rate($current?->hours, $last?->hours),
                     'previous' => $last?->hours ?? 0,
                 ],
-                'approved_mileage' => [
+                'approved_travel' => [
                     'current' => $current?->travel_distance,
                     'growth' => Helpers::growth_rate($current?->travel_distance, $last?->travel_distance),
                     'previous' => $last?->travel_distance ?? 0,

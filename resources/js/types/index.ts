@@ -175,6 +175,7 @@ export interface Project extends BaseModel {
   client?: Client;
   process_fee_rate: number | null;
   commission_rate: number | null;
+  tax_rate: number;
 }
 
 export interface AssignmentType extends BaseModel {
@@ -209,14 +210,14 @@ export interface PurchaseOrder extends BaseModel, ThreeStageAlert {
   budget: number;
   hourly_rate: number;
   budgeted_hours: number;
-  budgeted_mileage: number;
+  budgeted_travel: number;
 
   total_hours: number;
-  total_mileage: number;
+  total_travel: number;
   total_cost: number;
 
   currency: string | null;
-  mileage_unit: string | null;
+  travel_unit: string | null;
 }
 
 export enum AssignmentStatus {
@@ -409,7 +410,7 @@ export interface Timesheet extends BaseModel {
   user_id: number;
   user?: User;
 
-  mileage_unit: string;
+  travel_unit: string;
   currency: string;
 
   start: string; // YYYY-MM-DD
@@ -481,15 +482,11 @@ export interface TimesheetItem extends BaseModel {
   travel_cost: number;
 
   total_expense: number;
-  hotel: number;
-  meals: number;
-  rail_or_airfare: number;
-  other: number;
-
-  approved: boolean; // Reserved
 
   attachments_count?: number;
   attachments?: Attachment<TimesheetItem>[];
+
+  expenses_by_type?: Record<ExpenseType, number>;
 }
 
 export interface Budget extends BaseModel {
@@ -501,7 +498,7 @@ export interface Budget extends BaseModel {
   hourly_rate: number;
   budgeted_hours: number;
   travel_rate: number;
-  budgeted_mileage: number;
+  budgeted_travel: number;
 }
 
 export interface Skill extends BaseModel {
@@ -616,7 +613,7 @@ export interface TimesheetDetail extends Timesheet {
 
   // TODO: Consider remove the reference to purchase order
   budgeted_hours: number;
-  budgeted_mileage: number;
+  budgeted_travel: number;
   budgeted_expenses: number;
 
   skill_code: string;
@@ -666,4 +663,28 @@ export interface Quote extends BaseModel {
   status: number;
   notes: string | null;
   quote_client_id: number | null;
+}
+
+export enum ExpenseType {
+  Travel = 'travel',
+  Accommodation = 'accommodation',
+  Meals = 'meals',
+  Other = 'other',
+}
+
+export interface Expense extends BaseModel {
+  assignment_id: number;
+  timesheet_id: number;
+  timesheet_item_id: number;
+  user_id: number;
+  assignment_inspector_id: number;
+  net_amount: number;
+  gst: number|null;
+  process_fee: number|null;
+  amount: number;
+  type: string;
+  invoice_number: string|null;
+  creditor: string|null;
+  description: string|null;
+  report_number: string|null;
 }

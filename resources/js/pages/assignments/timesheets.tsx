@@ -54,7 +54,7 @@ export function Timesheets(props: TimesheetsProps) {
     {
       accessorKey: 'travel_distance',
       header: 'Travel Distance',
-      cell: ({ row }) => <span>{row.getValue('travel_distance')} {row.original.mileage_unit}</span>,
+      cell: ({ row }) => <span>{row.getValue('travel_distance')} {row.original.travel_unit}</span>,
     },
     {
       accessorKey: 'expenses',

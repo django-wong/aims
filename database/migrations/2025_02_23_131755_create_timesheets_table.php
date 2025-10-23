@@ -43,6 +43,7 @@ return new class extends Migration
 
             $table->boolean('late')->default(false)->comment('Is the timesheet late?');
             $table->unsignedTinyInteger('issue_code')->nullable();
+            $table->boolean('flash_report_sent')->default(false)->comment('Office user will make sure flash report is sent');
 
             // 0 = draft, 1 = submitted, 2 =
 
@@ -52,6 +53,7 @@ return new class extends Migration
             $table->timestamp('client_reminder_sent_at')->nullable()->comment('Timesheet and report reminder for client, it should be sent 2 days after approved_at ');
 
             // The invoiced timestamps for invoices that goes to contractor and client
+            // TODO: Fix this typo in future migrations, this should be contract_holder_invoice_id
             $table->foreignId('contractor_invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
             $table->foreignId('client_invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
 

@@ -24,7 +24,8 @@ class SkillMatrixController extends Controller
         return [
             AllowedFilter::callback('i_e_a', function (Builder $query, $value) {
                 $query->where('i_e_a', $value);
-            })
+            }),
+            AllowedFilter::exact('location', 'state')
         ];
     }
 

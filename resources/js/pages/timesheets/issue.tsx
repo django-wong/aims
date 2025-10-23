@@ -18,7 +18,7 @@ const ISSUES = [
   ['9', 'Inter-office: Client / coordinating office not advised of issues'],
   ['10', 'Late response to Client/Office request/query'],
   ['11', 'Client error / info. not supplied'],
-  ['12', 'Vendot error / info. not supplied'],
+  ['12', 'Vendor error / info. not supplied'],
 ];
 
 export function describeTimesheetIssue(code: string | null | number) {

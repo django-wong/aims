@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\IndexTimesheetItemRequest;
 use App\Http\Requests\APIv1\TimesheetItems\StoreRequest;
 use App\Http\Requests\APIv1\TimesheetItems\UpdateRequest;
 use App\Models\Assignment;
@@ -21,12 +22,14 @@ class TimesheetItemController extends Controller
             AllowedFilter::callback('assignment_id', function (Builder $query, $value) {
                 $assignment = Assignment::query()->findOrFail($value);
                 Gate::authorize('view', $assignment);
-                $query->whereIn('timesheet_id', function ($subQuery) use ($value) {
-                    $subQuery->select('id')->from('timesheets')->where('assignment_id', $value);
+                $query->whereIn('timesheet_items.timesheet_id', function ($subQuery) use ($value) {
+                    $subQuery->select('id')
+                        ->from('timesheets')
+                        ->where('assignment_id', $value);
                 });
             }),
             AllowedFilter::callback('timesheet_id', function (Builder $query, $value) {
-                $query->where('timesheet_id', $value);
+                $query->where('timesheet_items.timesheet_id', $value);
             }),
         ];
     }
@@ -48,13 +51,9 @@ class TimesheetItemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(IndexTimesheetItemRequest $request)
     {
-        $request->validate([
-            'filter.timesheet_id' => 'required_without:filter.assignment_id',
-            'filter.assignment_id' => 'required_without:filter.timesheet_id',
-        ]);
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->extend()->paginate();
     }
 
     /**
@@ -121,7 +120,7 @@ class TimesheetItemController extends Controller
                 foreach ([$request->timesheet(), $request->timesheet()->assignment] as $subject) {
                     activity()
                         ->on($subject)
-                        ->withProperties($record->getAttributes())
+                        ->withProperties($record->refresh()->getAttributes())
                         ->log('Logged time');
                 }
             }
@@ -170,9 +169,7 @@ class TimesheetItemController extends Controller
             'message' => 'Timesheet item updated successfully',
             'data' => $timesheet_item
                 ->refresh()
-                ->load([
-                    'attachments'
-                ])
+                ->load(['attachments'])
         ];
     }
 

@@ -24,11 +24,7 @@ class UpdateRequest extends StoreRequest
             'days',
             'overnights',
             'travel_distance',
-            'travel_rate',
-            'hotel',
-            'meals',
-            'rail_or_airfare',
-            'other',
+            'travel_rate'
         ]);
     }
 

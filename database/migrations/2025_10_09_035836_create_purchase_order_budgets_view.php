@@ -15,10 +15,10 @@ return new class extends Migration
             CREATE OR REPLACE VIEW purchase_order_budgets AS
             select purchase_orders.id as purchase_order_id,
                budgets.budgeted_hours,
-               budgets.budgeted_mileage,
+               budgets.budgeted_travel,
                budgets.budgeted_expenses,
                budgets.budgeted_hours_cost,
-               budgets.budgeted_mileage_cost,
+               budgets.budgeted_travel_cost,
                client_invoices.invoiced_hours,
                client_invoices.invoiced_expenses,
                client_invoices.invoiced_travel_distance,
@@ -30,10 +30,10 @@ return new class extends Migration
         from purchase_orders
                  left join (select purchase_order_id,
                                    sum(budgeted_hours)                 as budgeted_hours,
-                                   sum(budgeted_mileage)               as budgeted_mileage,
+                                   sum(budgeted_travel)               as budgeted_travel,
                                    sum(budgeted_expenses)              as budgeted_expenses,
                                    sum(budgeted_hours * hourly_rate)   as budgeted_hours_cost,
-                                   sum(budgeted_mileage * travel_rate) as budgeted_mileage_cost
+                                   sum(budgeted_travel * travel_rate) as budgeted_travel_cost
                             from budgets
                             group by budgets.purchase_order_id) as budgets on budgets.purchase_order_id = purchase_orders.id
                  left join (select purchase_order_id,

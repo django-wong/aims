@@ -16,7 +16,7 @@ return new class extends Migration
             select invoices.*,
                    purchase_orders.title                  as purchase_order_title,
                    purchase_orders.currency               as currency,
-                   purchase_orders.mileage_unit           as travel_unit,
+                   purchase_orders.travel_unit            as travel_unit,
                    invoiceable.name                       as invoiceable_org_name,
                    invoiceable_client.business_name       as invoiceable_client_business_name,
                    COUNT(timesheets.id)                   as timesheet_count,
@@ -37,9 +37,9 @@ return new class extends Migration
                    projects.tax_rate                      as tax_rate,
                    IF(invoices.invoiceable_type = 'App\\\Models\\\Client', 1, 0) as is_client_invoice,
                    IF(invoices.invoiceable_type = 'App\\\Models\\\Client',
-                      (SUM(timesheets.expenses) + SUM(timesheets.hour_cost) + SUM(timesheets.travel_cost)) + (projects.process_fee_rate / 100 * SUM(timesheets.expenses)),
+                      ((SUM(timesheets.expenses) + SUM(timesheets.hour_cost) + SUM(timesheets.travel_cost)) + (projects.process_fee_rate / 100 * SUM(timesheets.expenses))) * (projects.tax_rate / 100 + 1),
                       SUM(timesheets.cost) - (projects.commission_rate / 100 * SUM(timesheets.hour_cost))
-                   )                                      as final_cost
+                   ) as final_cost
             from invoices
                      left join purchase_orders on invoices.purchase_order_id = purchase_orders.id
                      left join orgs as invoiceable on invoices.invoiceable_id = invoiceable.id and invoices.invoiceable_type = 'App\\\Models\\\Org'

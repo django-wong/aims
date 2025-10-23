@@ -115,14 +115,21 @@ const columns: ColumnDef<Project>[] = [
     accessorKey: 'commission_rate',
     header: 'Commission %',
     cell: ({ row }) => {
-      return <div>{row.original.commission_rate ?? 'N/A'}</div>;
+      return <div>{row.original.commission_rate}%</div>;
     },
   },
   {
     accessorKey: 'process_fee_rate',
     header: 'Process Fee %',
     cell: ({ row }) => {
-      return <div>{row.original.process_fee_rate ?? 'N/A'}</div>;
+      return <div>{row.original.process_fee_rate}%</div>;
+    }
+  },
+  {
+    accessorKey: 'tax_rate',
+    header: 'Tax Rate %',
+    cell: ({ row }) => {
+      return <div>{row.original.tax_rate}%</div>;
     }
   },
   {

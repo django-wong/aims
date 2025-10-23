@@ -94,7 +94,10 @@ export function formatDate(
 /**
  * Formats a date and time as a readable string in "Month Day, Year, Hour:Minute AM/PM" format.
  */
-export function formatDateTime(input: Date | string | number): string {
+export function formatDateTime(input: Date | string | number | null): string {
+  if (!input) {
+    return '';
+  }
   const date = new Date(input);
   return date.toLocaleString(navigator.language, {
     month: 'numeric',
@@ -114,7 +117,11 @@ export function formatDateTime(input: Date | string | number): string {
  * @param locale - The locale for formatting (e.g., "en-US"). Defaults to "en-US".
  * @returns A string formatted as currency.
  */
-export function formatCurrency(amount: number, currency: string = 'USD', locale: string = 'en-US'): string {
+export function formatCurrency(amount: number | null, currency: string = 'USD', locale: string = 'en-US'): string {
+  if (amount === null || isNaN(amount)) {
+    return '';
+  }
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,

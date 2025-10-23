@@ -1,6 +1,6 @@
 import { Attachment } from '@/types';
 import { useTable } from '@/hooks/use-table';
-import { ColumnToggle, DataTable } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
 import { ColumnDef } from '@tanstack/react-table';
 import { humanFileSize } from '@/lib/utils';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
@@ -19,6 +19,7 @@ interface AttachmentListProps {
 }
 
 export function AttachmentList(props: AttachmentListProps) {
+  const outer_table = useTableApi();
   const table = useTable<Attachment>('/api/v1/attachments', {
     selectable: false,
     columns,
@@ -37,6 +38,7 @@ export function AttachmentList(props: AttachmentListProps) {
   function onUploadComplete() {
     table.reload();
     props.onUploadComplete?.();
+    outer_table?.reload();
   }
 
   return (

@@ -92,6 +92,7 @@ class TimesheetController extends Controller
         return [
             'user',
             'assignment',
+            'assignment.purchase_order',
             'assignment.project',
             'assignment.project.client',
             'timesheet_items',

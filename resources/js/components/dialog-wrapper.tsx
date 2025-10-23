@@ -13,7 +13,7 @@ export interface DialogWrapperProps extends React.ComponentProps<typeof DialogCo
   innerContentClassName?: string;
 }
 
-export function DialogWrapper({ trigger, title, description, footer, open, onOpenChange,innerContentClassName,...props }: DialogWrapperProps) {
+export function DialogWrapper({ trigger, title, description, footer, open, onOpenChange, innerContentClassName,...props }: DialogWrapperProps) {
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>

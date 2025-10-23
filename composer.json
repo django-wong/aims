@@ -19,9 +19,11 @@
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.10",
         "laravel/tinker": "^2.10.1",
+        "setasign/fpdi": "^2.6",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-query-builder": "^6.3",
         "staudenmeir/laravel-cte": "^1.12",
+        "tecnickcom/tcpdf": "^6.10",
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {

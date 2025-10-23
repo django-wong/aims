@@ -25,7 +25,7 @@ return new class extends Migration
                 project_types.name as project_type_name,
                 purchase_orders.title as purchase_order_title,
                 purchase_orders.budgeted_hours as purchase_order_budgeted_hours,
-                purchase_orders.budgeted_mileage as purchase_order_budgeted_mileage,
+                purchase_orders.budgeted_travel as purchase_order_budgeted_travel,
                 skills.code as skill_code,
                 skills.i_e_a as skill_i_e_a
             from assignments

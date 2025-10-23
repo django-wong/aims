@@ -14,6 +14,8 @@ import { router } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import { PropsWithChildren, startTransition, useEffect, useState } from 'react';
 import z from 'zod';
+import { usePurchaseOrder } from '@/providers/purchasr-order-provider';
+import { useProject } from '@/providers/project-provider';
 
 type TimesheetItemFormProps = {
   timesheet?: Timesheet;
@@ -49,17 +51,13 @@ const timesheetItemSchema = z.object({
 
   travel_distance: number,
 
-  hotel: number,
-  rail_or_airfare: number,
-  meals: number,
-  other: number,
-
   attachments: attachments,
 });
 
 type Record = z.infer<typeof timesheetItemSchema>;
 
 export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProps>) {
+  const project = useProject();
   const form = useReactiveForm<Record, TimesheetItem>({
     ...useResource('/api/v1/timesheet-items', {
       timesheet_id: props.timesheet?.id,
@@ -157,21 +155,6 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                 <div className={'col-span-12 md:col-span-6'}>
                   <div>
                     <div className={'grid grid-cols-12 gap-4'}>
-                      {/*<div className={'col-span-6'}>*/}
-                      {/*  <FormField*/}
-                      {/*    control={form.control}*/}
-                      {/*    render={({ field }) => {*/}
-                      {/*      return (*/}
-                      {/*        <>*/}
-                      {/*          <VFormField label={'Days'}>*/}
-                      {/*            <Input placeholder={'Day'} min={0} type={'number'} value={field.value} onChange={field.onChange} />*/}
-                      {/*          </VFormField>*/}
-                      {/*        </>*/}
-                      {/*      );*/}
-                      {/*    }}*/}
-                      {/*    name={'days'}*/}
-                      {/*  />*/}
-                      {/*</div>*/}
                       <div className={'col-span-12'}>
                         <FormField
                           control={form.control}
@@ -179,7 +162,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                             return (
                               <>
                                 <VFormField label={'Overnights'}>
-                                  <Input placeholder={'Overnight'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                                  <Input min={0} type={'number'} value={field.value} onChange={field.onChange} />
                                 </VFormField>
                               </>
                             );
@@ -242,78 +225,13 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                       return (
                         <>
                           <VFormField label={'Travel Distance'}>
-                            <Input placeholder={'KM/Mileage'} step={10} min={0} type={'number'} value={field.value} onChange={field.onChange} />
+                            <Input placeholder={project?.unit} step={10} min={0} type={'number'} value={field.value} onChange={field.onChange} />
                           </VFormField>
                         </>
                       );
                     }}
                     name={'travel_distance'}
                   />
-                </div>
-                <div className={'col-span-12'}>
-                  <Accordion type={'single'} className={'w-full'} defaultValue={''} collapsible>
-                    <AccordionItem value={'expenses'}>
-                      <AccordionTrigger>Expenses (click to expand)</AccordionTrigger>
-                      <AccordionContent>
-                        <div className={'w-full'}>
-                          <div className={'grid grid-cols-12 gap-4'}>
-                            <div className={'col-span-12 md:col-span-3'}>
-                              <FormField
-                                control={form.control}
-                                render={({ field }) => {
-                                  return (
-                                    <VFormField label={'Hotel'}>
-                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                    </VFormField>
-                                  );
-                                }}
-                                name={'hotel'}
-                              />
-                            </div>
-                            <div className={'col-span-12 md:col-span-3'}>
-                              <FormField
-                                control={form.control}
-                                render={({ field }) => {
-                                  return (
-                                    <VFormField label={'Rail/Airfare'}>
-                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                    </VFormField>
-                                  );
-                                }}
-                                name={'rail_or_airfare'}
-                              />
-                            </div>
-                            <div className={'col-span-12 md:col-span-3'}>
-                              <FormField
-                                control={form.control}
-                                render={({ field }) => {
-                                  return (
-                                    <VFormField label={'Meals'}>
-                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                    </VFormField>
-                                  );
-                                }}
-                                name={'meals'}
-                              />
-                            </div>
-                            <div className={'col-span-12 md:col-span-3'}>
-                              <FormField
-                                control={form.control}
-                                render={({ field }) => {
-                                  return (
-                                    <VFormField label={'Other'}>
-                                      <Input placeholder={'$'} min={0} type={'number'} value={field.value} onChange={field.onChange} />
-                                    </VFormField>
-                                  );
-                                }}
-                                name={'other'}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
                 </div>
                 <div className={'col-span-12 md:col-span-12'}>
                   <div>
@@ -322,8 +240,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                       render={({ field }) => {
                         return (
                           <>
-                            <FormItem>
-                              <FormLabel>Attachments (Expense receipt, flash report etc)</FormLabel>
+                            <VFormField label={'Attachments'} description={'Any file you want to share with administrator. Up to 5 files, 50MB each'}>
                               <Input
                                 id="picture"
                                 type="file"
@@ -333,7 +250,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                                   field.onChange(Array.from(event.target.files ?? []));
                                 }}
                               />
-                            </FormItem>
+                            </VFormField>
                           </>
                         );
                       }}

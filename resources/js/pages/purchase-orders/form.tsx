@@ -26,7 +26,7 @@ const schema = zod.object({
 
   // budget: zod.coerce.number().min(1, 'Budget must be positive'),
 
-  mileage_unit: zod.enum(['miles', 'km']).optional(),
+  travel_unit: zod.enum(['miles', 'km']).optional(),
   currency: zod.string().min(1, 'Currency is required'),
 
   first_alert_threshold: zod.number().min(1).max(100).default(70),
@@ -42,7 +42,7 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
       budget: 0,
       // hourly_rate: 0,
       currency: 'AUD',
-      mileage_unit: 'km',
+      travel_unit: 'km',
       first_alert_threshold: 70,
       second_alert_threshold: 90,
       final_alert_threshold: 100,
@@ -145,7 +145,7 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
               <div className={'col-span-6'}>
                 <FormField
                   render={({ field }) => {
-                    return <VFormField required label={'Mileage Unit'}>
+                    return <VFormField required label={'Travel Unit'}>
                       <Select onValueChange={field.onChange} value={field.value || ''}>
                         <SelectTrigger className={'bg-background w-full'}>
                           <SelectValue />
@@ -157,7 +157,7 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
                       </Select>
                     </VFormField>
                   }}
-                  name={'mileage_unit'}
+                  name={'travel_unit'}
                 />
               </div>
 

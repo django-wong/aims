@@ -14,7 +14,7 @@ class UpdateBudgetRequest extends FormRequest
             'rate_code' => 'sometimes|required|string|max:255',
             'travel_rate' => 'sometimes|nullable|numeric|min:0',
             'hourly_rate' => 'sometimes|nullable|numeric|min:0',
-            'budgeted_mileage' => 'sometimes|nullable|numeric|min:0',
+            'budgeted_travel' => 'sometimes|nullable|numeric|min:0',
             'budgeted_hours' => 'sometimes|nullable|numeric|min:0',
             'budgeted_expenses' => 'sometimes|nullable|numeric|min:0',
         ];

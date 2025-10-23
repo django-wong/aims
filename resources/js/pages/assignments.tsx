@@ -35,6 +35,7 @@ import { useIsClient } from '@/hooks/use-role';
 import dayjs from 'dayjs';
 import { HideFromClient } from '@/components/hide-from-client';
 import { TableFilter } from '@/components/table/filter';
+import { CloseDate } from '@/pages/assignments/close-date';
 
 export const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -373,14 +374,14 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       cell: ({ row }) => row.original.purchase_order?.budgeted_hours,
     },
     {
-      accessorKey: 'budgeted_mileage',
+      accessorKey: 'budgeted_travel',
       header: 'Budgeted Travel',
-      cell: ({ row }) => `${row.original.purchase_order?.budgeted_mileage}${row.original.purchase_order?.mileage_unit}`,
+      cell: ({ row }) => `${row.original.purchase_order?.budgeted_travel}${row.original.purchase_order?.travel_unit}`,
     },
     {
       accessorKey: 'is_closed',
       header: 'Open / Close',
-      cell: ({ row }) => <Badge variant={row.original.close_date ? 'outline' : 'default'}>{row.original.close_date ? 'Closed' : 'Open'}</Badge>,
+      cell: ({ row }) => <CloseDate close_date={row.original.close_date}/>,
     },
     // date closed
     {

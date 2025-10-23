@@ -138,7 +138,7 @@ class Timesheet extends Model
             ->leftJoin('vendors as sub_vendor', 'sub_vendor.id', '=', 'assignments.sub_vendor_id')
             ->leftJoin('vendors as main_vendor', 'main_vendor.id', '=', 'assignments.vendor_id');
 
-        return $query->select('timesheets.*', 'purchase_orders.mileage_unit', 'purchase_orders.currency', 'users.name as inspector_name');
+        return $query->select('timesheets.*', 'purchase_orders.travel_unit', 'purchase_orders.currency', 'users.name as inspector_name');
     }
 
     public function getInvoiceable($to_org_id = null): Client|Org|null

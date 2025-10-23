@@ -45,7 +45,7 @@ class BudgetController extends Controller
             $query->leftJoin('purchase_orders', 'purchase_orders.id', '=', 'budgets.purchase_order_id')
                 ->select(
                     'budgets.*',
-                    'purchase_orders.mileage_unit as mileage_unit',
+                    'purchase_orders.travel_unit as travel_unit',
                     'purchase_orders.currency as currency'
                 );
             $query->where(

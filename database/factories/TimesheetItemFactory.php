@@ -25,7 +25,6 @@ class TimesheetItemFactory extends Factory
             'date' => $this->faker->date(),
             'week_number' => $this->faker->numberBetween(1, 53),
 
-            // TODO: This should from purchase order budget
             'hourly_rate' => $this->faker->randomFloat(2, 10, 100),
             'work_hours' => $this->faker->numberBetween(-8, 8),
             'travel_hours' => $this->faker->numberBetween(0, 4),
@@ -37,10 +36,8 @@ class TimesheetItemFactory extends Factory
             'travel_distance' => $this->faker->optional()->numberBetween(0, 100) ?? 0,
             'travel_rate' => $this->faker->randomFloat(2, 1, 5),
 
-            'hotel' => $this->faker->randomFloat(2, 0, 500),
-            'meals' => $this->faker->randomFloat(2, 0, 200),
-            'rail_or_airfare' => $this->faker->randomFloat(2, 0, 1000),
-            'other' => $this->faker->randomFloat(2, 0, 300)
+            'pay_rate' => $this->faker->randomFloat(2, 10, 100),
+            'pay_travel_rate' => $this->faker->randomFloat(2, 1, 5),
         ];
     }
 }
