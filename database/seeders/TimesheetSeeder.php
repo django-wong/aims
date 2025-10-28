@@ -28,6 +28,7 @@ class TimesheetSeeder extends Seeder
                         'end' => $from->endOfWeek(WeekDay::Sunday)->format('Y-m-d'),
                         'assignment_id' => $inspector->assignment_id,
                         'user_id' => $inspector->user_id,
+                        'assignment_inspector_id' => $inspector->id,
                     ])
                     ->create();
             }

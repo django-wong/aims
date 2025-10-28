@@ -15,8 +15,11 @@ import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { useTableApi } from '@/components/data-table-2';
+import { router } from '@inertiajs/react';
 
 export function QuoteForm(props: DialogFormProps<Quote>) {
+  const table = useTableApi();
   const form = useReactiveForm<z.infer<typeof schema>, Quote>({
     resolver: zodResolver(schema) as any,
     ...useResource('/api/v1/quotes', {
@@ -36,6 +39,11 @@ export function QuoteForm(props: DialogFormProps<Quote>) {
         form.resetAll();
         setOpen(false);
         props.onSubmit(data.data);
+        if (table) {
+          table.reload();
+        } else {
+          router.reload();
+        }
       }
     }).catch(() => {});
   }

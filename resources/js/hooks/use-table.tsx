@@ -44,6 +44,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
   const [params, setParams] = useState<Record<string, string>>(options?.defaultParams ?? {});
   const [initialLoaded, setInitialLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [exporting, setExporting] = useState(false);
   const [state, setState] = useState<Partial<TableState>>(() => {
     return {
       pagination: {
@@ -115,8 +116,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     }
   });
 
-  useEffect(() => {
-    const abortController = new AbortController();
+  function getUrl() {
     const url = new URL(api, window.location.origin);
 
     if (searchParams) {
@@ -137,6 +137,14 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
 
     url.searchParams.set('page', String(state.pagination!.pageIndex + 1));
     url.searchParams.set('per_page', String(state.pagination!.pageSize));
+
+    return url;
+  }
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    const url = getUrl();
 
     const fetchOptions = {
       signal: abortController.signal,
@@ -202,6 +210,11 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     ...table,
     data,
     loading,
+    export: () => {
+      const url = getUrl();
+      url.searchParams.set('export', '1');
+      window.open(url.toString(), '_blank');
+    },
     searchParams,
     setSearchParams,
 

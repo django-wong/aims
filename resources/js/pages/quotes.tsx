@@ -31,29 +31,27 @@ export default function QuotesPage() {
   const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
 
   return (
-    <Layout breadcrumbs={breadcrumbs} pageAction={
-      <QuoteForm
-        onSubmit={() => {
-          router.reload();
-        }}>
-        <Button>Add New Quote</Button>
-      </QuoteForm>
-    }>
+    <Layout breadcrumbs={breadcrumbs}>
       <Head title="quotes" />
       <div className={'px-6'}>
         <DataTable
           left={
-            <Input className={'max-w-[200px]'} placeholder={'Search...'} onChange={({target: {value}}) => {
-              setKeywords(value);
-              table.setSearchParams((params) => {
-                if (value) {
-                  params.set('filter[keywords]', value);
-                } else {
-                  params.delete('filter[keywords]');
-                }
-                return params;
-              });
-            }} value={keywords}/>
+            <>
+              <QuoteForm>
+                <Button>Add New Quote</Button>
+              </QuoteForm>
+              <Input className={'max-w-[200px]'} placeholder={'Search...'} onChange={({target: {value}}) => {
+                setKeywords(value);
+                table.setSearchParams((params) => {
+                  if (value) {
+                    params.set('filter[keywords]', value);
+                  } else {
+                    params.delete('filter[keywords]');
+                  }
+                  return params;
+                });
+              }} value={keywords}/>
+            </>
           }
           table={table}
           right={

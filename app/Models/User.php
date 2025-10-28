@@ -17,7 +17,7 @@ use Lab404\Impersonate\Models\Impersonate;
  * @property int      $id
  * @property string   $email
  * @property Client   $client
- * @property string    $name
+ * @property string   $name
  */
 class User extends Authenticatable
 {
@@ -135,5 +135,12 @@ class User extends Authenticatable
         return $this->belongsToMany(
             Skill::class, 'user_skills', 'user_id', 'skill_id'
         );
+    }
+
+    public function scopeInspectors(Builder $query)
+    {
+        return $query->whereHas('user_role', function (Builder $q) {
+            $q->where('role', UserRole::INSPECTOR);
+        });
     }
 }

@@ -193,4 +193,9 @@ class ReportController extends Controller
             ]
         );
     }
+
+    public function expiring_certificates()
+    {
+        return inertia('reports/expiring-certificates');
+    }
 }

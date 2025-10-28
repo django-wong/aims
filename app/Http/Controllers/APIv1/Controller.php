@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Spatie\QueryBuilder\QueryBuilder;
 
 abstract class Controller
@@ -32,14 +34,19 @@ abstract class Controller
         return '*';
     }
 
-    protected function getModel(): string
+    protected function getQueryBuilderFrom(): string|Builder|Relation
     {
-        return 'App\\Models\\'.substr_replace(last(explode('\\', get_class($this))), '', -10);
+        return $this->getModel();
     }
 
-    protected function getQueryBuilder(): QueryBuilder
+    protected function getModel(): string
     {
-        $qb = QueryBuilder::for($this->getModel());
+        return 'App\\Models\\' . substr_replace(last(explode('\\', get_class($this))), '', -10);
+    }
+
+    protected function getQueryBuilder(string|Builder|Relation|null $from = null): QueryBuilder
+    {
+        $qb = QueryBuilder::for($from ?? $this->getQueryBuilderFrom());
 
         $allowedFields = $this->allowedFields();
         if (!empty($allowedFields)) {

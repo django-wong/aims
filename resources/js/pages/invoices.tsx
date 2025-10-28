@@ -1,4 +1,4 @@
-import { ColumnToggle, DataTable } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, ExportButton } from '@/components/data-table-2';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Invoice } from '@/types';
 
@@ -206,7 +206,12 @@ export default function Page(props: ClientPageProps) {
             </>
           }
           table={table}
-          right={<ColumnToggle />}
+          right={
+            <>
+              <ExportButton/>
+              <ColumnToggle/>
+            </>
+          }
         />
       </div>
     </AppLayout>

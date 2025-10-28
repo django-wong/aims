@@ -13,10 +13,10 @@ use Illuminate\Support\Str;
 /**
  * @property Model $attachable
  */
-class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable
+class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable, PdfEmbeddable
 {
     /** @use HasFactory<\Database\Factories\AttachmentFactory> */
-    use HasFactory, DynamicPagination;
+    use HasFactory, DynamicPagination, CanAddToPdf;
 
     protected $guarded = [
         'id',
@@ -82,6 +82,39 @@ class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable
             'Content-Type' => $this->mime_type,
             'Content-Length' => $this->size,
         ]);
+    }
+
+    public function getContent(): string
+    {
+        return Storage::disk($this->disk)->get($this->path);
+    }
+
+    public function tmpPath(): string
+    {
+        $tmpPath = sys_get_temp_dir() . '/' . Str::uuid()->toString() . '_' . $this->name;
+        $stream = Storage::disk($this->disk)->readStream($this->path);
+        $tmpFile = fopen($tmpPath, 'w');
+        stream_copy_to_stream($stream, $tmpFile);
+        fclose($tmpFile);
+        fclose($stream);
+        return $tmpPath;
+    }
+
+    public function readStream()
+    {
+        return Storage::disk($this->disk)->readStream($this->path);
+    }
+
+    public function isEmbeddable(): bool
+    {
+        $embeddableTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'application/pdf',
+        ];
+
+        return in_array($this->mime_type, $embeddableTypes);
     }
 
     public function revisions()

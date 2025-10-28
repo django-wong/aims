@@ -15,7 +15,8 @@ return new class extends Migration
             CREATE OR REPLACE VIEW timesheet_item_expense_by_types AS
             SELECT
                 timesheet_item_id,
-                JSON_OBJECTAGG(expenses.type, expenses.amount) as expenses_by_type
+                JSON_OBJECTAGG(expenses.type, expenses.amount) as expenses_by_type,
+                coalesce(sum(expenses.amount), 0) as total
             FROM
                 expenses
             group by timesheet_item_id

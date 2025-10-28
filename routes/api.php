@@ -19,6 +19,7 @@ use App\Http\Controllers\APIv1\OrgController;
 use App\Http\Controllers\APIv1\ProjectController;
 use App\Http\Controllers\APIv1\ProjectTypeController;
 use App\Http\Controllers\APIv1\PurchaseOrderController;
+use App\Http\Controllers\APIv1\Reports\ExpiringCertificateController;
 use App\Http\Controllers\APIv1\Reports\InvoiceRequiredController;
 use App\Http\Controllers\APIv1\Reports\ManHoursByYearController;
 use App\Http\Controllers\APIv1\SkillController;
@@ -95,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/man-hours-monthly-by-year', [\App\Http\Controllers\APIv1\Reports\ManHoursMonthlyByYearController::class, 'index']);
     Route::get('reports/monthly-revenue', \App\Http\Controllers\APIv1\Reports\MonthlyRevenueController::class);
     Route::get('reports/skill-matrix', \App\Http\Controllers\APIv1\Reports\SkillMatrixController::class);
+    Route::get('reports/expiring-certificates', ExpiringCertificateController::class);
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);

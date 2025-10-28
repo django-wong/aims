@@ -44,6 +44,10 @@ return new class extends Migration
 
             $table->decimal('total_expense', 10, 2)->default(0)->comment('Calculated');
 
+            $table->decimal('total_cost', 10, 2)->storedAs(
+                '(work_hours + travel_hours + report_hours) * hourly_rate + travel_distance * travel_rate + total_expense'
+            );
+
             $table->decimal('pay_rate', 10, 2)->default(0.00)->comment('Pay rate per hour for the inspector');
             $table->decimal('pay_travel_rate', 10, 2)->default(0.00)->comment('Pay rate per distance unit for travel');
 

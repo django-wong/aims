@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\QueryBuilderRequest;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
                 UserRole::INSPECTOR
             ]);
         });
+
+        QueryBuilderRequest::setFilterArrayValueDelimiter('|');
 
         RedirectIfAuthenticated::redirectUsing(function ($request) {
             if (! $request->user()->org()->exists()) {

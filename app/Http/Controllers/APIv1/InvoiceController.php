@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\CreateInvoicesFromTimesheetsRequest;
 use App\Http\Requests\APIv1\ApproveInvoiceRequest;
+use App\Http\Requests\APIv1\IndexInvoiceRequest;
 use App\Http\Requests\APIv1\RejectInvoiceRequest;
 use App\Models\Client;
 use App\Models\CurrentOrg;
@@ -143,11 +144,17 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(CurrentOrg $org)
+    public function index(IndexInvoiceRequest $request, CurrentOrg $org)
     {
         Gate::authorize('viewAny', Invoice::class);
 
-        return $this->getQueryBuilder()->paginate();
+        $query = $this->getQueryBuilder();
+
+        if ($request->has('export')) {
+            return \App\Exports\Invoice::fromQueryBuilder($query)->download('invoices.csv');
+        }
+
+        return $query->paginate();
     }
 
     /**

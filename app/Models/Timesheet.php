@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property \Illuminate\Support\Carbon|mixed                            $approved_at
  * @property boolean                                                     $late
  * @property User                                                        $user
+ * @property mixed                                                       $assignment_inspector_id
  */
 class Timesheet extends Model
 {

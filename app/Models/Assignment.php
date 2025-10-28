@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\App;
 
 
 /**
- * @property Project                $project
+ * @property Project                         $project
  * @property int|null                        $operation_org_id
  * @property int                             $org_id
  * @property Org                             $org
@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\App;
  * @property Collection<AssignmentInspector> $assignment_inspectors
  * @property User                            $coordinator
  * @property boolean                         $delegated
- * @property User|null                           $first_responder
+ * @property User|null                       $first_responder
  */
 class Assignment extends Model implements Commentable, Attachable
 {
@@ -102,6 +102,16 @@ class Assignment extends Model implements Commentable, Attachable
                 });
             }
         });
+    }
+
+    public function scopeScoped(Builder $query)
+    {
+        return $query->where('org_id', auth()->user()->user_role->org_id);
+    }
+
+    public function scopeOpen(Builder $query)
+    {
+        return $query->whereNull('close_date');
     }
 
     public function sub_vendor(): BelongsTo

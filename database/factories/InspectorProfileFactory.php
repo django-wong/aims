@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,6 +19,7 @@ class InspectorProfileFactory extends Factory
     public function definition(): array
     {
         return [
+            'address_id' => Address::factory(),
             'user_id' => User::factory(),
             'hourly_rate' => $this->faker->randomFloat(2, 20, 100),
             'initials' => $this->faker->word,

@@ -110,6 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('reports-late', 'reports_late')->name('reports.reports-late');
         Route::get('approval-efficiency', 'approval_efficiency')->name('reports.approval-efficiency');
         Route::get('skill-matrix', 'skill_matrix')->name('reports.skill-matrix');
+        Route::get('expiring-certificates', 'expiring_certificates')->name('reports.expiring-certificates');
     });
 
     Route::get('system-configuration', SystemConfiguration::class)->name('system-configuration');

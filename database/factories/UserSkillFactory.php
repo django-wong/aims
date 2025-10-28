@@ -17,7 +17,8 @@ class UserSkillFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => \App\Models\User::factory(),
+            'skill_id' => \App\Models\Skill::factory(),
         ];
     }
 }

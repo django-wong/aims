@@ -4,7 +4,7 @@ import { DeepPartial } from 'react-hook-form';
 
 export interface DialogFormProps<T = BaseModel, R = T> {
   children?: React.ReactNode;
-  onSubmit: (data: R) => void;
+  onSubmit?: (data: R) => void;
   value?: DeepPartial<T> | null;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -687,4 +687,13 @@ export interface Expense extends BaseModel {
   creditor: string|null;
   description: string|null;
   report_number: string|null;
+}
+
+export interface ExpiringCertificate extends BaseModel, Certificate {
+  certificate_type_name: string | null;
+  certificate_technique_name: string | null;
+  certificate_level_name: string | null;
+  org_id: number;
+  user_full_name: string;
+  expiring_in_days: number;
 }

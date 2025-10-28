@@ -13,6 +13,7 @@ import * as React from 'react';
 import { useLocationHash } from '@/hooks/use-location-hash';
 import { UserSkills } from '@/pages/inspectors/skills';
 import { UserCertificates } from '@/pages/inspectors/certificates';
+import { Impersonate } from '@/pages/clients/impersonate';
 
 interface InspectorEditProps {
   inspector: User;
@@ -42,6 +43,7 @@ export default function EditPage(props: InspectorEditProps) {
     <Layout
       pageAction={
         <>
+          <Impersonate userId={props.inspector.id}/>
           <PopoverConfirm
             asChild
             message={'Are you sure to delete this inspector? THis action cannot be undone.'}

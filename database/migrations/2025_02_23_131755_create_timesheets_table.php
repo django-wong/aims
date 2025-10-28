@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('assignment_id')->constrained();
             $table->foreignId('user_id')->constrained();
+            $table->foreignId('assignment_inspector_id')->nullable()->constrained('assignment_inspectors')->onDelete('set null');
             $table->date('start');
             $table->date('end');
             $table->string('week')->storedAs("DATE_FORMAT(start, '%x-W%v')")->index()->comment('Year and week number, e.g. 2023-W05');

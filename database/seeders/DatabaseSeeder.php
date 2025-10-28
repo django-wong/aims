@@ -29,11 +29,14 @@ class DatabaseSeeder extends Seeder
             AssignmentInspectorSeeder::class,
             TimesheetSeeder::class,
             TimesheetItemSeeder::class,
+            ExpenseSeeder::class,
             ContactSeeder::class,
             SkillSeeder::class,
             CertificateTypeSeeder::class,
             CertificateLevelSeeder::class,
             CertificateTechniqueSeeder::class,
+            CertificateSeeder::class,
+            UserSkillSeeder::class,
             SecondOrgSeeder::class,
         ]);
     }

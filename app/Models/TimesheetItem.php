@@ -49,4 +49,9 @@ class TimesheetItem extends Model implements Attachable
                 'expenses_by_type' => 'array',
             ]);
     }
+
+    public function expense(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(TimesheetItemExpenseByType::class, 'timesheet_item_id', 'id');
+    }
 }

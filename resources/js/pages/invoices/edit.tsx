@@ -73,19 +73,10 @@ export default function EditInvoicePage(props: EditInvoicePageProps) {
                     <FileIcon />
                     Preview
                   </TabsTrigger>
-                  <TabsTrigger value={'breakdown'}>
-                    <FileTextIcon />
-                    Breakdown
-                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value={'preview'} className={'grid gap-6'}>
                   <div className={'overflow-hidden rounded border'}>
                     <iframe src={'/api/v1/invoices/' + props.invoice.id + '/pdf'} className={'h-[80vh] w-full'}></iframe>
-                  </div>
-                </TabsContent>
-                <TabsContent value={'breakdown'}>
-                  <div className={'overflow-hidden rounded border'}>
-                    <iframe src={'/api/v1/invoices/' + props.invoice.id + '/pdf/breakdown'} className={'h-[80vh] w-full'}></iframe>
                   </div>
                 </TabsContent>
                 <TabsContent value={'timesheets'}>

@@ -171,6 +171,11 @@ class MenuController
                 'url' => route('reports.approval-efficiency'),
                 'icon' => 'gauge',
             ],
+            [
+                'name' => 'Expiring Certificates',
+                'url' => route('reports.expiring-certificates'),
+                'icon' => 'badge-alert',
+            ],
         ];
     }
 }

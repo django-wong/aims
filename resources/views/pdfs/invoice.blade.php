@@ -73,8 +73,8 @@
     </x-pdf.table.row>
 </x-pdf.table>
 
-@php $timesheets = \App\Models\Timesheet::query()->invoice($invoice)->get(); @endphp
-@foreach($timesheets as $index => $timesheet)
-    <x-pdf.page-break/>
-    <x-timesheet :timesheet="$timesheet"/>
-@endforeach
+{{--@php $timesheets = \App\Models\Timesheet::query()->invoice($invoice)->get(); @endphp--}}
+{{--@foreach($timesheets as $index => $timesheet)--}}
+{{--    <x-pdf.page-break/>--}}
+{{--    <x-timesheet :timesheet="$timesheet"/>--}}
+{{--@endforeach--}}

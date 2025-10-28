@@ -12,13 +12,13 @@ import { IconChevronDown, IconLayoutColumns } from '@tabler/icons-react';
 import { flexRender, Row } from '@tanstack/react-table';
 import { cva, VariantProps } from 'class-variance-authority';
 import {
+  ArrowBigDownDashIcon,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   ChevronUp,
-  DownloadIcon,
   LoaderCircle,
   RefreshCcwIcon,
 } from 'lucide-react';
@@ -204,11 +204,10 @@ export function ExportButton() {
     <Button
       variant={'outline'}
       onClick={() => {
-        alert('Not implemented yet.');
-        console.info(table);
+        table.export();
       }}
     >
-      <DownloadIcon />
+      <ArrowBigDownDashIcon/>
       Export
     </Button>
   );

@@ -47,10 +47,10 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
-        $inspection = $assignment->assignment_inspectors()->where('user_id', auth()->id())->with('assignment_type')->firstOrFail();
+        $assignment_inspector = $assignment->assignment_inspectors()->where('user_id', auth()->id())->with('assignment_type')->firstOrFail();
 
         Gate::allowIf(
-            $inspection, 'You are not assigned as an inspector for this assignment.'
+            $assignment_inspector, 'You are not assigned as an inspector for this assignment.'
         );
 
 
@@ -61,6 +61,7 @@ class AssignmentController extends Controller
             'start' => $start,
             'end' => $end,
             'user_id' => auth()->id(),
+            'assignment_inspector_id' => $assignment_inspector->id,
         ]);
 
         return inertia('assignments/record', [
@@ -68,7 +69,7 @@ class AssignmentController extends Controller
             'timesheet' => $timesheet->load(['timesheet_items'])->refresh(),
             'start' => $start,
             'end' => $end,
-            'inspection' => $inspection,
+            'inspection' => $assignment_inspector,
             'prev' => Carbon::parse($start)->subWeek()->format('Y-m-d'),
             'next' => Carbon::parse($start)->addWeek()->format('Y-m-d'),
         ]);

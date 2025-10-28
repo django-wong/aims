@@ -232,7 +232,7 @@ function CertificateForm(props: CertificateFormProps) {
   function submit(close: boolean = true) {
     form.submit().then((res) => {
       if (res) {
-        props.onSubmit(res.data);
+        props.onSubmit?.(res.data);
         if (close) {
           setOpen(false);
         } else {
