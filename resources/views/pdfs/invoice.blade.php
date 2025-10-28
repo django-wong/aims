@@ -68,7 +68,7 @@
     @endif
     <x-pdf.table.row>
         <td colspan="2" style="background-color: #ccc; text-align: right; font-weight: bold;">
-            TOTAL {{ $invoice->currency }} @money($invoice->final_cost)
+            TOTAL {{ $invoice->currency }} @money($invoice->total_cost)
         </td>
     </x-pdf.table.row>
 </x-pdf.table>

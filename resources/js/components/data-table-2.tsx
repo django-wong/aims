@@ -209,6 +209,7 @@ export function ExportButton() {
     >
       <ArrowBigDownDashIcon/>
       Export
+      { table.selections.length > 0 ? ` (${table.selections.length})` : '' }
     </Button>
   );
 }

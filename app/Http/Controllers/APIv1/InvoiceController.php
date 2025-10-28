@@ -127,7 +127,8 @@ class InvoiceController extends Controller
                         'project_title',
                     ], 'like', "%$value%");
                 }
-            })
+            }),
+            AllowedFilter::exact('selection', 'id')
         ];
     }
 
@@ -151,6 +152,9 @@ class InvoiceController extends Controller
         $query = $this->getQueryBuilder();
 
         if ($request->has('export')) {
+            if ($request->input('export') === 'xero') {
+                return \App\Exports\InvoiceXero::fromQueryBuilder($query)->download('xero-invoices.csv');
+            }
             return \App\Exports\Invoice::fromQueryBuilder($query)->download('invoices.csv');
         }
 

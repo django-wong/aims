@@ -18,6 +18,7 @@ import { formatCurrency, formatDateTime } from '@/lib/helpers';
 import { HideFromClient } from '@/components/hide-from-client';
 import { InvoiceActions } from '@/pages/client-invoices';
 import { Badge } from '@/components/ui/badge';
+import { ExportInXeroFormatButton } from '@/pages/invoices/export-in-xero-format-button';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -146,6 +147,7 @@ interface ClientPageProps {
 
 export default function Page(props: ClientPageProps) {
   const table = useTable<Invoice>('api/v1/invoices', {
+    selectable: true,
     columns,
     defaultParams: {
       include: 'invoiceable',
@@ -208,6 +210,7 @@ export default function Page(props: ClientPageProps) {
           table={table}
           right={
             <>
+              <ExportInXeroFormatButton/>
               <ExportButton/>
               <ColumnToggle/>
             </>

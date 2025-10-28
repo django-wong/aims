@@ -1,39 +1,31 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { useQueryParam } from '@/hooks/use-query-param';
 
 type UseSearchParamsReturn = [
   URLSearchParams,
-  Dispatch<SetStateAction<URLSearchParams>>
+  Dispatch<SetStateAction<URLSearchParams>>,
+  string
 ];
 
 export function useQueryParamAsSearchParams(name: string): UseSearchParamsReturn {
   const [value, setValue] = useQueryParam(name);
 
-  const [
-    searchParams, setSearchParams
-  ] = useState<URLSearchParams>(new URLSearchParams(value));
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setValue(searchParams.toString());
-    }, 100);
-    return () => {
-      clearTimeout(timer);
-    }
-  }, [searchParams, setValue])
+  const [searchParams, setSearchParams] = useState<URLSearchParams>(() => {
+    return new URLSearchParams(value);
+  });
 
   return [
     searchParams,
-    (value) => {
+    (value: SetStateAction<URLSearchParams>) => {
+      let newValue: URLSearchParams;
       if (typeof value === 'function') {
-        setSearchParams((prev) => {
-          const newParams = new URLSearchParams(prev);
-          value(newParams);
-          return newParams;
-        });
+        newValue = value(searchParams);
       } else {
-        setSearchParams(new URLSearchParams(value));
+        newValue = value;
       }
-    }
+      setSearchParams(newValue);
+      setValue(newValue.toString());
+    },
+    searchParams.toString()
   ];
 }

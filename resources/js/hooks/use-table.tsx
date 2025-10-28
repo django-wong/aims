@@ -36,7 +36,7 @@ function reloadReducer(state: number) {
 }
 
 export function useTable<T extends BaseTableData>(api: string, { selectable = false, ...options }: UseTableOptions<T>) {
-  const [searchParams, setSearchParams] = useQueryParamAsSearchParams(api);
+  const [searchParams, setSearchParams, queryString] = useQueryParamAsSearchParams(api);
   const [data, setData] = useState<T[]>(options.data ?? options?.defaultData ?? []);
   const [total, setTotal] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
@@ -44,7 +44,6 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
   const [params, setParams] = useState<Record<string, string>>(options?.defaultParams ?? {});
   const [initialLoaded, setInitialLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [exporting, setExporting] = useState(false);
   const [state, setState] = useState<Partial<TableState>>(() => {
     return {
       pagination: {
@@ -81,9 +80,6 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
     });
   }
 
-  // const [pagination, setPagination] = useState<PaginationState>();
-
-
   const table = useReactTable<T>({
     pageCount: totalPage,
     getCoreRowModel: getCoreRowModel(),
@@ -115,6 +111,11 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
       })
     }
   });
+
+  // Selected row ids across all pages
+  const selections = Object.entries(table.getState().rowSelection).map(
+      ([key, value]) => (value ? key : null)
+    ).filter((item) => item !== null) as string[];
 
   function getUrl() {
     const url = new URL(api, window.location.origin);
@@ -151,7 +152,7 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json',
+        'Accept': 'application/json',
       },
     };
 
@@ -186,14 +187,6 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
             setTotalPage(response.last_page);
           });
         })
-        .catch((error) => {
-          startTransition(() => {
-            // setData([]);
-            // setTotal(0);
-            // setTotalPage(1);
-          });
-          throw error;
-        })
         .finally(() => {
           startTransition(() => {
             setInitialLoaded(true);
@@ -202,26 +195,25 @@ export function useTable<T extends BaseTableData>(api: string, { selectable = fa
         });
     });
 
-    return () => abortController.abort();
-  }, [api, searchParams, reload, params, state.pagination]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => abortController.abort('cancelled by system');
+  }, [api, queryString, reload, params, state.pagination]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     initialLoaded,
     ...table,
     data,
     loading,
+    getUrl,
     export: () => {
       const url = getUrl();
       url.searchParams.set('export', '1');
+      url.searchParams.set('filter[selection]', selections.join('|'));
       window.open(url.toString(), '_blank');
     },
     searchParams,
     setSearchParams,
 
-    // Selected row id across all pages
-    selections: Object.entries(table.getState().rowSelection).map(
-      ([key, value]) => (value ? key : null)
-    ).filter((item) => item !== null) as string[],
+    selections: selections,
 
     selectable,
     params,

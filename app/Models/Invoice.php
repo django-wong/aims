@@ -25,6 +25,7 @@ class Invoice extends Model implements Commentable
 {
     /** @use HasFactory<\Database\Factories\InvoiceFactory> */
     use HasFactory, BelongsToPurchaseOrder, DynamicPagination, HasManyComments, BelongsToOrg, BelongsToUser;
+    use GeneratedInvoiceID;
 
     static function describeStatus(int $status): string
     {
@@ -66,11 +67,6 @@ class Invoice extends Model implements Commentable
             }
             $query->whereMorphedTo('invoiceable', $invoiceable)->where('status', Invoice::SENT);
         });
-    }
-
-    public function getGeneratedId()
-    {
-        return 'INV-'.str_pad($this->id, 8, '0', STR_PAD_LEFT);
     }
 
     public function invoiceable(): \Illuminate\Database\Eloquent\Relations\MorphTo

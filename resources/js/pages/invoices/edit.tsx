@@ -110,9 +110,9 @@ export default function EditInvoicePage(props: EditInvoicePageProps) {
                   <InfoLine label={'Travel Distance'}>
                     {props.invoice.travel_distance} {props.invoice.travel_unit}
                   </InfoLine>
-                  <InfoLine label={'Expenses'}>{formatCurrency(props.invoice.expenses)}</InfoLine>
                   <InfoLine label={'Hour Cost'}>{formatCurrency(props.invoice.hour_cost)}</InfoLine>
                   <InfoLine label={'Travel Cost'}>{formatCurrency(props.invoice.travel_cost)}</InfoLine>
+                  <InfoLine label={'Expenses'}>{formatCurrency(props.invoice.expenses)}</InfoLine>
                   {props.invoice.invoiceable_type === 'App\\Models\\Client' ? (
                     <InfoLine label={'Process fee'}>
                       {formatCurrency(props.invoice.process_fee)} at {props.invoice.process_fee_rate}%
@@ -120,8 +120,11 @@ export default function EditInvoicePage(props: EditInvoicePageProps) {
                   ) : (
                     <InfoLine label={'Commission Rate'}>{props.invoice.commission_rate}%</InfoLine>
                   )}
+                  <InfoLine label={'Total'}>{formatCurrency(props.invoice.total_cost)}</InfoLine>
                   <InfoLine label={'VAT'}>{props.invoice.tax_rate}%</InfoLine>
-                  <InfoLine label={'Total'}>{formatCurrency(props.invoice.final_cost)}</InfoLine>
+                  <InfoLine label={'Total Cost with VAT'}>
+                    {formatCurrency((1 + props.invoice.tax_rate  / 100) * props.invoice.total_cost)}
+                  </InfoLine>
                 </div>
                 {props.invoice.status === InvoiceStatusEnum.Rejected ? (
                   <>
