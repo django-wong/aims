@@ -1,12 +1,7 @@
 <?php
 
-namespace App\Support;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Helpers
-{
-    public static function growth_rate($current, $previous): float|int
+if (!function_exists('growth_rate')) {
+    function growth_rate($current, $previous): float|int
     {
         if (empty($previous) && !empty($current)) {
             return 1;

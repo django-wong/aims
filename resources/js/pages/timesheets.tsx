@@ -20,6 +20,7 @@ import { Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/helpers';
+import { HideFromClient } from '@/components/hide-from-client';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -34,15 +35,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns: ColumnDef<Timesheet>[] = [
   {
-    accessorKey: 'inspector_name',
-    header: 'Inspector',
-    cell: ({ row }) => {
+    accessorKey: 'id',
+    header: '#',
+    cell: ({row}) => {
       return (
         <Link className={'underline'} href={route('timesheets.edit', row.original.id)}>
-          {row.original.inspector_name}
+          {row.original.id}
         </Link>
-      );
-    },
+      )
+    }
+  },
+  {
+    accessorKey: 'inspector_name',
+    header: 'Inspector',
   },
   {
     accessorKey: 'assignment.reference_number',
@@ -223,21 +228,23 @@ export function TimesheetActions() {
       <ClientApprove />
       <ContractorHolderApprove />
       <CoordinationOfficeApprove />
-      <PopoverConfirm
-        asChild
-        message={'Are you sure you want to delete this timesheet?'}
-        onConfirm={() => {
-          axios.delete('/api/v1/timesheets/' + timesheet!.id).then(() => {
-            table.reload();
-          });
-        }}
-        side={'bottom'}
-        align={'end'}
-      >
-        <Button variant="outline" size="sm">
-          <Trash2 />
-        </Button>
-      </PopoverConfirm>
+      <HideFromClient>
+        <PopoverConfirm
+          asChild
+          message={'Are you sure you want to delete this timesheet?'}
+          onConfirm={() => {
+            axios.delete('/api/v1/timesheets/' + timesheet!.id).then(() => {
+              table.reload();
+            });
+          }}
+          side={'bottom'}
+          align={'end'}
+        >
+          <Button variant="outline" size="sm">
+            <Trash2 />
+          </Button>
+        </PopoverConfirm>
+      </HideFromClient>
     </div>
   );
 }

@@ -54,7 +54,7 @@ $timesheet_items = \App\Models\TimesheetItem::query()->with('expense')->where('t
         <td style="border: 1px solid #000">Total</td>
         <td style="border: 1px solid #000">Rate</td>
         <td style="border: 1px solid #000">Cost</td>
-        <td style="border: 1px solid #000">D</td>
+        <td style="border: 1px solid #000">{{ strtoupper($assignment->travel_unit ?? 'MILEAGE') }}</td>
         <td style="border: 1px solid #000">Rate</td>
         <td style="border: 1px solid #000">Cost</td>
         <td style="border: 1px solid #000">Sub</td>
@@ -91,7 +91,7 @@ $timesheet_items = \App\Models\TimesheetItem::query()->with('expense')->where('t
         <td colspan="2" style="border:1px solid #000;"></td>
         <td style="border:1px solid #000;">{{ $timesheet->travel_distance }}</td>
         <td style="border:1px solid #000;" colspan="8"></td>
-        <td style="border:1px solid #000;">{{ $timesheet->expenses }}</td>
+        <td style="border:1px solid #000;">@money($timesheet->cost)</td>
     </tr>
 </table>
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('timesheet_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('timesheet_id')->constrained();
+            $table->foreignId('timesheet_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id');
             $table->string('item_number')->nullable();
             $table->date('date')->nullable();

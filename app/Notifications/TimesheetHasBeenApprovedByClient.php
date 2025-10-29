@@ -40,6 +40,9 @@ class TimesheetHasBeenApprovedByClient extends Notification
             ->view('email')
             ->subject('Timesheet has approved by client')
             ->greeting('Hi ' . $notifiable->name)
+            ->attach(
+                new \App\PDFs\Timesheet($this->timesheet)
+            )
             ->line('The timesheet has been approved by the client. Please review the timesheet in assignment details and make further action from there.')
             ->line(
                 new HtmlString(
@@ -67,8 +70,6 @@ class TimesheetHasBeenApprovedByClient extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

@@ -30,6 +30,12 @@ class ClientApproved implements Status
         $timesheet->rejection_reason = '';
         $timesheet->save();
 
+        $timesheet->signatures()->updateOrCreate([
+            'timesheet_id' => $timesheet->id,
+        ], [
+            'client_signature' => request('signature_base64'),
+        ]);
+
         $timesheet->assignment->project->client->coordinator?->notify(
             new TimesheetHasBeenApprovedByClient($timesheet)
         );

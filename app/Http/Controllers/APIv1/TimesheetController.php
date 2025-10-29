@@ -50,11 +50,6 @@ class TimesheetController extends Controller
                         ->on($subject)
                         ->withProperties($timesheet->getChanges())->log('Signed off timesheet');
                 }
-
-                $timesheet->signatures()->updateOrCreate(
-                    ['timesheet_id' => $timesheet->id],
-                    ['inspector_signature' => $request->input('signature_base64')]
-                );
             });
 
             $status->next()?->transition($timesheet);
@@ -205,6 +200,8 @@ class TimesheetController extends Controller
 
     public function destroy(Timesheet $timesheet)
     {
+        Gate::authorize('delete', $timesheet);
+
         return response()->json([
             'data' => $timesheet->delete()
         ]);
@@ -234,5 +231,12 @@ class TimesheetController extends Controller
             'message' => 'You have approved the timesheet.',
             'data' => $timesheet
         ]);
+    }
+
+    public function pdf(Timesheet $timesheet)
+    {
+        $pdf = new \App\PDFs\Timesheet($timesheet);
+        $pdf->render();
+        return $pdf->Output("timesheet-{$timesheet->id}.pdf", 'I');
     }
 }

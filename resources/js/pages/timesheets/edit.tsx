@@ -176,12 +176,18 @@ export function TimesheetEditContent() {
         <TabsList>
           <TabsTrigger value={'workhours'}>Work hours & Report</TabsTrigger>
           <TabsTrigger value={'activity-log'}>Activity Log</TabsTrigger>
+          <TabsTrigger value={'preview'}>Preview</TabsTrigger>
         </TabsList>
         <TabsContent value={'workhours'} className={'space-y-6'}>
           <TimesheetItems timesheet={timesheet!} />
         </TabsContent>
         <TabsContent value={'activity-log'}>
           <Activities subject_type={'timesheet'} subject_id={timesheet.id}/>
+        </TabsContent>
+        <TabsContent value={'preview'}>
+          <div className={'overflow-hidden rounded border'}>
+            <iframe src={route('timesheets.pdf', timesheet.id)} className={'h-[80vh] w-full'}></iframe>
+          </div>
         </TabsContent>
       </Tabs>
     </>

@@ -16,10 +16,9 @@ import { PurchaseOrderForm } from '@/pages/purchase-orders/form';
 import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
 import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
 import { Timesheets } from '@/pages/assignments/timesheets';
-import { formatCurrency, formatDate, formatDateTime } from '@/lib/helpers';
-import { Card } from '@/components/ui/card';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { formatCurrency, formatDateTime } from '@/lib/helpers';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { HideFromClient } from '@/components/hide-from-client';
 
 interface Props {
   purchase_order: PurchaseOrder;
@@ -38,12 +37,14 @@ export default function PurchaseOrderEditPage(props: Props) {
     <PurchaseOrderProvider value={props.purchase_order}>
     <Layout
       pageAction={
-        <PurchaseOrderForm value={props.purchase_order} onSubmit={() => {router.reload()}}>
-          <Button>
-            <PencilIcon/>
-            Edit
-          </Button>
-        </PurchaseOrderForm>
+        <HideFromClient>
+          <PurchaseOrderForm value={props.purchase_order} onSubmit={() => {router.reload()}}>
+            <Button>
+              <PencilIcon/>
+              Edit
+            </Button>
+          </PurchaseOrderForm>
+        </HideFromClient>
       }
       breadcrumbs={breadcrumbs} largeTitle={props.purchase_order.title}>
       <Head title={props.purchase_order.title} />

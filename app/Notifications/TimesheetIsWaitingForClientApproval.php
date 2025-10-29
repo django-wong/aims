@@ -61,6 +61,10 @@ class TimesheetIsWaitingForClientApproval extends Notification
                 )
             );
 
+        $message->attach(
+            new \App\PDFs\Timesheet($this->timesheet)
+        );
+
         if ($first_responder) {
             $message->replyTo($first_responder->email, $first_responder->name);
         }

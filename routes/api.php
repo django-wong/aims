@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::post('timesheets/{timesheet}/sign-off', [TimesheetController::class, 'sign_off']);
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
     Route::post('timesheets/{timesheet}/reject', [TimesheetController::class, 'reject']);
+    Route::get('timesheets/{timesheet}/pdf', [TimesheetController::class, 'pdf'])->name('timesheets.pdf');
 
 
     // Reports

@@ -29,6 +29,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { DownloadIcon, EllipsisVerticalIcon, FileTextIcon, FolderOpenIcon, PencilIcon, PlusIcon, ReceiptCentIcon, Trash2Icon } from 'lucide-react';
 import React, { ComponentProps } from 'react';
+import { HideFromClient } from '@/components/hide-from-client';
+import { useIsClient } from '@/hooks/use-role';
 
 interface TimesheetItemsProps {
   timesheet?: Timesheet;
@@ -38,6 +40,7 @@ interface TimesheetItemsProps {
 }
 
 export function TimesheetItems(props: TimesheetItemsProps) {
+  const isClient = useIsClient();
   const columns: ColumnDef<TimesheetItem>[] = [
     {
       accessorKey: 'date',
@@ -116,19 +119,21 @@ export function TimesheetItems(props: TimesheetItemsProps) {
         </div>
       ),
     },
-    {
-      accessorKey: 'actions',
-      header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
-      size: 150,
-      enablePinning: true,
-      cell: ({ row }) => {
-        return (
-          <TableCellWrapper last>
-            <TimesheetItemActions value={row.original} />
-          </TableCellWrapper>
-        );
-      },
-    },
+    ...(isClient ? [] : [
+      {
+        accessorKey: 'actions',
+        header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
+        size: 150,
+        enablePinning: true,
+        cell: ({ row }) => {
+          return (
+            <TableCellWrapper last>
+              <TimesheetItemActions value={row.original} />
+            </TableCellWrapper>
+          );
+        },
+      } as ColumnDef<TimesheetItem>
+    ])
   ];
 
   const table = useTable<TimesheetItem>('/api/v1/timesheet-items', {
@@ -186,25 +191,31 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
   return (
     <TimesheetItemProvider value={props.value}>
       <div className={'flex items-center justify-end gap-2'}>
-        <LogExpenseForm
-          onSubmit={() => {
-            table.reload();
-          }}
-        >
-          <Button variant={'secondary'} size={'sm'}>
-            <ReceiptCentIcon />
-          </Button>
-        </LogExpenseForm>
-        <TimesheetItemForm value={props.value} onSubmit={onSubmit} asChild>
-          <Button variant={'secondary'} size={'sm'}>
-            <PencilIcon />
-          </Button>
-        </TimesheetItemForm>
-        <PopoverConfirm message={'Are you sure to delete this record?'} asChild onConfirm={deleteItem}>
-          <Button variant={'destructive'} size={'sm'}>
-            <Trash2Icon />
-          </Button>
-        </PopoverConfirm>
+        <HideFromClient>
+          <LogExpenseForm
+            onSubmit={() => {
+              table.reload();
+            }}
+          >
+            <Button variant={'secondary'} size={'sm'}>
+              <ReceiptCentIcon />
+            </Button>
+          </LogExpenseForm>
+        </HideFromClient>
+        <HideFromClient>
+          <TimesheetItemForm value={props.value} onSubmit={onSubmit} asChild>
+            <Button variant={'secondary'} size={'sm'}>
+              <PencilIcon />
+            </Button>
+          </TimesheetItemForm>
+        </HideFromClient>
+        <HideFromClient>
+          <PopoverConfirm message={'Are you sure to delete this record?'} asChild onConfirm={deleteItem}>
+            <Button variant={'destructive'} size={'sm'}>
+              <Trash2Icon />
+            </Button>
+          </PopoverConfirm>
+        </HideFromClient>
       </div>
     </TimesheetItemProvider>
   );
@@ -226,7 +237,9 @@ function TimesheetReports(props: TimesheetReportsProps) {
     }),
   });
 
-  const can_add_more = props.type === 'inspection-report' ? (api.data || []).length < 1 : true;
+  const isClient = useIsClient();
+  const can_add = !isClient;
+  const can_add_more = can_add && (props.type === 'inspection-report' ? (api.data || []).length < 1 : true);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     for (const file of event.target.files || []) {

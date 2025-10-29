@@ -12,6 +12,8 @@ import axios from 'axios';
 import { PencilIcon, Plus, TrashIcon } from 'lucide-react';
 import { BudgetForm } from './budgets/form';
 import { useState } from 'react';
+import { HideFromClient } from '@/components/hide-from-client';
+import { useIsClient } from '@/hooks/use-role';
 
 function BudgetActions(props: { budget: Budget }) {
   const table = useTableApi();
@@ -42,6 +44,7 @@ function BudgetActions(props: { budget: Budget }) {
 }
 
 export function Budgets() {
+  const isClient = useIsClient();
   const po = usePurchaseOrder();
   const columns: ColumnDef<Budget>[] = [
     {
@@ -113,17 +116,19 @@ export function Budgets() {
         return `$${row.original.budgeted_expenses}`;
       },
     },
-    {
-      accessorKey: 'actions',
-      header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
-      minSize: 80,
-      maxSize: 80,
-      cell: ({ row }) => (
-        <TableCellWrapper last>
-          <BudgetActions budget={row.original} />
-        </TableCellWrapper>
-      ),
-    },
+    ...(isClient ? [] : [
+      {
+        accessorKey: 'actions',
+        header: () => <TableCellWrapper last>Actions</TableCellWrapper>,
+        minSize: 80,
+        maxSize: 80,
+        cell: ({ row }) => (
+          <TableCellWrapper last>
+            <BudgetActions budget={row.original} />
+          </TableCellWrapper>
+        ),
+      } as ColumnDef<Budget>
+    ])
   ];
 
   const table = useTable<Budget>('/api/v1/budgets', {
@@ -155,11 +160,13 @@ export function Budgets() {
         })
       }}/>}
       right={
-        <BudgetForm onSubmit={onSubmit}>
-          <Button>
-            <Plus /> New Budget
-          </Button>
-        </BudgetForm>
+        <HideFromClient>
+          <BudgetForm onSubmit={onSubmit}>
+            <Button>
+              <Plus /> New Budget
+            </Button>
+          </BudgetForm>
+        </HideFromClient>
       }
       table={table}
     />

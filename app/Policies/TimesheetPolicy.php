@@ -63,4 +63,9 @@ class TimesheetPolicy
 
         return $user->can('update', $timesheet->assignment) || $timesheet->assignment->project->client->user()->is($user);
     }
+
+    public function delete(User $user, Timesheet $timesheet): bool
+    {
+        return $user->can('update', $timesheet->assignment);
+    }
 }

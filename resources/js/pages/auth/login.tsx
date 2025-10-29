@@ -10,6 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 
+let email: string = '';
+let password: string = '';
+
+if (import.meta.env.DEV) {
+  email = 'admin@localhost';
+  password = 'Ijd8l@9';
+}
+
 type LoginForm = {
   email: string;
   password: string;
@@ -23,8 +31,8 @@ interface LoginProps {
 
 export default function Login({ status, canResetPassword }: LoginProps) {
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
-        email: 'admin@localhost',
-        password: 'Ijd8l@9',
+        email: email,
+        password: password,
         remember: true,
     });
 

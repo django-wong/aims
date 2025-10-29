@@ -24,8 +24,6 @@ const schema = zod.object({
   previous_title: zod.string().optional().nullable(),
   project_id: zod.number(),
 
-  // budget: zod.coerce.number().min(1, 'Budget must be positive'),
-
   travel_unit: zod.enum(['miles', 'km']).optional(),
   currency: zod.string().min(1, 'Currency is required'),
 
@@ -56,7 +54,7 @@ export function PurchaseOrderForm(props: DialogFormProps<PurchaseOrder>) {
       if (res) {
         props.onOpenChange?.(false);
         setOpen(false);
-        props.onSubmit(form.getValues());
+        props.onSubmit?.(form.getValues());
       }
     })
   }

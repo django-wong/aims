@@ -54,6 +54,10 @@ class TimesheetSubmitted extends Notification
                 'View Assignment', route('assignments.edit', $this->timesheet->assignment_id)
             );
 
+        $message->attach(
+            new \App\PDFs\Timesheet($this->timesheet)
+        );
+
         if ($operation_coordinator = $this->timesheet->assignment->operation_coordinator) {
             if ($operation_coordinator->is($notifiable)) {
                 $coordinator = $this->timesheet->assignment->coordinator;

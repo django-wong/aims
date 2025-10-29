@@ -1,9 +1,7 @@
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { IconTrendingUp } from '@tabler/icons-react';
-import { Link2Icon, SendIcon } from 'lucide-react';
+import { Link2Icon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Link } from '@inertiajs/react';
-import { formatCurrency } from '@/lib/helpers';
 import { cn } from '@/utils/cn';
 import { NumberTicker } from '@/components/ui/number-ticker';
 
@@ -63,20 +61,28 @@ export function DashboardOverview(props: DashboardOverviewProps) {
           <CardDescription>Claimed Hours</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             <NumberTicker value={props.hours.claimed} startValue={Math.max(props.hours.claimed - 14, 0)}/> hrs
-            <div className={cn('pt-2 text-xs font-bold', props.hours.growing > 0 ? 'text-green-500' : 'text-red-500')}>
-              <strong>{props.hours.growing}</strong> since last week
-            </div>
           </CardTitle>
         </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            <div className={cn('font-bold', props.hours.growing > 0 ? 'text-green-500' : 'text-red-500')}>
+              <strong>{props.hours.growing}</strong> since last week
+            </div>
+          </div>
+        </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Revenue This Year</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             $<NumberTicker value={props.revenue.this_year} startValue={Math.max(props.revenue.this_year - 50, 0)}/>
-            <div className={'text-muted-foreground pt-2 text-xs'}>Exclude expenses and commission</div>
           </CardTitle>
         </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Exclude expenses and commission
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

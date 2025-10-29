@@ -6,6 +6,7 @@ use App\Http\Requests\APIv1\DeletePurchaseOrderRequest;
 use App\Http\Requests\APIv1\UpdatePurchaseOrderRequest;
 use App\Models\Budget;
 use App\Models\InspectorProfile;
+use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use App\Models\PurchaseOrderDailyUsage;
@@ -14,6 +15,7 @@ use App\Support\Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -28,7 +30,7 @@ class PurchaseOrderController extends Controller
         ]);
 
         /**
-         * @var Budget $budget
+         * @var Budget           $budget
          * @var InspectorProfile $inspector_profile
          */
         $budget = $purchase_order->budgets()->where('assignment_type_id', $validated['assignment_type_id'])->firstOrFail();
@@ -126,7 +128,11 @@ class PurchaseOrderController extends Controller
      */
     public function index()
     {
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->tap(function (Builder $query) {
+            if (Auth::isClient()) {
+                $query->whereIn('project_id', Project::query()->select('id')->where('client_id', auth()->user()->client->id));
+            }
+        })->paginate();
     }
 
     /**
@@ -206,22 +212,22 @@ class PurchaseOrderController extends Controller
             'data' => [
                 'expense' => [
                     'current' => $current?->total_expense ?? 0,
-                    'growth' => Helpers::growth_rate($current?->total_expense, $last?->total_expense),
+                    'growth' => growth_rate($current?->total_expense, $last?->total_expense),
                     'previous' => $last?->total_expense ?? 0,
                 ],
                 'approved_hours' => [
                     'current' => $current?->hours ?? 0,
-                    'growth' => Helpers::growth_rate($current?->hours, $last?->hours),
+                    'growth' => growth_rate($current?->hours, $last?->hours),
                     'previous' => $last?->hours ?? 0,
                 ],
                 'approved_travel' => [
                     'current' => $current?->travel_distance,
-                    'growth' => Helpers::growth_rate($current?->travel_distance, $last?->travel_distance),
+                    'growth' => growth_rate($current?->travel_distance, $last?->travel_distance),
                     'previous' => $last?->travel_distance ?? 0,
                 ],
                 'total_cost' => [
                     'current' => $current?->total_cost,
-                    'growth' => Helpers::growth_rate($current?->total_cost, $last?->total_cost),
+                    'growth' => growth_rate($current?->total_cost, $last?->total_cost),
                     'previous' => $last?->total_cost ?? 0,
                 ],
             ]

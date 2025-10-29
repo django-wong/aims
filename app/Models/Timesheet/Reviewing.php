@@ -32,6 +32,13 @@ class Reviewing implements Status
 
         $coordinator = $assignment->operation_coordinator ?? $assignment->coordinator;
 
+        if (request()->has('signature_base64')) {
+            $timesheet->signatures()->updateOrCreate(
+                ['timesheet_id' => $timesheet->id],
+                ['inspector_signature' => request()->input('signature_base64')]
+            );
+        }
+
         if ($coordinator) {
             $coordinator->notify(
                 new \App\Notifications\TimesheetSubmitted($timesheet)

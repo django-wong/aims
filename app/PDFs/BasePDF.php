@@ -3,9 +3,10 @@
 namespace App\PDFs;
 
 use App\PDFs\Traits\HeaderTrait;
+use Illuminate\Contracts\Mail\Attachable;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
-abstract class BasePDF extends Fpdi
+abstract class BasePDF extends Fpdi implements Attachable
 {
     public function Header()
     {
@@ -32,4 +33,13 @@ abstract class BasePDF extends Fpdi
     }
 
     abstract public function render();
+
+    public function toMailAttachment()
+    {
+        $this->render();
+
+        return \Illuminate\Mail\Attachment::fromData(
+            fn () => $this->Output('', 'S'), 'document.pdf',
+        );
+    }
 }

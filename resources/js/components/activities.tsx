@@ -2,6 +2,8 @@ import { usePagedGetApi } from '@/hooks/use-get-api';
 import { ActivityLog } from '@/types';
 import { formatDateTime } from '@/lib/helpers';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Empty } from '@/components/empty';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface ActivitiesProps  {
   subject_type: string;
@@ -19,9 +21,11 @@ export function Activities(props: ActivitiesProps) {
   return (
     <div>
       {
-        api.data?.map((data, index) => {
+        api.data && api.data.length > 0 ? (api.data?.map((data, index) => {
           return <Activity data={data} key={'at:' + index}/>
-        })
+        })) : (
+          <Empty className={'h-48'}/>
+        )
       }
     </div>
   );

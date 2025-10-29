@@ -10,6 +10,7 @@ use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Response;
@@ -32,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Auth::macro('isClient', function () {
+            return auth()->user()?->user_role->isAnyOf([UserRole::CLIENT]);
+        });
+
         \Illuminate\Support\Facades\Gate::define('viewDashboard', function (User $user) {
             return $user->isAnyRole([
                 UserRole::SYSTEM,

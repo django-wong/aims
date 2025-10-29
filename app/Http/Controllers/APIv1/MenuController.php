@@ -46,13 +46,13 @@ class MenuController
                         'icon' => 'briefcase-business',
                         'url' => route('projects'),
                     ],
-                ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::FINANCE],[
                     'purchase-orders' => [
                         'name' => 'Work Orders (WO)',
                         'icon' => 'shopping-bag',
                         'url' => route('purchase-orders'),
                     ],
+                ])),
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::FINANCE],[
                     'quotes' => [
                         'name' => 'Quotations',
                         'icon' => 'sheet',
