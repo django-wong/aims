@@ -17,6 +17,6 @@ class Vendor extends Model implements Contactable
 
     public function scopeVisiable(Builder $query)
     {
-        return $query->where('org_id', auth()->user()->user_role->id);
+        return $query->where('org_id', auth()->user()->user_role->org_id);
     }
 }
