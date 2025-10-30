@@ -12,7 +12,7 @@ class StoreQuoteRequest extends FormRequest
         return [
             'suffix' => 'string',
             'serial_number' => 'required|string',
-            'client_id' => 'required|integer|exists:clients,id',
+            'client_id' => 'integer|exists:clients,id',
             'client_ref' => 'string',
             'i_e_a' => 'string',
             'details' => 'string|max:1000',

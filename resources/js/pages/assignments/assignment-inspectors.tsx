@@ -74,7 +74,7 @@ export function AssignmentInspectors() {
             <div className={'flex items-center justify-end space-x-2'}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant={'secondary'} size={'sm'} asChild>
+                  <Button variant={'outline'} size={'sm'} asChild>
                     <a href={route('impersonate', { id: row.original.user_id})}>
                       <KeySquareIcon/>
                     </a>
@@ -85,7 +85,7 @@ export function AssignmentInspectors() {
                 </TooltipContent>
               </Tooltip>
               <Button
-                variant={'secondary'}
+                variant={'outline'}
                 size={'sm'}
                 onClick={() => {
                   axios.delete('/api/v1/assignment-inspectors/' + row.original.id).then(() => {

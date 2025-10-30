@@ -30,12 +30,12 @@ function BudgetActions(props: { budget: Budget }) {
         }}
         asChild
       >
-        <Button variant={'secondary'} size={'sm'}>
+        <Button variant={'outline'} size={'sm'}>
           <TrashIcon />
         </Button>
       </PopoverConfirm>
       <BudgetForm onSubmit={() => {table.reload()}} value={props.budget}>
-        <Button variant={'secondary'} size={'sm'}>
+        <Button variant={'outline'} size={'sm'}>
           <PencilIcon />
         </Button>
       </BudgetForm>

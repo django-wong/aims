@@ -38,7 +38,7 @@ class OrgController extends Controller
      */
     public function store(CreateOrgRequest $request)
     {
-        $org = Org::query()->create(Arr::only($request->validated(), ['name', 'code']));
+        $org = Org::query()->create(Arr::only($request->validated(), ['name', 'code', 'timezone']));
 
         if (! empty($request->validated('address'))) {
             $org->address()->associate(

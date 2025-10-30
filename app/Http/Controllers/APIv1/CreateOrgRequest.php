@@ -17,6 +17,7 @@ class CreateOrgRequest extends FormRequest
         return [
             'name' => 'required|string|max:255|unique:orgs,name',
             'code' => 'required|string|max:50|unique:orgs,code',
+            'timezone' => 'required|string|max:255',
 
             'address' => 'nullable|array',
             'address.country' => 'string|max:255',

@@ -31,15 +31,18 @@ export default function QuotesPage() {
   const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
 
   return (
-    <Layout breadcrumbs={breadcrumbs}>
+    <Layout
+      breadcrumbs={breadcrumbs}
+      pageAction={
+        <QuoteForm onSubmit={() => {table.reload()}}>
+          <Button>Add New Quote</Button>
+        </QuoteForm>
+      }>
       <Head title="quotes" />
       <div className={'px-6'}>
         <DataTable
           left={
             <>
-              <QuoteForm>
-                <Button>Add New Quote</Button>
-              </QuoteForm>
               <Input className={'max-w-[200px]'} placeholder={'Search...'} onChange={({target: {value}}) => {
                 setKeywords(value);
                 table.setSearchParams((params) => {
@@ -75,6 +78,10 @@ const columns: ColumnDef<Quote>[] = [
   {
     accessorKey: 'client_business_name',
     header: 'Client',
+  },
+  {
+    accessorKey: 'quote_client_business_name',
+    header: 'Quote Client',
   },
   {
     accessorKey: 'i_e_a',
@@ -133,11 +140,6 @@ const columns: ColumnDef<Quote>[] = [
   {
     accessorKey: 'notes',
     header: 'Notes',
-  },
-  // quote_client_business_name
-  {
-    accessorKey: 'quote_client_business_name',
-    header: 'Quote Client',
   },
   {
     accessorKey: 'actions',

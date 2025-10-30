@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('serial_number')->index();
             $table->string('suffix')->nullable();
             $table->string('title')->storedAs("CONCAT(serial_number, IF(suffix IS NOT NULL AND suffix != '', CONCAT('-', suffix), ''))")->index();
-            $table->foreignId('client_id')->nullable()->index();
+            $table->foreignId('client_id')->nullable()->index()->constrained('clients')->cascadeOnDelete();
             $table->string('client_ref')->nullable();
             $table->string('i_e_a')->default('i');
             $table->text('details')->nullable();
-            $table->foreignId('controlling_org_id')->nullable()->constrained('orgs');
+            $table->foreignId('controlling_org_id')->nullable()->constrained('orgs')->cascadeOnDelete();
             $table->date('received_date')->nullable();
             $table->string('pass_to_user')->nullable();
             $table->string('type')->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->date('despatched_date')->nullable();
             $table->unsignedTinyInteger('status')->default(0)->comment('0: Won, 1: Lost, 2: Not Advised, 3: Waiting, 4: Declined');
             $table->longText('notes')->nullable();
-            $table->foreignId('quote_client_id')->nullable()->constrained('clients');
+            $table->foreignId('quote_client_id')->nullable()->constrained('clients')->cascadeOnDelete();
             $table->timestamps();
 
             $table->index(['org_id', 'client_id', 'quote_client_id', 'status', 'title', 'serial_number'], 'quotes_search_index');

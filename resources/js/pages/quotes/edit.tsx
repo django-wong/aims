@@ -3,13 +3,13 @@ import { Head, router } from '@inertiajs/react';
 import { TwoColumnLayout73 } from '@/components/main-content';
 import { Info, InfoHead, InfoLine, InfoLineValue } from '@/components/info';
 import { BreadcrumbItem, Quote } from '@/types';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Comments } from '@/components/comments';
 import { Button } from '@/components/ui/button';
 import { QuoteForm } from '@/pages/quotes/form';
 import { describeStatus } from '@/pages/quotes';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/lib/helpers';
+import { PencilIcon } from 'lucide-react';
 
 interface EditQuotePageProps {
   quote: Quote;
@@ -38,7 +38,10 @@ export default function EditQuotePage({ quote }: EditQuotePageProps) {
       pageAction={
         <>
           <QuoteForm onSubmit={() => router.reload()} value={quote}>
-            <Button variant={'primary'}>Edit</Button>
+            <Button variant={'primary'}>
+              <PencilIcon/>
+              Edit
+            </Button>
           </QuoteForm>
         </>
       }>

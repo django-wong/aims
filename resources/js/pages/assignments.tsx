@@ -88,14 +88,14 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
     <div className={'flex items-center justify-end gap-2'}>
       <HideFromClient>
         <AssignmentForm value={assignment} onSubmit={() => {table.reload()}}>
-          <Button variant="secondary" size={'sm'}>
+          <Button variant="outline" size={'sm'}>
             <PencilIcon />
           </Button>
         </AssignmentForm>
       </HideFromClient>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size={'sm'}>
+          <Button variant="outline" size={'sm'}>
             <EllipsisVertical />
           </Button>
         </DropdownMenuTrigger>

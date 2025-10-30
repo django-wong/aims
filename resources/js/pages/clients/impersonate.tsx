@@ -13,7 +13,7 @@ export function Impersonate(props: { userId: number }) {
 
   return (
     <Link href={route('impersonate', props.userId)}>
-      <Button variant={'secondary'} size={'sm'}>
+      <Button variant={'outline'}>
         <LogInIcon/>
         Impersonate
       </Button>

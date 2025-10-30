@@ -38,7 +38,7 @@ export function QuoteForm(props: DialogFormProps<Quote>) {
       if (data) {
         form.resetAll();
         setOpen(false);
-        props.onSubmit(data.data);
+        props.onSubmit?.(data.data);
         if (table) {
           table.reload();
         } else {
@@ -110,7 +110,7 @@ export function QuoteForm(props: DialogFormProps<Quote>) {
             control={form.control}
             render={({field}) => {
               return (
-                <VFormField label={'Client'} className={'col-span-6'}>
+                <VFormField required label={'Client'} className={'col-span-6'}>
                   <ClientSelect onValueChane={(value) => {
                     field.onChange(value);
                   }} value={field.value || null}/>

@@ -3,7 +3,7 @@ import { Head, router } from '@inertiajs/react';
 import * as React from 'react';
 import { BreadcrumbItem, Client } from '@/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PropsWithChildren, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash, UserRoundPen } from 'lucide-react';
@@ -51,6 +51,7 @@ export default function Edit(props: ClientEditProps) {
           pageAction={
             props.can.update ? (
               <>
+                <Impersonate userId={props.client.user_id}/>
                 <PopoverConfirm
                   asChild
                   message={'Are you sure to delete this client? THis action cannot be undone.'}
@@ -63,16 +64,15 @@ export default function Edit(props: ClientEditProps) {
                     }
                   }
                 >
-                  <Button size={'sm'} variant={'secondary'}>
+                  <Button variant={'destructive'}>
                     <Trash/> Delete
                   </Button>
                 </PopoverConfirm>
                 <ClientForm value={props.client} onSubmit={() => {router.reload()}}>
-                  <Button size={'sm'} variant={'secondary'}>
+                  <Button variant={'primary'}>
                     <UserRoundPen/> Edit
                   </Button>
                 </ClientForm>
-                <Impersonate userId={props.client.user_id}/>
               </>
             ) : <Badge variant={'destructive'}>Read Only</Badge>
           }

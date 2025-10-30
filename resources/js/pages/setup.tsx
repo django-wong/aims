@@ -11,8 +11,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { addressSchema, AddressDialog } from '@/pages/projects/address-form';
 import { BaseLayout } from '@/layouts/base-layout';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import * as React from 'react';
 
-export default function Setup() {
+interface SetupProps {
+  timezones: string[];
+}
+
+export default function SetupPage(props: SetupProps) {
   return (
     <>
       <Head title="Setup new office">
@@ -24,7 +30,7 @@ export default function Setup() {
           <a href="#" className="flex items-center gap-2 self-center font-bold text-3xl ">
             AIMS
           </a>
-          <SetupForm />
+          <SetupForm {...props} />
         </div>
       </div>
     </>
@@ -35,6 +41,7 @@ export default function Setup() {
 const schema = z.object({
   name: z.string().min(2, { message: 'Name is required' }).max(50, { message: 'Name must be less than 50 characters' }),
   code: z.string().min(2, { message: 'Code is required' }).max(10, { message: 'Code must be less than 10 characters' }),
+  timezone: z.string().min(2, 'Timezone is required'),
   address: addressSchema.optional(),
   admin: z.object({
     first_name: z.string().min(1, { message: 'First name is required' }),
@@ -45,19 +52,20 @@ const schema = z.object({
   })
 });
 
-function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function SetupForm({ className, timezones, ...props }: React.HTMLAttributes<HTMLDivElement> & SetupProps) {
   const form = useReactiveForm<z.infer<typeof schema>>({
     url: '/api/v1/orgs',
     defaultValues: {
-      name: 'My awesome office',
-      code: 'MAO',
+      name: '',
+      code: '',
+      timezone: '',
       address: undefined,
       admin: {
-        first_name: 'Admin',
-        last_name: 'User',
-        email: 'me@djangowong.com',
-        password: 'password',
-        password_confirmation: 'password',
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
       }
     },
     resolver: zodResolver(schema)
@@ -122,6 +130,29 @@ function SetupForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
                         </VFormField>
                       )}
                       name={'code'}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      render={({field}) => {
+                        return (
+                          <VFormField label={'Timezone'}>
+                            <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {timezones.map((timezone, index) => {
+                                  return (
+                                    <SelectItem key={`tz:${index}`} value={timezone}>{timezone}</SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </VFormField>
+                        );
+                      }}
+                      name={'timezone'}
                     />
 
                     <div>

@@ -42,7 +42,7 @@ export default function ProjectEdit(props: { project: Project }) {
       pageAction={
         <HideFromClient>
           <ProjectForm value={props.project} onSubmit={() => {router.reload()}}>
-            <Button variant={'secondary'}>
+            <Button variant={'primary'}>
               <PencilIcon/>
               Edit
             </Button>

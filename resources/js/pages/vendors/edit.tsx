@@ -50,12 +50,12 @@ export default function Edit(props: VendorEditProps) {
             })
           }}
         >
-          <Button size={'sm'} variant={'secondary'}>
+          <Button variant={'destructive'}>
             <Trash/> Delete
           </Button>
         </PopoverConfirm>
         <VendorForm value={props.vendor} onSubmit={() => {router.reload()}}>
-          <Button size={'sm'} variant={'secondary'}>
+          <Button variant={'primary'}>
             <UserRoundPen/> Edit
           </Button>
         </VendorForm>

@@ -20,8 +20,8 @@ return new class extends Migration
                 org.name as org_name,
                 controlling_org.name as controlling_org_name
             from quotes
-            left join clients as client on quotes.quote_client_id = client.id
-            left join clients as quote_client on quotes.client_id = quote_client.id
+            left join clients as client on quotes.client_id = client.id
+            left join clients as quote_client on quotes.quote_client_id = quote_client.id
             left join orgs as org on quotes.org_id = org.id
             left join orgs as controlling_org on quotes.controlling_org_id = controlling_org.id;
         ");

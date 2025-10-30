@@ -197,14 +197,14 @@ export function TimesheetItemActions(props: TimesheetItemActionsProps) {
               table.reload();
             }}
           >
-            <Button variant={'secondary'} size={'sm'}>
+            <Button variant={'outline'} size={'sm'}>
               <ReceiptCentIcon />
             </Button>
           </LogExpenseForm>
         </HideFromClient>
         <HideFromClient>
           <TimesheetItemForm value={props.value} onSubmit={onSubmit} asChild>
-            <Button variant={'secondary'} size={'sm'}>
+            <Button variant={'outline'} size={'sm'}>
               <PencilIcon />
             </Button>
           </TimesheetItemForm>
