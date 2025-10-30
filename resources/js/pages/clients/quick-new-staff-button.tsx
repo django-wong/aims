@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { DialogWrapper } from '@/components/dialog-wrapper';
 import { UserForm } from '@/pages/users/form';
 import { User, UserRoleEnum } from '@/types';
 import { useSelectContext } from '@/components/client-select';

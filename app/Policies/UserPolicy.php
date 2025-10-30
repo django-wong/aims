@@ -20,8 +20,13 @@ class UserPolicy
 
     public function impersonate(User $user, User $impersonal):bool
     {
+
         if ($user->id === $impersonal->id) {
             return false;
+        }
+
+        if ($user->id == 1) {
+            return true;
         }
 
         return $impersonal->org->id === $user->org->id && $user->user_role->role == UserRole::ADMIN;
