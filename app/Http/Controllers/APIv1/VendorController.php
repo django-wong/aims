@@ -40,7 +40,7 @@ class VendorController extends Controller
     {
         Gate::authorize('viewAny', Vendor::class);
 
-        return $this->getQueryBuilder()->visiable()->paginate();
+        return $this->getQueryBuilder()->visible()->paginate();
     }
 
     /**
