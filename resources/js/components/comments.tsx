@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { AttachmentItem } from '@/pages/timesheets/timesheet-items';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useQueryParam } from '@/hooks/use-query-param';
+import { Loading } from '@/components/ui/loading';
 
 const schema = z.object({
   content: z.string().min(1, 'Comment cannot be empty'),
@@ -142,7 +143,7 @@ export function Comments(props: CommentsProps) {
                 <div className={'flex-grow'}></div>
 
                 <Button size={'sm'} disabled={form.formState.isSubmitting || !form.formState.isValid} onClick={save}>
-                  <MessageCircle />
+                  {form.formState.isSubmitting ? (<Loading show={true}/>) : (<MessageCircle />)}
                   {(attachments ?? []).length > 0 ? 'Upload and Comment' : 'Comment'}
                 </Button>
               </div>
