@@ -127,7 +127,7 @@ class AssignmentController extends Controller
         Gate::allows('update', $assignment);
 
         $assignment->assignment_inspectors()->each(function ($inspector) use ($assignment) {
-            $inspector->notify(
+            $inspector->user?->notify(
                 new AssignmentHasBeenIssued($assignment)
             );
         });
