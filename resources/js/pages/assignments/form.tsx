@@ -30,7 +30,7 @@ import { Assignment, DialogFormProps, SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { RefreshCcw } from 'lucide-react';
-import { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import { PropsWithChildren, startTransition, useCallback, useEffect, useState } from 'react';
 import z from 'zod';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -38,6 +38,8 @@ import { Label } from '@/components/ui/label';
 import { usePage } from '@inertiajs/react';
 import { Switch } from '@/components/ui/switch';
 import { QuickNewContactButton } from '@/pages/contacts/quick-new-contact-button';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const schema = z.object({
   reference_number: z.string().min(1, 'Reference number is required').max(30, 'Reference number must be at most 30 characters'),
@@ -118,9 +120,14 @@ const schema = z.object({
 });
 
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
+
   const {
     props: { auth },
   } = usePage<SharedData>();
+
+  const [
+    draft, setDraft
+  ] = useLocalStorage<z.infer<typeof schema>|null>(`${auth.user?.id}:assignment:draft`, null);
 
   const isEdit = !!props.value;
 
@@ -135,11 +142,13 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       delegated: false,
       notes: '',
       report_required: false,
+      ...draft,
       ...props.value,
     }),
     serialize: objectToFormData,
     resolver: zodResolver(schema) as any,
   });
+
 
   const i_am_the_operation_office = props.value?.operation_org_id === auth.org?.id;
 
@@ -156,11 +165,24 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     props.onOpenChange?.(value);
   }
 
+  function saveAsDraft() {
+    startTransition(() => {
+      setDraft({
+        ...form.getValues(),
+        attachments: []
+      });
+      setOpen(false);
+    })
+  }
+
   function save() {
     form.submit().then(async (response) => {
       if (response) {
-        setOpen(false);
-        props.onSubmit?.(response.data);
+        startTransition(() => {
+          setDraft(null);
+          setOpen(false);
+          props.onSubmit?.(response.data);
+        })
       }
     });
   }
@@ -1021,6 +1043,16 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 Cancel
               </Button>
             </DialogClose>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button variant={'outline'} onClick={saveAsDraft}>
+                  Save as Draft
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Save your work as a draft. Please note attachments will not be saved.
+              </TooltipContent>
+            </Tooltip>
             <Button disabled={form.formState.disabled || form.formState.isSubmitting} onClick={save}>
               Save
             </Button>
