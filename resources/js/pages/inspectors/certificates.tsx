@@ -23,6 +23,8 @@ import { format } from 'date-fns';
 import { EditIcon, Plus, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 import z from 'zod';
+import { formatDate } from '@/lib/helpers';
+import dayjs from 'dayjs';
 
 const certificates_columns: ColumnDef<Certificate>[] = [
   {
@@ -307,8 +309,11 @@ function CertificateForm(props: CertificateFormProps) {
                   render={({ field }) => (
                     <VFormField label={'Issued Date'}>
                       <DatePicker
+                        calendar={{
+                          captionLayout: 'dropdown'
+                        }}
                         value={field.value || undefined}
-                        onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
+                        onChange={(date) => field.onChange(date ? dayjs(date).format('YYYY/MM/DD') : null)}
                       />
                     </VFormField>
                   )}
@@ -320,8 +325,11 @@ function CertificateForm(props: CertificateFormProps) {
                   render={({ field }) => (
                     <VFormField label={'Expiry Date'}>
                       <DatePicker
+                        calendar={{
+                          captionLayout: 'dropdown'
+                        }}
                         value={field.value || undefined}
-                        onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : null)}
+                        onChange={(date) => field.onChange(date ? dayjs(date).format('YYYY/MM/DD') : null)}
                       />
                     </VFormField>
                   )}

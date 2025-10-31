@@ -40,7 +40,7 @@ export function DatePicker({disabled, value, onChange, placeholder, ...props }: 
           </Button>
         </PopoverTrigger>
         <PopoverContent className={'w-auto p-0'}>
-          <Calendar {...props.calendar} mode={'single'} selected={date} onSelect={onChange} />
+          <Calendar {...props.calendar} mode={'single'} defaultMonth={date} selected={date} onSelect={onChange} />
         </PopoverContent>
       </Popover>
     </>
