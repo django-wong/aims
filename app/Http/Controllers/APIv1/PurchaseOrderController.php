@@ -37,8 +37,8 @@ class PurchaseOrderController extends Controller
 
         $inspector_profile = InspectorProfile::query()->where('user_id', $validated['user_id'])->firstOrFail();
 
-        $inspection = ($budget->hourly_rate - $inspector_profile->hourly_rate) / $budget->hourly_rate * 100;
-        $travel = ($budget->travel_rate - $inspector_profile->travel_rate) / $budget->travel_rate * 100;
+        $inspection = empty($budget->hourly_rate) ? 0 : ($budget->hourly_rate - $inspector_profile->hourly_rate) / $budget->hourly_rate * 100;
+        $travel = empty($budget->travel_rate) ? 0 : ($budget->travel_rate - $inspector_profile->travel_rate) / $budget->travel_rate * 100;
         $total = $inspection + $travel;
 
         return response()->json([
