@@ -42,9 +42,11 @@ class QuoteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CurrentOrg $org)
     {
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->tap(function (Builder $query) use ($org) {
+            $query->where('org_id', $org->id);
+        })->paginate();
     }
 
     /**
@@ -58,9 +60,9 @@ class QuoteController extends Controller
                 'org_id' => $org->id,
             ]);
 
-           activity()->on($quote)->withProperties($request->input())->log('Quote created');
+            activity()->on($quote)->withProperties($request->input())->log('Quote created');
 
-           return $quote;
+            return $quote;
         });
 
         return [
