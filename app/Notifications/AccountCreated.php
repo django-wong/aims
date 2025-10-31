@@ -2,20 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\Assignment;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AssignmentHasBeenAccepted extends Notification
+class AccountCreated extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Assignment $assignment)
+    public function __construct(private User $user, private ?string $password = null)
     {
         //
     }
@@ -37,12 +37,15 @@ class AssignmentHasBeenAccepted extends Notification
     {
         return (new MailMessage)
             ->view('email')
-            ->subject("Assignment {$this->assignment->reference_number} has been accepted")
-            ->greeting('Hello')
-            ->line("The assignment with reference number {$this->assignment->reference_number} has been accepted by the coordinating office. Click the button below to track the assignment.")
-            ->action(
-                'View Assignment', route('assignments.edit', $this->assignment->id)
-            );
+            ->subject('Your Account Has Been Created')
+            ->greeting("Hello {$this->user->name}")
+            ->line('Your account has been successfully created.')
+            ->line('Login Email: ' . $this->user->email)
+            ->when(!is_null($this->password), function (MailMessage $mail) {
+                $mail->line("Password: {$this->password}");
+            })
+            ->action('Login Now', url('/'))
+            ->line('Please do not share your login credentials or this email with anyone.');
     }
 
     /**

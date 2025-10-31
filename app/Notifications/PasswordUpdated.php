@@ -2,20 +2,19 @@
 
 namespace App\Notifications;
 
-use App\Models\Assignment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AssignmentHasBeenAccepted extends Notification
+class PasswordUpdated extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Assignment $assignment)
+    public function __construct(private string $password)
     {
         //
     }
@@ -37,12 +36,12 @@ class AssignmentHasBeenAccepted extends Notification
     {
         return (new MailMessage)
             ->view('email')
-            ->subject("Assignment {$this->assignment->reference_number} has been accepted")
-            ->greeting('Hello')
-            ->line("The assignment with reference number {$this->assignment->reference_number} has been accepted by the coordinating office. Click the button below to track the assignment.")
-            ->action(
-                'View Assignment', route('assignments.edit', $this->assignment->id)
-            );
+            ->subject('Your Password Has Been Updated')
+            ->greeting('Hello ' . $notifiable->first_name)
+            ->line('This is to inform you that your password has been successfully updated.')
+            ->line('Your new password is: ' . $this->password)
+            ->line('Please keep this information secure and do not share it with anyone.')
+            ->line('If you did not request this change, please contact our support team immediately.');
     }
 
     /**
@@ -52,8 +51,6 @@ class AssignmentHasBeenAccepted extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

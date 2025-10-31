@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Models\User;
 use App\Models\UserRole;
+use App\Notifications\AccountCreated;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Http\Requests\APIv1\Users\StoreRequest;
@@ -121,10 +122,16 @@ class UserController extends Controller
             return $user;
         });
 
-        return response()->json([
+        $user->notify(
+            new AccountCreated($user, $request->input('password'))
+        );
+
+        $data = [
             'data' => $user->load('user_role'),
             'message' => 'User created successfully'
-        ], 201);
+        ];
+
+        return response()->json($data, 201);
     }
 
     public function update(User $user, UpdateRequest $request)

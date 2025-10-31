@@ -5,6 +5,7 @@ namespace App\Http\Requests\APIv1\Clients;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 
 class StoreRequest extends FormRequest
 {
@@ -35,6 +36,7 @@ class StoreRequest extends FormRequest
             'user' => 'nullable|array',
             'user.name' => 'required|string|max:255',
             'user.email' => 'required|email|max:255',
+            'user.password' => ['required', 'confirmed', Password::defaults()],
         ];
     }
 

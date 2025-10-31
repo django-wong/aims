@@ -19,7 +19,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Circle } from 'lucide-react';
 import zod from 'zod';
 import { RoleSelect } from '@/components/role-select';
-import { useExternalState } from '@/hooks/use-external-state';
 import { useEffect, useState } from 'react';
 
 type UserFormProps = DialogFormProps<User> & {
@@ -73,7 +72,7 @@ export function UserForm(props: UserFormProps) {
   function save() {
     form.submit().then(async (response) => {
       if (response) {
-        props.onSubmit(response.data);
+        props.onSubmit?.(response.data);
         setOpen(false);
         if (props.onOpenChange) {
           props.onOpenChange(open);

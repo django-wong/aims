@@ -22,6 +22,8 @@ import { StaffSelect } from '@/components/user-select';
 import AvatarUpload from '@/components/file-upload/avatar-upload';
 import { useEffect, useState } from 'react';
 import { QuickNewStaffButton } from '@/pages/clients/quick-new-staff-button';
+import { Label } from '@/components/ui/label';
+import zod from 'zod';
 
 const schema = z.object({
   business_name: z.string().min(1, 'Business name is required'),
@@ -36,19 +38,12 @@ const schema = z.object({
   ),
   user: z.object({
     name: z.string().min(1, 'Contact name is required'),
-    email: z.string().email('Invalid email format')
+    email: z.string().email('Invalid email format'),
+    password: zod.string().min(6).optional().nullable(),
+    password_confirmation: zod.string().optional().nullable(),
   }).optional(),
   notes: z.string().optional().nullable(),
   invoice_reminder: z.coerce.number().min(1).max(30).nullable(),
-}).superRefine((data, context) => {
-  // Logo is required if no logo_url is provided
-  // if (!data.logo_url && !data.logo) {
-  //   context.addIssue({
-  //     code: 'custom',
-  //     message: 'Logo is required',
-  //     path: ['logo'],
-  //   })
-  // }
 });
 
 export function ClientForm(props: DialogFormProps<Client>) {
@@ -72,6 +67,8 @@ export function ClientForm(props: DialogFormProps<Client>) {
     }
   });
 
+  const isUpdate = !!props.value;
+
   const [open, setOpen] = useState<boolean>(props.open ?? false);
 
   useEffect(() => {
@@ -87,7 +84,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
       if (res) {
         props.onOpenChange?.(false);
         setOpen(false);
-        props.onSubmit(res.data);
+        props.onSubmit?.(res.data);
       }
     })
   }
@@ -159,7 +156,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                   name={'code'}
                 />
               </div>
-              <div className={'col-span-6'}>
+              <div className={'col-span-12'}>
                 <FormField
                   control={form.control}
                   render={({ field }) => {
@@ -174,7 +171,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                   name={'user.name'}
                 />
               </div>
-              <div className={'col-span-6'}>
+              <div className={'col-span-12'}>
                 <FormField
                   control={form.control}
                   render={({ field }) => {
@@ -188,6 +185,32 @@ export function ClientForm(props: DialogFormProps<Client>) {
                     </VFormField>
                   }}
                   name={'user.email'}
+                />
+              </div>
+              <div className={'col-span-6'}>
+                <FormField
+                  control={form.control}
+                  render={({ field }) => {
+                    return (
+                      <VFormField required={!isUpdate} label={'Password'}>
+                        <Input autoComplete={'new-password'} placeholder={isUpdate ? 'Leave blank to retain existing password' : ''} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
+                      </VFormField>
+                    );
+                  }}
+                  name={'user.password'}
+                />
+              </div>
+              <div className={'col-span-6'}>
+                <FormField
+                  control={form.control}
+                  render={({ field }) => {
+                    return (
+                      <VFormField required={!isUpdate} label={'Confirm Password'}>
+                        <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
+                      </VFormField>
+                    );
+                  }}
+                  name={'user.password_confirmation'}
                 />
               </div>
               <div className={'col-span-6'}>

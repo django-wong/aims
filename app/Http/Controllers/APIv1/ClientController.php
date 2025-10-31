@@ -9,9 +9,12 @@ use App\Models\Client;
 use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
+use App\Notifications\AccountCreated;
+use App\Notifications\PasswordUpdated;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -110,10 +113,9 @@ class ClientController extends Controller
                 $address = Address::query()->create($request->validated('address'));
             }
 
-            $user = User::query()->create([
-                ...$request->validated('user'),
-                'password' => ''
-            ]);
+            $user = User::query()->create($request->validated('user'));
+
+            $user->refresh();
 
             $org = $request->user()->org->id;
 
@@ -129,6 +131,9 @@ class ClientController extends Controller
                 'role' => UserRole::CLIENT,
             ]);
 
+            $user->notify(
+                new AccountCreated($user, $request->input('user.password'))
+            );
 
             return $client->load(['user', 'address', 'org']);
         });
@@ -151,7 +156,15 @@ class ClientController extends Controller
     {
         $client = DB::transaction(function () use ($request, $client) {
             if ($request->has('user')) {
-                $client->user->update($request->validated('user'));
+                $client->user->update(Arr::only($request->validated('user'), ['email', 'name']));
+                if (! empty($request->input('user.password'))) {
+                    $client->user->update([
+                        'password' => $request->input('user.password')
+                    ]);
+                    $client->user->notify(
+                        new PasswordUpdated($request->input('user.password'))
+                    );
+                }
             }
 
             $client->update($request->basic());

@@ -40,7 +40,7 @@ class UpcomingAssignmentReminderForInspector extends Notification
         $message = (new MailMessage)
             ->view('email')
             ->subject("Assignment {$this->assignment->reference_number} is starting tomorrow")
-            ->greeting("Hello {$this->inspector->user->name},")
+            ->greeting("Hello {$this->inspector->user->name}")
             ->line("This is a reminder that your assignment ({$this->assignment->reference_number}) is scheduled to start tomorrow ({$this->assignment->first_visit_date->format('Y-m-d')}). Please ensure you are prepared and have all necessary materials ready.")
             ->action(
                 'View Assignment', route('assignments.edit', $this->assignment->id)

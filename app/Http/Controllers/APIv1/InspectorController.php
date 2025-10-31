@@ -6,6 +6,7 @@ use App\Http\Requests\APIv1\Inspectors\StoreRequest;
 use App\Http\Requests\APIv1\UpdateInspectorRequest;
 use App\Models\User;
 use App\Models\UserRole;
+use App\Notifications\AccountCreated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -30,9 +31,14 @@ class InspectorController extends Controller
 
         if (! empty($request->validated('address'))) {
             $address = $user->address()->create($request->validated('address'));
-            $user->address()->associate($address)->save();
-            $profile->address()->associate($address)->save();
+            foreach ([$user, $profile] as $subject) {
+                $subject->address()->associate($address)->save();
+            }
         }
+
+        $user->notify(
+            new AccountCreated($user, $request->input('password'))
+        );
 
         return [
             'data' => $user->load('inspector_profile', 'user_role')
