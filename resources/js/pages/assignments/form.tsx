@@ -25,7 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { StaffSelect } from '@/components/user-select';
 import { VendorSelect } from '@/components/vendor-select';
 import { VFormField } from '@/components/vform';
-import { useReactiveForm, useResource } from '@/hooks/use-form';
+import { objectToFormData, useReactiveForm, useResource } from '@/hooks/use-form';
 import { Assignment, DialogFormProps, SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
@@ -71,8 +71,6 @@ const schema = z.object({
   po_delivery_date: z.string().nullable().optional(),
   close_date: z.string().nullable().optional(),
   final_invoice_date: z.string().nullable().optional(),
-
-  // i_e_a: z.string().nullable().optional(),
 
   attachments: z.array(z.file()).nullable().optional(),
 
@@ -139,6 +137,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       report_required: false,
       ...props.value,
     }),
+    serialize: objectToFormData,
     resolver: zodResolver(schema) as any,
   });
 
@@ -161,7 +160,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     form.submit().then(async (response) => {
       if (response) {
         setOpen(false);
-        props.onSubmit(response.data);
+        props.onSubmit?.(response.data);
       }
     });
   }
