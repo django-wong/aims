@@ -27,8 +27,7 @@ $timesheet_items = \App\Models\TimesheetItem::query()->with('expense')->where('t
     <tr>
         <td style="border: 1px solid #000">Client: {{ $detail->client_name }}</td>
         <td style="border: 1px solid #000">WO/SO#: {{ $assignment->purchase_order->title }}</td>
-        <td style="border: 1px solid #000">ESN: </td>
-        <td style="border: 1px solid #000">Name: {{ $detail->inspector_name }}</td>
+        <td colspan="2" style="border: 1px solid #000">Name: {{ $detail->inspector_name }}</td>
     </tr>
     <tr>
         <td style="border: 1px solid #000">Wk Number: {{ $timesheet->week }}</td>
