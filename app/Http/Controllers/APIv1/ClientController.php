@@ -131,9 +131,9 @@ class ClientController extends Controller
                 'role' => UserRole::CLIENT,
             ]);
 
-            $user->notify(
-                new AccountCreated($user, $request->input('user.password'))
-            );
+            // $user->notify(
+            //     new AccountCreated($user, $request->input('user.password'))
+            // );
 
             return $client->load(['user', 'address', 'org']);
         });
@@ -161,9 +161,9 @@ class ClientController extends Controller
                     $client->user->update([
                         'password' => $request->input('user.password')
                     ]);
-                    $client->user->notify(
-                        new PasswordUpdated($request->input('user.password'))
-                    );
+                    // $client->user->notify(
+                    //     new PasswordUpdated($request->input('user.password'))
+                    // );
                 }
             }
 

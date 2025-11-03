@@ -46,9 +46,10 @@ class Approved implements Status
             ]);
         });
 
-        $client = $timesheet->assignment?->project?->client;
-        $client?->user?->notify(
-            new TimesheetIsWaitingForClientApproval($timesheet)
-        );
+        // Note: Disable the notification to client until the dashboard is ready.
+        // $client = $timesheet->assignment?->project?->client;
+        // $client?->user?->notify(
+        //     new TimesheetIsWaitingForClientApproval($timesheet)
+        // );
     }
 }
