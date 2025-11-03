@@ -7,6 +7,7 @@ use App\Http\Requests\APIv1\Vendors\UpdateRequest;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -78,6 +79,23 @@ class VendorController extends Controller
     public function update(UpdateRequest $request, Vendor $vendor)
     {
         $vendor->update($request->validated());
+
+        if (! empty($request->validated('address'))) {
+            $address = $vendor->address()->updateOrCreate(
+                [],
+                Arr::only($request->input('address'), [
+                    'address_line_1',
+                    'city',
+                    'state',
+                    'zip',
+                    'country',
+                    'address_line_2',
+                    'address_line_3',
+                ])
+            );
+            $vendor->address_id = $address->id;
+            $vendor->save();
+        }
 
         return response()->json([
             'data' => $vendor->refresh(),
