@@ -107,7 +107,14 @@ class MenuController
                         'icon' => 'cog',
                         'url' => route('system-configuration'),
                     ]
-                ]))
+                ])),
+                // ...($when([UserRole::SYSTEM], [
+                //     'system-configuration' => [
+                //         'name' => 'System Configuration',
+                //         'icon' => 'cog',
+                //         'url' => route('system-configuration'),
+                //     ]
+                // ]))
             ],
         ];
     }

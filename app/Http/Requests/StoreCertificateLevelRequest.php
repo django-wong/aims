@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\CertificateLevel;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreCertificateLevelRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StoreCertificateLevelRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Gate::allows('create', CertificateLevel::class);
     }
 
     /**
@@ -22,7 +24,7 @@ class StoreCertificateLevelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|unique:certificate_levels,name',
         ];
     }
 }

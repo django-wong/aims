@@ -445,31 +445,6 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         />
                       </div>
 
-                      {/*<div className={'col-span-6'}>*/}
-                      {/*  <FormField*/}
-                      {/*    control={form.control}*/}
-                      {/*    render={({ field }) => (*/}
-                      {/*      <VFormField label={'I/E/A'}>*/}
-                      {/*        <Select onValueChange={field.onChange} value={field.value || ''}>*/}
-                      {/*          <SelectTrigger className={'bg-background w-full'}>*/}
-                      {/*            <SelectValue />*/}
-                      {/*          </SelectTrigger>*/}
-                      {/*          <SelectContent>*/}
-                      {/*            <SelectItem value="I">I</SelectItem>*/}
-                      {/*            <SelectItem value="E">E</SelectItem>*/}
-                      {/*            <SelectItem value="A">A</SelectItem>*/}
-                      {/*            <SelectItem value="IE">IE</SelectItem>*/}
-                      {/*            <SelectItem value="EA">EA</SelectItem>*/}
-                      {/*            <SelectItem value="IA">IA</SelectItem>*/}
-                      {/*            <SelectItem value="IEA">IEA</SelectItem>*/}
-                      {/*          </SelectContent>*/}
-                      {/*        </Select>*/}
-                      {/*      </VFormField>*/}
-                      {/*    )}*/}
-                      {/*    name={'i_e_a'}*/}
-                      {/*  />*/}
-                      {/*</div>*/}
-
                       <div className={'col-span-12'}>
                         <FormField
                           control={form.control}

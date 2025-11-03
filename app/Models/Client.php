@@ -15,10 +15,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Org        $org
  * @property int $id
  */
-class Client extends Model implements Contactable, Invoiceable
+class Client extends Model implements Contactable, Invoiceable, Commentable
 {
     /** @use HasFactory<\Database\Factories\ClientFactory> */
     use HasFactory, DynamicPagination, BelongsToOrg, BelongsToUser, HasManyContact, BelongsToAddress, HasManyContact;
+    use HasManyComments;
 
     protected $guarded = [
         'id', 'updated_at', 'created_at'

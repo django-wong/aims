@@ -11,7 +11,9 @@ class Skill extends Model
     use HasFactory, DynamicPagination;
 
     protected $guarded = [
-        'id', 'created_at', 'updated_at'
+        'id',
+        'created_at',
+        'updated_at'
     ];
 
     public function users()

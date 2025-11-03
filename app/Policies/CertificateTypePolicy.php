@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\CertificateType;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class CertificateTypePolicy
@@ -13,7 +14,7 @@ class CertificateTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +22,7 @@ class CertificateTypePolicy
      */
     public function view(User $user, CertificateType $certificateType): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +30,7 @@ class CertificateTypePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAnyRole([UserRole::ADMIN]);
     }
 
     /**
@@ -37,7 +38,7 @@ class CertificateTypePolicy
      */
     public function update(User $user, CertificateType $certificateType): bool
     {
-        return false;
+        return $user->isAnyRole([UserRole::ADMIN]);
     }
 
     /**
@@ -45,22 +46,6 @@ class CertificateTypePolicy
      */
     public function delete(User $user, CertificateType $certificateType): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, CertificateType $certificateType): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, CertificateType $certificateType): bool
-    {
-        return false;
+        return $user->isAnyRole([UserRole::ADMIN]);
     }
 }

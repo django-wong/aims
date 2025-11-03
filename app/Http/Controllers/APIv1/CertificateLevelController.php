@@ -5,6 +5,7 @@ namespace App\Http\Controllers\APIv1;
 use App\Http\Requests\StoreCertificateLevelRequest;
 use App\Http\Requests\UpdateCertificateLevelRequest;
 use App\Models\CertificateLevel;
+use Illuminate\Support\Facades\Gate;
 
 class CertificateLevelController extends Controller
 {
@@ -24,35 +25,16 @@ class CertificateLevelController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreCertificateLevelRequest $request)
     {
-        //
-    }
+        $certificateLevel = CertificateLevel::query()->create($request->validated());
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CertificateLevel $certificateLevel)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CertificateLevel $certificateLevel)
-    {
-        //
+        return [
+            'message' => 'Certificate Level created successfully.',
+            'data' => $certificateLevel,
+        ];
     }
 
     /**
@@ -60,7 +42,12 @@ class CertificateLevelController extends Controller
      */
     public function update(UpdateCertificateLevelRequest $request, CertificateLevel $certificateLevel)
     {
-        //
+        $certificateLevel->update($request->validated());
+
+        return [
+            'message' => 'Certificate Level updated successfully.',
+            'data' => $certificateLevel,
+        ];
     }
 
     /**
@@ -68,6 +55,12 @@ class CertificateLevelController extends Controller
      */
     public function destroy(CertificateLevel $certificateLevel)
     {
-        //
+        Gate::authorize('delete', $certificateLevel);
+
+        $certificateLevel->delete();
+
+        return [
+            'message' => 'Certificate Level deleted successfully.',
+        ];
     }
 }

@@ -37,6 +37,13 @@ class AppServiceProvider extends ServiceProvider
             return auth()->user()?->user_role->isAnyOf([UserRole::CLIENT]);
         });
 
+        \Illuminate\Support\Facades\Gate::before(function (User $user, $ability) {
+            if ($user->isAnyRole([UserRole::SYSTEM])) {
+                return true;
+            }
+            return null;
+        });
+
         \Illuminate\Support\Facades\Gate::define('viewDashboard', function (User $user) {
             return $user->isAnyRole([
                 UserRole::SYSTEM,

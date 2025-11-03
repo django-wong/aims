@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateCertificateLevelRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateCertificateLevelRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Gate::allows('update', $this->route('certificate_level'));
     }
 
     /**
@@ -21,8 +22,10 @@ class UpdateCertificateLevelRequest extends FormRequest
      */
     public function rules(): array
     {
+        $certificateLevelId = $this->route('certificate_level')->id;
+
         return [
-            //
+            'name' => 'required|string|unique:certificate_levels,name,' . $certificateLevelId,
         ];
     }
 }

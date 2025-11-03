@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Skill;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class SkillPolicy
@@ -13,7 +14,7 @@ class SkillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +22,7 @@ class SkillPolicy
      */
     public function view(User $user, Skill $skill): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +30,9 @@ class SkillPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAnyRole([
+            UserRole::ADMIN
+        ]);
     }
 
     /**
@@ -37,7 +40,9 @@ class SkillPolicy
      */
     public function update(User $user, Skill $skill): bool
     {
-        return false;
+        return $user->isAnyRole([
+            UserRole::ADMIN
+        ]);
     }
 
     /**
@@ -45,22 +50,8 @@ class SkillPolicy
      */
     public function delete(User $user, Skill $skill): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Skill $skill): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Skill $skill): bool
-    {
-        return false;
+        return $user->isAnyRole([
+            UserRole::ADMIN
+        ]);
     }
 }

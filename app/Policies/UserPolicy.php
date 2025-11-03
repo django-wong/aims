@@ -21,15 +21,22 @@ class UserPolicy
     public function impersonate(User $user, User $impersonal):bool
     {
 
-        if ($user->id === $impersonal->id) {
+        if ($user->id === $impersonal->id || $impersonal->org->id !== $user->org->id) {
             return false;
         }
 
-        if ($user->id == 1) {
+        if ($user->user_role->role == UserRole::ADMIN) {
             return true;
         }
 
-        return $impersonal->org->id === $user->org->id && $user->user_role->role == UserRole::ADMIN;
+        if ($user->isAnyRole([UserRole::PM, UserRole::STAFF])) {
+            return $impersonal->isAnyRole([
+                UserRole::CLIENT,
+                UserRole::INSPECTOR
+            ]);
+        }
+
+        return  false;
     }
 
     public function create(User $user): bool

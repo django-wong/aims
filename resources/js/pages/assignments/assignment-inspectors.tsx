@@ -75,7 +75,7 @@ export function AssignmentInspectors() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant={'outline'} size={'sm'} asChild>
-                    <a href={route('impersonate', { id: row.original.user_id})}>
+                    <a href={route('impersonate', { id: row.original.user_id, redirect_to: route('assignments.record', { id: row.original.assignment_id})})}>
                       <KeySquareIcon/>
                     </a>
                   </Button>

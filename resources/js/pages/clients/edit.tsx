@@ -4,6 +4,7 @@ import * as React from 'react';
 import { BreadcrumbItem, Client } from '@/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMemo } from 'react';
+import { Comments } from '@/components/comments';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash, UserRoundPen } from 'lucide-react';
@@ -84,12 +85,16 @@ export default function Edit(props: ClientEditProps) {
                   <TabsList className={'mb-4'}>
                     <TabsTrigger value={'contacts'}>Contacts</TabsTrigger>
                     <TabsTrigger value={'notes'}>Notes</TabsTrigger>
+                    <TabsTrigger value={'comments'}>Comments</TabsTrigger>
                   </TabsList>
                   <TabsContent value={'notes'}>
                     <NotesEditor client={props.client}/>
                   </TabsContent>
                   <TabsContent value={'contacts'}>
                     <ClientContacts client={props.client}/>
+                  </TabsContent>
+                  <TabsContent value={'comments'}>
+                    <Comments commentableType={'Client'} commentableId={props.client.id} />
                   </TabsContent>
                 </Tabs>
               }

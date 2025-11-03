@@ -25,46 +25,49 @@ type UserFormProps = DialogFormProps<User> & {
   role?: UserRoleEnum
 };
 
-const updateSchema = zod.object({
-  method: zod.literal('update'),
+const schema = zod.object({
+  id: zod.coerce.number().optional().nullable(),
+  title: zod.string().optional().nullable(),
+  first_name: zod.string('').min(1),
+  last_name: zod.string().min(1),
+  email: zod.email(),
+  role: zod.coerce.number().optional().nullable(),
   password: zod.string().min(6).optional().nullable(),
   password_confirmation: zod.string().optional().nullable(),
-  first_name: zod.string('').min(1),
-  last_name: zod.string().min(1),
-  title: zod.string().optional().nullable(),
-  email: zod.email(),
+}).superRefine((data, ctx) => {
+  if (! data.id) {
+    // password is required
+    if (! data.password) {
+      ctx.addIssue({
+        path: ['password'],
+        code: 'custom',
+        message: 'Password is required when creating new user',
+      });
+    }
+    // role is required
+    if (! data.role) {
+      ctx.addIssue({
+        path: ['role'],
+        code: 'custom',
+        message: 'Role is required',
+      });
+    }
+  }
 });
-
-const createSchema = zod.object({
-  method: zod.literal('create'),
-  role: zod.number(),
-  password: zod.string().min(8),
-  password_confirmation: zod.string(),
-  first_name: zod.string('').min(1),
-  last_name: zod.string().min(1),
-  title: zod.string().optional().nullable(),
-  email: zod.email(),
-});
-
-const schema = zod.discriminatedUnion('method', [
-  createSchema,
-  updateSchema,
-]);
 
 export function UserForm(props: UserFormProps) {
   const form = useReactiveForm<zod.infer<typeof schema>, any>({
     ...useResource('/api/v1/users', {
-      first_name: 'First',
-      last_name: 'Last',
-      title: 'Mr',
-      email: 'me@djangowong.com',
-      password: '123123123',
-      password_confirmation: '123123123',
+      first_name: '',
+      last_name: '',
+      title: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
       ...props.value,
       role: props.role || props.value?.user_role?.role,
-      method: (props.value && props.value.id) ? 'update' : 'create' as any,
     }),
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
   });
 
   const isUpdate = !!(props.value && props.value.id);
@@ -158,19 +161,27 @@ export function UserForm(props: UserFormProps) {
                       name={'email'}
                     />
                   </div>
-                  <div className={'col-span-12'}>
-                    <FormField
-                      control={form.control}
-                      render={({field}) => {
-                        return (
-                          <VFormField required label={'Role'}>
-                            <RoleSelect disabled={!!(isUpdate || props.role)} onValueChane={field.onChange} value={field.value}/>
-                          </VFormField>
-                        )
-                      }}
-                      name={'role'}
-                    />
-                  </div>
+                  {
+                    isUpdate ? null : (
+                      <div className={'col-span-12'}>
+                        <FormField
+                          control={form.control}
+                          render={({field}) => {
+                            return (
+                              <VFormField required label={'Role'}>
+                                <RoleSelect
+                                  disabled={!!(isUpdate || props.role)}
+                                  onValueChane={field.onChange}
+                                  value={field.value ?? null}
+                                />
+                              </VFormField>
+                            )
+                          }}
+                          name={'role'}
+                        />
+                      </div>
+                    )
+                  }
                   <div className={'col-span-12'}>
                     <FormField
                       control={form.control}

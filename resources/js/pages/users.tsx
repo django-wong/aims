@@ -1,16 +1,10 @@
-import { DataTable, useTableApi } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, TableRefresher, useTableApi } from '@/components/data-table-2';
 import { RoleSelect } from '@/components/role-select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTable } from '@/hooks/use-table';
@@ -20,11 +14,12 @@ import { BreadcrumbItem, SharedData, User } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
-import { ChevronDown, Edit, EllipsisVertical, Plus, ScanFace, Trash2 } from 'lucide-react';
-import { startTransition, useEffect, useState } from 'react';
+import { ChevronDown, PencilIcon, Plus, ScanFace, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { Input } from '@/components/ui/input';
 import { useDebouncer } from '@/hooks/use-debounced';
+import { PopoverConfirm } from '@/components/popover-confirm';
 
 function describeUserRole(role: number): string {
   switch (role) {
@@ -135,7 +130,7 @@ export default function Users() {
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <UserForm onSubmit={() => {}}>
+        <UserForm onSubmit={() => table.reload()}>
           <Button>
             <Plus/> New
           </Button>
@@ -169,9 +164,13 @@ export default function Users() {
                   <TabsTrigger value="8">Staff</TabsTrigger>
                 </TabsList>
               </Tabs>
+              <TableRefresher/>
             </>
           }
           table={table}
+          right={
+            <ColumnToggle></ColumnToggle>
+          }
         />
       </div>
     </AppLayout>
@@ -179,81 +178,33 @@ export default function Users() {
 }
 
 function UserActions({ user }: { user: User }) {
-  const [open, setOpen] = useState(false);
-
   const table = useTableApi<User>();
-
-  const {
-    props: { auth },
-  } = usePage<SharedData>();
-
+  const {props: {auth}} = usePage<SharedData>();
   const canImpersonate = user.id !== auth.user?.id;
 
   return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size={'sm'}>
-            <EllipsisVertical />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" side={'bottom'} align={'end'}>
-          <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              onSelect={() => {
-                setTimeout(() => {
-                  setOpen(true);
-                }, 200)
-              }}
-            >
-              Edit
-              <DropdownMenuShortcut>
-                <Edit className={'size-4'} />
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={'text-red-500'}
-              onClick={() => {
-                axios.delete(route('users.destroy', { id: user.id })).then((res) => {
-                  if (res) {
-                    table.reload();
-                  }
-                });
-              }}
-            >
-              Delete
-              <DropdownMenuShortcut>
-                <Trash2 className={'size-4'} />
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <Link href={route('impersonate', { id: user.id })}>
-              <DropdownMenuItem disabled={!canImpersonate}>
-                Impersonate
-                <DropdownMenuShortcut>
-                  <ScanFace className={'size-4'} />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <UserForm
-        open={open}
-        onOpenChange={setOpen}
-        onSubmit={(data) => {
-          startTransition(() => {
+    <div className={'flex gap-2'}>
+      <Button variant={'outline'} asChild disabled={!canImpersonate} size={'sm'}>
+        <Link href={route('impersonate', { id: user.id })}>
+          <ScanFace className={'size-4'} />
+        </Link>
+      </Button>
+      <UserForm value={user} onSubmit={() => {table.reload()}}>
+        <Button variant={'outline'} size={'sm'}>
+          <PencilIcon/>
+        </Button>
+      </UserForm>
+      <PopoverConfirm asChild message={'Are you sure to delete this account?'} onConfirm={() => {
+        axios.delete(route('users.destroy', { id: user.id })).then((res) => {
+          if (res) {
             table.reload();
-            setOpen(false);
-            console.info(data);
-          });
-        }}
-        value={user}
-      />
+          }
+        });
+      }}>
+        <Button variant={'destructive'} size={'sm'}>
+          <Trash2 />
+        </Button>
+      </PopoverConfirm>
     </div>
   );
 }

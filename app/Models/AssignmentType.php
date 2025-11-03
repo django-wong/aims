@@ -11,6 +11,10 @@ class AssignmentType extends Model
     /** @use HasFactory<\Database\Factories\AssignmentTypeFactory> */
     use HasFactory, HasManyAssignments, BelongsToOrg, DynamicPagination, HasManyBudgets;
 
+    protected $guarded = [
+        'id'
+    ];
+
     public function scopeVisible(Builder $query, Org|int|null $org = null)
     {
         $orgId = is_null($org)
