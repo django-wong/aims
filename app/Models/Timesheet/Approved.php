@@ -47,10 +47,8 @@ class Approved implements Status
         });
 
         $client = $timesheet->assignment?->project?->client;
-        foreach ([$client?->coordinator, $client?->reviewer] as $notifiable) {
-            $notifiable?->notify(
-                new TimesheetIsWaitingForClientApproval($timesheet)
-            );
-        }
+        $client?->user?->notify(
+            new TimesheetIsWaitingForClientApproval($timesheet)
+        );
     }
 }

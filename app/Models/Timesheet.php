@@ -31,7 +31,7 @@ class Timesheet extends Model
 {
     const DRAFT = 0;
     const REVIEWING = 1;
-    const APPROVED = 2;
+    const APPROVED = 2; // TODO: Rename this to REVIEWED
     const CLIENT_APPROVED = 3;
     const INVOICED = 4;
 
