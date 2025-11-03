@@ -54,7 +54,7 @@ class AssignmentController extends Controller
         );
 
 
-        $start = $request->input('start', now()->startOfWeek()->format('Y-m-d'));
+        $start = Carbon::parse($request->input('start', now()->startOfWeek()->format('Y-m-d')))->startOfWeek()->format('Y-m-d');
         $end = Carbon::parse($start)->endOfWeek()->format('Y-m-d');
 
         $timesheet = $assignment->timesheets()->firstOrCreate([
