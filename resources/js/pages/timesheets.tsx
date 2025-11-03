@@ -1,4 +1,4 @@
-import { DataTable, useTableApi } from '@/components/data-table-2';
+import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
 import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
@@ -21,6 +21,9 @@ import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/helpers';
 import { HideFromClient } from '@/components/hide-from-client';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { ShowAllSwitch } from '@/components/table/show-all-switch';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -200,11 +203,21 @@ export default function Timesheets() {
                   });
                 }}
               />
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <ShowAllSwitch>Show All</ShowAllSwitch>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Show all timesheets including empty ones
+                </TooltipContent>
+              </Tooltip>
             </>
           }
           right={
             <>
               <CreateInvoiceButton />
+              <ColumnToggle/>
             </>
           }
         />

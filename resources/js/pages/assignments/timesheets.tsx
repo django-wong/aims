@@ -11,6 +11,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 import { Timesheet } from '@/types';
 import { TimesheetActions } from '@/pages/timesheets';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { ShowAllSwitch } from '@/components/table/show-all-switch';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TimesheetsProps {
   filters?: Record<string, any>;
@@ -138,11 +142,19 @@ export function Timesheets(props: TimesheetsProps) {
       <DataTable
         left={
           <>
-            <ColumnToggle />
             <CreateInvoiceButton/>
+            <ColumnToggle />
+            <TableRefresher />
+            <Tooltip>
+              <TooltipTrigger>
+                <ShowAllSwitch>Show All</ShowAllSwitch>
+              </TooltipTrigger>
+              <TooltipContent>
+                Show all timesheets including empty ones
+              </TooltipContent>
+            </Tooltip>
           </>
         }
-        right={<TableRefresher />}
         table={table}
       />
     </>
