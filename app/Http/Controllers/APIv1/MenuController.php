@@ -40,7 +40,7 @@ class MenuController
                         'url' => route('vendors'),
                     ]
                 ])),
-                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT, UserRole::INSPECTOR],[
+                ...($when([UserRole::PM, UserRole::ADMIN, UserRole::STAFF, UserRole::CLIENT],[
                     'projects' => [
                         'name' => 'Projects',
                         'icon' => 'briefcase-business',
