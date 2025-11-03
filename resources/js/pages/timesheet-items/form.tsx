@@ -110,6 +110,9 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                             <>
                               <VFormField required label={'Date'}>
                                 <DatePicker
+                                  calendar={{
+                                    month: props.timesheet?.start ? new Date(props.timesheet?.start) : undefined
+                                  }}
                                   disabled
                                   value={field.value ?? undefined}
                                   onChange={(date) => field.onChange(date ? dayjs(date).format('YYYY/MM/DD') : null)}
@@ -131,6 +134,7 @@ export function TimesheetItemForm(props: PropsWithChildren<TimesheetItemFormProp
                               <VFormField required label={'Date'}>
                                 <MultipleDatePicker
                                   calendar={{
+                                    month: props.timesheet?.start ? new Date(props.timesheet?.start) : undefined,
                                     disabled: (date) => {
                                       if (props.timesheet) {
                                         const start = dayjs(props.timesheet.start);
