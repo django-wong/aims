@@ -7,7 +7,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -21,45 +21,34 @@ import {
 } from "@/components/ui/sidebar"
 
 import { DynamicIcon, IconName } from 'lucide-react/dynamic';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useRole } from '@/hooks/use-role';
-import { useAuth } from '@/hooks/use-auth';
 import { Link } from '@inertiajs/react';
 
-interface MenuItem {
+export interface ReportMenuItem {
   name: string
   url: string
   icon: IconName,
-  children?: MenuItem[]
+  children?: ReportMenuItem[]
 }
 
-export function NavReports() {
+interface NavReportsProps {
+  items: ReportMenuItem[]
+}
+
+export function NavReports(props: NavReportsProps) {
   const { isMobile } = useSidebar()
-  const [menus, setMenus] = useState<MenuItem[]>([]);
-
-  const {
-    user
-  } = useAuth();
-
-  useEffect(() => {
-    axios.get('/api/v1/menus/reports').then(response => {
-      setMenus(response.data);
-    })
-  }, [user?.id])
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Report / KPIs</SidebarGroupLabel>
       <SidebarMenu>
-        {menus.length === 0 && (
+        {props.items.length === 0 && (
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
               <span>No reports available</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         )}
-        {menus.map((item) => (
+        {props.items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <Link href={item.url}>
@@ -91,12 +80,6 @@ export function NavReports() {
             )}
           </SidebarMenuItem>
         ))}
-        {/*<SidebarMenuItem>*/}
-        {/*  <SidebarMenuButton className="text-sidebar-foreground/70">*/}
-        {/*    <IconDots className="text-sidebar-foreground/70" />*/}
-        {/*    <span>More</span>*/}
-        {/*  </SidebarMenuButton>*/}
-        {/*</SidebarMenuItem>*/}
       </SidebarMenu>
     </SidebarGroup>
   );

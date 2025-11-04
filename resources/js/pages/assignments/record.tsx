@@ -91,7 +91,7 @@ export default function Record(props: RecordProps) {
           <div className={'flex w-full flex-1 flex-col'}>
             <>
               <>
-                <div className={'z-10 p-6 py-8 shadow-sm'}>
+                <div className={'z-10 p-6 py-8'}>
                   <div>
                     <div className={'mb-4 flex items-center justify-between'}>
                       <div className={'-ml-3 flex items-center gap-2 text-3xl font-bold'}>

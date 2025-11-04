@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\App;
 
 
@@ -106,7 +107,16 @@ class Assignment extends Model implements Commentable, Attachable
 
     public function scopeScoped(Builder $query)
     {
-        return $query->where('org_id', auth()->user()->user_role->org_id);
+        return $query->where('org_id', auth()->user()->user_role->org_id)->tap(function (Builder $query) {
+            $user = auth()->user();
+            if ($user->isRole(UserRole::CLIENT)) {
+                $query->whereIn(
+                    'assignments.project_id', function (QueryBuilder $query) use ($user) {
+                        $query->select('id')->from('projects')->where('client_id', $user->client->id);
+                    }
+                );
+            }
+        });
     }
 
     public function scopeOpen(Builder $query)

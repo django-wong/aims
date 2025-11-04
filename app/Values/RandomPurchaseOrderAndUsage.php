@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Values;
+
+use App\Models\PurchaseOrder;
+use App\Models\UserRole;
+use Illuminate\Database\Eloquent\Builder;
+
+class RandomPurchaseOrderAndUsage extends Value
+{
+    private function getPurchaseOrder(): ?PurchaseOrder
+    {
+        return PurchaseOrder::query()->tap(function (Builder $query) {
+            $user = auth()->user();
+            if ($user->isRole(UserRole::CLIENT)) {
+                $query->whereIn('purchase_orders.project_id', function ($subquery) use ($user) {
+                    $subquery->select('id')
+                        ->from('projects')
+                        ->where('client_id', $user->client?->id ?? 0);
+                });
+            } else {
+                $query->where('purchase_orders.org_id', $user->user_role->org_id);
+            }
+        })->orderBy('id', 'desc')->first();
+    }
+
+    public function value()
+    {
+        $po = $this->getPurchaseOrder();
+
+        return [
+            'title' => $po->title ?? 'N/A', 'usage' => $po->usage ?? 0,
+        ];
+    }
+}

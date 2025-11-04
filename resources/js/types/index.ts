@@ -1,6 +1,7 @@
 import { MainNavItem } from '@/components/nav-main';
 import { LucideIcon } from 'lucide-react';
 import { DeepPartial } from 'react-hook-form';
+import { ReportMenuItem } from '@/components/nav-reports';
 
 export interface DialogFormProps<T = BaseModel, R = T> {
   children?: React.ReactNode;
@@ -46,6 +47,7 @@ export interface SharedData {
     main: {
       [key: string]: MainNavItem;
     };
+    reports: Array<ReportMenuItem>
   };
   name: string;
   quote: { message: string; author: string };

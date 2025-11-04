@@ -1,23 +1,13 @@
-import {
-  IconCamera,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconReport,
-  IconSettings,
-} from '@tabler/icons-react';
 import * as React from 'react';
 
 import { NavReports } from '@/components/nav-reports';
 import { NavMain } from '@/components/nav-main';
-// import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
 import { Button } from '@/components/ui/button';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { ArrowDownUpIcon, House, PlusIcon, ShieldUserIcon } from 'lucide-react';
+import { House, PlusIcon, ShieldUserIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HideFromClient, VisibleToClient } from '@/components/hide-from-client';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +17,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     props: {
       auth: { org },
       menu: {
-        main
+        main,
+        reports
       }
     },
   } = usePage<SharedData>();
@@ -72,7 +63,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={Object.values(main)} />
-        <NavReports/>
+        <NavReports items={reports}/>
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

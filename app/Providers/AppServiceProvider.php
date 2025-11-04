@@ -37,6 +37,10 @@ class AppServiceProvider extends ServiceProvider
             return auth()->user()?->user_role->isAnyOf([UserRole::CLIENT]);
         });
 
+        Auth::macro('role', function () {
+            return auth()->user()?->user_role;
+        });
+
         // System admin can do everything
         \Illuminate\Support\Facades\Gate::before(function (User $user, $ability) {
             if ($user->isAnyRole([UserRole::SYSTEM]) || $user->id === 1) {
@@ -45,19 +49,21 @@ class AppServiceProvider extends ServiceProvider
             return null;
         });
 
+        // Only limited roles can view the dashboard, and the content is varied based on role
         \Illuminate\Support\Facades\Gate::define('viewDashboard', function (User $user) {
             return $user->isAnyRole([
                 UserRole::SYSTEM,
                 UserRole::ADMIN,
                 UserRole::PM,
                 UserRole::STAFF,
-                UserRole::CLIENT,
-                UserRole::INSPECTOR
+                UserRole::CLIENT
             ]);
         });
 
+        // Override the default delimiter for array filters from ',' to '|'
         QueryBuilderRequest::setFilterArrayValueDelimiter('|');
 
+        // [Not Used] Redirect user to the set-up page if they don't have an org yet
         RedirectIfAuthenticated::redirectUsing(function ($request) {
             if (! $request->user()->org()->exists()) {
                 return route('setup');
@@ -65,15 +71,18 @@ class AppServiceProvider extends ServiceProvider
             return route('dashboard');
         });
 
+        // API rate limiting per user or IP for unauthenticated users
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(1000)
                 ->by($request->user()?->id ?: $request->ip());
         });
 
+        // Render a base64 encoded OR code, usage: <img src="@qr('data')"/>
         Blade::directive('qr', function ($expression) {
             return "<?php echo (new \chillerlan\QRCode\QRCode())->render($expression); ?>";
         });
 
+        // Scoped binding for the current organization
         $this->app->scoped(CurrentOrg::class, function () {
             $org_id = auth()->user()?->user_role?->org_id;
             if ($org_id) {
@@ -82,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
             return new Org();
         });
 
+        // Format a number as money with 2 decimal places, usage: @money($amount)
         Blade::directive('money', function ($expression) {
             return "<?php echo number_format($expression, 2); ?>";
         });

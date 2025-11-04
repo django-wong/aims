@@ -110,25 +110,51 @@ class InvoiceController extends Controller
         return [
             AllowedFilter::callback('type', function (Builder $query, $value) {
                 if (auth()->user()->isRole(UserRole::CLIENT)) {
-                    $query->where('status', '!=', Invoice::DRAFT)->whereMorphedTo('invoiceable', Client::query()->where('user_id', auth()->user()->id)->first());
-                    return;
+                    $query
+                        ->where('status', '!=', Invoice::DRAFT)
+                        ->whereMorphedTo(
+                            'invoiceable', auth()->user()->client
+                        );
+                } else {
+                    match ($value) {
+                        'inbound' => $query
+                            ->where('status', '!=', Invoice::DRAFT)
+                            ->whereMorphedTo(
+                                'invoiceable', auth()->user()->user_role->org
+                            ),
+                        'outbound' => $query
+                            ->where(
+                                'invoice_details.org_id', auth()->user()->user_role->org_id
+                            ),
+                    };
                 }
-                match ($value) {
-                    'inbound' => $query->where('status', '!=', Invoice::DRAFT)->whereMorphedTo('invoiceable', auth()->user()->user_role->org),
-                    'outbound' => $query->where('invoice_details.org_id', auth()->user()->user_role->org_id),
-                };
             })->default('outbound'),
+
             AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                $columns = [
+                    'purchase_order_title',
+                    'invoiceable_org_name',
+                    'invoiceable_client_business_name',
+                    'project_title',
+                ];
+
                 if ($value) {
-                    $query->whereAny([
-                        'purchase_order_title',
-                        'invoiceable_org_name',
-                        'invoiceable_client_business_name',
-                        'project_title',
-                    ], 'like', "%$value%");
+                    $query->whereAny($columns, 'like', "%$value%");
                 }
             }),
-            AllowedFilter::exact('selection', 'id')
+
+            AllowedFilter::exact('selection', 'id'),
+
+            AllowedFilter::callback('view', function (Builder $query, $value) {
+                switch ($value) {
+                    case 'open':
+                        $query->whereRaw('(approved_at is null and status > 0)');
+                        break;
+                    default:
+                        // do nothing
+                        break;
+                }
+            })->default('all')
         ];
     }
 

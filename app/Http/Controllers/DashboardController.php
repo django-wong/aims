@@ -9,21 +9,19 @@ use App\Models\Timesheet;
 use App\Models\UserRole;
 use App\Values\ClaimedHourGrowth;
 use App\Values\ClaimedHours;
+use App\Values\PendingInvoices;
+use App\Values\ClosedAssignment;
+use App\Values\CountOfPurchaseOrders;
 use App\Values\CurrentMonthRevenue;
 use App\Values\LastMonthRevenue;
 use App\Values\OpenAssignment;
 use App\Values\PendingApprovalTimesheets;
+use App\Values\RandomPurchaseOrderAndUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
-    private function getInspectorDashboardData()
-    {
-        return [
-        ];
-    }
-
     private function getDashboardData()
     {
 
@@ -58,15 +56,32 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request)
     {
+        if (auth()->user() && auth()->user()->isRole(UserRole::INSPECTOR)) {
+            return to_route('assignments');
+        }
+
         Gate::authorize('viewDashboard');
 
         return match ($request->user()->user_role->role) {
             UserRole::CLIENT => inertia(
-                'dashboard/client', $this->getClientDashboardData()
+                'dashboard/client', [
+                    'pending_invoices' => new PendingInvoices(),
+                    'rejected_invoices' => Invoice::query()->whereMorphedTo('invoiceable', $request->user()->client)
+                        ->whereNotNull('rejected_at')->count(),
+                    'assignments' => [
+                        'open' => new OpenAssignment(),
+                        'closed' => new ClosedAssignment()
+                    ],
+                    'timesheets' => [
+                        'open' => new PendingApprovalTimesheets()
+                    ],
+                    'purchase_order' => [
+                        'count' => new CountOfPurchaseOrders(),
+                        'top_one' => new RandomPurchaseOrderAndUsage()
+                    ]
+                ]
             ),
-            UserRole::INSPECTOR => inertia(
-                'dashboard/inspector', $this->getInspectorDashboardData()
-            ),
+
             default => inertia(
                 'dashboard', $this->getDashboardData()
             ),

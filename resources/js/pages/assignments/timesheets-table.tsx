@@ -11,9 +11,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 import { Timesheet } from '@/types';
 import { TimesheetActions } from '@/pages/timesheets';
-import { ShowAllSwitch } from '@/components/table/show-all-switch';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { StateFilter } from '@/pages/timesheets/state-filter';
+import { useTableConfiguration } from '@/providers/table-configuration';
 
 interface TimesheetsProps {
   filters?: Record<string, any>;
@@ -30,6 +29,7 @@ const assignment_column: ColumnDef<Timesheet> = {
 };
 
 export function TimesheetsTable(props: TimesheetsProps) {
+  const config = useTableConfiguration();
   const isClient = useIsClient();
 
   const columns: ColumnDef<Timesheet>[] = [
@@ -140,12 +140,14 @@ export function TimesheetsTable(props: TimesheetsProps) {
     <>
       <DataTable
         left={
-          <>
-            <CreateInvoiceButton/>
-            <ColumnToggle />
-            <TableRefresher />
-            <><StateFilter/></>
-          </>
+          config.toolbar ? (
+            <>
+              <CreateInvoiceButton/>
+              <ColumnToggle />
+              <TableRefresher />
+              <><StateFilter/></>
+            </>
+          ) : null
         }
         table={table}
       />

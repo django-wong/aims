@@ -41,7 +41,7 @@ export function NavMain({
                   <span className={'flex-grow'}>{item.name}</span>
                   {
                     item.badge ? (
-                      <Badge variant={'outline'} className={'shrink-0'}> {item.badge}</Badge>
+                      <Badge className={'shrink-0'}> {item.badge}</Badge>
                     ) : null
                   }
                 </Link>

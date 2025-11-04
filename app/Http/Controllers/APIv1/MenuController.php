@@ -5,13 +5,16 @@ namespace App\Http\Controllers\APIv1;
 use App\Models\Invoice;
 use App\Models\Timesheet;
 use App\Models\UserRole;
+use App\Values\OpenAssignment;
+use App\Values\PendingApprovalTimesheets;
+use App\Values\PendingInvoices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class MenuController
 {
 
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
         $user_role = $request->user()?->user_role;
 
@@ -64,6 +67,7 @@ class MenuController
                         'name' => 'Assignments',
                         'icon' => 'contact',
                         'url' => route('assignments'),
+                        'badge' => new OpenAssignment()
                     ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::CLIENT], [
@@ -71,7 +75,7 @@ class MenuController
                         'name' => 'Timesheets',
                         'icon' => 'clock',
                         'url' => route('timesheets'),
-                        // 'badge' => Timesheet::query()->pending()->count()
+                        'badge' => new PendingApprovalTimesheets()
                     ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF], [
@@ -86,7 +90,7 @@ class MenuController
                         'name' => 'Invoices',
                         'icon' => 'scroll-text',
                         'url' => route('invoices'),
-                        // 'badge' => Invoice::query()->pending()->count()
+                        'badge' => (new PendingInvoices())->value()
                     ],
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM], [
@@ -108,18 +112,13 @@ class MenuController
                         'url' => route('system-configuration'),
                     ]
                 ])),
-                // ...($when([UserRole::SYSTEM], [
-                //     'system-configuration' => [
-                //         'name' => 'System Configuration',
-                //         'icon' => 'cog',
-                //         'url' => route('system-configuration'),
-                //     ]
-                // ]))
             ],
+
+            'reports' => $this->reports()
         ];
     }
 
-    public function reports()
+    private function reports()
     {
         if (auth()->user()->isAnyRole([UserRole::CLIENT, UserRole::INSPECTOR, UserRole::VENDOR])) {
             return [];
@@ -136,11 +135,6 @@ class MenuController
                 'url' => route('reports.hours-entry'),
                 'icon' => 'calendar-days'
             ],
-            // [
-            //     'name' => 'Hours Log',
-            //     'url' => route('reports.hours-log'),
-            //     'icon' => 'calendar-clock'
-            // ],
             [
                 'name' => 'Man-hours',
                 'url' => route('reports.man-hours'),

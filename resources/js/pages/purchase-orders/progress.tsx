@@ -1,8 +1,10 @@
 import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ProgressProps {
   value: number; // value between 0 and 1
 }
+
 export function PurchaseOrderProgress(props: ProgressProps) {
   let color = '#4bd852';
   let status = 'on-track';
@@ -16,8 +18,13 @@ export function PurchaseOrderProgress(props: ProgressProps) {
   }
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    <Progress className={status} style={{'--color-primary': color}} value={props.value * 100}/>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Progress className={status} style={{'--color-primary': color} as any} value={props.value * 100}/>
+      </TooltipTrigger>
+      <TooltipContent>
+        {Math.round(props.value * 100)}% used
+      </TooltipContent>
+    </Tooltip>
   );
 }

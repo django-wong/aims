@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Controllers\APIv1\MenuController;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -36,22 +38,22 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        $session = $request->session();
+        $user = $request->user();
 
         return [
-            'menu' => app('App\Http\Controllers\APIv1\MenuController')->index($request),
             ...parent::share($request),
+            'menu' => App::call(MenuController::class),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user()?->load('user_role'),
-                'org' => $request->user()?->org,
-                'impersonating' => $request->user()?->isImpersonated() ?? false,
-                'client' => $request->user()?->client
+                'user' => $user?->load('user_role'),
+                'org' => $user?->org,
+                'impersonating' => $user?->isImpersonated() ?? false,
+                'client' => $user?->client
             ],
             'flash' => [
-                'message' => $request->session()->get('message'),
-                'error' => $request
-                    ->session()->get('error'),
+                'message' => $session->get('message'),
+                'error' => $session->get('error'),
             ],
         ];
     }

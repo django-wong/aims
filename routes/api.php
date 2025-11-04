@@ -32,8 +32,7 @@ use App\Http\Controllers\APIv1\VendorController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-    Route::get('menus', [MenuController::class, 'index']);
-    Route::get('menus/reports', [MenuController::class, 'reports']);
+    Route::get('menus', MenuController::class);
 
     Route::get('assignments/next-assignment-number', [AssignmentController::class, 'next_assignment_number']);
 

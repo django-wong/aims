@@ -55,6 +55,8 @@ export default function Edit(props: ClientEditProps) {
                 <Impersonate userId={props.client.user_id}/>
                 <PopoverConfirm
                   asChild
+                  side={'bottom'}
+                  align={'end'}
                   message={'Are you sure to delete this client? THis action cannot be undone.'}
                   onConfirm={
                     () => {

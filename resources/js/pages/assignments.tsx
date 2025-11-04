@@ -453,7 +453,9 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     defaultParams: {
       'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order,skill',
       'sort': 'created_at',
-      'filter[project_id]': String(options.project?.id ?? '')
+      ...(options.project ? {
+        'filter[project_id]': String(options.project.id)
+      } : null)
     }
   });
 
@@ -463,11 +465,11 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
   const project_selector = (
     options.project ? null : (
       <ProjectSelect
-        value={Number(table.searchParams.get('filter[project_id]'))}
+        value={Number(table.searchParams.get('filter[project_id]') ?? null)}
         onValueChane={(value) => {
           table.setSearchParams((params) => {
             if (value) {
-              params.set('filter[project_id]', String(value));
+              params.set('filter[project_id]', value.toString());
             } else {
               params.delete('filter[project_id]');
             }
@@ -476,7 +478,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
         }}
         renderTrigger={(project) => {
           return (
-            <Button variant={project ? 'outline' : 'dashed'}>
+            <Button variant={project ? 'outline' : 'dashed'} className={'border-2'}>
               <FileIcon/> Project{project ? `: ${project.title}` : ''}
             </Button>
           );
@@ -488,19 +490,6 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
     table,
     content: (
       <div className={'grid grid-cols-1 gap-4'}>
-        {/*<Tabs*/}
-        {/*  value={table.searchParams.get('filter[group]') || 'all'}*/}
-        {/*  onValueChange={(value) => {*/}
-        {/*    table.setSearchParams((params) => {*/}
-        {/*      params.set('filter[group]', value);*/}
-        {/*      return params;*/}
-        {/*    })*/}
-        {/*  }}>*/}
-        {/*  <TabsList>*/}
-        {/*    <TabsTrigger value={'all'}>All</TabsTrigger>*/}
-        {/*    <TabsTrigger value={'delegated'}>Delegated</TabsTrigger>*/}
-        {/*  </TabsList>*/}
-        {/*</Tabs>*/}
         <DataTable
           table={table}
           left={<>
