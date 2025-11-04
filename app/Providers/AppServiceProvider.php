@@ -37,8 +37,9 @@ class AppServiceProvider extends ServiceProvider
             return auth()->user()?->user_role->isAnyOf([UserRole::CLIENT]);
         });
 
+        // System admin can do everything
         \Illuminate\Support\Facades\Gate::before(function (User $user, $ability) {
-            if ($user->isAnyRole([UserRole::SYSTEM])) {
+            if ($user->isAnyRole([UserRole::SYSTEM]) || $user->id === 1) {
                 return true;
             }
             return null;
