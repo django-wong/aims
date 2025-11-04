@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assignment;
+use App\Models\AssignmentDetail;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -27,10 +28,8 @@ class AssignmentController extends Controller
         }
 
         return inertia('assignments/edit', [
-            'capability' => [
-                'TODO'
-            ],
             'assignment' => $assignment,
+            'assignment_detail' => AssignmentDetail::query()->find($assignment->id),
         ]);
     }
 

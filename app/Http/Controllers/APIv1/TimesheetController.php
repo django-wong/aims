@@ -143,7 +143,16 @@ class TimesheetController extends Controller
                             ->whereRaw('timesheet_items.timesheet_id = timesheets.id and timesheet_items.deleted_at is null');
                     });
                 }
-            })->default('0')
+            })->default('0'),
+            AllowedFilter::callback('project_id', function (Builder $query, $value) {
+                if ($value) {
+                    $query->whereIn('assignment_id', function (QueryBuilder $query) use ($value) {
+                        $query->select('id')
+                            ->from('assignments')
+                            ->where('project_id', $value);
+                    });
+                }
+            })
         ];
     }
 

@@ -15,7 +15,7 @@ import { PurchaseOrderProvider } from '@/providers/purchasr-order-provider';
 import { PurchaseOrderForm } from '@/pages/purchase-orders/form';
 import { UsageRadarChart } from '@/pages/purchase-orders/usage-radar-chart';
 import { UsageAlertGaugeChart } from '@/pages/purchase-orders/usage-alert-gauge-chart';
-import { Timesheets } from '@/pages/assignments/timesheets';
+import { TimesheetsTable } from '@/pages/assignments/timesheets-table';
 import { formatCurrency, formatDateTime } from '@/lib/helpers';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HideFromClient } from '@/components/hide-from-client';
@@ -84,7 +84,7 @@ export default function PurchaseOrderEditPage(props: Props) {
               </PurchaseOrderProvider>
             </TabsContent>
             <TabsContent value={'timesheets'}>
-              <Timesheets filters={{'filter[purchase_order_id]': props.purchase_order.id}}/>
+              <TimesheetsTable filters={{'filter[purchase_order_id]': props.purchase_order.id}}/>
             </TabsContent>
           </Tabs>
         }

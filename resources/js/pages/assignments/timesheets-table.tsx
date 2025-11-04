@@ -11,8 +11,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CreateInvoiceButton } from '@/pages/assignments/create-invoice-button';
 import { Timesheet } from '@/types';
 import { TimesheetActions } from '@/pages/timesheets';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { ShowAllSwitch } from '@/components/table/show-all-switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -30,7 +28,7 @@ const assignment_column: ColumnDef<Timesheet> = {
   ),
 };
 
-export function Timesheets(props: TimesheetsProps) {
+export function TimesheetsTable(props: TimesheetsProps) {
   const isClient = useIsClient();
 
   const columns: ColumnDef<Timesheet>[] = [

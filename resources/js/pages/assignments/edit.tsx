@@ -17,7 +17,7 @@ import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { AssignmentForm } from '@/pages/assignments/form';
 import { NotificationOfInspection } from '@/pages/assignments/notification-of-inspection';
 import { RejectWithMessage } from '@/pages/assignments/reject-with-message';
-import { Timesheets } from '@/pages/assignments/timesheets';
+import { TimesheetsTable } from '@/pages/assignments/timesheets-table';
 import { AssignmentProvider } from '@/providers/assignment-provider';
 import { Assignment, AssignmentStatus, BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -39,6 +39,7 @@ import axios from 'axios';
 import { AssignmentStatusBadge } from '@/pages/assignments/assignment-status-badge';
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { useIsClient } from '@/hooks/use-role';
+import { formatCurrency } from '@/lib/helpers';
 
 interface EditProps {
   assignment: Assignment;
@@ -183,7 +184,7 @@ export default function Edit(props: EditProps) {
               </HideFromClient>
               <TabsContent value={'timesheets'}>
                 <div className={'grid gap-4'}>
-                  <Timesheets
+                  <TimesheetsTable
                     filters={{
                       'filter[assignment_id]': String(props.assignment?.id)
                     }}
@@ -252,11 +253,19 @@ export default function Edit(props: EditProps) {
                 <InfoLine icon={'target'} label={'Status'}>
                   <AssignmentStatusBadge/>
                 </InfoLine>
-                <InfoLine icon={'clock-2'} label={'Hours'}>
+              </div>
+
+              <InfoHead>Budget</InfoHead>
+              {/*<p className={'text-sm text-muted-foreground'}>Please aware the usage does not include other assignment that share the same work order</p>*/}
+              <div>
+                <InfoLine icon={'clock-2'} label={'Budgeted Hours'}>
                   {props.assignment.purchase_order?.budgeted_hours || 'N/A'}
                 </InfoLine>
-                <InfoLine icon={'car'} label={'Travel'}>
+                <InfoLine icon={'car'} label={'Budgeted Travel'}>
                   {props.assignment.purchase_order?.budgeted_travel} {props.assignment.purchase_order?.travel_unit}
+                </InfoLine>
+                <InfoLine icon={'car'} label={'Budgeted Expense'}>
+                  {formatCurrency(props.assignment.purchase_order?.budgeted_expenses)}
                 </InfoLine>
               </div>
 

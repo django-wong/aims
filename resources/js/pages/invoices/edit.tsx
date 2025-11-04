@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQueryParam } from '@/hooks/use-query-param';
 import Layout from '@/layouts/app-layout';
 import { formatCurrency } from '@/lib/helpers';
-import { Timesheets } from '@/pages/assignments/timesheets';
+import { TimesheetsTable } from '@/pages/assignments/timesheets-table';
 import { ApproveButton } from '@/pages/invoices/approve-button';
 import { CreateClientInvoice } from '@/pages/invoices/create-client-invoice';
 import { DeleteInvoice } from '@/pages/invoices/delete-invoice';
@@ -18,7 +18,7 @@ import { SendInvoiceButton } from '@/pages/invoices/send-invoice-button';
 import { InvoiceProvider } from '@/providers/invoice-provider';
 import { BreadcrumbItem, Invoice, InvoiceStatusEnum } from '@/types';
 import { Link } from '@inertiajs/react';
-import { FileClockIcon, FileIcon, FileTextIcon, MessageCircleIcon } from 'lucide-react';
+import { FileClockIcon, FileIcon, MessageCircleIcon } from 'lucide-react';
 
 interface EditInvoicePageProps {
   invoice: Invoice;
@@ -80,7 +80,7 @@ export default function EditInvoicePage(props: EditInvoicePageProps) {
                   </div>
                 </TabsContent>
                 <TabsContent value={'timesheets'}>
-                  <Timesheets filters={{ 'filter[invoice_id]': props.invoice.id }} />
+                  <TimesheetsTable filters={{ 'filter[invoice_id]': props.invoice.id }} />
                 </TabsContent>
                 <TabsContent value={'comments'}>
                   <Comments commentableType={'Invoice'} commentableId={props.invoice.id} />
