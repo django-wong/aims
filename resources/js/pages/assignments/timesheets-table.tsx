@@ -13,6 +13,7 @@ import { Timesheet } from '@/types';
 import { TimesheetActions } from '@/pages/timesheets';
 import { ShowAllSwitch } from '@/components/table/show-all-switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { StateFilter } from '@/pages/timesheets/state-filter';
 
 interface TimesheetsProps {
   filters?: Record<string, any>;
@@ -98,7 +99,7 @@ export function TimesheetsTable(props: TimesheetsProps) {
       cell: ({ row }) =>
         <span className={cn('timesheet-status', `timesheet-status-${row.original.status}`)}>
           <TimesheetProvider value={row.original}>
-            <TimesheetStatus status={row.original.status} />
+            <TimesheetStatus />
           </TimesheetProvider>
         </span>
     },
@@ -143,14 +144,7 @@ export function TimesheetsTable(props: TimesheetsProps) {
             <CreateInvoiceButton/>
             <ColumnToggle />
             <TableRefresher />
-            <Tooltip>
-              <TooltipTrigger>
-                <ShowAllSwitch>Show All</ShowAllSwitch>
-              </TooltipTrigger>
-              <TooltipContent>
-                Show all timesheets including empty ones
-              </TooltipContent>
-            </Tooltip>
+            <><StateFilter/></>
           </>
         }
         table={table}

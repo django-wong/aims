@@ -21,7 +21,8 @@ import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/helpers';
 import { HideFromClient } from '@/components/hide-from-client';
-import { ShowAllSwitch } from '@/components/table/show-all-switch';
+import { StateFilter } from '@/pages/timesheets/state-filter';
+import { TimesheetStatus } from '@/pages/timesheets/status';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -100,6 +101,17 @@ const columns: ColumnDef<Timesheet>[] = [
     meta: {
       center: true,
     },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      return (
+        <TimesheetProvider value={row.original}>
+          <TimesheetStatus />
+        </TimesheetProvider>
+      );
+    }
   },
   {
       accessorKey: 'client_invoice_id',
@@ -190,6 +202,7 @@ export default function TimesheetsPage() {
           table={table}
           left={
             <>
+              <StateFilter/>
               <ProjectSelect
                 placeholder={'Filter by Project'}
                 className={'max-w-[250px]'}
@@ -201,15 +214,6 @@ export default function TimesheetsPage() {
                   });
                 }}
               />
-
-              <Tooltip>
-                <TooltipTrigger>
-                  <ShowAllSwitch>Show All</ShowAllSwitch>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Show all timesheets including empty ones
-                </TooltipContent>
-              </Tooltip>
             </>
           }
           right={

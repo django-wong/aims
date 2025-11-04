@@ -12,7 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class AssignmentController extends Controller
 {
-    public function edit(string $id)
+    public function edit(string $id, Request $request)
     {
         $assignment = Assignment::query()
             ->with(
@@ -20,8 +20,10 @@ class AssignmentController extends Controller
             )
             ->findOrFail($id);
 
+        $assigned = $assignment->assignment_inspectors()->where('user_id', auth()->id())->exists();
+
         // Redirect to timesheet if user is an inspector for the assignment
-        if (Gate::allows('inspect', $assignment)) {
+        if ($assigned) {
             return to_route(
                 'assignments.record', $assignment->id
             );
@@ -35,7 +37,6 @@ class AssignmentController extends Controller
 
     public function record(Request $request, string $id)
     {
-
         $request->validate([
             'start' => 'nullable|date_format:Y-m-d',
         ]);

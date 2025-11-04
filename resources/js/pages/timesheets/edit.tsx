@@ -88,7 +88,7 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                       </InfoLine>
 
                       <InfoLine label={'Status'}>
-                        <TimesheetStatus status={props.timesheet.status} />
+                        <TimesheetStatus />
                       </InfoLine>
 
                       {

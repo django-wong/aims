@@ -4,11 +4,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { CheckIcon, CircleDashedIcon, LoaderCircleIcon, XIcon } from 'lucide-react';
 import { useTimesheet } from '@/providers/timesheet-provider';
 
-export function TimesheetStatus(props: { status: Timesheet['status'] }) {
-  switch (props.status) {
+export function TimesheetStatus() {
+  const timesheet = useTimesheet();
+
+  if (!timesheet) {
+    return null;
+  }
+
+  switch (timesheet.status) {
     case 0:
       return (
-        <StatusExplanation status={props.status}>
+        <StatusExplanation status={timesheet.status}>
           <Badge variant="outline" className={'bg-gray-100'}>
             Draft <RejectionBadge/>
           </Badge>
@@ -16,7 +22,7 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       );
     case 1:
       return (
-        <StatusExplanation status={props.status}>
+        <StatusExplanation status={timesheet.status}>
           <Badge variant="outline" className={'bg-yellow-50 border-yellow-200'}>
             Reviewing <RejectionBadge/>
           </Badge>
@@ -24,7 +30,7 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       );
     case 2:
       return (
-        <StatusExplanation status={props.status}>
+        <StatusExplanation status={timesheet.status}>
           <Badge variant="outline" className={'bg-blue-50 border-blue-200'}>
             Waiting for Client <RejectionBadge/>
           </Badge>
@@ -32,7 +38,7 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       );
     case 3:
       return (
-        <StatusExplanation status={props.status}>
+        <StatusExplanation status={timesheet.status}>
           <Badge variant="outline" className={'bg-purple-50 border-purple-200'}>
             Client Approved <RejectionBadge/>
           </Badge>
@@ -40,7 +46,7 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       );
     case 4:
       return (
-        <StatusExplanation status={props.status}>
+        <StatusExplanation status={timesheet.status}>
           <Badge variant="outline" className={'bg-green-50 border-green-200'}>
             Invoiced
           </Badge>
@@ -48,7 +54,7 @@ export function TimesheetStatus(props: { status: Timesheet['status'] }) {
       );
     default:
       return (
-        <StatusExplanation status={props.status}>
+        <StatusExplanation status={timesheet.status}>
           <Badge variant="outline" className={'bg-red-50 border-red-200'}>
             Unknown Status
           </Badge>

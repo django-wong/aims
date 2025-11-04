@@ -135,14 +135,41 @@ class TimesheetController extends Controller
                         ->where('purchase_order_id', $value);
                 });
             }),
-            AllowedFilter::callback('all', function (Builder $query, $value) {
-                if ($value !== '1') {
-                    $query->whereExists(function ($query) {
-                        $query->select(DB::raw(1))
-                            ->from('timesheet_items')
-                            ->whereRaw('timesheet_items.timesheet_id = timesheets.id and timesheet_items.deleted_at is null');
-                    });
+            AllowedFilter::callback('view', function (Builder $query, $value) {
+                $user = auth()->user();
+                switch ($value) {
+                    case 'all':
+                        break;
+                    case 'open':
+                        if ($user->isRole(UserRole::CLIENT)) {
+                            $query->where('timesheets.status', Timesheet::APPROVED);
+                        } else {
+                            $query->where(function (Builder $query) {
+                                $query->whereIn(
+                                    'timesheets.status', [
+                                        Timesheet::REVIEWING,
+                                    ]
+                                )->orWhere('timesheets.rejected', true);
+                            });
+                        }
+                        break;
+                    // By default, show all timesheets that is not empty
+                    default:
+                        $query->whereExists(function ($query) {
+                            $query->select(DB::raw(1))
+                                ->from('timesheet_items')
+                                ->whereRaw('timesheet_items.timesheet_id = timesheets.id and timesheet_items.deleted_at is null');
+                        });
                 }
+            })->default('default'),
+            AllowedFilter::callback('all', function (Builder $query, $value) {
+                // if ($value !== '1') {
+                //     $query->whereExists(function ($query) {
+                //         $query->select(DB::raw(1))
+                //             ->from('timesheet_items')
+                //             ->whereRaw('timesheet_items.timesheet_id = timesheets.id and timesheet_items.deleted_at is null');
+                //     });
+                // }
             })->default('0'),
             AllowedFilter::callback('project_id', function (Builder $query, $value) {
                 if ($value) {
