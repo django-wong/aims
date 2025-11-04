@@ -21,8 +21,6 @@ import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/helpers';
 import { HideFromClient } from '@/components/hide-from-client';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { ShowAllSwitch } from '@/components/table/show-all-switch';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -175,7 +173,7 @@ const columns: ColumnDef<Timesheet>[] = [
   },
 ];
 
-export default function Timesheets() {
+export default function TimesheetsPage() {
   const table = useTable('/api/v1/timesheets', {
     selectable: true,
     columns: columns,

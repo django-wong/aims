@@ -267,7 +267,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
       if (res) {
         props.onOpenChange?.(false);
         setOpen(false);
-        props.onSubmit(res.data);
+        props.onSubmit?.(res.data);
       }
     })
   }
