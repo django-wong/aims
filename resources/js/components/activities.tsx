@@ -3,7 +3,6 @@ import { ActivityLog } from '@/types';
 import { formatDateTime } from '@/lib/helpers';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Empty } from '@/components/empty';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface ActivitiesProps  {
   subject_type: string;
@@ -19,7 +18,7 @@ export function Activities(props: ActivitiesProps) {
   });
 
   return (
-    <div>
+    <div className={'grid grid-cols-1 gap-[1px]'}>
       {
         api.data && api.data.length > 0 ? (api.data?.map((data, index) => {
           return <Activity data={data} key={'at:' + index}/>
@@ -33,7 +32,7 @@ export function Activities(props: ActivitiesProps) {
 
 export function Activity(props: { data: ActivityLog }) {
   return (
-    <div className={'border-l-2 pl-6'}>
+    <div className={'border-l-4 p-4 bg-muted/50 grid grid-cols-1 gap-2 hover:border-primary hover:bg-muted transition-all'}>
       <div className={'flex items-center justify-between text-sm text-muted-foreground'}>
         <div className={'flex items-center gap-2'}>
           <Avatar className="h-8 w-8 rounded-lg grayscale border">
@@ -47,13 +46,6 @@ export function Activity(props: { data: ActivityLog }) {
         </div>
         <div>
           {formatDateTime(props.data.created_at)}
-        </div>
-      </div>
-      <div className={'mt-1 mb-6'}>
-        <div className={'bg-muted p-6 rounded mt-2 border text-sm'}>
-          <pre>
-            {JSON.stringify(props.data.properties, null, 2)}
-          </pre>
         </div>
       </div>
     </div>
