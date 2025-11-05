@@ -1,5 +1,5 @@
-import { LoaderCircle } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 export function Loading(props: {show: boolean}) {
-  return props.show ? <LoaderCircle className={'animate-spin size-4'} /> : null;
+  return props.show ? <Spinner/> : null;
 }
