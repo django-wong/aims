@@ -13,6 +13,10 @@ class PendingInvoices extends Value
         return Invoice::query()->tap(function (Builder  $query) {
             $user = auth()->user();
 
+            if (empty($user)) {
+                return 0;
+            }
+
             if ($user->isRole(UserRole::CLIENT)) {
                 $query->whereMorphedTo('invoiceable', $user?->client);
             }
