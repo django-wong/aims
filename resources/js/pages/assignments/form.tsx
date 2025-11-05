@@ -142,7 +142,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
       delegated: false,
       notes: '',
       report_required: false,
-      ...draft,
+      // ...draft,
       ...props.value,
     }),
     serialize: objectToFormData,
@@ -165,15 +165,15 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     props.onOpenChange?.(value);
   }
 
-  function saveAsDraft() {
-    startTransition(() => {
-      setDraft({
-        ...form.getValues(),
-        attachments: []
-      });
-      setOpen(false);
-    })
-  }
+  // function saveAsDraft() {
+  //   startTransition(() => {
+  //     setDraft({
+  //       ...form.getValues(),
+  //       attachments: []
+  //     });
+  //     setOpen(false);
+  //   })
+  // }
 
   function reset() {
     setDraft(null);
@@ -1030,16 +1030,16 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 Cancel
               </Button>
             </DialogClose>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button variant={'outline'} onClick={saveAsDraft}>
-                  Save as Draft
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                Save your work as a draft. Please note attachments will not be saved.
-              </TooltipContent>
-            </Tooltip>
+            {/*<Tooltip>*/}
+            {/*  <TooltipTrigger>*/}
+            {/*    <Button variant={'outline'} onClick={saveAsDraft}>*/}
+            {/*      Save as Draft*/}
+            {/*    </Button>*/}
+            {/*  </TooltipTrigger>*/}
+            {/*  <TooltipContent>*/}
+            {/*    Save your work as a draft. Please note attachments will not be saved.*/}
+            {/*  </TooltipContent>*/}
+            {/*</Tooltip>*/}
             <Button disabled={form.formState.disabled || form.formState.isSubmitting} onClick={save}>
               Save
             </Button>
