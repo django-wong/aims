@@ -49,7 +49,7 @@ const schema = z.object({
 
   project_id: z.number('Project is required').int().positive(),
 
-  coordinator_id: z.number().int().positive().nullable().optional(),
+  coordinator_id: z.number().int().positive(),
 
   // Delegate to operation (coordinating) office
   operation_org_id: z.number().int().positive().nullable(),
@@ -65,7 +65,7 @@ const schema = z.object({
   skill_id: z.number().int().positive().nullable().optional(),
 
   vendor_id: z.number().int().positive().nullable(),
-  purchase_order_id: z.number().int().positive().nullable(),
+  purchase_order_id: z.number().int().positive(),
   sub_vendor_id: z.number().int().positive().nullable(),
 
   client_po: z.string().max(30).nullable().optional(),
@@ -96,6 +96,7 @@ const schema = z.object({
   audit: z.boolean().optional(),
 
   // Status/flash report/exit call
+  report_required: z.coerce.boolean().optional().nullable(),
   exit_call: z.boolean().optional(),
   flash_report: z.boolean().optional(),
   client_contact_id: z.number().int().positive().nullable().optional(),
@@ -119,6 +120,38 @@ const schema = z.object({
   inspector_instructions: z.string().max(1500).nullable().optional(),
 });
 
+const defaultValue: Partial<z.infer<typeof schema>> = {
+  operation_org_id: null,
+  reference_number: '',
+  inspectors: [],
+  sub_vendor_id: null,
+  pre_inspection_meeting: false,
+  final_inspection: false,
+  dimensional: false,
+  sample_inspection: false,
+  witness_of_tests: false,
+  monitoring: false,
+  packing: false,
+  document_review: false,
+  expediting: false,
+  audit: false,
+  vendor_id: null,
+  delegated: false,
+  notes: '',
+  flash_report: false,
+  exit_call: false,
+  report_required: false,
+  reporting_format: 0,
+  reporting_frequency: 0,
+  send_report_to: 0,
+  timesheet_format: 0,
+  ncr_format: 0,
+  punch_list_format: 0,
+  irn_format: 0,
+  document_stamp: 0,
+  issue_irn_to_vendor: 0,
+};
+
 export function AssignmentForm(props: DialogFormProps<Assignment>) {
 
   const {
@@ -131,18 +164,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
 
   const isEdit = !!props.value;
 
-  // const [type, setType] = useState(props.value?.operation_org_id ? 'delegate' : 'direct'); // 0 = direct assignment, 1 = delegated
-
   const form = useReactiveForm<z.infer<typeof schema>, Assignment>({
     ...useResource('/api/v1/assignments', {
-      operation_org_id: null,
-      inspectors: [],
-      sub_vendor_id: null,
-      vendor_id: null,
-      delegated: false,
-      notes: '',
-      report_required: false,
-      // ...draft,
+      ...defaultValue,
       ...props.value,
     }),
     serialize: objectToFormData,
@@ -155,6 +179,8 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
   useEffect(() => {
     if (props.value) {
       form.reset(props.value as any);
+    } else if (draft) {
+      form.reset(draft);
     }
   }, [props.value]);
 
@@ -165,23 +191,19 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     props.onOpenChange?.(value);
   }
 
-  // function saveAsDraft() {
-  //   startTransition(() => {
-  //     setDraft({
-  //       ...form.getValues(),
-  //       attachments: []
-  //     });
-  //     setOpen(false);
-  //   })
-  // }
+  function saveAsDraft() {
+    startTransition(() => {
+      setDraft({
+        ...form.getValues(),
+        attachments: [] // attachments are file objects, cannot be saved in local storage
+      });
+      setOpen(false);
+    })
+  }
 
   function reset() {
     setDraft(null);
-    form.reset({}, {
-      keepValues: false,
-      keepDirtyValues: false,
-      keepDefaultValues: false
-    });
+    form.resetAll(defaultValue);
   }
 
   function save() {
@@ -191,6 +213,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
           setDraft(null);
           setOpen(false);
           props.onSubmit?.(response.data);
+          if (! props.value) {
+            form.resetAll(defaultValue)
+          }
         })
       }
     });
@@ -774,23 +799,39 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                       <FormField
                         control={form.control}
                         render={({ field }) => (
-                          <VFormField
-                            label={'Contact Person'}
-                            className={'col-span-12'}
-                            description={'Contact person at the client side for exit call, set up in the vendor contacts if needed.'}
-                          >
-                            <ContactSelect
-                              onValueChane={field.onChange}
-                              value={field.value || null}
-                              params={{
-                                contactable_type: 'client',
-                                contactable_id: `{project.${form.watch('project_id')}.client_id}`,
-                              }}
-                            />
-                          </VFormField>
+                          <div className="col-span-6 flex items-center space-x-2">
+                            <Checkbox id="report_required" checked={field.value || false} onCheckedChange={field.onChange} />
+                            <label htmlFor="report_required" className="text-sm font-medium">
+                              Report Required
+                            </label>
+                          </div>
                         )}
-                        name={'client_contact_id'}
+                        name={'report_required'}
                       />
+                      {
+                        form.watch('project_id') ? (
+                          <FormField
+                            control={form.control}
+                            render={({ field }) => (
+                              <VFormField
+                                label={'Contact Person'}
+                                className={'col-span-12'}
+                                description={'Contact person at the client side for exit call, set up in the client contacts if needed.'}
+                              >
+                                <ContactSelect
+                                  onValueChane={field.onChange}
+                                  value={field.value || null}
+                                  params={{
+                                    contactable_type: 'client',
+                                    contactable_id: `{project.${form.watch('project_id')}.client_id}`,
+                                  }}
+                                />
+                              </VFormField>
+                            )}
+                            name={'client_contact_id'}
+                          />
+                        ) : null
+                      }
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value={'reporting'}>
@@ -802,7 +843,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Reporting Format'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select reporting format" />
                               </SelectTrigger>
@@ -819,7 +860,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Reporting Frequency'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select reporting frequency" />
                               </SelectTrigger>
@@ -836,7 +877,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Send report to'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select timesheet format" />
                               </SelectTrigger>
@@ -854,7 +895,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Timesheet Format'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select timesheet format" />
                               </SelectTrigger>
@@ -871,7 +912,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'NCR Format'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select NCR format" />
                               </SelectTrigger>
@@ -888,7 +929,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Punch List Format'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select punch list format" />
                               </SelectTrigger>
@@ -905,7 +946,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'IRN Format'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select IRN format" />
                               </SelectTrigger>
@@ -922,7 +963,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Document Stamp'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select document stamp" />
                               </SelectTrigger>
@@ -939,7 +980,7 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                         control={form.control}
                         render={({ field }) => (
                           <VFormField label={'Issue IRN to Vendor'} className={'col-span-6'}>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || '0'}>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                               <SelectTrigger className={'bg-background w-full'}>
                                 <SelectValue placeholder="Select option" />
                               </SelectTrigger>
@@ -1030,16 +1071,16 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
                 Cancel
               </Button>
             </DialogClose>
-            {/*<Tooltip>*/}
-            {/*  <TooltipTrigger>*/}
-            {/*    <Button variant={'outline'} onClick={saveAsDraft}>*/}
-            {/*      Save as Draft*/}
-            {/*    </Button>*/}
-            {/*  </TooltipTrigger>*/}
-            {/*  <TooltipContent>*/}
-            {/*    Save your work as a draft. Please note attachments will not be saved.*/}
-            {/*  </TooltipContent>*/}
-            {/*</Tooltip>*/}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant={'outline'} onClick={saveAsDraft}>
+                  Save as Draft
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Save your work as a draft. Please note attachments will not be saved.
+              </TooltipContent>
+            </Tooltip>
             <Button disabled={form.formState.disabled || form.formState.isSubmitting} onClick={save}>
               Save
             </Button>
@@ -1066,7 +1107,6 @@ function ReferenceNumber({ value, onValueChange, ...props }: ReferenceNumberProp
   }, [onValueChange]);
 
   useEffect(() => {
-    console.info('use effect', value);
     if (!value && props.allowGenerate) {
       generate();
     }

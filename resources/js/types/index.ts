@@ -234,7 +234,7 @@ export enum AssignmentStatus {
 }
 
 export interface Assignment extends BaseModel {
-  reference_number: string | null;
+  reference_number: string;
   previous_reference_number: string | null;
 
   delegated: boolean;
@@ -254,7 +254,7 @@ export interface Assignment extends BaseModel {
 
   project_id: number;
   project?: Project;
-  purchase_order_id: number | null;
+  purchase_order_id: number;
   purchase_order?: PurchaseOrder;
   vendor_id: number | null;
   vendor?: Vendor;

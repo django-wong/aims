@@ -38,8 +38,10 @@ function append(value: FormDataConvertible, formData: FormData, key: string) {
     formData.append(key, `${value}`);
   } else if (typeof value === 'string') {
     formData.append(key, value);
-  } else if (value === null || value === undefined) {
+  } else if (value === null) {
     formData.append(key, '');
+  } else if (value === undefined) {
+    formData.delete(key);
   } else {
     objectToFormData(value, formData, key);
   }
@@ -150,11 +152,24 @@ export function useReactiveForm<T extends FieldValues, R = T>(props: UseReactive
       form.handleSubmit(cb, ecb)();
     },
     resetAll: (value?: DefaultValues<T> | null) => {
-      form.reset(value || undefined, {
-        keepDefaultValues: false,
+      const target = {
+        ...(
+          Object.keys(form.getValues()).reduce((obj, key) => {
+            return {
+              ...obj,
+              [key]: null,
+            }
+          }, {})
+        ),
+        ...props.defaultValues,
+        ...value,
+      };
+
+      form.reset(target as DefaultValues<T>, {
+        keepDefaultValues: true,
         keepValues: false,
         keepDirtyValues: false,
       });
-    },
+    }
   };
 }

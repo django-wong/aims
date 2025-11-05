@@ -224,6 +224,9 @@ const po_column: ColumnDef<Assignment> = {
     accessorKey: 'purchase_order_id',
     header: 'Work Order',
     cell: ({ row }) => {
+      if (! row.original.purchase_order_id) {
+        return 'N/A';
+      }
       return (
         <Link href={route('purchase-orders.edit', { id: row.original.purchase_order?.id })} className={'underline'}>
           {row.original.purchase_order?.title}

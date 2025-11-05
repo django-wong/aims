@@ -165,7 +165,7 @@ class AssignmentController extends Controller
         /**
          * @var Assignment $assignment
          */
-        $assignment = Org::current()->assignments()->create(array_filter($data));
+        $assignment = Org::current()->assignments()->create($data);
 
         $request->saveAttachments(for: $assignment);
 
