@@ -18,6 +18,12 @@ class MenuController
     {
         $user_role = $request->user()?->user_role;
 
+        if (empty($user_role)) {
+            return [
+
+            ];
+        }
+
         $when = function($roles, $then) use ($user_role) {
             return $user_role && $user_role->isAnyOf($roles) ? $then : [];
         };
