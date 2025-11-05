@@ -175,6 +175,15 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
     })
   }
 
+  function reset() {
+    setDraft(null);
+    form.reset({}, {
+      keepValues: false,
+      keepDirtyValues: false,
+      keepDefaultValues: false
+    });
+  }
+
   function save() {
     form.submit().then(async (response) => {
       if (response) {
@@ -1013,6 +1022,9 @@ export function AssignmentForm(props: DialogFormProps<Assignment>) {
             </Form>
           </DialogInnerContent>
           <DialogFooter className={'flex-row items-center'}>
+            <Button variant={'destructive'} onClick={reset}>
+              Reset
+            </Button>
             <DialogClose asChild>
               <Button variant={'outline'} type={'button'}>
                 Cancel
