@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { PurchaseOrderForm } from './purchase-orders/form';
 import './purchase-orders/index.css';
 import { useIsClient } from '@/hooks/use-role';
+import { HideFromClient } from '@/components/hide-from-client';
 
 function PurchaseOrderActions(props: { purchaseOrder: PurchaseOrder }) {
   const isClient = useIsClient();
@@ -181,11 +182,13 @@ export default function PurchaseOrdersPage() {
         { title: 'Work Orders', href: '/purchase-orders' },
       ]}
       pageAction={
-        <PurchaseOrderForm open={formOpen} onOpenChange={setFormOpen} onSubmit={() => table.reload()}>
-          <Button>
-            <Plus /> New Work Order
-          </Button>
-        </PurchaseOrderForm>
+        <HideFromClient>
+          <PurchaseOrderForm open={formOpen} onOpenChange={setFormOpen} onSubmit={() => table.reload()}>
+            <Button>
+              <Plus /> New Work Order
+            </Button>
+          </PurchaseOrderForm>
+        </HideFromClient>
       }
     >
       <Head title="Work Orders" />
