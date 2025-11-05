@@ -58,7 +58,7 @@ export function BudgetForm(props: DialogFormProps<Budget>) {
   function save() {
     form.submit().then(async (response) => {
       if (response) {
-        props.onSubmit(response.data);
+        props.onSubmit?.(response.data);
         setOpen(false);
       }
     });

@@ -41,7 +41,7 @@ export function VendorForm(props: DialogFormProps<Vendor>) {
   function save() {
     form.submit().then((response) => {
       if (response) {
-        props.onSubmit(response.data);
+        props.onSubmit?.(response.data);
         setOpen(false);
       }
     })

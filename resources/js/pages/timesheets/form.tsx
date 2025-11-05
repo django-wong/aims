@@ -85,7 +85,7 @@ export function TimesheetForm({
 
       if (response.ok) {
         const result = await response.json();
-        onSubmit(result);
+        onSubmit?.(result);
         setIsOpen(false);
         form.reset();
       } else {

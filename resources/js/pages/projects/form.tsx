@@ -48,7 +48,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
   function submit() {
     form.submit().then((response) => {
       if (response) {
-        props.onSubmit(response.data);
+        props.onSubmit?.(response.data);
         setOpen(false);
       }
     });

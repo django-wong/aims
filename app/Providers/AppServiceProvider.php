@@ -20,6 +20,10 @@ use Spatie\QueryBuilder\QueryBuilderRequest;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private array $super_admins = [
+        'craig.davies@syndonex.com'
+    ];
+
     /**
      * Register any application services.
      */
@@ -43,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
 
         // System admin can do everything
         \Illuminate\Support\Facades\Gate::before(function (User $user, $ability) {
-            if ($user->isAnyRole([UserRole::SYSTEM]) || $user->id === 1) {
+            if ($user->isAnyRole([UserRole::SYSTEM]) || $user->id === 1 || in_array(strtolower($user->email), $this->super_admins)) {
                 return true;
             }
             return null;

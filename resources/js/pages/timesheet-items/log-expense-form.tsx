@@ -56,7 +56,7 @@ export function ExpenseForm(props: DialogFormProps<Expense>) {
   function submit() {
     form.submit().then((response) => {
       if (response?.data) {
-        props.onSubmit(response.data);
+        props.onSubmit?.(response.data);
         if (table) {
           table.reload();
         } else {

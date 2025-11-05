@@ -140,7 +140,7 @@ function UserSkillForm(props: DialogFormProps<User, UserSkill>) {
   function submit(close: boolean = false) {
     form.submit().then((res) => {
       if (res) {
-        props.onSubmit(res.data);
+        props.onSubmit?.(res.data);
         if (close) {
           setOpen(false);
         } else {

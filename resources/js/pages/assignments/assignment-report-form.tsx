@@ -52,7 +52,7 @@ export function TimesheetReportForm(props: DialogFormProps & { type?: string }) 
     form.handleSubmit(() => {
       form.submit().then((response) => {
         if (response) {
-          props.onSubmit(response.data as TimesheetReport);
+          props.onSubmit?.(response.data as TimesheetReport);
           setOpen(false);
         }
       });
