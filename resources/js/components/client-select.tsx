@@ -87,13 +87,10 @@ export interface SelectProps<T> {
 
 export const ClientSelect = createSelect<Client>({
   api: '/api/v1/clients',
-  getKeywords: (item) => [
-    item.user?.name || item.business_name,
-    item.user?.email || ''
-  ],
-  getItemLabel: (item) => item.business_name || item.user?.name || 'Unknown Client',
+  getKeywords: (item) => [item.user?.name || item.business_name, item.user?.email || ''],
+  getItemLabel: (item) => `${item.business_name} (${item.code})`,
   searchParams: new URLSearchParams({
-    sort: 'business_name'
+    sort: 'business_name',
   }),
 });
 

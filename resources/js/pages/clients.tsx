@@ -99,6 +99,11 @@ export default function Clients() {
       cell: ({ row }) => row.original.group || '',
     },
     {
+      accessorKey: 'code',
+      header: 'Code',
+      cell: ({ row }) => row.original.code || '',
+    },
+    {
       accessorKey: 'email',
       header: 'Email',
       size: 100,
