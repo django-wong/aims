@@ -38,7 +38,7 @@ export function SendInvoiceButton() {
   if (invoice?.status == InvoiceStatusEnum.Rejected || invoice?.status == InvoiceStatusEnum.Draft) {
     return (
       <>
-        <Button disabled={loading} onClick={send} variant={'primary'}>
+        <Button disabled={loading} onClick={send}>
           <Loading show={loading} />
           Request Approval
         </Button>

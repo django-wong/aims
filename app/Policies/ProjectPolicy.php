@@ -16,16 +16,23 @@ class ProjectPolicy
             UserRole::STAFF,
             UserRole::ADMIN,
             UserRole::CLIENT,
-            UserRole::INSPECTOR
+            UserRole::INSPECTOR,
         ]);
     }
 
-    /**
-     * Determine whether the user can view the project.
-     */
+    public function create(User $user): bool
+    {
+        return $user->isAnyRole([
+            UserRole::FINANCE,
+            UserRole::PM,
+            UserRole::STAFF,
+            UserRole::ADMIN,
+        ]);
+    }
+
     public function view(User $user, Project $project): bool
     {
-        return UserRole::query()->where('user_id', $user->id)->where('org_id', $project->org_id)->exists();
+        return $user->user_role->org_id === $project->org_id && $this->create($user);
     }
 
     public function update(User $user, Project $project): bool

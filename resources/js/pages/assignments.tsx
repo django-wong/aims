@@ -1,77 +1,81 @@
-import AppLayout from '@/layouts/app-layout';
-import { Assignment, BreadcrumbItem, Project } from '@/types';
-import { Button } from '@/components/ui/button';
-import { useTable } from '@/hooks/use-table';
-import { ColumnDef } from '@tanstack/react-table';
+import { ClientSelect } from '@/components/client-select';
 import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
-import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, FileIcon, Mail, MessageSquare, PencilIcon, PlusIcon, Trash2,
-  User2Icon
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { HideFromClient } from '@/components/hide-from-client';
+import { ProjectSelect } from '@/components/project-select';
+import { TableFilter } from '@/components/table/filter';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuPortal,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub, DropdownMenuSubContent,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { AssignmentForm } from '@/pages/assignments/form';
-import { useState } from 'react';
-import { useDebouncer } from '@/hooks/use-debounced';
-import { Link, router } from '@inertiajs/react';
-import axios from 'axios';
-import { Badge } from '@/components/ui/badge';
-import { ProjectSelect } from '@/components/project-select';
+import { Input } from '@/components/ui/input';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { toast } from 'sonner';
-import { download } from '@/utils/download-response-as-blob';
-import { ClientSelect } from '@/components/client-select';
-import { useIsClient } from '@/hooks/use-role';
-import dayjs from 'dayjs';
-import { HideFromClient } from '@/components/hide-from-client';
-import { TableFilter } from '@/components/table/filter';
+import { useDebouncer } from '@/hooks/use-debounced';
+import { useIsClient, useIsInspector } from '@/hooks/use-role';
+import { useTable } from '@/hooks/use-table';
+import AppLayout from '@/layouts/app-layout';
 import { CloseDate } from '@/pages/assignments/close-date';
+import { AssignmentForm } from '@/pages/assignments/form';
+import { Assignment, BreadcrumbItem, Project } from '@/types';
+import { download } from '@/utils/download-response-as-blob';
+import { Link, router } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PencilIcon, PlusIcon, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Home',
-    href: '/'
+    href: '/',
   },
   {
     title: 'Assignments',
-    href: route('assignments')
-  }
+    href: route('assignments'),
+  },
 ];
 
-
 export default function AssignmentsPage() {
-  const {table, content} = useAssignmentsTable();
+  const { table, content } = useAssignmentsTable();
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
-
-  // const [hash, setHash] = useQueryParam('tab', 'all');
 
   return (
     <AppLayout
       breadcrumbs={breadcrumbs}
       pageAction={
-        <AssignmentForm
-          open={open}
-          onOpenChange={setOpen}
-          onSubmit={() => {table.reload()}}>
-          <Button onClick={() => {setCount(count + 1)}}>
-            <PlusIcon/> New
-          </Button>
-        </AssignmentForm>
-      }>
-      <div className={'px-6'}>
-        {content}
-      </div>
+        <HideFromClient>
+          <AssignmentForm
+            open={open}
+            onOpenChange={setOpen}
+            onSubmit={() => {
+              table.reload();
+            }}
+          >
+            <Button
+              onClick={() => {
+                setCount(count + 1);
+              }}
+            >
+              <PlusIcon /> New
+            </Button>
+          </AssignmentForm>
+        </HideFromClient>
+      }
+    >
+      <div className={'px-6'}>{content}</div>
     </AppLayout>
   );
 }
@@ -87,7 +91,12 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
   return (
     <div className={'flex items-center justify-end gap-2'}>
       <HideFromClient>
-        <AssignmentForm value={assignment} onSubmit={() => {table.reload()}}>
+        <AssignmentForm
+          value={assignment}
+          onSubmit={() => {
+            table.reload();
+          }}
+        >
           <Button variant="outline" size={'sm'}>
             <PencilIcon />
           </Button>
@@ -100,19 +109,20 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-64" side={'bottom'} align={'end'}>
-          <DropdownMenuLabel className={'flex items-center gap-2 justify-between'}>
+          <DropdownMenuLabel className={'flex items-center justify-between gap-2'}>
             <span>Assignment</span> <span>#{assignment.id}</span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            { isClient ? (
+            {isClient ? (
               <DropdownMenuItem
                 onClick={() => {
                   alert('Not available yet');
-                }}>
+                }}
+              >
                 New NOI
                 <DropdownMenuShortcut>
-                  <CopyIcon/>
+                  <CopyIcon />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             ) : null}
@@ -120,19 +130,21 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
               <DropdownMenuItem
                 onClick={() => {
                   router.visit(route('assignments.edit', { id: assignment.id }));
-                }}>
+                }}
+              >
                 View Details
                 <DropdownMenuShortcut>
-                  <Eye/>
+                  <Eye />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             )}
-            { isClient ? null : (
+            {isClient ? null : (
               <>
                 <DropdownMenuItem
                   onClick={() => {
                     toast.message('Generating PDF...');
-                    axios.get('/api/v1/assignments/' + assignment.id + '/pdf', { responseType: 'blob' })
+                    axios
+                      .get('/api/v1/assignments/' + assignment.id + '/pdf', { responseType: 'blob' })
                       .then((response) => {
                         download(response);
                         toast.success('PDF generated successfully!');
@@ -140,33 +152,32 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
                       .catch((error) => {
                         console.error('Error generating PDF:', error);
                         toast.error('Failed to generate PDF.');
-                      }
-                    );
-                  }}>
+                      });
+                  }}
+                >
                   Assignment Form (PDF)
                   <DropdownMenuShortcut>
-                    <ClipboardTypeIcon/>
+                    <ClipboardTypeIcon />
                   </DropdownMenuShortcut>
                 </DropdownMenuItem>
               </>
             )}
-            { isClient ? null : (
+            {isClient ? null : (
               <DropdownMenuItem
-                  onClick={() => {
-                    axios.get('/api/v1/assignments/' + assignment.id + '/link').then(
-                      (response) => {
-                        navigator.clipboard.writeText(response.data['data']);
-                        toast.success('Link copied to clipboard!');
-                      }
-                    );
-                  }}>
-                  Copy Link for Inspector
-                  <DropdownMenuShortcut>
-                    <CopyIcon/>
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
+                onClick={() => {
+                  axios.get('/api/v1/assignments/' + assignment.id + '/link').then((response) => {
+                    navigator.clipboard.writeText(response.data['data']);
+                    toast.success('Link copied to clipboard!');
+                  });
+                }}
+              >
+                Copy Link for Inspector
+                <DropdownMenuShortcut>
+                  <CopyIcon />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
             )}
-            { isClient ? null : (
+            {isClient ? null : (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Notify Inspector</DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
@@ -174,16 +185,17 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
                     <DropdownMenuItem
                       onClick={() => {
                         axios.post('/api/v1/assignments/' + assignment.id + '/notify-inspector');
-                      }}>
+                      }}
+                    >
                       Email
                       <DropdownMenuShortcut>
-                        <Mail/>
+                        <Mail />
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuItem disabled>
                       SMS
                       <DropdownMenuShortcut>
-                        <MessageSquare/>
+                        <MessageSquare />
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
@@ -197,16 +209,15 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
                   <DropdownMenuSubContent>
                     <DropdownMenuItem
                       variant={'destructive'}
-                      onClick={
-                        () => {
-                          axios.delete(`/api/v1/assignments/${assignment.id}`).then(() => {
-                            router.reload();
-                          })
-                        }
-                      }>
+                      onClick={() => {
+                        axios.delete(`/api/v1/assignments/${assignment.id}`).then(() => {
+                          router.reload();
+                        });
+                      }}
+                    >
                       Confirm
                       <DropdownMenuShortcut>
-                        <Trash2 className={'text-red-500'}/>
+                        <Trash2 className={'text-red-500'} />
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
@@ -221,25 +232,26 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
 }
 
 const po_column: ColumnDef<Assignment> = {
-    accessorKey: 'purchase_order_id',
-    header: 'Work Order',
-    cell: ({ row }) => {
-      if (! row.original.purchase_order_id) {
-        return 'N/A';
-      }
-      return (
-        <Link href={route('purchase-orders.edit', { id: row.original.purchase_order?.id })} className={'underline'}>
-          {row.original.purchase_order?.title}
-        </Link>
-      );
+  accessorKey: 'purchase_order_id',
+  header: 'Work Order',
+  cell: ({ row }) => {
+    if (!row.original.purchase_order_id) {
+      return 'N/A';
     }
-}
+    return (
+      <Link href={route('purchase-orders.edit', { id: row.original.purchase_order?.id })} className={'underline'}>
+        {row.original.purchase_order?.title}
+      </Link>
+    );
+  },
+};
 
 interface UseAssignmentsTableOptions {
-  project?: Project
+  project?: Project;
 }
 
 export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
+  const isInspector = useIsInspector();
   const isClient = useIsClient();
 
   const columns: ColumnDef<Assignment>[] = [
@@ -260,32 +272,36 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       header: 'Date recorded',
       cell: ({ row }) => dayjs(row.original.created_at).format('DD/MM/YYYY'),
     },
-    {
-      id: 'client_id',
-      accessorKey: 'client_id',
-      header: 'Client',
-      cell: ({ row }) => {
-        return (
-          <>
-            <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
-              {row.original.project?.client?.business_name}
-            </Link>
-          </>
-        );
-      },
-    },
-    {
-      id: 'client_code',
-      accessorKey: 'client_code',
-      header: () => <TableFilter>Client Code</TableFilter>,
-      cell: ({ row }) => {
-        return (
-          <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
-            {row.original.project?.client?.code}
-          </Link>
-        );
-      },
-    },
+    ...(isClient
+      ? []
+      : ([
+          {
+            id: 'client_code',
+            accessorKey: 'client_code',
+            header: () => <TableFilter>Client Code</TableFilter>,
+            cell: ({ row }) => {
+              return (
+                <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
+                  {row.original.project?.client?.code}
+                </Link>
+              );
+            },
+          },
+          {
+            id: 'client_id',
+            accessorKey: 'client_id',
+            header: 'Client',
+            cell: ({ row }) => {
+              return (
+                <>
+                  <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>
+                    {row.original.project?.client?.business_name}
+                  </Link>
+                </>
+              );
+            },
+          },
+        ] as ColumnDef<Assignment>[])),
     {
       accessorKey: 'operation_org_id',
       header: 'Operating Office',
@@ -305,25 +321,21 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
         );
       },
     },
-    // {
-    //   accessorKey: 'assignment_type_id',
-    //   header: 'Type',
-    //   cell: ({ row }) => {
-    //     return <Badge variant={'secondary'}>{row.original.assignment_type?.name ?? '-'}</Badge>;
-    //   },
-    //   size: 100,
-    // },
     ...(isClient ? [] : [po_column]),
-    {
-      accessorKey: 'client_po',
-      header: 'Client PO',
-      cell: ({ row }) => row.original.client_po ?? '-',
-    },
-    {
-      accessorKey: 'client_po_rev',
-      header: 'Client PO Rev',
-      cell: ({ row }) => row.original.client_po_rev ?? '-',
-    },
+    ...(isInspector
+      ? []
+      : ([
+          {
+            accessorKey: 'client_po',
+            header: 'Client PO',
+            cell: ({ row }) => row.original.client_po ?? '-',
+          },
+          {
+            accessorKey: 'client_po_rev',
+            header: 'Client PO Rev',
+            cell: ({ row }) => row.original.client_po_rev ?? '-',
+          },
+        ] as ColumnDef<Assignment>[])),
     {
       accessorKey: 'vendor_id',
       header: 'Vendor',
@@ -364,27 +376,34 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       header: 'Notes',
       cell: ({ row }) => <div className={'line-clamp-1 max-w-[300px] text-ellipsis'}>{row.original.notes}</div>,
     },
-    // po_delivery_date
     {
       accessorKey: 'po_delivery_date',
       header: 'PO Delivery Date',
       cell: ({ row }) => (row.original.po_delivery_date ? dayjs(row.original.po_delivery_date).format('DD/MM/YYYY') : '-'),
     },
-    // budgeted hours
-    {
-      accessorKey: 'budgeted_hours',
-      header: 'Budgeted Hours',
-      cell: ({ row }) => row.original.purchase_order?.budgeted_hours,
-    },
-    {
-      accessorKey: 'budgeted_travel',
-      header: 'Budgeted Travel',
-      cell: ({ row }) => `${row.original.purchase_order?.budgeted_travel}${row.original.purchase_order?.travel_unit}`,
-    },
+    ...(isInspector
+      ? []
+      : ([
+          {
+            accessorKey: 'budgeted_hours',
+            header: 'Budgeted Hours',
+            cell: ({ row }) => row.original.purchase_order?.budgeted_hours,
+          },
+          {
+            accessorKey: 'budgeted_travel',
+            header: 'Budgeted Travel',
+            cell: ({ row }) => `${row.original.purchase_order?.budgeted_travel}${row.original.purchase_order?.travel_unit}`,
+          },
+          {
+            accessorKey: 'final_invoice_date',
+            header: 'Final Invoice',
+            cell: ({ row }) => (row.original.final_invoice_date ? dayjs(row.original.final_invoice_date).format('DD/MM/YYYY') : '-'),
+          },
+        ] as ColumnDef<Assignment>[])),
     {
       accessorKey: 'is_closed',
       header: 'Open / Close',
-      cell: ({ row }) => <CloseDate close_date={row.original.close_date}/>,
+      cell: ({ row }) => <CloseDate close_date={row.original.close_date} />,
     },
     // date closed
     {
@@ -392,25 +411,12 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       header: 'Date Closed',
       cell: ({ row }) => (row.original.close_date ? dayjs(row.original.close_date).format('DD/MM/YYYY') : '-'),
     },
-    // final invoice
-    {
-      accessorKey: 'final_invoice_date',
-      header: 'Final Invoice',
-      cell: ({ row }) => (row.original.final_invoice_date ? dayjs(row.original.final_invoice_date).format('DD/MM/YYYY') : '-'),
-    },
     // original job number
     {
       accessorKey: 'original_job_number',
       header: 'Original Job Number',
       cell: ({ row }) => row.original.previous_reference_number ?? '-',
     },
-
-    // new job number
-    // {
-    //   accessorKey: 'new_job_number',
-    //   header: 'New Job Number',
-    //   cell: ({ row }) => row.original.new_job_number ?? '-',
-    // },
 
     // project type
     {
@@ -454,40 +460,36 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       },
     },
     defaultParams: {
-      'include': 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order,skill',
-      'sort': 'created_at',
-      ...(options.project ? {
-        'filter[project_id]': String(options.project.id)
-      } : null)
-    }
+      include: 'project.client,project.project_type,assignment_type,vendor,sub_vendor,operation_org,org,purchase_order,skill',
+      sort: 'created_at',
+      ...(options.project
+        ? {
+            'filter[project_id]': String(options.project.id),
+          }
+        : null),
+    },
   });
 
   const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') ?? '');
   const debouncer = useDebouncer();
 
-  const project_selector = (
-    options.project ? null : (
-      <ProjectSelect
-        value={Number(table.searchParams.get('filter[project_id]') ?? null)}
-        onValueChane={(value) => {
-          table.setSearchParams((params) => {
-            if (value) {
-              params.set('filter[project_id]', value.toString());
-            } else {
-              params.delete('filter[project_id]');
-            }
-            return params;
-          })
-        }}
-        renderTrigger={(project) => {
-          return (
-            <Button variant={project ? 'outline' : 'dashed'} className={'border-2'}>
-              <FileIcon/> Project{project ? `: ${project.title}` : ''}
-            </Button>
-          );
-        }}/>
-    )
-  )
+  const project_selector = options.project ? null : (
+    <ProjectSelect
+      className={'max-w-[150px]'}
+      placeholder={'Filter by Project'}
+      value={Number(table.searchParams.get('filter[project_id]') ?? null)}
+      onValueChane={(value) => {
+        table.setSearchParams((params) => {
+          if (value) {
+            params.set('filter[project_id]', value.toString());
+          } else {
+            params.delete('filter[project_id]');
+          }
+          return params;
+        });
+      }}
+    />
+  );
 
   return {
     table,
@@ -495,26 +497,28 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       <div className={'grid grid-cols-1 gap-4'}>
         <DataTable
           table={table}
-          left={<>
-            <Input
-              value={keywords}
-              onChange={(event) => {
-                setKeywords(event.target.value);
-                debouncer(() => {
-                  table.setSearchParams((params) => {
-                    params.set('filter[keywords]', event.target.value);
-                    return params;
-                  })
-                })
-              }}
-              className={'max-w-[250px]'}
-              placeholder={'Search...'}
-            />
-            {project_selector}
+          left={
             <>
-              {options.project ? null : (
-                isClient ? null : (
+              <Input
+                value={keywords}
+                onChange={(event) => {
+                  setKeywords(event.target.value);
+                  debouncer(() => {
+                    table.setSearchParams((params) => {
+                      params.set('filter[keywords]', event.target.value);
+                      return params;
+                    });
+                  });
+                }}
+                className={'max-w-[250px]'}
+                placeholder={'Search...'}
+              />
+              {project_selector}
+              <>
+                {options.project ? null : isClient ? null : (
                   <ClientSelect
+                    placeholder={'Filter by Client'}
+                    className={'max-w-[150px]'}
                     onValueChane={(value) => {
                       table.setSearchParams((params) => {
                         if (value) {
@@ -523,28 +527,21 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
                           params.delete('filter[client_id]');
                         }
                         return params;
-                      })
+                      });
                     }}
                     value={Number(table.searchParams.get('filter[client_id]')) || null}
-                    renderTrigger={(client) => {
-                      return (
-                        <Button variant={client ? 'outline' : 'dashed'}>
-                          <User2Icon/>Client{client ? `: ${client.business_name}` : ''}
-                        </Button>
-                      );
-                    }}
                   />
-                )
-              )}
+                )}
+              </>
             </>
-          </>}
+          }
           right={
             <>
-              <ColumnToggle/>
+              <ColumnToggle />
             </>
           }
         />
       </div>
-    )
-  }
+    ),
+  };
 }

@@ -38,7 +38,7 @@ export default function EditQuotePage({ quote }: EditQuotePageProps) {
       pageAction={
         <>
           <QuoteForm onSubmit={() => router.reload()} value={quote}>
-            <Button variant={'primary'}>
+            <Button>
               <PencilIcon/>
               Edit
             </Button>

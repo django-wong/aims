@@ -5,6 +5,10 @@ export function useIsClient() {
   return useRole() === 6;
 }
 
+export function useIsInspector() {
+  return useRole() === 5;
+}
+
 export function useRole() {
   const {
     props: {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\APIv1\Projects;
 
+use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
 
@@ -23,7 +25,17 @@ class StoreRequest extends FormRequest
     {
         return [
             'project_type_id' => 'nullable|integer|exists:project_types,id',
-            'client_id' => 'nullable|integer|exists:clients,id',
+            'client_id' => [
+                'nullable',
+                'integer',
+                'exists:clients,id',
+                function ($attribute, $value, $fail) {
+                    $client = Client::query()->find($value);
+                    if (Gate::denies('update', $client)) {
+                        $fail('No permission to assign this client to the project.');
+                    }
+                },
+            ],
             'title' => 'required|string|max:255',
             'commission_rate' => 'nullable|numeric|min:0',
             'process_fee_rate' => 'nullable|numeric|min:0'

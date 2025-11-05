@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PurchaseOrder;
+use Illuminate\Support\Facades\Gate;
 
 class PurchaseOrderController extends Controller
 {
@@ -16,8 +17,12 @@ class PurchaseOrderController extends Controller
 
     public function edit(string $id)
     {
+        $po = PurchaseOrder::query()->with('project.client')->findOrFail($id);
+
+        Gate::authorize('view', $po);
+
         return inertia('purchase-orders/edit', [
-            'purchase_order' => PurchaseOrder::query()->with('project.client')->findOrFail($id)
+            'purchase_order' => $po
         ]);
     }
 }

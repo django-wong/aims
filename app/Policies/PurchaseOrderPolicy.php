@@ -10,64 +10,43 @@ use Illuminate\Auth\Access\Response;
 
 class PurchaseOrderPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
         return false;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // Check if user and purchase order belong to the same organization
-        if ($user->org->id !== $purchaseOrder->org_id) {
-            return false;
-        }
-
-        // Deny access if the user is an inspector
-        if ($user->user_role && $user->user_role->role === UserRole::INSPECTOR) {
-            return false;
-        }
-
-        // Allow all other users from the same org
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user, Project|null $project = null): bool
-    {
-        // Allow admin, finance, and staff users to create purchase orders
-        if ($user->user_role && in_array($user->user_role->role, [
-            UserRole::ADMIN,
-            UserRole::FINANCE,
-            UserRole::STAFF
-        ])) {
-            if ($project) {
-                return $user->user_role->org()->is($project->org);
-            }
+        if ($purchaseOrder->project?->client?->user?->id === $user->id) {
             return true;
         }
 
-        return false;
+        $role = $user->isAnyRole([
+            UserRole::ADMIN,
+            UserRole::PM,
+            UserRole::FINANCE,
+            UserRole::STAFF,
+        ]);
+
+        return $user->org->id === $purchaseOrder->org_id && $role;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
+    public function create(User $user): bool
+    {
+        return $user->isAnyRole([
+            UserRole::ADMIN,
+            UserRole::STAFF,
+            UserRole::PM,
+            UserRole::FINANCE,
+        ]);
+    }
+
     public function update(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        return $this->view($user, $purchaseOrder);
+        return $user->user_role->org_id === $purchaseOrder->org_id
+            && $this->create($user);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, PurchaseOrder $purchaseOrder): bool
     {
         return $this->update($user, $purchaseOrder);

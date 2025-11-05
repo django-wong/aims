@@ -188,7 +188,7 @@ export default function Record(props: RecordProps) {
                                   <>
                                     <LogYourTime />
                                     <SignOffForm>
-                                      <Button variant={'primary'} disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
+                                      <Button disabled={props.timesheet?.status !== TimesheetStatus.Draft}>
                                         <SendIcon />
                                         Submit for Approval
                                       </Button>
@@ -378,7 +378,7 @@ export default function Record(props: RecordProps) {
                           onOpenChange={setShowSpecialNotes}
                           className={'sm:max-w-4xl'}
                           trigger={
-                            <Button variant={'primary'} className={'w-full'}>View</Button>
+                            <Button className={'w-full'}>View</Button>
                           }
                           description={'Read this carefully before starting work on this assignment.'}
                           title={'Special Notes'}

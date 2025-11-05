@@ -57,7 +57,7 @@ export function CreateInvoiceButton() {
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button disabled={loading} variant="primary" type="submit" onClick={submit}>
+          <Button disabled={loading} type="submit" onClick={submit}>
             <Loading show={loading}/>
             Create Invoice
           </Button>

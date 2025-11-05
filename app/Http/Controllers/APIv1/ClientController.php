@@ -70,36 +70,7 @@ class ClientController extends Controller
         Gate::authorize('viewAny', Client::class);
 
         return response()->json(
-            $this->getQueryBuilder()
-                ->where(function (Builder $query) use ($request) {
-                    // User can see the clients of their own organization, or if they are delegated to the client's work.
-                    $query->where('org_id', $request->user()->org->id);
-                    // ->orWhere(function (Builder $query) {
-                    //     $query->whereIn('id', function (QueryBuilder $query) {
-                    //         $query->select('client_id')
-                    //             ->from('projects')
-                    //             ->whereIn('id', function (QueryBuilder $query) {
-                    //                 $query->select('project_id')
-                    //                     ->from('assignments')
-                    //                     ->where('operation_org_id', Org::current()->id);
-                    //             });
-                    //     });
-                    // });
-
-                    // if (auth()->user()->isRole(UserRole::INSPECTOR)) {
-                    //     $query->whereIn('id', function (QueryBuilder $query) {
-                    //         $query->select('client_id')
-                    //             ->from('projects')
-                    //             ->whereIn('id', function (QueryBuilder $query) {
-                    //                 $query->select('project_id')
-                    //                     ->from('assignments')
-                    //                     ->leftJoin('assignment_inspectors', 'assignments.id', '=', 'assignment_inspectors.assignment_id')
-                    //                     ->where('assignment_inspectors.user_id', auth()->user()->id);
-                    //             });
-                    //     });
-                    // }
-                })
-                ->paginate()
+            $this->getQueryBuilder()->visible()->paginate()
         );
     }
 

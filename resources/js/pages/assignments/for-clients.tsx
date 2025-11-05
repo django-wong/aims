@@ -231,6 +231,8 @@ export default function ClientAssignmentsPage() {
                 placeholder={'Search...'}
               />
               <ProjectSelect
+                placeholder={'Filter by Project'}
+                className={'max-w-[150px]'}
                 value={Number(table.searchParams.get('filter[project_id]'))}
                 onValueChane={(value) => {
                   table.setSearchParams((params) => {
@@ -241,13 +243,6 @@ export default function ClientAssignmentsPage() {
                     }
                     return params;
                   });
-                }}
-                renderTrigger={(project) => {
-                  return (
-                    <Button variant={project ? 'outline' : 'dashed'}>
-                      <FileIcon /> Project{project ? `: ${project.title}` : ''}
-                    </Button>
-                  );
                 }}
               />
             </>

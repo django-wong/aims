@@ -35,7 +35,7 @@ export function ApproveForm() {
     <>
       <DialogWrapper
         trigger={
-          <Button variant={'primary'} size={'sm'}><CheckIcon/>Approve</Button>
+          <Button size={'sm'}><CheckIcon/>Approve</Button>
         }
         title={'Approve the invoice'}
         description={'Please sign in the space bellow'}

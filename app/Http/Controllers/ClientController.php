@@ -13,6 +13,8 @@ class ClientController extends Controller
     {
         $client = Client::query()->with(['user', 'address', 'coordinator', 'reviewer'])->findOrFail($id);
 
+        Gate::authorize('view', $client);
+
         return Inertia::render('clients/edit', [
             'client' => $client,
             'can' => [

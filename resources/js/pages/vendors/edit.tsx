@@ -55,7 +55,7 @@ export default function Edit(props: VendorEditProps) {
           </Button>
         </PopoverConfirm>
         <VendorForm value={props.vendor} onSubmit={() => {router.reload()}}>
-          <Button variant={'primary'}>
+          <Button>
             <UserRoundPen/> Edit
           </Button>
         </VendorForm>

@@ -352,7 +352,7 @@ export default function TableUpload({
                     <TableCell className="py-2 pe-1">
                       <div className="flex items-center gap-1">
                         {fileItem.preview && (
-                          <Button variant="dim" size="icon" className="size-8" asChild>
+                          <Button size="icon" className="size-8" asChild>
                             <a href={fileItem.preview} target="_blank">
                               <Download className="size-3.5" />
                             </a>
@@ -361,7 +361,6 @@ export default function TableUpload({
                         {fileItem.status === 'error' ? (
                           <Button
                             onClick={() => retryUpload(fileItem.id)}
-                            variant="dim"
                             size="icon"
                             className="size-8 text-destructive/80 hover:text-destructive"
                           >
@@ -370,7 +369,6 @@ export default function TableUpload({
                         ) : (
                           <Button
                             onClick={() => removeUploadFile(fileItem.id)}
-                            variant="dim"
                             size="icon"
                             className="size-8"
                           >

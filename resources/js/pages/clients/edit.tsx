@@ -72,7 +72,7 @@ export default function Edit(props: ClientEditProps) {
                   </Button>
                 </PopoverConfirm>
                 <ClientForm value={props.client} onSubmit={() => {router.reload()}}>
-                  <Button variant={'primary'}>
+                  <Button>
                     <UserRoundPen/> Edit
                   </Button>
                 </ClientForm>

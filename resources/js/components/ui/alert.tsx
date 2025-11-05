@@ -205,8 +205,6 @@ function Alert({ className, variant, size, icon, appearance, close = false, onCl
       {close && (
         <Button
           size="sm"
-          variant="inverse"
-          mode="icon"
           onClick={onClose}
           aria-label="Dismiss"
           data-slot="alert-close"

@@ -8,20 +8,20 @@ use App\Models\UserRole;
 
 class ClientPolicy
 {
-    public function viewAny(User $user):bool
+    public function viewAny(User $user): bool
     {
         return in_array($user->user_role->role, [
             UserRole::PM,
             UserRole::ADMIN,
             UserRole::STAFF,
-            UserRole::INSPECTOR,
             UserRole::FINANCE,
+            UserRole::INSPECTOR
         ]);
     }
 
     public function view(User $user, Client $client): bool
     {
-        return $this->viewAny($user) && $client->org_id === $user->org->id;
+        return $client->org_id === $user->org->id && $this->create($user);
     }
 
     public function create(User $user): bool
@@ -36,7 +36,7 @@ class ClientPolicy
 
     public function update(User $user, Client $client): bool
     {
-        return $this->viewAny($user) && $client->org_id === $user->org->id;
+        return $client->org_id === $user->org->id && $this->create($user);
     }
 
     public function delete(User $user, Client $client): bool

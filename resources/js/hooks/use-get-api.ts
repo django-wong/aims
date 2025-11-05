@@ -14,7 +14,7 @@ export function usePagedGetApi<T>(endpoint: string, options?: UsePagedGetApiProp
   const [pageSize, setPageSize] = useState<number>(options?.pageSize || 100);
 
   const api = useQuery<T[]>({
-    staleTime: 1000 * 60, // 5 minutes
+    staleTime: 0,
     initialData: options?.initialData,
     queryKey: [endpoint, page, pageSize, options?.searchParams?.toString() || ''],
     queryFn: async (params) => {

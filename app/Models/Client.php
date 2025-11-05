@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 /**
- * @property integer    $org_id
- * @property User|null  $coordinator
- * @property int|null   $address_id
- * @property User       $user
- * @property User|null  $reviewer
- * @property Org        $org
- * @property int $id
+ * @property integer   $org_id
+ * @property User|null $coordinator
+ * @property int|null  $address_id
+ * @property User      $user
+ * @property User|null $reviewer
+ * @property Org       $org
+ * @property int       $id
  */
 class Client extends Model implements Contactable, Invoiceable, Commentable
 {
@@ -43,5 +45,33 @@ class Client extends Model implements Contactable, Invoiceable, Commentable
     public function getInvoiceAddress(): ?string
     {
         return $this->address->full_address ?? null;
+    }
+
+    public function scopeVisible(Builder $query, ?User $user = null)
+    {
+        $user = $user ?? auth()->user();
+
+        if ($user->isRole(UserRole::INSPECTOR)) {
+            $query->whereIn('id', function (QueryBuilder $query) use ($user) {
+                $query->select('client_id')
+                    ->from('projects')
+                    ->whereRaw(
+                        'id in (select project_id from assignments left join assignment_inspectors ai on assignments.id = ai.assignment_id where ai.user_id = ?)', [$user->id]
+                    );
+            });
+        }
+
+        if ($user->isRole(UserRole::CLIENT)) {
+            $query->whereRaw('1 = 2');
+        }
+
+
+        $query->where(function (Builder $query) use ($user) {
+            $query->where('org_id', $user->org->id)
+                ->orWhereRaw(
+                    'id in (select client_id from projects left join assignments on projects.id = assignments.project_id where assignments.operation_org_id = ?)',
+                    [$user->org->id]
+                );
+        });
     }
 }

@@ -18,7 +18,16 @@ class StoreRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'previous_title' => 'nullable|string|max:255',
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => [
+                'required',
+                'exists:projects,id',
+                function ($attribute, $value, $fail) {
+                    $project = Project::query()->find($value);
+                    if ($project && !Gate::allows('update', $project)) {
+                        $fail('You do not have permission to associate a purchase order with this project.');
+                    }
+                },
+            ],
             'quote_id' => 'nullable|exists:quotes,id',
 
             // 'budget' => 'required|numeric|min:0|max:999999999999.99',
@@ -88,7 +97,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::authorize('create', [\App\Models\PurchaseOrder::class, Project::query()->find($this->input('project_id'))]);
+        return Gate::allows('create', \App\Models\PurchaseOrder::class) && Gate::allows('update', Project::query()->find($this->input('project_id')));
     }
 
     /**

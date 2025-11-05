@@ -105,14 +105,16 @@ class AssignmentController extends Controller
     {
         Gate::authorize('viewAny', Assignment::class);
 
-        $role = auth()->user()->user_role->role;
+        return inertia('assignments');
 
-        if ($role == UserRole::INSPECTOR) {
-            return inertia(
-                'assignments/for-inspectors'
-            );
-        }
-
-        return $role == UserRole::CLIENT ? inertia('assignments/for-clients') : inertia('assignments');
+        // $role = auth()->user()->user_role->role;
+        //
+        // if ($role == UserRole::INSPECTOR) {
+        //     return inertia(
+        //         'assignments/for-inspectors'
+        //     );
+        // }
+        //
+        // return $role == UserRole::CLIENT ? inertia('assignments/for-clients') : inertia('assignments');
     }
 }

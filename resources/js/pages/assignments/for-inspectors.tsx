@@ -181,6 +181,8 @@ export default function AssignmentsForInspectors() {
                   placeholder={'Search...'}
                 />
                 <ProjectSelect
+                  className={'max-w-[150px]'}
+                  placeholder="Filter by Project"
                   value={Number(table.searchParams.get('filter[project_id]'))}
                   onValueChane={(value) => {
                     table.setSearchParams((params) => {
@@ -192,15 +194,10 @@ export default function AssignmentsForInspectors() {
                       return params;
                     });
                   }}
-                  renderTrigger={(project) => {
-                    return (
-                      <Button variant={project ? 'outline' : 'dashed'}>
-                        <FileIcon /> Project{project ? `: ${project.title}` : ''}
-                      </Button>
-                    );
-                  }}
                 />
                 <ClientSelect
+                  className={'max-w-[150px]'}
+                  placeholder="Filter by Client"
                   onValueChane={(value) => {
                     table.setSearchParams((params) => {
                       if (value) {
@@ -212,14 +209,6 @@ export default function AssignmentsForInspectors() {
                     });
                   }}
                   value={Number(table.searchParams.get('filter[client_id]')) || null}
-                  renderTrigger={(client) => {
-                    return (
-                      <Button variant={client ? 'outline' : 'dashed'}>
-                        <User2Icon />
-                        Client{client ? `: ${client.business_name}` : ''}
-                      </Button>
-                    );
-                  }}
                 />
               </>
             }
