@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Models\AssignmentDetail;
+use App\Models\AssignmentInspector;
 use App\Models\UserRole;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
@@ -14,24 +16,20 @@ class AssignmentController extends Controller
 {
     public function edit(string $id, Request $request)
     {
-        $assignment = Assignment::query()
-            ->with(
-                'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'purchase_order', 'skill', 'coordinator', 'operation_coordinator'
-            )
-            ->findOrFail($id);
-
-        $assigned = $assignment->assignment_inspectors()->where('user_id', auth()->id())->exists();
+        $assigned = AssignmentInspector::query()->where('assignment_id', $id)->where('user_id', auth()->id())->exists();
 
         // Redirect to timesheet if user is an inspector for the assignment
         if ($assigned) {
-            return to_route(
-                'assignments.record', $assignment->id
-            );
+            return to_route('assignments.record', $id);
         }
 
         return inertia('assignments/edit', [
-            'assignment' => $assignment,
-            'assignment_detail' => AssignmentDetail::query()->find($assignment->id),
+            'detail' => AssignmentDetail::query()->find($id),
+            'assignment' => Assignment::query()
+                ->with(
+                    'project.client', 'operation_org', 'org', 'vendor', 'sub_vendor', 'assignment_type', 'purchase_order', 'skill', 'coordinator', 'operation_coordinator'
+                )
+                ->findOrFail($id),
         ]);
     }
 

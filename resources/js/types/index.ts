@@ -317,6 +317,34 @@ export interface Assignment extends BaseModel {
   special_notes: string | null;
 }
 
+export interface AssignmentDetail extends Assignment {
+  project_title: string;
+  client_business_name: string;
+  client_group: string;
+  client_code: string;
+  purchase_order_title: string;
+  purchase_order_previous_title: string;
+  currency: string;
+  travel_unit: string;
+  budgeted_hours: number;
+  budgeted_travel: number;
+  budgeted_expenses: number;
+  hours: number;
+  travel_distance: number;
+  expenses: number;
+  cost: number;
+  hour_cost: number;
+  travel_cost: number;
+  skill_code: string;
+  i_e_a: string;
+  org_name: string;
+  operation_org_name: string;
+  main_vendor_name: string;
+  sub_vendor_name: string;
+  coordinator_name: string;
+  operation_coordinator_name: string;
+}
+
 export type Invoiceable = {
   invoiceable_id: number;
 } & (

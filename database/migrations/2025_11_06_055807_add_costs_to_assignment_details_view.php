@@ -61,6 +61,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \Illuminate\Support\Facades\DB::unprepared("DROP VIEW IF EXISTS assignment_details");
+        // No down migration provided
     }
 };

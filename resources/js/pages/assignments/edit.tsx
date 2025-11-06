@@ -19,7 +19,7 @@ import { NotificationOfInspection } from '@/pages/assignments/notification-of-in
 import { RejectWithMessage } from '@/pages/assignments/reject-with-message';
 import { TimesheetsTable } from '@/pages/assignments/timesheets-table';
 import { AssignmentProvider } from '@/providers/assignment-provider';
-import { Assignment, AssignmentStatus, BreadcrumbItem } from '@/types';
+import { Assignment, AssignmentDetail, AssignmentStatus, BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import {
@@ -41,11 +41,12 @@ import { PopoverConfirm } from '@/components/popover-confirm';
 import { useIsClient } from '@/hooks/use-role';
 import { formatCurrency } from '@/lib/helpers';
 
-interface EditProps {
+interface AssignmentEditProps {
   assignment: Assignment;
+  detail: AssignmentDetail
 }
 
-export default function Edit(props: EditProps) {
+export default function AssignmentEdit(props: AssignmentEditProps) {
   const [hash, setHash] = useQueryParam('tab', 'overview');
   const isClient = useIsClient();
 
@@ -255,17 +256,17 @@ export default function Edit(props: EditProps) {
                 </InfoLine>
               </div>
 
-              <InfoHead>Budget</InfoHead>
-              {/*<p className={'text-sm text-muted-foreground'}>Please aware the usage does not include other assignment that share the same work order</p>*/}
+              <InfoHead>Budget vs Usage</InfoHead>
+              <p className={'text-sm text-muted-foreground'}>Please aware the usage does not include other assignment that share the same work order</p>
               <div>
                 <InfoLine icon={'clock-2'} label={'Budgeted Hours'}>
-                  {props.assignment.purchase_order?.budgeted_hours || 'N/A'}
+                  {props.assignment.purchase_order?.budgeted_hours || 'N/A'} <span className={'text-sm text-muted-foreground'}>vs</span> {props.detail.hours}
                 </InfoLine>
                 <InfoLine icon={'car'} label={'Budgeted Travel'}>
-                  {props.assignment.purchase_order?.budgeted_travel} {props.assignment.purchase_order?.travel_unit}
+                  {props.assignment.purchase_order?.budgeted_travel} <span className={'text-sm text-muted-foreground'}>vs</span> {props.detail.travel_distance}{props.assignment.purchase_order?.travel_unit}
                 </InfoLine>
                 <InfoLine icon={'car'} label={'Budgeted Expense'}>
-                  {formatCurrency(props.assignment.purchase_order?.budgeted_expenses)}
+                  {formatCurrency(props.assignment.purchase_order?.budgeted_expenses)} <span className={'text-sm text-muted-foreground'}>vs</span> {formatCurrency(props.detail.expenses)}
                 </InfoLine>
               </div>
 
