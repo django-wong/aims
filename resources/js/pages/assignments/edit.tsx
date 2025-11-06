@@ -259,13 +259,13 @@ export default function AssignmentEdit(props: AssignmentEditProps) {
               <InfoHead>Budget vs Usage</InfoHead>
               <p className={'text-sm text-muted-foreground'}>Please aware the usage does not include other assignment that share the same work order</p>
               <div>
-                <InfoLine icon={'clock-2'} label={'Budgeted Hours'}>
+                <InfoLine icon={'clock-2'} label={'Hours'}>
                   {props.assignment.purchase_order?.budgeted_hours || 'N/A'} <span className={'text-sm text-muted-foreground'}>vs</span> {props.detail.hours}
                 </InfoLine>
-                <InfoLine icon={'car'} label={'Budgeted Travel'}>
+                <InfoLine icon={'car'} label={'Travel'}>
                   {props.assignment.purchase_order?.budgeted_travel} <span className={'text-sm text-muted-foreground'}>vs</span> {props.detail.travel_distance}{props.assignment.purchase_order?.travel_unit}
                 </InfoLine>
-                <InfoLine icon={'car'} label={'Budgeted Expense'}>
+                <InfoLine icon={'car'} label={'Expense'}>
                   {formatCurrency(props.assignment.purchase_order?.budgeted_expenses)} <span className={'text-sm text-muted-foreground'}>vs</span> {formatCurrency(props.detail.expenses)}
                 </InfoLine>
               </div>
