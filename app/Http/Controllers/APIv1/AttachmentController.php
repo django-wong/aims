@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\Attachments\StoreRequest;
 use App\Http\Requests\APIv1\IndexAttachmentRequest;
+use App\Http\Requests\APIv1\UpdateAttachmentRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,19 +50,16 @@ class AttachmentController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Attachment $attachment)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Attachment $attachment)
+    public function update(UpdateAttachmentRequest $request, Attachment $attachment)
     {
-        //
+        $attachment->revision($request->file('attachment'))->save();
+
+        return [
+            'message' => 'Attachment updated successfully.',
+            'data' => $attachment->fresh()
+        ];
     }
 
     /**
@@ -69,6 +67,12 @@ class AttachmentController extends Controller
      */
     public function destroy(Attachment $attachment)
     {
-        //
+        Gate::authorize('delete', $attachment);
+
+        $attachment->delete();
+
+        return [
+            'message' => 'Attachment deleted successfully.'
+        ];
     }
 }

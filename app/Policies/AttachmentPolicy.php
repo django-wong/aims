@@ -8,9 +8,6 @@ use App\Models\User;
 
 class AttachmentPolicy
 {
-    /**
-     * Determine whether the user can view the comment.
-     */
     public function view(User $user, Attachment $attachment): bool
     {
         return $user->can('view', $attachment->attachable);
@@ -19,5 +16,10 @@ class AttachmentPolicy
     public function create(User $user, Attachable $attachable): bool
     {
         return $user->can('update', $attachable) || $user->can('add_attachment', $attachable);
+    }
+
+    public function delete(User $user, Attachment $attachment): bool
+    {
+        return $user->can('update', $attachment->attachable) || $user->can('remove_attachment', $attachment->attachable);
     }
 }

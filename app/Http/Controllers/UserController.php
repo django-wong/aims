@@ -16,9 +16,11 @@ class UserController
         $allow = Gate::check('impersonate', $user);
 
         if (!$allow) {
-            return redirect()->back()->with(
-                'error', __('You are not allowed to impersonate this user.')
-            );
+            return redirect()
+                ->back()
+                ->with(
+                    'error', __('You are not allowed to impersonate this user.')
+                );
         }
 
         Auth::user()->impersonate($user);
@@ -27,8 +29,11 @@ class UserController
         $request->session()->put('return_to', url()->previous());
 
         if ($request->has('redirect_to')) {
-            return redirect($request->get('redirect_to'));
+            return redirect(
+                $request->get('redirect_to')
+            );
         }
+
         return redirect()->route('dashboard');
     }
 

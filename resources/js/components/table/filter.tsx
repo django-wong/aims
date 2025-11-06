@@ -23,7 +23,7 @@ export function TableFilter(props: TableFilterProps) {
           <PopoverContent align={'end'} side={'bottom'} className={'w-80 grid'}>
             <FilterHeader>
               <FilterTitle>Client</FilterTitle>
-              <FilterDescription>Filter by client name</FilterDescription>
+              <FilterDescription>Filter by client name (WIP)</FilterDescription>
             </FilterHeader>
 
             <FilterContent>

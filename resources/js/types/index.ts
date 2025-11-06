@@ -43,6 +43,9 @@ export interface NavItem {
 export type FlashMessageType = 'message' | 'error';
 
 export interface SharedData {
+  privileges: {
+    can_switch_org: boolean;
+  },
   menu: {
     main: {
       [key: string]: MainNavItem;

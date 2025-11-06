@@ -3,9 +3,11 @@
 namespace App\Http\Middleware;
 
 use App\Http\Controllers\APIv1\MenuController;
+use App\Models\Org;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -45,6 +47,9 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'menu' => App::call(MenuController::class),
             'name' => config('app.name'),
+            'privileges' => [
+               'can_switch_org' => Gate::allows('switch', Org::class)
+            ],
             'auth' => [
                 'user' => $user?->load('user_role'),
                 'org' => $user?->org,

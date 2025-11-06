@@ -278,7 +278,7 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
           {
             id: 'client_code',
             accessorKey: 'client_code',
-            header: () => <TableFilter>Client Code</TableFilter>,
+            header: () => 'Client Code',
             cell: ({ row }) => {
               return (
                 <Link href={route('clients.edit', { id: row.original.project?.client_id })} className={'underline'}>

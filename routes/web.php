@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InspectorController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MagicLinkController;
+use App\Http\Controllers\OrgController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\QuoteController;
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('setup', [SetupController::class, 'index'])->name('setup');
+
+    Route::get('orgs/{org}/switch', [OrgController::class, 'switchOrg'])->name('org.switch');
 
     // Projects
     Route::controller(ProjectController::class)->group(function () {
