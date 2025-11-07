@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\TimesheetItem;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
@@ -29,8 +30,12 @@ class ExpensePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, TimesheetItem $timesheetItem): bool
     {
+        $org = $timesheetItem->timesheet->assignment->operation_org_id ?? $timesheetItem->timesheet->assignment->org_id;
+        if ($user->org->id == $org) {
+            return Gate::allows('create', Invoice::class) || $user->can('inspect', $timesheetItem->timesheet->assignment);
+        }
         return false;
     }
 

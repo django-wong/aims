@@ -25,7 +25,19 @@ class ExpenseController extends Controller
     protected function allowedFilters()
     {
         return [
-            AllowedFilter::exact('timesheet_item_id')
+            AllowedFilter::callback('timesheet_item_id', function ($query, $value) {
+                if (! empty($value)) {
+                    Gate::authorize(
+                        'create', [
+                            Expense::class,
+                            TimesheetItem::query()->findOrFail($value)
+                        ]
+                    );
+                    $query->where('timesheet_item_id', $value);
+                } else {
+                    Gate::authorize('create', Invoice::class);
+                }
+            })->default('')
         ];
     }
 
@@ -34,8 +46,6 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        Gate::authorize('create', Invoice::class);
-
         return $this->getQueryBuilder()->paginate();
     }
 

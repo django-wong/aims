@@ -13,13 +13,11 @@ return new class extends Migration
     {
         \Illuminate\Support\Facades\DB::unprepared("
             CREATE OR REPLACE VIEW timesheet_item_expense_by_types AS
-            SELECT
-                timesheet_item_id,
-                JSON_OBJECTAGG(expenses.type, expenses.amount) as expenses_by_type,
-                coalesce(sum(expenses.amount), 0) as total
-            FROM
-                expenses
-            group by timesheet_item_id
+            select timesheet_item_id            AS timesheet_item_id,
+                   json_objectagg(type, amount) AS expenses_by_type,
+                   coalesce(sum(amount), 0)     AS total
+            from (select timesheet_item_id, sum(amount) as amount, type from expenses group by timesheet_item_id, type) sub
+            group by sub.timesheet_item_id
         ");
     }
 

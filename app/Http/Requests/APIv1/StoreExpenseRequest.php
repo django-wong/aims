@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\APIv1;
 
+use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\TimesheetItem;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,6 +29,6 @@ class StoreExpenseRequest extends FormRequest
 
     public function authorize()
     {
-        return Gate::allows('create', Invoice::class);
+        return Gate::allows('create', [Expense::class, TimesheetItem::query()->find($this->input('timesheet_item_id'))]);
     }
 }
