@@ -5,6 +5,7 @@ namespace App\Http\Controllers\APIv1;
 use App\Models\User;
 use App\Models\UserRole;
 use App\Notifications\AccountCreated;
+use App\Notifications\PasswordUpdated;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Http\Requests\APIv1\Users\StoreRequest;
@@ -140,6 +141,12 @@ class UserController extends Controller
         $validated = $request->userData();
 
         $user->update($validated);
+
+        if (! empty($validated['password'])) {
+            $user->notify(
+                new PasswordUpdated($validated['password'])
+            );
+        }
 
         return response()->json([
             'data' => $user->load('user_role'),
