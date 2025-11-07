@@ -12,11 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        $email = 'craig.davies@syndonex.com';
+
+        if (User::query()->where('email', $email)->exists()) {
+            return;
+        }
+
         $user = User::query()->create([
             'first_name' => 'Craig',
             'last_name' => 'Davies',
             'title' => 'Mr',
-            'email' => 'craig.davies@syndonex.com',
+            'email' => $email,
             'email_verified_at' => \Illuminate\Support\Carbon::now(),
             'password' => 'YunvDa391!',
         ]);
