@@ -68,6 +68,16 @@ class InvoicePolicy
         return $this->approve($user, $invoice);
     }
 
+    public function update(User $user, Invoice $invoice)
+    {
+        return in_array($user->user_role->role, [
+            UserRole::PM,
+            UserRole::ADMIN,
+            UserRole::FINANCE,
+            UserRole::STAFF
+        ]) && $user->user_role->org_id == $invoice->org_id;
+    }
+
     public function destroy(User $user, Invoice $invoice): bool
     {
         return in_array($user->user_role->role, [

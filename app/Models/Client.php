@@ -39,12 +39,12 @@ class Client extends Model implements Contactable, Invoiceable, Commentable
 
     public function getInvoiceName(): string
     {
-        return $this->business_name;
+        return $this->billing_name ?? $this->business_name;
     }
 
     public function getInvoiceAddress(): ?string
     {
-        return $this->address->full_address ?? null;
+        return $this->billing_address ?? $this->address->full_address ?? null;
     }
 
     public function scopeVisible(Builder $query, ?User $user = null)

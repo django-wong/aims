@@ -26,11 +26,11 @@ class Org extends Model implements CurrentOrg, Invoiceable
 
     public function getInvoiceName(): string
     {
-        return $this->name;
+        return $this->billing_name ?? $this->name;
     }
 
     public function getInvoiceAddress(): ?string
     {
-        return $this->address->full_address ?? null;
+        return $this->billing_address ?? $this->address->full_address ?? null;
     }
 }

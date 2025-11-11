@@ -14,6 +14,11 @@ export interface DialogFormProps<T = BaseModel, R = T> {
 
 export interface Org extends BaseModel {
   name: string;
+  code: string | null;
+  timezone: string;
+  billing_statement: string | null;
+  address_id: number | null;
+  address?: Address;
 }
 
 export interface Auth {
@@ -372,6 +377,10 @@ export interface InvoiceBase extends BaseModel {
   purchase_order_id: number;
   batch_id: string;
   status: InvoiceStatusEnum;
+  title: string|null;
+  sub_title: string|null;
+  to: string|null;
+  notes: string|null;
 }
 
 export type Invoice = InvoiceBase & Invoiceable;

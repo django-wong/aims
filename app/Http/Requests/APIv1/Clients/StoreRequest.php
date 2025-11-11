@@ -18,8 +18,10 @@ class StoreRequest extends FormRequest
     {
         return [
             'business_name' => 'required|string|max:255',
-            'group' => 'nullable|string|max:255',
+            'client_group' => 'nullable|string|max:255',
             'code' => 'nullable|string|max:100',
+            'billing_name' => 'nullable|string|max:255',
+            'billing_address' => 'nullable|string|max:255',
             'coordinator_id' => 'nullable|exists:users,id',
             'reviewer_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string|max:1000',
@@ -54,6 +56,8 @@ class StoreRequest extends FormRequest
             'business_name',
             'coordinator_id',
             'reviewer_id',
+            'billing_name',
+            'billing_address',
             'notes',
             'code',
             'client_group',

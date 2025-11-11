@@ -22,6 +22,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
               Appearance
             </a>
           </FlatTabTrigger>
+          <FlatTabTrigger value={'/settings/billing'}>
+            <a href={route('billing')}>
+              Billing
+            </a>
+          </FlatTabTrigger>
         </FlatTabList>
       </FlatTabs>
 

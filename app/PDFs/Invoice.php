@@ -13,13 +13,13 @@ class Invoice extends BasePDF
         parent::__construct();
     }
 
-    public function Header()
+    public function Header(): void
     {
         parent::Header();
         // Add text "Invoice" to the header on the right side
         $this->SetFont('helvetica', '', 12);
         $this->SetXY($this->getPageWidth() - 60, 10);
-        $this->Cell(50, 10, $this->invoice->getGeneratedId(), 0, 0, 'R');
+        $this->Cell('', 10, $this->invoice->getGeneratedId(), 0, 0, 'R');
     }
 
     public function render()

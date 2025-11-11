@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIv1;
 
+use App\Http\Requests\APIv1\UpdateOrgRequest;
 use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
@@ -64,26 +65,15 @@ class OrgController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Org $org)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Org $org)
+    public function update(UpdateOrgRequest $request, Org $org)
     {
-        //
-    }
+        $org->update($request->validated());
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Org $org)
-    {
-        //
+        return [
+            'message' => 'Org updated successfully',
+            'data' => $org
+        ];
     }
 }

@@ -18,4 +18,13 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/appearance');
     })->name('appearance');
+
+    Route::get('settings/billing', function (\App\Models\CurrentOrg $org) {
+        return Inertia::render(
+            'settings/billing',
+            [
+                'org' => $org
+            ]
+        );
+    })->name('billing');
 });

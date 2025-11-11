@@ -1,11 +1,11 @@
-<h1 style="font-size: 24px; font-weight: bold; text-align: left;">B.I.E Quality Services Pte Ltd</h1>
-<h6 style="font-size: 16px; font-weight: bold; text-align: left">TAX INVOICE</h6>
+<h1 style="font-size: 24px; font-weight: bold; text-align: left;">{{ $invoice->title ?? $invoice->org->billing_name ?? 'B.I.E Quality Services Pte Ltd' }}</h1>
+<h6 style="font-size: 16px; font-weight: bold; text-align: left">{{ $invoice->sub_title ?? ($invoice->org->abn ? 'ABN: '.$invoice->org->abn : null) ?? 'INVOICE' }}</h6>
 <x-pdf.table cellpadding="2">
     <x-pdf.table.row>
         <td style="width: 50%;">
             <p style="font-weight: bold">TO:</p>
-            <p>{{ $invoice->invoiceable->getInvoiceName() }}</p>
-            <p>{{ $invoice->invoiceable->getInvoiceAddress() }}</p>
+            <p>{{ $invoice->billing_name ?? $invoice->invoiceable->getInvoiceName() }}</p>
+            <p>{{ $invoice->billing_address ?? $invoice->invoiceable->getInvoiceAddress() }}</p>
         </td>
         <td style="text-align: right">
             <p><strong>INVOICE DATE:</strong> {{ $invoice->created_at->format('d-m-Y') }}</p>
@@ -73,8 +73,11 @@
     </x-pdf.table.row>
 </x-pdf.table>
 
-{{--@php $timesheets = \App\Models\Timesheet::query()->invoice($invoice)->get(); @endphp--}}
-{{--@foreach($timesheets as $index => $timesheet)--}}
-{{--    <x-pdf.page-break/>--}}
-{{--    <x-timesheet :timesheet="$timesheet"/>--}}
-{{--@endforeach--}}
+@if(! empty($invoice->notes))
+    <p>@foreach(explode("\n", $invoice->notes) as $line){{ $line }} <br>@endforeach</p>
+@endif
+
+@if(! empty($invoice->org->billing_statement))
+    <p><strong>Bank Details</strong></p>
+    <p>@foreach(explode("\n", $invoice->org->billing_statement) as $line){{ $line }} <br>@endforeach</p>
+@endif

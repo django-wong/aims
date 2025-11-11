@@ -5,7 +5,7 @@
         <td style="width: auto; text-align: center; font-size: 24px; vertical-align: center; font-weight: bold">
             <span style="font-size: 12px">BIE GROUP</span>
             <br>
-            Timesheet Breakdown
+            Invoice Breakdown
         </td>
     </tr>
 </table>
@@ -14,9 +14,10 @@
 
 <x-pdf.table>
     <x-pdf.table.row>
-        <x-pdf.table.cell style="width: 13%; font-weight: bold; background-color: #ccc">REF</x-pdf.table.cell>
+        <x-pdf.table.cell style="width: 13%; font-weight: bold; background-color: #ccc">BIE: IA#</x-pdf.table.cell>
+        <x-pdf.table.cell style="width: 10%; font-weight: bold; background-color: #ccc">WO</x-pdf.table.cell>
         <x-pdf.table.cell style="width: 10%; font-weight: bold; background-color: #ccc">Client PO</x-pdf.table.cell>
-        <x-pdf.table.cell style="width: 20%; font-weight: bold; background-color: #ccc">Main / Sub vendor</x-pdf.table.cell>
+        <x-pdf.table.cell style="width: 10%; font-weight: bold; background-color: #ccc">Main / Sub vendor</x-pdf.table.cell>
         <x-pdf.table.cell style="width: 10%; font-weight: bold; background-color: #ccc">Discipline</x-pdf.table.cell>
         <x-pdf.table.cell style="width: 10%; font-weight: bold; background-color: #ccc">Project</x-pdf.table.cell>
         <x-pdf.table.cell style="width: 10%; font-weight: bold; background-color: #ccc">REP No.</x-pdf.table.cell>
@@ -38,6 +39,7 @@
         @endphp
         <x-pdf.table.row>
             <x-pdf.table.cell>{{$timesheet->assignment->reference_number}}</x-pdf.table.cell>
+            <x-pdf.table.cell>{{$timesheet->assignment->purchase_order->title ?? 'N/A'}}</x-pdf.table.cell>
             <x-pdf.table.cell>{{$timesheet->assignment->client_po ?? 'N/A'}}</x-pdf.table.cell>
             <x-pdf.table.cell>{{$timesheet->assignment->vendor?->name}}/{{$timesheet->assignment->sub_vendor?->name}}</x-pdf.table.cell>
             <x-pdf.table.cell>{{$inspector->assignment_type->name}}</x-pdf.table.cell>
@@ -51,6 +53,7 @@
     @endforeach
     <x-pdf.table.row class="head">
         <x-pdf.table.cell style="font-weight: bold">Total</x-pdf.table.cell>
+        <x-pdf.table.cell style="font-weight: bold"></x-pdf.table.cell>
         <x-pdf.table.cell style="font-weight: bold"></x-pdf.table.cell>
         <x-pdf.table.cell style="font-weight: bold"></x-pdf.table.cell>
         <x-pdf.table.cell style="font-weight: bold"></x-pdf.table.cell>

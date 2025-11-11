@@ -6,6 +6,7 @@ use App\Http\Requests\APIv1\CreateInvoicesFromTimesheetsRequest;
 use App\Http\Requests\APIv1\ApproveInvoiceRequest;
 use App\Http\Requests\APIv1\IndexInvoiceRequest;
 use App\Http\Requests\APIv1\RejectInvoiceRequest;
+use App\Http\Requests\APIv1\UpdateInvoiceRequest;
 use App\Models\Client;
 use App\Models\CurrentOrg;
 use App\Models\Invoice;
@@ -206,9 +207,14 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Invoice $invoice)
+    public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
-        //
+        $invoice = $invoice->update($request->validated());
+
+        return [
+            'message' => 'Invoice updated successfully',
+            'invoice' => $invoice,
+        ];
     }
 
     /**

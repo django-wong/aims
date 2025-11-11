@@ -22,13 +22,14 @@ import { StaffSelect } from '@/components/user-select';
 import AvatarUpload from '@/components/file-upload/avatar-upload';
 import { useEffect, useState } from 'react';
 import { QuickNewStaffButton } from '@/pages/clients/quick-new-staff-button';
-import { Label } from '@/components/ui/label';
 import zod from 'zod';
 
 const schema = z.object({
   business_name: z.string().min(1, 'Business name is required'),
   client_group: z.string(),
   code: z.string(),
+  billing_name: z.string().max(255).min(1).optional().nullable(),
+  billing_address: z.string().max(255).min(1).optional().nullable(),
   coordinator_id: z.number().optional().nullable(),
   reviewer_id: z.number().optional().nullable(),
   logo_url: z.string().optional().nullable(),
@@ -280,19 +281,46 @@ export function ClientForm(props: DialogFormProps<Client>) {
               </div>
               <div className={'col-span-12'}>
                 <FormField
+                  control={form.control}
                   render={({ field }) => {
                     return <VFormField label={'Invoice Reminder'} description={'System will send reminder to client if no action was taken within the set days'}>
                       <Input
                         type={'number'}
                         min={1}
                         max={30}
-                        value={field.value}
+                        value={field.value ?? ''}
                         onChange={(event) => field.onChange(parseInt(event.target.value))}
                         placeholder={'in Days'}
                       />
                     </VFormField>
                   }}
                   name={'invoice_reminder'}
+                />
+              </div>
+              <div className={'col-span-12'}>
+                <FormField
+                  control={form.control}
+                  name={'billing_name'}
+                  render={({field}) => {
+                    return (
+                      <VFormField label={'Billing Name'}>
+                        <Input value={field.value ?? ''} onChange={field.onChange} placeholder={'Default to the business name'}/>
+                      </VFormField>
+                    );
+                  }}
+                />
+              </div>
+              <div className={'col-span-12'}>
+                <FormField
+                  control={form.control}
+                  name={'billing_address'}
+                  render={({field}) => {
+                    return (
+                      <VFormField label={'Billing Address'}>
+                        <Textarea value={field.value ?? ''} onChange={field.onChange} placeholder={'Default to the address above'}/>
+                      </VFormField>
+                    );
+                  }}
                 />
               </div>
               <div className={'col-span-12'}>
