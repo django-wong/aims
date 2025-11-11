@@ -1,10 +1,9 @@
 import { ColumnToggle, DataTable, ExportButton } from '@/components/data-table-2';
-import { Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { useTable } from '@/hooks/use-table';
 import Layout from '@/layouts/app-layout';
 import { ApprovalEfficiency, BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { CircleAlertIcon } from 'lucide-react';
 import { startTransition, useState } from 'react';
@@ -40,13 +39,9 @@ export default function ApprovalEfficiencyPage(props: ApprovalEfficiencyProps) {
     <Layout breadcrumbs={breadcrumbs}>
       <div className={'flex-1 flex flex-col gap-6 px-6 overflow-hidden'}>
         <Alert>
-          <AlertIcon>
-            <CircleAlertIcon />
-          </AlertIcon>
-          <AlertContent>
-            <AlertTitle className={'font-bold'}>Heads up!</AlertTitle>
-            <AlertDescription>For optimal performance, this report is limited to computing data for clients in last year only.</AlertDescription>
-          </AlertContent>
+          <CircleAlertIcon />
+          <AlertTitle className={'font-bold'}>Heads up!</AlertTitle>
+          <AlertDescription>For optimal performance, this report is limited to computing data for clients in last year only.</AlertDescription>
         </Alert>
         <DataTable
           left={
