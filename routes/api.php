@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
 
     // Assignment inspectors
     Route::post('assignment-inspectors/{assignment_inspector}/acknowledge', [AssignmentInspectorController::class, 'acknowledge']);
+    Route::get('assignment-inspectors/{assignment_inspector}/pdf', [AssignmentInspectorController::class, 'pdf'])->name('assignment-inspectors.pdf');
 
     // Purchase Orders
     Route::get('purchase-orders/{purchase_order}/calculate-gross-margins', [PurchaseOrderController::class, 'calculate_gross_margins']);

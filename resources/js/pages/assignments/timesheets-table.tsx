@@ -120,7 +120,7 @@ export function TimesheetsTable(props: TimesheetsProps) {
   ];
 
   const table = useTable<Timesheet>('/api/v1/timesheets', {
-    selectable: true,
+    selectable: !isClient,
     columns,
     initialState: {
       columnPinning: {

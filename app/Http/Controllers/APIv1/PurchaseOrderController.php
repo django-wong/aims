@@ -11,7 +11,6 @@ use App\Models\PurchaseOrder;
 use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use App\Models\PurchaseOrderDailyUsage;
 use App\Models\PurchaseOrderMonthlyUsage;
-use App\Support\Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -128,7 +127,7 @@ class PurchaseOrderController extends Controller
      */
     public function index()
     {
-        return $this->getQueryBuilder()->tap(function (Builder $query) {
+        return $this->getQueryBuilder()->visible()->tap(function (Builder $query) {
             if (Auth::isClient()) {
                 $query->whereIn('project_id', Project::query()->select('id')->where('client_id', auth()->user()->client->id));
             }

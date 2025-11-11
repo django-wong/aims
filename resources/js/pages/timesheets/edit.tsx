@@ -20,6 +20,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { HideFromClient } from '@/components/hide-from-client';
 import { Activities } from '@/components/activities';
 import { FlashReportSent } from '@/pages/timesheets/flash-report-sent';
+import { Button } from '@/components/ui/button';
+import { FileDownIcon } from 'lucide-react';
 
 interface EditTimesheetProps {
   timesheet: Timesheet;
@@ -58,6 +60,15 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                 <CoordinationOfficeApprove/>
                 <HideFromClient>
                   <LogYourTime/>
+                </HideFromClient>
+                <HideFromClient>
+                  <Button
+                    variant={'outline'}
+                    onClick={() => {
+                      window.open(route('timesheets.pdf', props.timesheet.id), '_blank');
+                    }}>
+                    <FileDownIcon/>
+                  </Button>
                 </HideFromClient>
               </>
             }

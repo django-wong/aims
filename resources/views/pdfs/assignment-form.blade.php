@@ -222,13 +222,62 @@
     </table>
     <x-pdf.page-break/>
 
+    @if($assignment->skill)
+    <table class="table">
+        <tr>
+            <td class="head">Equipment</td>
+        </tr>
+    </table>
+    <div class="content" style="border-top: none;">
+        {!! $assignment->skill->code !!} @if(! empty($assignment->skill->description)) - {!! $assignment->skill->description !!}@endif
+    </div>
+    @endif
+
+    @if($assignment->equipment)
+    <table class="table">
+        <tr>
+            <td class="head">Description</td>
+        </tr>
+    </table>
+    <div class="content" style="border-top: none; white-space: pre-line;">{!! $assignment->equipment !!}</div>
+    @endif
+
+    @if($assignment->inter_office_instructions)
+    <table class="table">
+        <tr>
+            <td class="head">Inter office instruction</td>
+        </tr>
+    </table>
+    <div class="content" style="border-top: none; white-space: pre-line;">{!! $assignment->inter_office_instructions !!}</div>
+    @endif
+
+    @if($assignment->inspector_instructions)
+    <table class="table">
+        <tr>
+            <td class="head">Inspection instruction</td>
+        </tr>
+    </table>
+    <div class="content" style="border-top: none; white-space: pre-line;">{!! $assignment->inspector_instructions !!}</div>
+    @endif
+
+    @if($assignment->notes)
+    <table class="table">
+        <tr>
+            <td class="head">Notes</td>
+        </tr>
+    </table>
+    <div class="content" style="border-top: none;">
+        {!! $assignment->notes !!}
+    </div>
+    @endif
+
     @if($assignment->special_notes)
     <table class="table">
         <tr>
             <td class="head">Special Notes</td>
         </tr>
     </table>
-    <div class="content" style="border-top: none; white-space: preserve;">
+    <div class="content" style="border-top: none;">
         {!! $assignment->special_notes !!}
     </div>
     @endif

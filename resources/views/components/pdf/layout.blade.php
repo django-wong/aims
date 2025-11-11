@@ -35,6 +35,9 @@
         .table td.title {
             background-color: #f7fafc;
         }
+        p {
+            margin: 0 0 0 0;
+        }
     </style>
     <body style="position: relative; padding-top: 20px; padding-bottom: 20px;">
         {{ $slot }}

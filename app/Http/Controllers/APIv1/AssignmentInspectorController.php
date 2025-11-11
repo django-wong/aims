@@ -6,6 +6,7 @@ use App\Http\Requests\StoreAssignmentInspectorRequest;
 use App\Http\Requests\UpdateAssignmentInspectorRequest;
 use App\Models\Assignment;
 use App\Models\AssignmentInspector;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
@@ -147,5 +148,15 @@ class AssignmentInspectorController extends Controller
             'message' => 'Inspector acknowledged successfully.',
             'data' => $assignment_inspector->load('user', 'assignment', 'assignment_type')
         ];
+    }
+
+    public function pdf(AssignmentInspector $assignment_inspector)
+    {
+        return Pdf::loadView(
+            'pdfs.assignment-form', [
+                'assignment' => $assignment_inspector->assignment,
+                'assignment_inspector' => $assignment_inspector,
+            ]
+        )->download("assignment-{$assignment_inspector->assignment->id}.pdf");
     }
 }

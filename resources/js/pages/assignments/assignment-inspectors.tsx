@@ -6,9 +6,10 @@ import { useTable } from '@/hooks/use-table';
 import { AddInspectorToAssignment } from '@/pages/assignments/add-inspector-to-assignment';
 import { useAssignment } from '@/providers/assignment-provider';
 import { AssignmentInspector } from '@/types';
+import { Link } from '@inertiajs/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { KeySquareIcon, TrashIcon } from 'lucide-react';
+import { FileDownIcon, KeySquareIcon, TrashIcon } from 'lucide-react';
 
 export function AssignmentInspectors() {
   const assignment = useAssignment();
@@ -72,6 +73,11 @@ export function AssignmentInspectors() {
         cell: ({ row }) => {
           return (
             <div className={'flex items-center justify-end space-x-2'}>
+              <Button variant={'outline'} size={'sm'} onClick={() => {
+                window.open(route('assignment-inspectors.pdf', { id: row.original.id }), '_blank');
+              }}>
+                <FileDownIcon/>
+              </Button>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant={'outline'} size={'sm'} asChild>

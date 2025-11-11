@@ -33,9 +33,9 @@ class ReportController extends Controller
                 left join user_roles on users.id = user_roles.user_id
                 left join orgs on user_roles.org_id = orgs.id
                 left join timesheet_items on timesheet_items.user_id = users.id
-            where user_roles.role = 5 and YEAR(timesheet_items.date) = ?
+            where user_roles.role = 5 and YEAR(timesheet_items.date) = ? and user_roles.org_id = ?
             group by users.id, orgs.name;
-        ', [$year]);
+        ', [$year, auth()->user()->user_role->org_id]);
 
         return inertia('reports/field-operatives-manhour-summary', [
             'year' => $year,

@@ -253,6 +253,8 @@ function CertificateForm(props: CertificateFormProps) {
     });
   }
 
+  const issued_at = form.watch('issued_at');
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
@@ -326,7 +328,15 @@ function CertificateForm(props: CertificateFormProps) {
                     <VFormField label={'Expiry Date'}>
                       <DatePicker
                         calendar={{
-                          captionLayout: 'dropdown'
+                          captionLayout: 'dropdown',
+                          disabled: (date) => {
+                            if (issued_at) {
+                              const start = dayjs(issued_at);
+                              const end = dayjs(date);
+                              return end.isBefore(start, 'day');
+                            }
+                            return false;
+                          }
                         }}
                         value={field.value || undefined}
                         onChange={(date) => field.onChange(date ? dayjs(date).format('YYYY/MM/DD') : null)}

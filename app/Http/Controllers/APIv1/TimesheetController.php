@@ -282,6 +282,6 @@ class TimesheetController extends Controller
     {
         $pdf = new \App\PDFs\Timesheet($timesheet);
         $pdf->render();
-        return $pdf->Output("timesheet-{$timesheet->id}.pdf", 'I');
+        return $pdf->Output("TS-{$timesheet->assignment->purchase_order->title}-ID{$timesheet->id}.pdf", 'I');
     }
 }

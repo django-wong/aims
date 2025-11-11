@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int     $org_id
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int     $total_hours
  * @property int     $budgeted_hours
  * @property Project $project
- * @property string   $title
+ * @property string  $title
  */
 class PurchaseOrder extends Model implements Commentable
 {
@@ -27,9 +29,9 @@ class PurchaseOrder extends Model implements Commentable
     protected function casts(): array
     {
         return [
-            'first_alert_at'  => 'datetime',
+            'first_alert_at' => 'datetime',
             'second_alert_at' => 'datetime',
-            'final_alert_at'  => 'datetime'
+            'final_alert_at' => 'datetime'
         ];
     }
 
@@ -40,5 +42,23 @@ class PurchaseOrder extends Model implements Commentable
                 $purchase_order->previous_title = implode(', ', array_filter([$purchase_order->previous_title, $purchase_order->getOriginal('title')]));
             }
         });
+    }
+
+    public function scopeVisible(Builder $query)
+    {
+        if (Auth::isClient()) {
+            $query->whereIn('project_id', Project::query()->select('id')->where('client_id', auth()->user()->client->id));
+            return $query;
+        } else {
+            $query->where(function (Builder $query) {
+                $org = auth()->user()->user_role->org_id;
+                $query->where('org_id', $org)
+                    ->orWhereIn(
+                        'id', Assignment::query()->select('purchase_order_id')->where('operation_org_id', $org)
+                    );
+            });
+        }
+
+        return $query;
     }
 }
