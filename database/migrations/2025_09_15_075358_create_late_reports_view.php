@@ -14,6 +14,7 @@ return new class extends Migration
         \Illuminate\Support\Facades\DB::unprepared("
             CREATE OR REPLACE VIEW late_reports AS
             select timesheets.id                as timesheet_id,
+                   timesheets.week              as week,
                    assignments.reference_number as reference_number,
                    assignments.id               as assignment_id,
                    assignments.org_id           as org_id,
@@ -33,14 +34,14 @@ return new class extends Migration
                    IF(skills.i_e_a = 'e', 2, 1) as target,
                    datediff(timesheet_reports.created_at, timesheet_items.date) as days_to_report
             from timesheets
-                     left join assignments on timesheets.assignment_id = assignments.id
-                     left join skills on assignments.skill_id = skills.id
-                     left join orgs on assignments.org_id = orgs.id
-                     left join orgs operation_org on assignments.operation_org_id = operation_org.id
-                     left join users on timesheets.user_id = users.id
-                     left join timesheet_items on timesheet_items.timesheet_id = timesheets.id and timesheet_items.id = (select min(id) from timesheet_items where timesheet_items.timesheet_id = timesheets.id order by timesheet_items.date desc limit 1)
-                     left join timesheet_reports on timesheet_reports.timesheet_id = timesheets.id and timesheet_reports.type = 'inspection-report'
-                     left join projects on projects.id = assignments.project_id
+                   left join assignments on timesheets.assignment_id = assignments.id
+                   left join skills on assignments.skill_id = skills.id
+                   left join orgs on assignments.org_id = orgs.id
+                   left join orgs operation_org on assignments.operation_org_id = operation_org.id
+                   left join users on timesheets.user_id = users.id
+                   left join timesheet_items on timesheet_items.timesheet_id = timesheets.id and timesheet_items.id = (select min(id) from timesheet_items where timesheet_items.timesheet_id = timesheets.id order by timesheet_items.date desc limit 1)
+                   left join timesheet_reports on timesheet_reports.timesheet_id = timesheets.id and timesheet_reports.type = 'inspection-report'
+                   left join projects on projects.id = assignments.project_id
             left join clients on projects.client_id = clients.id
             where timesheets.late = 1;
         ");

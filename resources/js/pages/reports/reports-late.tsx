@@ -41,6 +41,10 @@ const columns: ColumnDef<LateReport>[] = [
     header: 'Reference Number',
   },
   {
+    accessorKey: 'week',
+    header: 'Week',
+  },
+  {
     accessorKey: 'org_name',
     header: 'Office',
   },

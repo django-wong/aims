@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Assignment;
 use App\Models\AssignmentInspector;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -17,7 +18,7 @@ class AssignmentReportLate extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Assignment $assignment, private User $inspector)
+    public function __construct(private Assignment $assignment, private AssignmentInspector $inspector)
     {
         //
     }

@@ -8,6 +8,6 @@ class LateReportController extends Controller
 {
     public function index()
     {
-        return $this->getQueryBuilder()->paginate();
+        return $this->getQueryBuilder()->visible()->paginate();
     }
 }

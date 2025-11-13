@@ -36,30 +36,34 @@ class CheckLateReport implements ShouldQueue
                  * @var Timesheet|null $timesheet
                  */
                 $start_of_last_week = now($this->org->timezone)->subWeek()->startOfWeek();
-                $timesheet = $assignment->timesheets()->where('user_id', $inspector->user_id)->where('status', '>', Timesheet::DRAFT)->whereDate('start', $start_of_last_week)->first();
+                $timesheet = $assignment->timesheets()->where('user_id', $inspector->user_id)->whereDate('start', $start_of_last_week)->first();
+
+                // If timesheet exists and is not draft, and has inspection report, then it's good
                 if ($timesheet) {
-                    if ($timesheet->timesheet_reports()->where('type', 'inspection-report')->exists()) {
-                        return;
+                    if ($timesheet->status > Timesheet::DRAFT) {
+                        if ($timesheet->timesheet_reports()->where('type', 'inspection-report')->exists()) {
+                            return;
+                        }
                     }
                 }
 
-                $assignment->coordinator->notify(
-                    new AssignmentReportLate($assignment, $inspector)
-                );
-
-                if ($timesheet) {
-                    $timesheet->update(['late' => true]);
-                    return;
+                // Otherwise, mark as late and notify coordinator
+                if (empty($timesheet)) {
+                    $timesheet = $assignment->timesheets()->create([
+                        'user_id' => $inspector->user_id,
+                        'org_id' => $this->org->id,
+                        'late' => true,
+                        'start' => $start_of_last_week,
+                        'end' => $start_of_last_week->copy()->endOfWeek(),
+                        'status' => Timesheet::DRAFT,
+                    ]);
                 }
 
-                $assignment->timesheets()->create([
-                    'user_id' => $inspector->user_id,
-                    'org_id' => $this->org->id,
-                    'late' => true,
-                    'start' => $start_of_last_week,
-                    'end' => $start_of_last_week->copy()->endOfWeek(),
-                    'status' => Timesheet::DRAFT,
-                ]);
+                $timesheet->update(['late' => true]);
+
+                $assignment->coordinator->notify(
+                    new AssignmentReportLate($assignment, $inspector, $timesheet)
+                );
             });
         });
     }
