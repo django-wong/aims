@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Org;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class OrgController extends Controller
 {
@@ -17,5 +18,11 @@ class OrgController extends Controller
         $controller = app(UserController::class);
 
         return $controller->impersonate($role->user_id, $request);
+    }
+
+    public function index()
+    {
+        Gate::authorize('create', Org::class);
+        return inertia(component: 'orgs');
     }
 }

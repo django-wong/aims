@@ -21,7 +21,7 @@ class RandomPurchaseOrderAndUsage extends Value
             } else {
                 $query->where('purchase_orders.org_id', $user->user_role->org_id);
             }
-        })->orderBy('id', 'desc')->first();
+        })->orderBy('usage', 'desc')->first();
     }
 
     public function value()

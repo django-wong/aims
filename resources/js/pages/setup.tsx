@@ -38,7 +38,7 @@ export default function SetupPage(props: SetupProps) {
 }
 
 
-const schema = z.object({
+export const schema = z.object({
   name: z.string().min(2, { message: 'Name is required' }).max(50, { message: 'Name must be less than 50 characters' }),
   code: z.string().min(2, { message: 'Code is required' }).max(10, { message: 'Code must be less than 10 characters' }),
   timezone: z.string().min(2, 'Timezone is required'),

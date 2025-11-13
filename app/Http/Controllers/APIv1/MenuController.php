@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Models\Invoice;
+use App\Models\Org;
 use App\Models\Timesheet;
 use App\Models\UserRole;
 use App\Values\OpenAssignment;
@@ -35,6 +36,13 @@ class MenuController
                         'name' => 'Dashboard',
                         'icon' => 'house',
                         'url' => route('dashboard'),
+                    ],
+                ] : []),
+                ...(Gate::allows('create', Org::class) ? [
+                    'orgs' => [
+                        'name' => 'Organizations',
+                        'icon' => 'building-2',
+                        'url' => route('orgs'),
                     ],
                 ] : []),
                 ...($when([UserRole::ADMIN, UserRole::STAFF, UserRole::PM, UserRole::FINANCE],[

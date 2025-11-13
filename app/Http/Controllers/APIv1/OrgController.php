@@ -6,8 +6,8 @@ use App\Http\Requests\APIv1\UpdateOrgRequest;
 use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class OrgController extends Controller
@@ -24,6 +24,13 @@ class OrgController extends Controller
     protected function allowedSorts()
     {
         return ['name'];
+    }
+
+    protected function allowedIncludes()
+    {
+        return [
+            'address'
+        ];
     }
 
     /**
@@ -71,9 +78,31 @@ class OrgController extends Controller
     {
         $org->update($request->validated());
 
+        if (! empty($request->validated('address'))) {
+            if ($org->address) {
+                $org->address->update($request->validated('address'));
+            } else {
+                $org->address()->associate(
+                    \App\Models\Address::query()->create($request->validated('address'))
+                );
+                $org->save();
+            }
+        }
+
         return [
             'message' => 'Org updated successfully',
             'data' => $org
+        ];
+    }
+
+    public function destroy(Org $org)
+    {
+        Gate::authorize('delete', $org);
+
+        $org->delete();
+
+        return [
+            'message' => 'Org deleted successfully',
         ];
     }
 }

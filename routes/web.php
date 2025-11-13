@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('setup', [SetupController::class, 'index'])->name('setup');
 
+    Route::get('orgs', [OrgController::class, 'index'])->name('orgs');
     Route::get('orgs/{org}/switch', [OrgController::class, 'switchOrg'])->name('org.switch');
 
     // Projects

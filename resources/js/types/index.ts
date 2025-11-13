@@ -14,7 +14,7 @@ export interface DialogFormProps<T = BaseModel, R = T> {
 
 export interface Org extends BaseModel {
   name: string;
-  code: string | null;
+  code: string;
   timezone: string;
   billing_statement: string | null;
   address_id: number | null;

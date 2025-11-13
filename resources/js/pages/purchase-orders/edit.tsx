@@ -187,8 +187,6 @@ export default function PurchaseOrderEditPage(props: Props) {
                 </InfoLine>
                 <UsageAlertGaugeChart/>
               </div>
-              <InfoHead>Overall Usage</InfoHead>
-              <UsageRadarChart/>
             </Info>
           </div>
         }

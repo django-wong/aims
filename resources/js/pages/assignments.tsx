@@ -2,7 +2,6 @@ import { ClientSelect } from '@/components/client-select';
 import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
 import { HideFromClient } from '@/components/hide-from-client';
 import { ProjectSelect } from '@/components/project-select';
-import { TableFilter } from '@/components/table/filter';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

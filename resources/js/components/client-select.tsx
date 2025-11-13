@@ -73,10 +73,10 @@ export function createSelect<T extends Model>(options: CreateSelectProps<T>) {
   };
 }
 
-export interface SelectProps<T> {
-  onValueChane: (value: number|null) => void;
+export interface SelectProps<T, V = number> {
+  onValueChane: (value: V|null) => void;
   onDataChange?: (data: T|null) => void;
-  value: number|null;
+  value: V|null;
   className?: string;
   placeholder?: string;
   disabled?: boolean;

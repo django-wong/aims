@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int    $id
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 class Org extends Model implements CurrentOrg, Invoiceable
 {
     /** @use HasFactory<\Database\Factories\OrgFactory> */
-    use HasFactory, HasManyAssignments, BelongsToAddress;
+    use HasFactory, HasManyAssignments, BelongsToAddress, SoftDeletes;
 
     protected $guarded = [
         'id'
