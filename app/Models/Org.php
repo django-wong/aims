@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property int    $id
  * @property string $name
- * @property string  $timezone
+ * @property string $timezone
+ * @property ?Address  $address
  */
 class Org extends Model implements CurrentOrg, Invoiceable
 {

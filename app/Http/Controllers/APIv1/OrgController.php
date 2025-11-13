@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\APIv1;
 
 use App\Http\Requests\APIv1\UpdateOrgRequest;
+use App\Models\Address;
+use App\Models\CurrentOrg;
 use App\Models\Org;
 use App\Models\User;
 use App\Models\UserRole;
@@ -50,7 +52,7 @@ class OrgController extends Controller
 
         if (! empty($request->validated('address'))) {
             $org->address()->associate(
-                \App\Models\Address::query()->create($request->validated('address'))
+                Address::query()->create($request->validated('address'))
             );
             $org->save();
         }
@@ -83,7 +85,7 @@ class OrgController extends Controller
                 $org->address->update($request->validated('address'));
             } else {
                 $org->address()->associate(
-                    \App\Models\Address::query()->create($request->validated('address'))
+                    Address::query()->create($request->validated('address'))
                 );
                 $org->save();
             }
@@ -97,6 +99,8 @@ class OrgController extends Controller
 
     public function destroy(Org $org)
     {
+        Gate::denyIf(auth()->user()->user_role->org_id === $org->id, 'You cannot delete the org you are currently logged into.');
+
         Gate::authorize('delete', $org);
 
         $org->delete();
