@@ -66,7 +66,7 @@ class TimesheetReportController extends Controller
         ])->log('Uploaded report');
 
         return [
-            'message' => 'Timesheet report created successfully.',
+            'message' => 'Report uploaded successfully.',
             'data' => $report,
         ];
     }
