@@ -165,12 +165,10 @@ export default function AssignmentEdit(props: AssignmentEditProps) {
                   <FileCheckIcon />
                   <span className={'hidden sm:inline'}>Reports</span>
                 </TabsTrigger>
-                <HideFromClient>
-                  <TabsTrigger value={'comments'}>
-                    <MessagesSquare />
-                    <span className={'hidden sm:inline'}>Comments</span>
-                  </TabsTrigger>
-                </HideFromClient>
+                <TabsTrigger value={'comments'}>
+                  <MessagesSquare />
+                  <span className={'hidden sm:inline'}>Comments</span>
+                </TabsTrigger>
               </TabsList>
               <TabsContent value={'overview'}>
                 <DailyUsage />
@@ -196,11 +194,9 @@ export default function AssignmentEdit(props: AssignmentEditProps) {
                 <AssignmentReports />
               </TabsContent>
               {/*<TabsContent value={'inspector-report'}>TODO: Inspector report</TabsContent>*/}
-              <HideFromClient>
-                <TabsContent value={'comments'}>
-                  <Comments commentableType={'Assignment'} commentableId={props.assignment.id} />
-                </TabsContent>
-              </HideFromClient>
+              <TabsContent value={'comments'}>
+                <Comments commentableType={'Assignment'} commentableId={props.assignment.id} />
+              </TabsContent>
             </Tabs>
           }
           right={
