@@ -3,7 +3,7 @@ import { useIsClient } from '@/hooks/use-role';
 import { useTable } from '@/hooks/use-table';
 import { cn, timesheet_range } from '@/lib/utils';
 import { TimesheetStatus } from '@/pages/timesheets/status';
-import { AssignmentProvider } from '@/providers/assignment-provider';
+import { AssignmentProvider, useAssignment } from '@/providers/assignment-provider';
 import { TimesheetProvider } from '@/providers/timesheet-provider';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
@@ -31,9 +31,10 @@ const assignment_column: ColumnDef<Timesheet> = {
 export function TimesheetsTable(props: TimesheetsProps) {
   const config = useTableConfiguration();
   const isClient = useIsClient();
+  const assignment = useAssignment();
 
   const columns: ColumnDef<Timesheet>[] = [
-    ...(isClient ? [assignment_column] : []),
+    ...((isClient && !assignment) ? [assignment_column] : []),
     {
       accessorKey: 'id',
       header: '#',

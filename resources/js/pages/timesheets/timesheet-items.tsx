@@ -320,14 +320,14 @@ function TimesheetReports(props: TimesheetReportsProps) {
             {can_add_more ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <AttachmentRoot className={'bg-secondary/20 hover:bg-background flex flex-col items-center justify-center border-dashed'}>
-                    <label>
+                  <label>
+                    <AttachmentRoot className={'bg-secondary hover:bg-background flex flex-col items-center justify-center border-dashed'}>
                       <div>
                         <PlusIcon size={32} />
                       </div>
                       <input type={'file'} className={'hidden'} onChange={(event) => onChange(event)} />
-                    </label>
-                  </AttachmentRoot>
+                    </AttachmentRoot>
+                  </label>
                 </TooltipTrigger>
                 <TooltipContent>Upload .xlsx .pdf .docs or image files.</TooltipContent>
               </Tooltip>

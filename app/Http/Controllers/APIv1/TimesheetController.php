@@ -162,15 +162,6 @@ class TimesheetController extends Controller
                         });
                 }
             })->default('default'),
-            AllowedFilter::callback('all', function (Builder $query, $value) {
-                // if ($value !== '1') {
-                //     $query->whereExists(function ($query) {
-                //         $query->select(DB::raw(1))
-                //             ->from('timesheet_items')
-                //             ->whereRaw('timesheet_items.timesheet_id = timesheets.id and timesheet_items.deleted_at is null');
-                //     });
-                // }
-            })->default('0'),
             AllowedFilter::callback('project_id', function (Builder $query, $value) {
                 if ($value) {
                     $query->whereIn('assignment_id', function (QueryBuilder $query) use ($value) {
