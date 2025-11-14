@@ -164,7 +164,7 @@ export function TimesheetItems(props: TimesheetItemsProps) {
         <Accordion type={'multiple'} className={'w-full'} defaultValue={['inspection-report']}>
           <TimesheetReports timesheet={props.timesheet!} type={'inspection-report'} label={'Inspection Report'} />
           <TimesheetReports timesheet={props.timesheet!} type={'punch-list'} label={'Punch List'} />
-          <TimesheetReports timesheet={props.timesheet!} type={'hse-report'} label={'HSE Report'} />
+          <TimesheetReports timesheet={props.timesheet!} type={'inspection-release-note'} label={'Inspection Release Note'} />
         </Accordion>
       </div>
     </div>
