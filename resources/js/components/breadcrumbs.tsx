@@ -13,7 +13,7 @@ export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[]
                             const isLast = index === breadcrumbs.length - 1;
                             return (
                                 <Fragment key={index}>
-                                    <BreadcrumbItem>
+                                    <BreadcrumbItem className={'max-w-[120px] line-clamp-1'}>
                                         {isLast ? (
                                             <BreadcrumbPage>{item.title}</BreadcrumbPage>
                                         ) : (
