@@ -132,6 +132,8 @@ export function describe_report_type(type: string) {
       return 'PL';
     case 'hse-report':
       return 'HSE';
+    case 'inspection-release-note':
+      return 'IRN';
     default:
       return 'NCR';
   }
