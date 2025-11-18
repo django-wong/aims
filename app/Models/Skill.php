@@ -16,6 +16,13 @@ class Skill extends Model
         'updated_at'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'on_skill_matrix' => 'array'
+        ];
+    }
+
     public function users()
     {
         return $this->belongsToMany(

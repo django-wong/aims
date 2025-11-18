@@ -67,5 +67,8 @@ class SkillSeeder extends Seeder
                 'report_code' => $skill[4],
             ]);
         }
+
+        Skill::query()->where('skills.i_e_a', 'I')->update(['on_skill_matrix' => ['inspection', 'specialist']]);
+        Skill::query()->where('skills.i_e_a', 'E')->update(['on_skill_matrix' => ['expedition']]);
     }
 }

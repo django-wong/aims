@@ -18,6 +18,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export function Skills() {
   const columns: ColumnDef<Skill>[] = [
@@ -104,7 +105,8 @@ const schema = z.object({
   report_code: z.string().min(1).optional().nullable(),
   i_e_a: z.string(),
   description: z.string().optional().nullable(),
-  sort: z.coerce.number().optional().nullable()
+  sort: z.coerce.number().optional().nullable(),
+  on_skill_matrix: z.array(z.string())
 })
 
 function SkillForm(props: DialogFormProps) {
@@ -190,6 +192,21 @@ function SkillForm(props: DialogFormProps) {
               </VFormField>
             )}
             name={'i_e_a'}
+          />
+          <FormField
+            name={'on_skill_matrix'}
+            control={form.control}
+            render={({field}) => {
+              return (
+                <VFormField label={'On Skill Matrix'} className={'col-span-12'}>
+                  <ToggleGroup type={'multiple'} variant={'outline'} value={field.value || []} onValueChange={field.onChange}>
+                    <ToggleGroupItem value={'inspection'}>Inspection</ToggleGroupItem>
+                    <ToggleGroupItem value={'expedition'}>Expedition</ToggleGroupItem>
+                    <ToggleGroupItem value={'specialist'}>Specialist</ToggleGroupItem>
+                  </ToggleGroup>
+                </VFormField>
+              );
+            }}
           />
           <FormField
             control={form.control}
