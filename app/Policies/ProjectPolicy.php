@@ -32,7 +32,18 @@ class ProjectPolicy
 
     public function view(User $user, Project $project): bool
     {
-        return $user->user_role->org_id === $project->org_id && $this->create($user);
+        if ($user->user_role->org_id === $project->org_id) {
+            if ($this->create($user)) {
+                return true;
+            }
+
+            $client = $user->client;
+            if ($client && $client->id === $project->client_id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function update(User $user, Project $project): bool
