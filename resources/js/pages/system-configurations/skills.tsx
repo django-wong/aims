@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Skill, DialogFormProps } from '@/types';
 import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
-import { PencilIcon, TrashIcon } from 'lucide-react';
+import { CheckIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { DialogWrapper } from '@/components/dialog-wrapper';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
@@ -200,9 +200,18 @@ function SkillForm(props: DialogFormProps) {
               return (
                 <VFormField label={'On Skill Matrix'} className={'col-span-12'}>
                   <ToggleGroup type={'multiple'} variant={'outline'} value={field.value || []} onValueChange={field.onChange}>
-                    <ToggleGroupItem value={'inspection'}>Inspection</ToggleGroupItem>
-                    <ToggleGroupItem value={'expedition'}>Expedition</ToggleGroupItem>
-                    <ToggleGroupItem value={'specialist'}>Specialist</ToggleGroupItem>
+                    <ToggleGroupItem value={'inspection'} className={'*:opacity-15 data-[state=on]:*:opacity-100'}>
+                      <CheckIcon/>
+                      Inspection
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value={'expedition'} className={'*:opacity-15 data-[state=on]:*:opacity-100'}>
+                      <CheckIcon/>
+                      Expedition
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value={'specialist'} className={'*:opacity-15 data-[state=on]:*:opacity-100'}>
+                      <CheckIcon/>
+                      Specialist
+                    </ToggleGroupItem>
                   </ToggleGroup>
                 </VFormField>
               );
