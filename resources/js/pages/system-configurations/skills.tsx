@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Skill, DialogFormProps } from '@/types';
 import { ColumnToggle, DataTable, useTableApi } from '@/components/data-table-2';
 import { Button } from '@/components/ui/button';
-import { PencilIcon, TrashIcon } from 'lucide-react';
+import { CheckIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { DialogWrapper } from '@/components/dialog-wrapper';
 import { useReactiveForm, useResource } from '@/hooks/use-form';
@@ -18,6 +18,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export function Skills() {
   const columns: ColumnDef<Skill>[] = [
@@ -104,7 +105,8 @@ const schema = z.object({
   report_code: z.string().min(1).optional().nullable(),
   i_e_a: z.string(),
   description: z.string().optional().nullable(),
-  sort: z.coerce.number().optional().nullable()
+  sort: z.coerce.number().optional().nullable(),
+  on_skill_matrix: z.array(z.string())
 })
 
 function SkillForm(props: DialogFormProps) {
@@ -190,6 +192,30 @@ function SkillForm(props: DialogFormProps) {
               </VFormField>
             )}
             name={'i_e_a'}
+          />
+          <FormField
+            name={'on_skill_matrix'}
+            control={form.control}
+            render={({field}) => {
+              return (
+                <VFormField label={'On Skill Matrix'} className={'col-span-12'}>
+                  <ToggleGroup type={'multiple'} variant={'outline'} value={field.value || []} onValueChange={field.onChange}>
+                    <ToggleGroupItem value={'inspection'} className={'*:opacity-15 data-[state=on]:*:opacity-100'}>
+                      <CheckIcon/>
+                      Inspection
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value={'expedition'} className={'*:opacity-15 data-[state=on]:*:opacity-100'}>
+                      <CheckIcon/>
+                      Expedition
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value={'specialist'} className={'*:opacity-15 data-[state=on]:*:opacity-100'}>
+                      <CheckIcon/>
+                      Specialist
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </VFormField>
+              );
+            }}
           />
           <FormField
             control={form.control}

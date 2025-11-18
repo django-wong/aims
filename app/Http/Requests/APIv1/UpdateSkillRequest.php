@@ -23,11 +23,12 @@ class UpdateSkillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|unique:skills,code',
+            'code' => 'required|string|unique:skills,code,' . $this->route('skill')->id,
             'report_code' => 'nullable|string',
             'i_e_a' => 'required|string',
             'description' => 'nullable|string',
-            'sort' => 'nullable|numeric:'
+            'sort' => 'nullable|numeric:',
+            'on_skill_matrix' => 'array|nullable'
         ];
     }
 }

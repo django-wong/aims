@@ -23,7 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function SkillMatrixPage(props: SkillMatrixPageProps) {
   const [params, setParams] = useSearchParams({
-    'filter[i_e_a]': 'I',
+    'filter[type]': 'inspection',
     preview: '1',
   });
 
@@ -37,17 +37,18 @@ export default function SkillMatrixPage(props: SkillMatrixPageProps) {
       <div className={'flex flex-1 flex-col gap-6 px-6'}>
         <div className={'flex items-center gap-4'}>
           <Tabs
-            value={params.get('filter[i_e_a]') ?? ''}
+            value={params.get('filter[type]') ?? 'inspection'}
             onValueChange={(type) => {
               setParams((params) => {
-                params.set('filter[i_e_a]', type);
+                params.set('filter[type]', type);
                 return params;
               });
             }}
           >
             <TabsList>
-              <TabsTrigger value={'I'}>Inspection</TabsTrigger>
-              <TabsTrigger value={'E'}>Expedition</TabsTrigger>
+              <TabsTrigger value={'inspection'}>Inspection</TabsTrigger>
+              <TabsTrigger value={'expedition'}>Expedition</TabsTrigger>
+              <TabsTrigger value={'specialist'}>Specialist</TabsTrigger>
             </TabsList>
           </Tabs>
           {props.locations.length > 0 ? (

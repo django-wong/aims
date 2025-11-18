@@ -25,7 +25,12 @@ class SkillMatrixController extends Controller
             AllowedFilter::callback('i_e_a', function (Builder $query, $value) {
                 $query->where('i_e_a', $value);
             }),
-            AllowedFilter::exact('location', 'state')
+            AllowedFilter::exact('location', 'state'),
+            AllowedFilter::callback('type', function (Builder $query, $value) {
+                $query->whereIn(
+                    'skill_id', Skill::query()->select('id')->whereJsonContains('on_skill_matrix', $value)
+                );
+            }),
         ];
     }
 
@@ -41,7 +46,7 @@ class SkillMatrixController extends Controller
                     ]);
             })->get(),
 
-            'skills' => Skill::query()->where('i_e_a', $request->input('filter.i_e_a'))->get(),
+            'skills' => Skill::query()->whereJsonContains('on_skill_matrix', $request->input('filter.type'))->get(),
         ];
 
         return Pdf::loadView('pdfs.skill-matrix', $data)->setPaper('a4', 'landscape')->stream("skill-matrix.pdf");

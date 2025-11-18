@@ -21,6 +21,7 @@ return new class extends Migration
                 addresses.country as country,
                 addresses.state as state,
                 addresses.city as city,
+                skills.id as skill_id,
                 skills.i_e_a as i_e_a,
                 skills.code as skill_code,
                 skills.description as skill_description
