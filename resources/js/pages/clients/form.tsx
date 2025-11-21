@@ -17,12 +17,14 @@ import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { Circle, LocationEdit } from 'lucide-react';
+import { Circle, LocationEdit, MailIcon } from 'lucide-react';
 import { StaffSelect } from '@/components/user-select';
 import AvatarUpload from '@/components/file-upload/avatar-upload';
 import { useEffect, useState } from 'react';
 import { QuickNewStaffButton } from '@/pages/clients/quick-new-staff-button';
 import zod from 'zod';
+import { Badge } from '@/components/ui/badge';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 
 const schema = z.object({
   business_name: z.string().min(1, 'Business name is required'),
@@ -45,6 +47,8 @@ const schema = z.object({
   }).optional(),
   notes: z.string().optional().nullable(),
   invoice_reminder: z.coerce.number().min(1).max(30).nullable(),
+  email: z.email().optional().nullable(),
+  notification_recipients: z.array(z.email())
 });
 
 export function ClientForm(props: DialogFormProps<Client>) {
@@ -275,6 +279,59 @@ export function ClientForm(props: DialogFormProps<Client>) {
                           </AddressDialog>
                         </div>
                       </VFormField>
+                    );
+                  }}
+                />
+              </div>
+              <div className={'col-span-12 grid grid-cols-1 gap-2'}>
+                <FormField
+                  name={'email'}
+                  control={form.control}
+                  render={({field}) => {
+                    return (
+                      <VFormField label={'Notification Recipients'}>
+                        <InputGroup>
+                          <InputGroupAddon>
+                            <MailIcon/>
+                          </InputGroupAddon>
+                          <InputGroupInput value={field.value ?? ''} onChange={field.onChange} onKeyPress={async (e) => {
+                            if (e.key === 'Enter') {
+                              if (await form.trigger('email')) {
+                                const {
+                                  email, notification_recipients
+                                } = form.getValues();
+                                if (email) {
+                                  const current = notification_recipients || [];
+                                  if (!current.includes(email)) {
+                                    form.setValue('notification_recipients', [...current, email]);
+                                  }
+                                  form.setValue('email', undefined);
+                                }
+                              }
+                            }
+                          }} placeholder={'Type email and press enter to add'}/>
+                        </InputGroup>
+                      </VFormField>
+                    );
+                  }}
+                />
+                <FormField
+                  name={'notification_recipients'}
+                  control={form.control}
+                  render={({field}) => {
+                    return (
+                      <div className={'flex flex-wrap gap-2'}>
+                        {(field.value ?? []).map((email) => (
+                          <Badge key={email} className={'flex items-center'}>
+                            <span>{email}</span>
+                            <button type={'button'} onClick={() => {
+                              field.onChange(field.value.filter(e => e !== email));
+                            }}>
+                              &times;
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
                     );
                   }}
                 />

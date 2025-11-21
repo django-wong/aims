@@ -41,16 +41,10 @@ class TimesheetController extends Controller
                 }
             }
 
-            DB::transaction(function () use ($timesheet, $request) {
-                $timesheet->signed_off_at = Carbon::now();
-                $timesheet->save();
-
-                foreach ([$timesheet, $timesheet->assignment] as $subject) {
-                    activity()
-                        ->on($subject)
-                        ->withProperties($timesheet->getChanges())->log('Signed off timesheet');
-                }
-            });
+            // DB::transaction(function () use ($timesheet, $request) {
+            //     $timesheet->signed_off_at = Carbon::now();
+            //     $timesheet->save();
+            // });
 
             $status->next()?->transition($timesheet);
         }
@@ -227,6 +221,14 @@ class TimesheetController extends Controller
             ->log(
                 'Updated timesheet'
             );
+
+        if ($timesheet->wasChanged('late')) {
+            if ($timesheet->late) {
+                activity()->on($timesheet)->log('Marked as late');
+            } else {
+                activity()->on($timesheet)->log('Unmarked as late');
+            }
+        }
 
         return [
             'message' => $updated ? 'Timesheet updated successfully.' : 'No changes made to the timesheet.',

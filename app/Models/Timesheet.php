@@ -26,6 +26,9 @@ use Illuminate\Support\Carbon;
  * @property boolean                                                     $late
  * @property User                                                        $user
  * @property mixed                                                       $assignment_inspector_id
+ * @property bool                                                        $rejected
+ * @property string                                                      $rejection_reason
+ * @property string|null                                                 $signed_off_by
  */
 class Timesheet extends Model
 {

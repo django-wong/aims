@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * @property integer   $org_id
@@ -22,10 +23,27 @@ class Client extends Model implements Contactable, Invoiceable, Commentable
     /** @use HasFactory<\Database\Factories\ClientFactory> */
     use HasFactory, DynamicPagination, BelongsToOrg, BelongsToUser, HasManyContact, BelongsToAddress, HasManyContact;
     use HasManyComments;
+    use Notifiable;
 
     protected $guarded = [
         'id', 'updated_at', 'created_at'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'notification_recipients' => 'array',
+        ];
+    }
+
+    public function routeNotificationForMail($notification)
+    {
+        if (! empty($this->notification_recipients)) {
+            return $this->notification_recipients;
+        }
+
+        return $this->user->email;
+    }
 
     public function reviewer()
     {

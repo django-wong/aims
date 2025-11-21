@@ -100,7 +100,7 @@ $timesheet_items = \App\Models\TimesheetItem::query()->with('expense')->where('t
             <table>
                 <tr><td>Place: {{ $assignment->vendor?->name }}</td></tr>
                 <tr><td>Date: {{$timesheet->signed_off_at?->format('d-m-Y')}}</td></tr>
-                <tr><td>Print Name:{{$timesheet->user->name}}</td></tr>
+                <tr><td>Print Name:{{$timesheet->signed_off_by}}</td></tr>
                 <tr>
                     <td>Signed:<br>
                         @if(! empty($timesheet->signatures->inspector_signature))

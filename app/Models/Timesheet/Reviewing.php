@@ -3,6 +3,7 @@
 namespace App\Models\Timesheet;
 
 use App\Models\Timesheet;
+use Lab404\Impersonate\Services\ImpersonateManager;
 
 /**
  * Timesheet is submitted by the inspector and is waiting for operation office approval.
@@ -21,8 +22,25 @@ class Reviewing implements Status
 
     public function transition(Timesheet $timesheet): void
     {
+        $on_behalf = null;
+        $user = auth()->user();
+        if ($user?->isImpersonated()) {
+            $on_behalf = $user?->name;
+            $user = app(ImpersonateManager::class)->getImpersonator();
+        }
+
         if (empty($timesheet->signed_off_at)) {
+            $timesheet->signed_off_by = $user?->name;
             $timesheet->signed_off_at = now();
+            $timesheet->save();
+            foreach ([$timesheet, $timesheet->assignment] as $subject) {
+                activity()
+                    ->by($user)
+                    ->on($subject)
+                    ->withProperties($timesheet->getChanges())->log(
+                        'Signed off timesheet' . ($on_behalf ? " on behalf of {$on_behalf}" : '')
+                    );
+            }
         }
 
         $timesheet->status = Timesheet::REVIEWING;
