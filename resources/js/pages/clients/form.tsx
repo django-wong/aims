@@ -291,9 +291,6 @@ export function ClientForm(props: DialogFormProps<Client>) {
                     return (
                       <VFormField label={'Notification Recipients'}>
                         <InputGroup>
-                          <InputGroupAddon>
-                            <MailIcon/>
-                          </InputGroupAddon>
                           <InputGroupInput value={field.value ?? ''} onChange={field.onChange} onKeyPress={async (e) => {
                             if (e.key === 'Enter') {
                               if (await form.trigger('email')) {
@@ -310,6 +307,9 @@ export function ClientForm(props: DialogFormProps<Client>) {
                               }
                             }
                           }} placeholder={'Type email and press enter to add'}/>
+                          <InputGroupAddon>
+                            <MailIcon/>
+                          </InputGroupAddon>
                         </InputGroup>
                       </VFormField>
                     );
