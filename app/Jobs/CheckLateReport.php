@@ -61,6 +61,12 @@ class CheckLateReport implements ShouldQueue
 
                 $timesheet->update(['late' => true]);
 
+                activity()->byAnonymous()->on($timesheet)
+                    ->withProperties(['late' => true])
+                    ->log(
+                        'Marked timesheet as late for missing inspection report.'
+                    );
+
                 $assignment->coordinator->notify(
                     new AssignmentReportLate($assignment, $inspector, $timesheet)
                 );

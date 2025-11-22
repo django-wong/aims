@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Timesheet;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
@@ -16,7 +15,7 @@ class ClientReminderForPendingApprovalTimesheet extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Timesheet $timesheet)
+    public function __construct(private readonly Timesheet $timesheet)
     {
         //
     }

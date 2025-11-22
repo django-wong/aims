@@ -9,6 +9,9 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
+/**
+ * @uses \App\Models\Client::routeNotificationForMail()
+ */
 class TimesheetIsWaitingForClientApproval extends Notification
 {
     use Queueable;

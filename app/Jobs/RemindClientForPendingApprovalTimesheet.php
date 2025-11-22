@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\ClientTimesheetReminder;
-use App\Notifications\TimesheetIsWaitingForClientApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use App\Notifications\ClientReminderForPendingApprovalTimesheet;
@@ -21,12 +20,19 @@ class RemindClientForPendingApprovalTimesheet implements ShouldQueue
     public function handle(): void
     {
         while ($reminder = ClientTimesheetReminder::query()->first()) {
-            $reminder->client->user->notify(
+            sleep(1);
+            $reminder->client->notify(
                 new ClientReminderForPendingApprovalTimesheet($reminder->timesheet)
             );
             $reminder->timesheet->client_reminder_sent_at = now();
             $reminder->timesheet->save();
-            sleep(1);
+
+            activity()
+                ->on($reminder->timesheet)
+                ->withProperties($reminder->timesheet->getChanges())
+                ->log(
+                    'Client reminded for pending approval timesheet'
+                );
         }
     }
 }

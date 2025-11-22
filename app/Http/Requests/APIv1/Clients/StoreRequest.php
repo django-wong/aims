@@ -39,6 +39,8 @@ class StoreRequest extends FormRequest
             'user.name' => 'required|string|max:255',
             'user.email' => 'required|email|max:255',
             'user.password' => ['required', 'confirmed', Password::defaults()],
+            'notification_recipients' => 'nullable|array',
+            'notification_recipients.*' => 'email|max:255',
         ];
     }
 
@@ -61,7 +63,8 @@ class StoreRequest extends FormRequest
             'notes',
             'code',
             'client_group',
-            'invoice_reminder'
+            'invoice_reminder',
+            'notification_recipients',
         ]);
 
         if ($url = $this->upload()) {
