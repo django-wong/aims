@@ -54,6 +54,7 @@ const schema = z.object({
 export function ClientForm(props: DialogFormProps<Client>) {
   const form = useReactiveForm<z.infer<typeof schema>, Client>({
     ...useResource('/api/v1/clients', {
+      notification_recipients: null,
       business_name: '',
       coordinator_id: null,
       reviewer_id: null,
