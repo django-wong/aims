@@ -77,8 +77,8 @@ class StoreRequest extends FormRequest
     public function upload(): bool|string
     {
         if ($this->hasFile('logo')) {
-            return Storage::url(
-                $this->file('logo')->storePublicly('clients/logos')
+            return Storage::disk('public')->url(
+                $this->file('logo')->storePublicly('clients/logos', 'public')
             );
         }
         return false;
