@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Project } from '@/types';
 import { PropsWithChildren } from 'react';
 import { useAssignmentsTable } from '@/pages/assignments';
-import { ContactIcon, InfoIcon, MessagesSquareIcon, PencilIcon, TargetIcon } from 'lucide-react';
+import { ContactIcon, MessagesSquareIcon, PencilIcon, TargetIcon } from 'lucide-react';
 import { useQueryParam } from '@/hooks/use-query-param';
 import { HideFromClient } from '@/components/hide-from-client';
 import { ProjectForm } from '@/pages/projects/form';
@@ -88,6 +88,7 @@ export default function ProjectEdit(props: { project: Project }) {
               <HideFromClient>
                 <InfoLine icon={'info'} label={'Commission Rate'}>{props.project.commission_rate}%</InfoLine>
                 <InfoLine icon={'info'} label={'Process fee'}>{props.project.process_fee_rate}%</InfoLine>
+                <InfoLine icon={'info'} label={'Tax Rate'}>{props.project.tax_rate}%</InfoLine>
               </HideFromClient>
             </div>
 

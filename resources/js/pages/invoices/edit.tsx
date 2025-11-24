@@ -131,8 +131,8 @@ export default function EditInvoicePage(props: EditInvoicePageProps) {
                         <InfoLine label={'Commission Rate'}>{props.invoice.commission_rate}%</InfoLine>
                       )}
                       <InfoLine label={'Total'}>{formatCurrency(props.invoice.total_cost)}</InfoLine>
-                      <InfoLine label={'VAT'}>{props.invoice.tax_rate}%</InfoLine>
-                      <InfoLine label={'Total Cost with VAT'}>
+                      <InfoLine label={'Tax Rate'}>{props.invoice.tax_rate}%</InfoLine>
+                      <InfoLine label={'Total Cost with Tax'}>
                         {formatCurrency((1 + props.invoice.tax_rate / 100) * props.invoice.total_cost)}
                       </InfoLine>
                     </div>
