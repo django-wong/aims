@@ -159,16 +159,16 @@ export default function PurchaseOrdersPage() {
 
   const debouncer = useDebouncer();
   const [formOpen, setFormOpen] = useState(false);
-  const [keywords, setKeywords] = useState(table.searchParams.get('keywords') || '');
+  const [keywords, setKeywords] = useState(table.searchParams.get('filter[keywords]') || '');
 
   function onKeywordsChange(value: string) {
     setKeywords(value);
     debouncer(() => {
       table.setSearchParams((params) => {
         if (value) {
-          params.set('keywords', value);
+          params.set('filter[keywords]', value);
         } else {
-          params.delete('keywords');
+          params.delete('filter[keywords]');
         }
         return params;
       });
