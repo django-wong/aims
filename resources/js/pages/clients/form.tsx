@@ -48,7 +48,7 @@ const schema = z.object({
   notes: z.string().optional().nullable(),
   invoice_reminder: z.coerce.number().min(1).max(30).nullable(),
   email: z.email().optional().nullable(),
-  notification_recipients: z.array(z.email())
+  notification_recipients: z.array(z.email()).nullable()
 });
 
 export function ClientForm(props: DialogFormProps<Client>) {
@@ -325,7 +325,7 @@ export function ClientForm(props: DialogFormProps<Client>) {
                           <Badge key={email} className={'flex items-center'}>
                             <span>{email}</span>
                             <button type={'button'} onClick={() => {
-                              field.onChange(field.value.filter(e => e !== email));
+                              field.onChange((field.value ?? []).filter(e => e !== email));
                             }}>
                               &times;
                             </button>
