@@ -59,6 +59,13 @@
                 {{ $invoice->process_fee_rate }}% Process Fee (on Expenses) {{ $invoice->currency }} @money($invoice->process_fee)
             </td>
         </x-pdf.table.row>
+        @if($invoice->tax_rate > 0)
+        <x-pdf.table.row>
+            <td colspan="2" style="text-align: right;">
+                GST {{ $invoice->tax_rate }}%
+            </td>
+        </x-pdf.table.row>
+        @endif
     @else
         <x-pdf.table.row>
             <td colspan="2" style="text-align: right;">
@@ -66,9 +73,12 @@
             </td>
         </x-pdf.table.row>
     @endif
+    @php
+    $multiplier = $invoice->is_client_invoice && $invoice->tax_rate > 0 ? (1 + ($invoice->tax_rate / 100)) : 1;
+    @endphp
     <x-pdf.table.row>
         <td colspan="2" style="background-color: #ccc; text-align: right; font-weight: bold;">
-            TOTAL {{ $invoice->currency }} @money($invoice->total_cost)
+            TOTAL {{ $invoice->currency }} @money($invoice->total_cost * $multiplier)
         </td>
     </x-pdf.table.row>
 </x-pdf.table>

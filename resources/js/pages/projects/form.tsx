@@ -18,20 +18,21 @@ import { Loader2Icon } from 'lucide-react';
 import { DialogFormProps, Project } from '@/types';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import zod from 'zod';
+import z from 'zod';
 import { ClientSelect } from '@/components/client-select';
 import { ProjectTypeSelect } from '@/components/project-type-select';
 
-const schema = zod.object({
-  title: zod.string().min(1, 'Title is required'),
-  project_type_id: zod.number(),
-  client_id: zod.number(),
-  commission_rate: zod.coerce.number().min(0),
-  process_fee_rate: zod.coerce.number().min(0)
+const schema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  project_type_id: z.number(),
+  client_id: z.number(),
+  commission_rate: z.coerce.number().min(0),
+  process_fee_rate: z.coerce.number().min(0),
+  tax_rate: z.coerce.number().min(0).optional().nullable(),
 });
 
 export function ProjectForm(props: DialogFormProps<Project>) {
-  const form = useReactiveForm<zod.infer<typeof schema>, Project>({
+  const form = useReactiveForm<z.infer<typeof schema>, Project>({
     ...(useResource('/api/v1/projects', {
       title: '',
       project_type_id: null,
@@ -110,7 +111,7 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                     return <VFormField
                       required
                       description={'Apply to all delegated assignments of the project'}
-                      label={'Commission %'} className={'col-span-12 sm:col-span-6'}>
+                      label={'Commission %'} className={'col-span-12 sm:col-span-4'}>
                       <Input type={'number'} onChange={field.onChange} value={field.value ?? ''}/>
                     </VFormField>;
                   }}
@@ -122,11 +123,21 @@ export function ProjectForm(props: DialogFormProps<Project>) {
                     return <VFormField
                       required
                       description={'Apply to each expenses'}
-                      label={'Process fee %'} className={'col-span-12 sm:col-span-6'}>
+                      label={'Process fee %'} className={'col-span-12 sm:col-span-4'}>
                       <Input type={'number'} onChange={field.onChange} value={field.value ?? ''}/>
                     </VFormField>;
                   }}
                   name={'process_fee_rate'}
+                />
+                <FormField
+                  control={form.control}
+                  render={({field}) => {
+                    return <VFormField
+                      label={'Tax Rate'} className={'col-span-12 sm:col-span-4'}>
+                      <Input type={'number'} onChange={field.onChange} value={field.value ?? ''}/>
+                    </VFormField>;
+                  }}
+                  name={'tax_rate'}
                 />
               </div>
             </Form>

@@ -38,7 +38,8 @@ class StoreRequest extends FormRequest
             ],
             'title' => 'required|string|max:255',
             'commission_rate' => 'nullable|numeric|min:0',
-            'process_fee_rate' => 'nullable|numeric|min:0'
+            'process_fee_rate' => 'nullable|numeric|min:0',
+            'tax_rate' => 'nullable|numeric|min:0',
         ];
     }
 
