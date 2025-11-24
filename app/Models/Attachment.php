@@ -51,7 +51,7 @@ class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable,
         return [
             'name' => $file->getClientOriginalName(),
             'disk' => config('filesystems.default'),
-            'path' => $file->storePublicly($for->getPathPrefix() . '/' . $for->getKey() . '/attachments', config('filesystems.default')),
+            'path' => $file->store($for->getPathPrefix() . '/' . $for->getKey() . '/attachments', config('filesystems.default')),
             'size' => $file->getSize(),
             'mime_type' => $file->getMimeType(),
         ];
