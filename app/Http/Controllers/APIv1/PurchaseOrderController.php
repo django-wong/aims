@@ -12,6 +12,7 @@ use App\Http\Requests\APIv1\PurchaseOrders\StoreRequest;
 use App\Models\PurchaseOrderDailyUsage;
 use App\Models\PurchaseOrderMonthlyUsage;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -96,7 +97,14 @@ class PurchaseOrderController extends Controller
             }),
             AllowedFilter::callback('keywords', function (Builder $query, $value) {
                 if (!empty($value)) {
-                    $query->whereAny(['title', 'previous_title'], 'like', "%$value%");
+                    $query->whereAny([
+                        'title',
+                        'previous_title',
+                        'client_name',
+                        'client_code',
+                        'client_group',
+                        'project_title'
+                    ], 'like', "%$value%");
                 }
             })
         ];
@@ -128,9 +136,24 @@ class PurchaseOrderController extends Controller
     public function index()
     {
         return $this->getQueryBuilder()->visible()->tap(function (Builder $query) {
+            $query->leftJoinSub(function (QueryBuilder $subQuery) {
+                $subQuery->from('projects')
+                    ->select([
+                        'projects.id as pid',
+                        'clients.business_name as client_name',
+                        'clients.code as client_code',
+                        'clients.client_group as client_group',
+                        'projects.title as project_title',
+                    ])
+                    ->leftJoin('clients', 'clients.id', '=', 'projects.client_id');
+            }, 'projects', 'projects.pid', '=', 'purchase_orders.project_id');
+
             if (Auth::isClient()) {
-                $query->whereIn('project_id', Project::query()->select('id')->where('client_id', auth()->user()->client->id));
+                $query->whereIn(
+                    'project_id', Project::query()->select('id')->where('client_id', auth()->user()->client->id)
+                );
             }
+
         })->paginate();
     }
 
