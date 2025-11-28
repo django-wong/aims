@@ -38,12 +38,12 @@ class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable,
         );
     }
 
-    public static function store(UploadedFile $file, Attachable $attachable)
+    public static function store(UploadedFile $file, Attachable $attachable, $group = null)
     {
         return $attachable->attachments()->create(
             static::upload(
                 $file, for: $attachable
-            )
+            ) + ['group' => $group]
         );
     }
 
@@ -80,6 +80,14 @@ class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable,
     public function download()
     {
         return Storage::disk($this->disk)->download($this->path, $this->name, [
+            'Content-Type' => $this->mime_type,
+            'Content-Length' => $this->size,
+        ]);
+    }
+
+    public function stream()
+    {
+        return Storage::disk($this->disk)->response($this->path, $this->name, [
             'Content-Type' => $this->mime_type,
             'Content-Length' => $this->size,
         ]);

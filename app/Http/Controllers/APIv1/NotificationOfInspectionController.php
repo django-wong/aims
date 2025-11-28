@@ -109,10 +109,12 @@ class NotificationOfInspectionController extends Controller
         // Replace proposed date if available
         if ($notification_of_inspection->proposed_from) {
             $notification_of_inspection->from = $notification_of_inspection->proposed_from;
+            $notification_of_inspection->proposed_from = null;
         }
 
         if ($notification_of_inspection->proposed_to) {
             $notification_of_inspection->to = $notification_of_inspection->proposed_to;
+            $notification_of_inspection->proposed_to = null;
         }
 
         $notification_of_inspection->save();

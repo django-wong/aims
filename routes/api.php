@@ -89,7 +89,14 @@ Route::middleware('auth')->group(function () {
     Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve']);
     Route::post('timesheets/{timesheet}/reject', [TimesheetController::class, 'reject']);
     Route::get('timesheets/{timesheet}/pdf', [TimesheetController::class, 'pdf'])->name('timesheets.pdf');
-
+    Route::prefix('timesheets')->group(function () {
+        Route::prefix('{timesheet}')->group(function () {
+            Route::controller(TimesheetController::class)->group(function () {
+                Route::post('upload-signed-copy', 'upload_signed_copy');
+                Route::delete('remove-signed-copy', 'remove_signed_copy');
+            });
+        });
+    });
 
     // Reports
     Route::get('reports/hours-entry', \App\Http\Controllers\APIv1\Reports\HoursEntryController::class);

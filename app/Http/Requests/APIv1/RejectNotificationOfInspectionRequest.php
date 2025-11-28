@@ -10,8 +10,8 @@ class RejectNotificationOfInspectionRequest extends FormRequest
     {
         return [
             'rejection_reason' => 'required|string|max:1000',
-            'proposed_from' => 'required|date|required_with:proposed_to',
-            'proposed_to' => 'required|date|after_or_equal:proposed_from|required_with:proposed_from',
+            'proposed_from' => 'required|date',
+            'proposed_to' => 'required|date|after_or_equal:proposed_from',
         ];
     }
 }

@@ -27,7 +27,7 @@ export default function Edit(props: EditProps) {
       href: '/notification-of-inspections',
     },
     {
-      title: `${props.notification_of_inspection.assignment?.reference_number ?? props.notification_of_inspection.id}`,
+      title: `NOI-${props.notification_of_inspection.assignment?.reference_number ?? props.notification_of_inspection.id}`,
       href: `.`,
     },
   ];
@@ -37,7 +37,6 @@ export default function Edit(props: EditProps) {
   return (
     <NotificationOfInspectionProvider value={props.notification_of_inspection}>
       <Layout breadcrumbs={breadcrumbs} pageAction={<NotificationOfInspectionPageAction/>}>
-        <Head title="edit" />
         <TwoColumnLayout73
           left={
             <div>
@@ -83,7 +82,7 @@ export default function Edit(props: EditProps) {
                   </InfoLine>
                 </div>
                 <div>
-                  <InfoLineLabel>Description</InfoLineLabel>
+                  <InfoHead>Description</InfoHead>
                   <div>{props.notification_of_inspection.description}</div>
                 </div>
               </Info>

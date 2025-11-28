@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  * @property string                                                      $rejection_reason
  * @property string|null                                                 $signed_off_by
  */
-class Timesheet extends Model
+class Timesheet extends Model implements Attachable
 {
     const DRAFT = 0;
     const REVIEWING = 1;
@@ -40,6 +40,7 @@ class Timesheet extends Model
 
     /** @use HasFactory<TimesheetFactory> */
     use HasFactory, BelongsToAssignment, HasManyTimesheetItems, BelongsToUser, HasManyTimesheetReport, DynamicPagination;
+    use HasManyAttachments;
 
     protected $guarded = [
         'id', 'created_at', 'updated_at', 'deleted_at'

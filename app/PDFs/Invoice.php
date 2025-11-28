@@ -24,19 +24,13 @@ class Invoice extends BasePDF
 
     public function render()
     {
-        $data = [
-            'invoice' => InvoiceDetail::query()->find($this->invoice->id)
-        ];
+        $data = ['invoice' => InvoiceDetail::query()->find($this->invoice->id)];
 
         $this->AddPage();
-        $this->writeHTML(
-            view('pdfs.invoice', $data)->render()
-        );
+        $this->writeHTML(view('pdfs.invoice', $data)->render());
 
         $this->AddPage('L');
-        $this->writeHTML(
-            view('pdfs.invoice-breakdown', $data)->render()
-        );
+        $this->writeHTML(view('pdfs.invoice-breakdown', $data)->render());
 
         $this->AddPage('L');
         $this->writeHTML(
@@ -46,12 +40,21 @@ class Invoice extends BasePDF
         $timesheets = \App\Models\Timesheet::query()->invoice($this->invoice)->get();
 
         foreach ($timesheets as $timesheet) {
-            $this->AddPage('L', 'A4');
-            $this->writeHTML(
-                view('pdfs.timesheet', ['timesheet' => $timesheet])->render()
-            );
+            $signed_copy = $timesheet->attachments()->where('group', 'signed_copy')->latest()->first();
+
+            if ($signed_copy && $signed_copy->isEmbeddable()) {
+                $signed_copy->onto($this);
+            } else {
+                $this->AddPage('L', 'A4');
+                $this->writeHTML(
+                    view(
+                        'pdfs.timesheet', ['timesheet' => $timesheet]
+                    )->render()
+                );
+            }
 
             $attachments = Attachment::query()->where('attachable_type', Expense::class)->whereIn('attachable_id', Expense::query()->where('timesheet_id', $timesheet->id)->select('id'))->get();
+
             foreach ($attachments as $attachment) {
                 if ($attachment->isEmbeddable()) {
                     $attachment->onto($this);

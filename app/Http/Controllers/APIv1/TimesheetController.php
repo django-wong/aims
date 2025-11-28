@@ -7,6 +7,8 @@ use App\Http\Requests\APIv1\ApproveTimesheetRequest;
 use App\Http\Requests\APIv1\RejectTimesheetRequest;
 use App\Http\Requests\APIv1\SignOffTimesheetRequest;
 use App\Http\Requests\APIv1\UpdateTimesheetRequest;
+use App\Http\Requests\APIv1\UploadSignedTimesheetCopyRequest;
+use App\Models\Attachment;
 use App\Models\Timesheet;
 use App\Models\UserRole;
 use App\Notifications\TimesheetRejected;
@@ -16,6 +18,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Ramsey\Uuid\Type\Time;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class TimesheetController extends Controller
@@ -273,8 +276,47 @@ class TimesheetController extends Controller
 
     public function pdf(Timesheet $timesheet)
     {
+        $attachment = $timesheet->attachments()->where('group', 'signed_copy')->latest()->first();
+
+        if ($attachment) {
+            return $attachment->stream();
+        }
+
         $pdf = new \App\PDFs\Timesheet($timesheet);
         $pdf->render();
         return $pdf->Output("TS-{$timesheet->assignment->purchase_order->title}-ID{$timesheet->id}.pdf", 'I');
+    }
+
+    public function remove_signed_copy(Request $request, Timesheet $timesheet)
+    {
+        Gate::authorize('update', $timesheet);
+
+        $timesheet->attachments()->where('group', 'signed_copy')->delete();
+
+        activity()->on($timesheet)
+            ->log(
+                'Removed signed timesheet copy'
+            );
+
+        return [
+            'message' => 'Signed timesheet copy removed successfully.',
+        ];
+    }
+
+    public function upload_signed_copy(UploadSignedTimesheetCopyRequest $request, Timesheet $timesheet)
+    {
+        Gate::authorize('update', $timesheet);
+
+        $attachment = Attachment::store($request->file('attachment'), $timesheet, 'signed_copy');
+
+        activity()->on($timesheet)
+            ->log(
+                'Uploaded signed timesheet copy'
+            );
+
+        return [
+            'message' => 'Signed timesheet copy uploaded successfully.',
+            'data' => $attachment
+        ];
     }
 }
