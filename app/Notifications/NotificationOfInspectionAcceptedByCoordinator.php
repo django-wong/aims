@@ -3,20 +3,18 @@
 namespace App\Notifications;
 
 use App\Models\NotificationOfInspection;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class InspectionRequestedByClient extends Notification
+class NotificationOfInspectionAcceptedByCoordinator extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(private NotificationOfInspection $noi, private ?User $cc = null)
+    public function __construct(private NotificationOfInspection $noi)
     {
         //
     }
@@ -37,19 +35,14 @@ class InspectionRequestedByClient extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $message = (new MailMessage)
-            ->subject('You have a new inspection request.')
+            ->subject('Your inspection request has been accepted.')
             ->action('View Request', url('/notification-of-inspections/'.$this->noi->id))
             ->view(
-                'emails.notification-of-inspection', [
+                'emails.notification-of-inspection-accepted-by-coordinator', [
                     'noi' => $this->noi,
                     'notifiable' => $notifiable,
                 ]
             );
-
-
-        if ($this->cc) {
-            $message->cc($this->cc->email);
-        }
 
         $message->attachMany($this->noi->attachments);
 

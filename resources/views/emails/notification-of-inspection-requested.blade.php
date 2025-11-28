@@ -10,14 +10,18 @@ $timezone = $noi->org->timezone ?? config('app.timezone');
             </x-email.line>
 
             <x-email.article>
-                <strong>Inspection Details:</strong><br />
-                Preferred Date: <i>{{ $noi->from->timezone($timezone)->format('F j, Y H:i') }} to {{ $noi->to->timezone($timezone)->format('F j, Y H:i', $timezone) }} ({{ $timezone }})</i> <br />
-                Location: <i>{{ $noi->location ?? 'N/A' }}</i>
+                <strong>Location:</strong><br />
+                <i>{{ $noi->location ?? 'N/A' }}</i>
             </x-email.article>
 
             <x-email.article>
                 <strong>Description:</strong><br />
-                <i>{{ $noi->description ?? 'N/A' }}<br /></i>
+                <i>{{ $noi->description ?? 'N/A' }}</i>
+            </x-email.article>
+
+            <x-email.article>
+                <strong>Preferred Date:</strong><br />
+                <i>{{ $noi->from->timezone($timezone)->format('F j, Y H:i') }} to {{ $noi->to->timezone($timezone)->format('F j, Y H:i', $timezone) }} ({{ $timezone }})</i>
             </x-email.article>
 
             @if(! empty($actionUrl))

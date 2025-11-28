@@ -7,7 +7,11 @@ use App\Http\Requests\APIv1\StoreNotificationOfInspectionRequest;
 use App\Http\Requests\APIv1\UpdateNotificationOfInspectionRequest;
 use App\Models\CurrentOrg;
 use App\Models\NotificationOfInspection;
-use App\Notifications\InspectionRequestedByClient;
+use App\Notifications\NotificationOfInspectionAcceptedByClient;
+use App\Notifications\NotificationOfInspectionAcceptedByCoordinator;
+use App\Notifications\NotificationOfInspectionRejectedByClient;
+use App\Notifications\NotificationOfInspectionRejectedByCoordinator;
+use App\Notifications\NotificationOfInspectionRequestedByClient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
@@ -63,7 +67,7 @@ class NotificationOfInspectionController extends Controller
              */
             $noi = NotificationOfInspection::query()->create($request->validated() + [
                 'client_id' => $request->user()->client->id,
-                 'org_id' => $org->id
+                'org_id' => $org->id,
             ]);
 
             $request->saveAttachments($noi);
@@ -75,7 +79,7 @@ class NotificationOfInspectionController extends Controller
 
         return [
             'data' => $noi,
-            'message' => 'Notification of Inspection created successfully.'
+            'message' => 'Notification of Inspection created successfully.',
         ];
     }
 
@@ -89,7 +93,7 @@ class NotificationOfInspectionController extends Controller
 
         return [
             'message' => 'Notification of Inspection updated successfully.',
-            'data' => $notification_of_inspection
+            'data' => $notification_of_inspection,
         ];
     }
 
@@ -102,13 +106,41 @@ class NotificationOfInspectionController extends Controller
             ? NotificationOfInspection::CLIENT_ACCEPTED
             : NotificationOfInspection::ACCEPTED;
 
+        // Replace proposed date if available
+        if ($notification_of_inspection->proposed_from) {
+            $notification_of_inspection->from = $notification_of_inspection->proposed_from;
+        }
+
+        if ($notification_of_inspection->proposed_to) {
+            $notification_of_inspection->to = $notification_of_inspection->proposed_to;
+        }
+
         $notification_of_inspection->save();
 
         activity()->on($notification_of_inspection)->log('Accepted');
 
+        if ($notification_of_inspection->status === NotificationOfInspection::CLIENT_ACCEPTED) {
+            $user = $notification_of_inspection->assignment->operation_coordinator;
+            $cc = $notification_of_inspection->assignment->coordinator;
+            if ($cc && empty($user)) {
+                [$user, $cc] = [$cc, null];
+            }
+            if ($user) {
+                $user->notify(
+                    new NotificationOfInspectionAcceptedByClient($notification_of_inspection, $cc)
+                );
+            }
+        }
+
+        if ($notification_of_inspection->status === NotificationOfInspection::ACCEPTED) {
+            $notification_of_inspection->client->notify(
+                new NotificationOfInspectionAcceptedByCoordinator($notification_of_inspection)
+            );
+        }
+
         return [
             'message' => 'Notification of Inspection accepted.',
-            'data' => $notification_of_inspection
+            'data' => $notification_of_inspection,
         ];
     }
 
@@ -125,11 +157,30 @@ class NotificationOfInspectionController extends Controller
 
         $reason = $request->input('rejection_reason', 'n/a');
 
+        if ($notification_of_inspection->status === NotificationOfInspection::CLIENT_REJECTED) {
+            $user = $notification_of_inspection->assignment->operation_coordinator;
+            $cc = $notification_of_inspection->assignment->coordinator;
+            if ($cc && empty($user)) {
+                [$user, $cc] = [$cc, null];
+            }
+            if ($user) {
+                $user->notify(
+                    new NotificationOfInspectionRejectedByClient($notification_of_inspection, $cc)
+                );
+            }
+        }
+
+        if ($notification_of_inspection->status === NotificationOfInspection::REJECTED) {
+            $notification_of_inspection->client->notify(
+                new NotificationOfInspectionRejectedByCoordinator($notification_of_inspection)
+            );
+        }
+
         activity()->on($notification_of_inspection)->log("Rejected with reason: <{$reason}>");
 
         return [
             'message' => 'Notification of Inspection rejected.',
-            'data' => $notification_of_inspection
+            'data' => $notification_of_inspection,
         ];
     }
 
@@ -151,7 +202,9 @@ class NotificationOfInspectionController extends Controller
 
         if ($user) {
             $user->notify(
-                new InspectionRequestedByClient($notification_of_inspection, $cc)
+                new NotificationOfInspectionRequestedByClient(
+                    $notification_of_inspection, $cc
+                )
             );
             activity()->byAnonymous()->on($notification_of_inspection)->log(
                 sprintf('Notification sent to <%s>, and ccd <%s>', $user->name, $cc?->name ?? 'nobody')
@@ -160,7 +213,7 @@ class NotificationOfInspectionController extends Controller
 
         return [
             'message' => 'Notification of Inspection sent successfully.',
-            'data' => $notification_of_inspection
+            'data' => $notification_of_inspection,
         ];
     }
 }
