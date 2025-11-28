@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
- * @property Model $attachable
+ * @property Model  $attachable
+ * @property string $name
  */
 class Attachment extends Model implements \Illuminate\Contracts\Mail\Attachable, PdfEmbeddable
 {

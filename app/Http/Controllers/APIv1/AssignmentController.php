@@ -19,6 +19,7 @@ use App\Notifications\AssignmentHasBeenRejected;
 use App\Notifications\AssignmentHasBeenDelegated;
 use App\Notifications\AssignmentHasBeenIssued;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -80,6 +81,25 @@ class AssignmentController extends Controller
 
         return [
             'message' => 'You have accepted the assignment.',
+        ];
+    }
+
+    /**
+     * Get all inspectors for the assignment, could be used for NOI request
+     * @param Assignment $assignment
+     */
+    public function inspectors(Assignment $assignment)
+    {
+        Gate::authorize('view', $assignment);
+
+        return [
+            'data' => $assignment->assignment_inspectors()->tap(function (Builder $query) {
+                $query->with('user', function (BelongsTo $query) {
+                    $query->select([
+                        'id', 'first_name', 'last_name', 'email', 'name'
+                    ]);
+                });
+            })->get()
         ];
     }
 

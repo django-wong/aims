@@ -116,4 +116,9 @@ class AssignmentPolicy
 
         return Response::deny('You don\'t have permission to create invoice.');
     }
+
+    public function requestInspection(User $user, Assignment $assignment): bool
+    {
+        return $assignment->project->client->user->is($user);
+    }
 }

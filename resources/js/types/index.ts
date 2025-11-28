@@ -740,3 +740,18 @@ export interface ExpiringCertificate extends BaseModel, Certificate {
   user_full_name: string;
   expiring_in_days: number;
 }
+
+export interface NotificationOfInspection extends BaseModel {
+  org_id: number;
+  org?: Org;
+  client_id: number;
+  client?: Client;
+  assignment_id: number;
+  assignment?: Assignment
+  from: string;
+  to: string;
+  inspector_id: number;
+  inspector?: User;
+  location: string | null;
+  description: string | null;
+}

@@ -150,6 +150,13 @@ body {
       height: 0;
     }
   }
+
+  .activity-list {
+    position: relative;
+    &::before {
+      display: block; top: 0; bottom: 0; width: 1px; border-left: 1px dashed #ddd; left: 1rem; position: absolute; content: ' ';
+    }
+  }
 }
 
 

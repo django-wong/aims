@@ -33,7 +33,7 @@ export function DatePicker({disabled, value, onChange, placeholder, ...props }: 
                   })}
                 </span>
               ) : (
-                <span>{placeholder || ''}</span>
+                <span className={'text-muted-foreground'}>{placeholder || ''}</span>
               )}
             </div>
             <CalendarIcon />

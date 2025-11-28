@@ -15,6 +15,7 @@ use App\Http\Controllers\APIv1\CommentController;
 use App\Http\Controllers\APIv1\ContactController;
 use App\Http\Controllers\APIv1\InspectorController;
 use App\Http\Controllers\APIv1\MenuController;
+use App\Http\Controllers\APIv1\NotificationOfInspectionController;
 use App\Http\Controllers\APIv1\OrgController;
 use App\Http\Controllers\APIv1\ProjectController;
 use App\Http\Controllers\APIv1\ProjectTypeController;
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
         'user-skills' => UserSkillController::class,
         'invoices' => \App\Http\Controllers\APIv1\InvoiceController::class,
         'quotes' => \App\Http\Controllers\APIv1\QuoteController::class,
+        'notification-of-inspections' => \App\Http\Controllers\APIv1\NotificationOfInspectionController::class,
     ]);
 
     // Users
@@ -78,6 +80,9 @@ Route::middleware('auth')->group(function () {
     Route::post('assignments/{assignment}/accept', [AssignmentController::class, 'accept']);
     Route::post('assignments/{assignment}/reject', [AssignmentController::class, 'reject']);
     Route::get('assignments/{assignment}/daily-usage', [AssignmentController::class, 'daily_usage']);
+    Route::get('assignments/{assignment}/inspectors', [
+        AssignmentController::class, 'inspectors'
+    ])->name('assignments.inspectors');
 
     // Timesheets
     Route::post('timesheets/{timesheet}/sign-off', [TimesheetController::class, 'sign_off']);
@@ -120,5 +125,13 @@ Route::middleware('auth')->group(function () {
         return [
             'data' => DateTimeZone::listIdentifiers()
         ];
+    });
+
+    Route::prefix('notification-of-inspections')->group(function () {
+        Route::controller(NotificationOfInspectionController::class)->group(function () {
+            Route::post('/{notification_of_inspection}/accept', 'accept');
+            Route::post('/{notification_of_inspection}/reject', 'reject');
+            Route::post('/{notification_of_inspection}/send', 'send');
+        });
     });
 });
