@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\NotificationOfInspection;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
 
@@ -14,7 +15,7 @@ class NotificationOfInspectionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->user_role->role != UserRole::INSPECTOR;
     }
 
     /**
@@ -53,7 +54,7 @@ class NotificationOfInspectionPolicy
      */
     public function delete(User $user, NotificationOfInspection $notificationOfInspection): bool
     {
-        return false;
+        return $notificationOfInspection->client->is($user->client);
     }
 
     /**

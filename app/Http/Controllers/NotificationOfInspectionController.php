@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreNotificationOfInspectionRequest;
 use App\Http\Requests\UpdateNotificationOfInspectionRequest;
 use App\Models\NotificationOfInspection;
+use Illuminate\Support\Facades\Gate;
 
 class NotificationOfInspectionController extends Controller
 {
@@ -13,31 +14,9 @@ class NotificationOfInspectionController extends Controller
      */
     public function index()
     {
+        Gate::authorize('view-any', NotificationOfInspection::class);
+
         return inertia('notification-of-inspections/index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreNotificationOfInspectionRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(NotificationOfInspection $notificationOfInspection)
-    {
-        //
     }
 
     /**
@@ -45,26 +24,10 @@ class NotificationOfInspectionController extends Controller
      */
     public function edit(NotificationOfInspection $notification_of_inspection)
     {
-        $notification_of_inspection->load('assignment', 'client', 'inspector');
+        Gate::authorize('view', $notification_of_inspection);
 
         return inertia('notification-of-inspections/edit', [
-            'notification_of_inspection' => $notification_of_inspection,
+            'notification_of_inspection' => $notification_of_inspection->load('assignment', 'client', 'inspector'),
         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNotificationOfInspectionRequest $request, NotificationOfInspection $notificationOfInspection)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(NotificationOfInspection $notificationOfInspection)
-    {
-        //
     }
 }

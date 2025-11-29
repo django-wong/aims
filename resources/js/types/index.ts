@@ -741,6 +741,15 @@ export interface ExpiringCertificate extends BaseModel, Certificate {
   expiring_in_days: number;
 }
 
+export enum NotificationOfInspectionStatus {
+  Draft = 0,
+  Sent = 1,
+  Accepted = 2,
+  Rejected = 3,
+  ClientRejected = 4,
+  ClientAccepted = 5,
+}
+
 export interface NotificationOfInspection extends BaseModel {
   org_id: number;
   org?: Org;
@@ -749,6 +758,10 @@ export interface NotificationOfInspection extends BaseModel {
   assignment_id: number;
   assignment?: Assignment
   from: string;
+  status: NotificationOfInspectionStatus
+  proposed_from: string | null;
+  proposed_to: string | null;
+  rejection_reason: string | null;
   to: string;
   inspector_id: number;
   inspector?: User;

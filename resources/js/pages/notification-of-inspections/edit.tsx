@@ -11,6 +11,9 @@ import { formatDate, formatDateTime } from '@/lib/helpers';
 import { NotificationOfInspectionProvider } from '@/providers/notification-of-inspection-provider';
 import { NotificationOfInspectionPageAction } from '@/pages/notification-of-inspections/page-actions';
 import { NotificationOfInspectionStatusBadge } from '@/pages/notification-of-inspections/status-badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircleIcon } from 'lucide-react';
+import { NotificationOfInspectionRejectionDetails } from '@/pages/notification-of-inspections/rejection-details';
 
 interface EditProps {
   notification_of_inspection: NotificationOfInspection;
@@ -39,7 +42,8 @@ export default function Edit(props: EditProps) {
       <Layout breadcrumbs={breadcrumbs} pageAction={<NotificationOfInspectionPageAction/>}>
         <TwoColumnLayout73
           left={
-            <div>
+            <div className={'grid grid-cols-1 gap-6'}>
+              <NotificationOfInspectionRejectionDetails/>
               <Tabs value={tab} onValueChange={setTab}>
                 <TabsList className={'mb-2'}>
                   <TabsTrigger value={'attachments'}>Attachments</TabsTrigger>
@@ -72,7 +76,7 @@ export default function Edit(props: EditProps) {
                     {formatDateTime(props.notification_of_inspection.from)}
                   </InfoLine>
                   <InfoLine label={'To'}>
-                    {formatDateTime(props.notification_of_inspection.from)}
+                    {formatDateTime(props.notification_of_inspection.to)}
                   </InfoLine>
                   <InfoLine label={'Location'}>
                     {props.notification_of_inspection.location}

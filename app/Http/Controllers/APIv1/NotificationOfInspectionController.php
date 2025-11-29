@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class NotificationOfInspectionController extends Controller
 {
@@ -57,6 +58,15 @@ class NotificationOfInspectionController extends Controller
                 });
             }
         })->paginate();
+    }
+
+    protected function allowedFilters()
+    {
+        return [
+            AllowedFilter::callback('keywords', function (Builder $query, $value) {
+                $query->whereAny(['assignments.reference_number', 'users.name', 'clients.business_name'],'like', "%$value%");
+            }),
+        ];
     }
 
     public function store(StoreNotificationOfInspectionRequest $request, CurrentOrg $org)
@@ -216,6 +226,21 @@ class NotificationOfInspectionController extends Controller
         return [
             'message' => 'Notification of Inspection sent successfully.',
             'data' => $notification_of_inspection,
+        ];
+    }
+
+    public function destroy(NotificationOfInspection $notification_of_inspection)
+    {
+        Gate::authorize('delete', $notification_of_inspection);
+
+        DB::transaction(function () use ($notification_of_inspection) {
+            activity()->on($notification_of_inspection->assignment)->log('Deleted Notification of Inspection');
+            $notification_of_inspection->delete();
+        });
+
+
+        return [
+            'message' => 'Notification of Inspection deleted successfully.',
         ];
     }
 }
