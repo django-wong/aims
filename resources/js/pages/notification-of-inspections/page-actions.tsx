@@ -68,7 +68,11 @@ function Send() {
   const [loading, setLoading] = useState(false);
   const reload = useReload();
 
-  if (!is_client || ! [0, 1].includes(subject?.status)) {
+  if (!subject) {
+    return null;
+  }
+
+  if (!is_client || ![0, 1].includes(subject.status)) {
     return null;
   }
 
@@ -81,14 +85,14 @@ function Send() {
 
   return (
     <Button onClick={send} disabled={loading}>
-      <SendIcon/> Send {subject?.status > 0 ? 'Again' : ''}
+      <SendIcon/> Send {subject.status > 0 ? 'Again' : ''}
     </Button>
   );
 }
 
 const schema = z.object({
-  proposed_from: z.string().optional(),
-  proposed_to: z.string().optional(),
+  proposed_from: z.string().optional().nullable(),
+  proposed_to: z.string().optional().nullable(),
   rejection_reason: z.string().min(10, 'Reason must be at least 10 characters long'),
 }).refine(
   (data) => {
@@ -106,6 +110,7 @@ const schema = z.object({
 function Reject() {
   const subject = useNotificationOfInspection();
   const is_client = useIsClient();
+  const reload = useReload();
 
   const form = useReactiveForm<z.infer<typeof schema>>({
     url: '/api/v1/notification-of-inspections/' + subject?.id + '/reject',
@@ -136,6 +141,7 @@ function Reject() {
   function reject() {
     form.submit().then(() => {
       setOpen(false);
+      reload();
     })
   }
 

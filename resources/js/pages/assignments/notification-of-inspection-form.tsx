@@ -89,7 +89,7 @@ export function NotificationOfInspectionForm(props: DialogFormProps<Notification
           <DialogClose asChild>
             <Button variant={'outline'}>Close</Button>
           </DialogClose>
-          <Button onClick={submit} disabled={form.formState.isSubmitting}>Send</Button>
+          <Button onClick={submit} disabled={form.formState.isSubmitting}>Submit</Button>
         </>
       }
       trigger={props.children}
