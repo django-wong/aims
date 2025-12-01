@@ -36,11 +36,16 @@ class AttachmentController extends Controller
 
         Gate::authorize('create', [Attachment::class, $attachable]);
 
+
         if (!empty($attachments = $request->file('attachments'))) {
             foreach ($attachments as $attachment) {
-                Attachment::store(
+                /**
+                 * @var Attachment $saved
+                 */
+                $saved = Attachment::store(
                     $attachment, attachable: $attachable
                 );
+                activity()->on($attachable)->log("Uploaded new attachment <{$saved->name}>");
             }
         }
 
@@ -55,6 +60,7 @@ class AttachmentController extends Controller
     public function update(UpdateAttachmentRequest $request, Attachment $attachment)
     {
         $attachment->revision($request->file('attachment'))->save();
+        activity()->on($attachment->attachable)->log("Revised the attachment <{$attachment->name}> with <{$request->file('attachment')->getClientOriginalName()}>");
 
         return [
             'message' => 'Attachment updated successfully.',
@@ -70,6 +76,7 @@ class AttachmentController extends Controller
         Gate::authorize('delete', $attachment);
 
         $attachment->delete();
+        activity()->on($attachment->attachable)->log("Deleted Attachment <{$attachment->name}>");
 
         return [
             'message' => 'Attachment deleted successfully.'

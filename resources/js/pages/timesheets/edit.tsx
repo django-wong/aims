@@ -21,7 +21,10 @@ import { HideFromClient } from '@/components/hide-from-client';
 import { Activities } from '@/components/activities';
 import { FlashReportSent } from '@/pages/timesheets/flash-report-sent';
 import { Button } from '@/components/ui/button';
-import { FileDownIcon } from 'lucide-react';
+import { FileDownIcon, UploadIcon } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { UploadSignedCopy } from './upload-signed-copy';
+import { useState } from 'react';
 
 interface EditTimesheetProps {
   timesheet: Timesheet;
@@ -29,6 +32,8 @@ interface EditTimesheetProps {
 }
 
 export default function EditTimesheet(props: EditTimesheetProps) {
+  const [open, setOpen] = useState(false);
+
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'Home',
@@ -62,13 +67,34 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                   <LogYourTime/>
                 </HideFromClient>
                 <HideFromClient>
-                  <Button
-                    variant={'outline'}
-                    onClick={() => {
-                      window.open(route('timesheets.pdf', props.timesheet.id), '_blank');
-                    }}>
-                    <FileDownIcon/>
-                  </Button>
+                  <UploadSignedCopy open={open} onOpenChange={setOpen}/>
+                  <ButtonGroup>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant={'outline'}
+                          onClick={() => {
+                            window.open(route('timesheets.pdf', props.timesheet.id), '_blank');
+                          }}>
+                          <FileDownIcon/>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Download PDF copy of the timesheet, this can be replaced with a signed copy.
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant={'outline'} onClick={() => setOpen(true)}>
+                          <UploadIcon/>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Upload a signed copy of the timesheet
+                      </TooltipContent>
+                    </Tooltip>
+
+                  </ButtonGroup>
                 </HideFromClient>
               </>
             }
@@ -106,7 +132,7 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                         props.timesheet.client_invoice_id ? (
                           <InfoLine label={'Client Invoice'}>
                             <Link href={route('invoices.edit', props.timesheet.client_invoice_id)} className={'link'}>
-                              View
+                              #{props.timesheet.client_invoice_id}
                             </Link>
                           </InfoLine>
                         ) : null
@@ -116,7 +142,7 @@ export default function EditTimesheet(props: EditTimesheetProps) {
                         props.timesheet.contractor_invoice_id ? (
                           <InfoLine label={'Client Invoice'}>
                             <Link href={route('invoices.edit', props.timesheet.contractor_invoice_id)} className={'link'}>
-                              View
+                              #{props.timesheet.contractor_invoice_id}
                             </Link>
                           </InfoLine>
                         ) : null

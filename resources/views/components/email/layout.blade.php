@@ -9,11 +9,8 @@
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
         <meta name="x-apple-disable-message-reformatting"  content=""/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            {!! Vite::content('resources/css/app.css') !!}
-        </style>
     </head>
-    <body style='margin: 0;font-size: 16px;background-color:#ffffff;font-family:"Avenir", "Helvetica Neue",sans-serif;padding:2rem;'>
+    <body style='margin: 0;font-size: 16px;background-color:#ffffff;font-family:"Avenir", "Helvetica Neue",sans-serif;padding:1rem'>
         <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" style='margin:0 auto;word-break: break-word;'>
             <tbody>
             <tr style="width:100%">

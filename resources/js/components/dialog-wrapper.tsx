@@ -3,6 +3,10 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { DialogInnerContent } from '@/components/dialog-inner-content';
 import { Button } from '@/components/ui/button';
 
+export {
+  DialogClose
+}
+
 export interface DialogWrapperProps extends React.ComponentProps<typeof DialogContent> {
   trigger: React.ReactNode;
   title: string;

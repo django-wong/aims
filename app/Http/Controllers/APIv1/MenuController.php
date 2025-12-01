@@ -94,9 +94,9 @@ class MenuController
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::CLIENT, UserRole::STAFF], [
                     'noi' => [
-                        'name' => 'Notification of Inspection (NOI)',
+                        'name' => 'Notification of Inspection',
                         'icon' => 'contact',
-                        'url' => route('notification-of-inspection'),
+                        'url' => route('notification-of-inspections'),
                     ]
                 ])),
                 ...($when([UserRole::ADMIN, UserRole::PM, UserRole::STAFF, UserRole::FINANCE, UserRole::CLIENT], [

@@ -15,7 +15,7 @@ import { AssignmentInspectors } from '@/pages/assignments/assignment-inspectors'
 import { AssignmentReports } from '@/pages/assignments/assignment-reports';
 import { DailyUsage } from '@/pages/assignments/daily-usage';
 import { AssignmentForm } from '@/pages/assignments/form';
-import { NotificationOfInspection } from '@/pages/assignments/notification-of-inspection';
+import { NotificationOfInspectionForm } from '@/pages/assignments/notification-of-inspection-form';
 import { RejectWithMessage } from '@/pages/assignments/reject-with-message';
 import { TimesheetsTable } from '@/pages/assignments/timesheets-table';
 import { AssignmentProvider } from '@/providers/assignment-provider';
@@ -28,6 +28,7 @@ import {
   CheckCheckIcon,
   ClockFadingIcon,
   FileCheckIcon,
+  FlagTriangleRightIcon,
   MessagesSquare,
   PaperclipIcon,
   PencilIcon,
@@ -40,6 +41,7 @@ import { AssignmentStatusBadge } from '@/pages/assignments/assignment-status-bad
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { useIsClient } from '@/hooks/use-role';
 import { formatCurrency } from '@/lib/helpers';
+import { useState } from 'react';
 
 interface AssignmentEditProps {
   assignment: Assignment;
@@ -74,14 +76,13 @@ export default function AssignmentEdit(props: AssignmentEditProps) {
         largeTitle={'View Assignment'}
         pageAction={
           <>
-            {/*<AssignmentActions assignment={props.assignment}/>*/}
             <VisibleToClient>
-              <NotificationOfInspection>
+              <NotificationOfInspectionForm>
                 <Button variant={'outline'}>
-                  <AlarmClockIcon/>
+                  <FlagTriangleRightIcon/>
                   Notification of Inspection
                 </Button>
-              </NotificationOfInspection>
+              </NotificationOfInspectionForm>
             </VisibleToClient>
 
             <HideFromClient>

@@ -41,7 +41,7 @@ class CheckLateReport implements ShouldQueue
                 // If timesheet exists and is not draft, and has inspection report, then it's good
                 if ($timesheet) {
                     if ($timesheet->status > Timesheet::DRAFT) {
-                        if ($timesheet->timesheet_reports()->where('type', 'inspection-report')->exists()) {
+                        if (empty($assignment->report_required) || $timesheet->timesheet_reports()->where('type', 'inspection-report')->exists()) {
                             return;
                         }
                     }

@@ -12,7 +12,7 @@ import { ContactIcon, MessagesSquareIcon, PencilIcon, TargetIcon } from 'lucide-
 import { useQueryParam } from '@/hooks/use-query-param';
 import { HideFromClient } from '@/components/hide-from-client';
 import { ProjectForm } from '@/pages/projects/form';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 
 export default function ProjectEdit(props: { project: Project }) {
@@ -97,7 +97,9 @@ export default function ProjectEdit(props: { project: Project }) {
             <InfoHead>Client</InfoHead>
             <div>
               <InfoLine icon={'user-2'} label={'Client'}>
-                {props.project.client?.business_name || 'N/A'}
+                <Link href={"/clients/" + props.project.client?.id} className={'underline'}>
+                  {props.project.client?.business_name || 'N/A'}
+                </Link>
               </InfoLine>
               <InfoLine label={'Coordinator'} icon={'user-2'}>
                 {props.project.client?.coordinator?.name || 'N/A'}
@@ -112,21 +114,5 @@ export default function ProjectEdit(props: { project: Project }) {
         }
       />
     </AppLayout>
-  );
-}
-
-function Content(props: PropsWithChildren<{ project: Project }>) {
-  return (
-    <div>
-      <div className={'grid grid-cols-2 gap-4 lg:grid-cols-4'}>
-        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
-        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
-        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
-        <Skeleton className={'min-h-[100px] rounded-lg border bg-muted-foreground/10'}></Skeleton>
-      </div>
-      <Skeleton className={'bg-muted-foreground/10 mt-6 flex min-h-[200px] items-center justify-center rounded-lg border border-dashed'}>
-        {props.children}
-      </Skeleton>
-    </div>
   );
 }

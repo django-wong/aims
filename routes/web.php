@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InspectorController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MagicLinkController;
+use App\Http\Controllers\NotificationOfInspectionController;
 use App\Http\Controllers\OrgController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
@@ -93,9 +94,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return redirect($return_to);
     })->name('leave-impersonation');
 
-    Route::get('notification-of-inspection', function () {
-        return Inertia::render('404');
-    })->name('notification-of-inspection');
+    Route::prefix('notification-of-inspections')->group(function () {
+        Route::controller(NotificationOfInspectionController::class)->group(function () {
+            Route::get('/', 'index')->name('notification-of-inspections');
+            Route::get('/{notification_of_inspection}', 'edit');
+        });
+    });
 
     // Inspectors
     Route::get('inspectors', [InspectorController::class, 'index'])->name('inspectors');
