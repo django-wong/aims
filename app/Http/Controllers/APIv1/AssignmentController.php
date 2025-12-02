@@ -239,7 +239,15 @@ class AssignmentController extends Controller
         if ($assignment->reference_number) {
             $name = "{$assignment->reference_number}.pdf";
         }
-        return Pdf::loadView('pdfs.assignment-form', ['assignment' => $assignment])->download($name);
+
+        $assignment_inspector = $assignment->assignment_inspectors()->first();
+
+        return Pdf::loadView(
+            'pdfs.assignment-form', [
+                'assignment' => $assignment,
+                'assignment_inspector' => $assignment_inspector,
+            ]
+        )->download($name);
     }
 
     public function daily_usage(Request $request, Assignment $assignment)
