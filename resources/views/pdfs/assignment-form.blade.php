@@ -65,9 +65,9 @@
         </tr>
         <tr>
             <td class="title">Tel No:</td>
-            <td>{{$assignment->visit_contact?->phone ?? ''}}</td>
+            <td><a href="tel:{{$assignment->client_contact?->phone ?? ''}}">{{$assignment->client_contact?->phone ?? ''}}</a></td>
             <td class="title">Mobile No:</td>
-            <td>{{ $assignment->visit_contact?->mobile ?? '' }}</td>
+            <td><a href="tel:{{$assignment->client_contact?->mobile ?? ''}}">{{ $assignment->client_contact?->mobile ?? '' }}</a></td>
         </tr>
         <tr>
             <td colspan="4" class="head">
