@@ -23,6 +23,7 @@ import { formatCurrency } from '@/lib/helpers';
 import { HideFromClient } from '@/components/hide-from-client';
 import { StateFilter } from '@/pages/timesheets/state-filter';
 import { TimesheetStatus } from '@/pages/timesheets/status';
+import { useIsClient } from '@/hooks/use-role';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -186,8 +187,10 @@ const columns: ColumnDef<Timesheet>[] = [
 ];
 
 export default function TimesheetsPage() {
+  const isClient = useIsClient();
+
   const table = useTable('/api/v1/timesheets', {
-    selectable: true,
+    selectable: !isClient,
     columns: columns,
     defaultParams: {
       include: 'assignment.purchase_order,assignment.project.client,timesheet_items_count,timesheet_items.user',

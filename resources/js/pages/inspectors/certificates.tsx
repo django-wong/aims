@@ -312,7 +312,8 @@ function CertificateForm(props: CertificateFormProps) {
                     <VFormField label={'Issued Date'}>
                       <DatePicker
                         calendar={{
-                          captionLayout: 'dropdown'
+                          captionLayout: 'dropdown',
+                          fromYear: 2000,
                         }}
                         value={field.value || undefined}
                         onChange={(date) => field.onChange(date ? dayjs(date).format('YYYY/MM/DD') : null)}
@@ -328,12 +329,14 @@ function CertificateForm(props: CertificateFormProps) {
                     <VFormField label={'Expiry Date'}>
                       <DatePicker
                         calendar={{
+                          fromDate: issued_at ? dayjs(issued_at).toDate() : undefined,
+                          toYear: dayjs().add(100, 'year').year(),
                           captionLayout: 'dropdown',
                           disabled: (date) => {
                             if (issued_at) {
                               const start = dayjs(issued_at);
                               const end = dayjs(date);
-                              return end.isBefore(start, 'day');
+                              return end.isBefore(start);
                             }
                             return false;
                           }
