@@ -36,6 +36,8 @@ class TimesheetIsWaitingForClientApproval extends Notification
 
     /**
      * Get the mail representation of the notification.
+     * TODO: Change the link to point to the timesheet so client can directly approve/reject from there.
+     * TODO: Add inspection report as attachment if available.
      */
     public function toMail(object $notifiable): MailMessage
     {

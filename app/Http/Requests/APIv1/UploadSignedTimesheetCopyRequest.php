@@ -9,7 +9,7 @@ class UploadSignedTimesheetCopyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachment' => 'required|file|mimes:pdf|max:51200', // Max size 50MB
+            'attachment' => 'required|file|mimes:pdf,png,jpg|max:51200', // Max size 50MB
         ];
     }
 }

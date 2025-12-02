@@ -42,3 +42,13 @@ services:
         ports:
             - "5173:5173" # For Vite development server
             - "8080:80"
+
+    metabase:
+        image: metabase/metabase:latest
+        ports:
+            - "3000:3000"
+        networks:
+            - app
+        depends_on:
+            mysql:
+                condition: service_healthy

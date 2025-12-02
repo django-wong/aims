@@ -16,8 +16,11 @@ trait CanAddToPdf
         switch ($this->mime_type) {
             case 'image/jpeg':
             case 'image/png':
-                $pdf->AddPage('P');
-                $pdf->Image($path, 15, 30, $pdf->getPageWidth() - 30);
+                // Get image size to determine orientation
+                [$width, $height] = getimagesize($path);
+                $orientation = ($width > $height) ? 'L' : 'P';
+                $pdf->AddPage($orientation);
+                $pdf->Image($path, 15, 15, $pdf->getPageWidth() - 30);
                 break;
             case  'application/pdf':
                 $pdf->setMargins(0, 0, 0);
