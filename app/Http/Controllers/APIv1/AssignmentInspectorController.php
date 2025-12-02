@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class AssignmentInspectorController extends Controller
 {
@@ -152,11 +153,21 @@ class AssignmentInspectorController extends Controller
 
     public function pdf(AssignmentInspector $assignment_inspector)
     {
+        $name = $assignment_inspector->assignment->reference_number;
+
+        if (empty($name)) {
+            $name = "inspector-assignment";
+        }
+
+        $inspector_name = Str::slug($assignment_inspector->user->name);
+
+        $name = $name . "-{$inspector_name}.pdf";
+
         return Pdf::loadView(
             'pdfs.assignment-form', [
                 'assignment' => $assignment_inspector->assignment,
                 'assignment_inspector' => $assignment_inspector,
             ]
-        )->download("assignment-{$assignment_inspector->assignment->id}.pdf");
+        )->download($name);
     }
 }

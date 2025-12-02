@@ -14,7 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string                           $signature_base64
  * @property Assignment                       $assignment
  * @property User                             $user
- * @property int                            $id
+ * @property int                              $id
+ * @property mixed                            $assignment_id
  */
 class AssignmentInspector extends Model
 {
