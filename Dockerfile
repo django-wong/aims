@@ -14,6 +14,20 @@ RUN docker-php-ext-install pdo pdo_mysql bcmath zip intl xml gd exif opcache
 RUN pecl install xdebug-3.2.1 \
 	&& docker-php-ext-enable xdebug
 
+## Install system deps for ImageMagick and build tools
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    libmagickwand-dev \
+#    libmagickcore-dev \
+#    imagemagick \
+#    pkg-config \
+#    && rm -rf /var/lib/apt/lists/*
+#
+## Install imagick via PECL, then enable it
+#RUN pecl install imagick \
+#    && docker-php-ext-enable imagick
+#
+#RUN apt-get update && apt-get install -y ghostscript
+
 FROM base AS runner
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public

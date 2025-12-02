@@ -36,4 +36,4 @@ Schedule::job(new RemindClientForPendingApprovalTimesheet)->hourly();
  * X is configurable per client, default to 7 days
  * For invoices issued to contract holders, the reminder is sent after 7 days.
  */
-Schedule::job(new RemindForPendingInvoice())->everyMinute();
+Schedule::job(new RemindForPendingInvoice())->daily();

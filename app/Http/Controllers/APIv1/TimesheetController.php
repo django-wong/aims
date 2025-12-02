@@ -12,6 +12,7 @@ use App\Models\Attachment;
 use App\Models\Timesheet;
 use App\Models\UserRole;
 use App\Notifications\TimesheetRejected;
+use App\PDFs\EmptyPDF;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -279,11 +280,19 @@ class TimesheetController extends Controller
         $attachment = $timesheet->attachments()->where('group', 'signed_copy')->latest()->first();
 
         if ($attachment) {
+            if ($attachment->mime_type !== 'application/pdf') {
+                if ($attachment->isEmbeddable()) {
+                    $pdf = new EmptyPDF();
+                    $attachment->onto($pdf);
+                    goto end;
+                }
+            }
             return $attachment->stream();
         }
 
         $pdf = new \App\PDFs\Timesheet($timesheet);
         $pdf->render();
+        end:
         return $pdf->Output("TS-{$timesheet->assignment->purchase_order->title}-ID{$timesheet->id}.pdf", 'I');
     }
 

@@ -84,7 +84,7 @@ export function UploadSignedCopy(props: DialogFormProps) {
                       const file = event.target.files?.[0];
                       field.onChange(file);
                     }}
-                    required accept="application/pdf"
+                    required accept="application/pdf,image/jpeg,image/png"
                   />
                 </VFormField>
               )
