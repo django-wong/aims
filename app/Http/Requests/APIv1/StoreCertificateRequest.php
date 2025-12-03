@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Gate;
 
 class StoreCertificateRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): \Illuminate\Auth\Access\Response
     {
         return Gate::authorize('create', [Certificate::class, User::query()->find($this->input('user_id'))]);
     }

@@ -21,9 +21,16 @@ class UserController extends Controller
     {
         return [
             AllowedFilter::callback('preset', function (Builder $query, $value) {
-                $roles = match ($value) {
-                    'inspectors' => [5],
-                    default => [2, 3, 4, 6, 8]
+
+                switch ($value) {
+                    case 'inspectors':
+                        $query->whereExists(function (QueryBuilder  $query) {
+                            $query->selectRaw(1)->from('inspector_profiles')->whereColumn('inspector_profiles.user_id', 'users.id');
+                        });
+                        return;
+                    default:
+                        $roles = [2, 3, 4, 6, 8];
+                        break;
                 };
 
                 $query->whereExists(function (QueryBuilder  $query) use ($roles) {
@@ -35,6 +42,16 @@ class UserController extends Controller
                         );
                 });
             })->default('users'),
+
+            AllowedFilter::callback('exclude_inspectors', function (Builder $query, $value) {
+                if ($value) {
+                    $query->whereNotExists(function (QueryBuilder  $query) {
+                        $query->selectRaw(1)
+                            ->from('inspector_profiles')
+                            ->whereColumn('inspector_profiles.user_id', 'users.id');
+                    });
+                }
+            }),
 
             AllowedFilter::callback('role', function (Builder $query, $value) {
                 $query->whereExists(function (QueryBuilder $query) use ($value) {

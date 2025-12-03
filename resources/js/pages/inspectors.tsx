@@ -1,20 +1,9 @@
-import { AddressDialog, addressSchema as addressSchema } from '@/pages/projects/address-form';
-import { BreadcrumbItem, DialogFormProps, User } from '@/types';
-import { ColumnDef } from '@tanstack/react-table';
-import TableCellWrapper from '@/components/ui/table-cell-wrapper';
-import { useTable } from '@/hooks/use-table';
-import { useState } from 'react';
-import { useDebouncer } from '@/hooks/use-debounced';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
 import { DataTable, useTableApi } from '@/components/data-table-2';
-import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Circle, LocationEdit, MoreHorizontal, Plus, ScanFace, Trash2Icon } from 'lucide-react';
-import axios from 'axios';
-import { z } from 'zod';
-import { useReactiveForm, useResource } from '@/hooks/use-form';
+import { DatePicker } from '@/components/date-picker';
+import { DialogInnerContent } from '@/components/dialog-inner-content';
+import { VisibleToStaffAndAbove } from '@/components/hide-from-client';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogClose,
@@ -25,17 +14,35 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogInnerContent } from '@/components/dialog-inner-content';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Form, FormField } from '@/components/ui/form';
-import { VFormField } from '@/components/vform';
-import { useExternalState } from '@/hooks/use-external-state';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import TableCellWrapper from '@/components/ui/table-cell-wrapper';
 import { Textarea } from '@/components/ui/textarea';
-import { DatePicker } from '@/components/date-picker';
+import { StaffSelect } from '@/components/user-select';
+import { VFormField } from '@/components/vform';
+import { useDebouncer } from '@/hooks/use-debounced';
+import { useExternalState } from '@/hooks/use-external-state';
+import { useReactiveForm, useResource } from '@/hooks/use-form';
+import { useTable } from '@/hooks/use-table';
+import AppLayout from '@/layouts/app-layout';
+import { AddressDialog, addressSchema } from '@/pages/projects/address-form';
+import { Address, BreadcrumbItem, DialogFormProps, InspectorProfile, User } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
+import axios from 'axios';
 import dayjs from 'dayjs';
-import { VisibleToStaffAndAbove } from '@/components/hide-from-client';
+import { Circle, LocationEdit, MoreHorizontal, Plus, ScanFace, Trash2Icon } from 'lucide-react';
+import { useState } from 'react';
+import { z } from 'zod';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -48,11 +55,15 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-const columns: ColumnDef<User>[] = [
+const columns: ColumnDef<InspectorProfile & User & Address>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <Link className={'underline'} href={`/inspectors/${row.original.id}/edit`}>{row.original.name}</Link>,
+    cell: ({ row }) => (
+      <Link className={'underline'} href={`/inspectors/${row.original.user_id}/edit`}>
+        {row.original.name}
+      </Link>
+    ),
   },
   {
     accessorKey: 'email',
@@ -66,55 +77,49 @@ const columns: ColumnDef<User>[] = [
   },
   // hourly rate
   {
-    accessorKey: 'inspector_profile.hourly_rate',
+    accessorKey: 'hourly_rate',
     header: 'Hourly Rate',
-    cell: ({ row }) => <span>{row.original.inspector_profile?.hourly_rate != null ? `$${row.original.inspector_profile?.hourly_rate}` : 'N/A'}</span>,
+    cell: ({ row }) => <span>{row.original.hourly_rate != null ? `$${row.original.hourly_rate}` : 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.travel_rate',
+    accessorKey: 'travel_rate',
     header: 'Travel Rate',
-    cell: ({ row }) => <span>{row.original.inspector_profile?.travel_rate != null ? `$${row.original.inspector_profile?.travel_rate}` : 'N/A'}</span>,
+    cell: ({ row }) => <span>{row.original.travel_rate != null ? `$${row.original.travel_rate}` : 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.new_hourly_rate',
-    header: 'Hourly Rate',
-    cell: ({ row }) => (
-      <span>{row.original.inspector_profile?.new_hourly_rate != null ? `$${row.original.inspector_profile?.new_hourly_rate}` : 'N/A'}</span>
-    ),
+    accessorKey: 'new_hourly_rate',
+    header: 'New Hourly Rate',
+    cell: ({ row }) => <span>{row.original.new_hourly_rate != null ? `$${row.original.new_hourly_rate}` : 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.new_travel_rate',
-    header: 'Travel Rate',
-    cell: ({ row }) => (
-      <span>{row.original.inspector_profile?.new_travel_rate != null ? `$${row.original.inspector_profile?.new_travel_rate}` : 'N/A'}</span>
-    ),
+    accessorKey: 'new_travel_rate',
+    header: 'New Travel Rate',
+    cell: ({ row }) => <span>{row.original.new_travel_rate != null ? `$${row.original.new_travel_rate}` : 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.new_rate_effective_date',
+    accessorKey: 'new_rate_effective_date',
     header: 'New Rate Effective Date',
-    cell: ({ row }) => <span>{row.original.inspector_profile?.new_rate_effective_date ?? 'N/A'}</span>,
+    cell: ({ row }) => <span>{row.original.new_rate_effective_date ?? 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.assigned_identifier',
+    accessorKey: 'assigned_identifier',
     header: 'Assigned ID',
-    cell: ({ row }) => <span>{row.original.inspector_profile?.assigned_identifier ?? 'N/A'}</span>,
+    cell: ({ row }) => <span>{row.original.assigned_identifier ?? 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.initials',
+    accessorKey: 'initials',
     header: 'Initials',
-    cell: ({ row }) => <span>{row.original.inspector_profile?.initials ?? 'N/A'}</span>,
+    cell: ({ row }) => <span>{row.original.initials ?? 'N/A'}</span>,
   },
   {
-    accessorKey: 'inspector_profile.include_on_skills_matrix',
+    accessorKey: 'include_on_skills_matrix',
     header: 'On Skills Matrix',
-    cell: ({ row }) => (
-      <span>{row.original.inspector_profile?.include_on_skills_matrix ? 'Yes' : 'No'}</span>
-    ),
+    cell: ({ row }) => <span>{row.original.include_on_skills_matrix ? 'Yes' : 'No'}</span>,
   },
   {
     accessorKey: 'address',
     header: 'Address',
-    cell: ({ row }) => <span>{row.original.address?.full_address ?? 'N/A'}</span>,
+    cell: ({ row }) => <span>{row.original.full_address ?? 'N/A'}</span>,
   },
   {
     accessorKey: 'Actions',
@@ -128,12 +133,10 @@ const columns: ColumnDef<User>[] = [
 ];
 
 export default function Inspectors() {
-  const table = useTable('/api/v1/users', {
+  const table = useTable<InspectorProfile & User & Address>('/api/v1/inspector-profiles', {
     columns: columns,
     defaultParams: {
-      'filter[preset]': 'inspectors',
-      'sort': 'name',
-      'include': 'inspector_profile,address'
+      sort: 'name',
     },
   });
 
@@ -142,8 +145,7 @@ export default function Inspectors() {
   const debouncer = useDebouncer();
 
   return (
-    <AppLayout
-      breadcrumbs={breadcrumbs}>
+    <AppLayout breadcrumbs={breadcrumbs}>
       <div className={'px-6'}>
         <DataTable
           left={
@@ -166,9 +168,13 @@ export default function Inspectors() {
           }
           table={table}
           right={
-            <InspectorForm onSubmit={() => {table.reload()}}>
+            <InspectorForm
+              onSubmit={() => {
+                table.reload();
+              }}
+            >
               <Button>
-                <Plus/> New
+                <Plus /> New
               </Button>
             </InspectorForm>
           }
@@ -178,7 +184,7 @@ export default function Inspectors() {
   );
 }
 
-function InspectorActions({ user }: { user: User }) {
+function InspectorActions({ user }: { user: InspectorProfile & User }) {
   // Dropdown menu with Edit and Delete options
   const table = useTableApi();
   return (
@@ -191,7 +197,7 @@ function InspectorActions({ user }: { user: User }) {
       <DropdownMenuContent align={'end'} side={'bottom'} className={'w-56'}>
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <VisibleToStaffAndAbove>
-          <Link href={route('impersonate', { id: user.id })}>
+          <Link href={route('impersonate', { id: user.user_id })}>
             <DropdownMenuItem>
               Impersonate
               <DropdownMenuShortcut>
@@ -200,13 +206,16 @@ function InspectorActions({ user }: { user: User }) {
             </DropdownMenuItem>
           </Link>
         </VisibleToStaffAndAbove>
-        <DropdownMenuItem className="text-destructive" onClick={() => {
-          if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
-            axios.delete(`/api/v1/users/${user.id}`).then(() => {
-              table.reload();
-            });
-          }
-        }}>
+        <DropdownMenuItem
+          className="text-destructive"
+          onClick={() => {
+            if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
+              axios.delete(`/api/v1/inspector-profiles/${user.id}`).then(() => {
+                table.reload();
+              });
+            }
+          }}
+        >
           Delete
           <DropdownMenuShortcut>
             <Trash2Icon />
@@ -220,31 +229,39 @@ function InspectorActions({ user }: { user: User }) {
 const inspector_profile = z.object({
   initials: z.string().nullable().optional(),
   address_id: z.number().nullable().optional(),
-  hourly_rate: z.coerce.number(),
-  travel_rate: z.coerce.number(),
-  new_hourly_rate: z.coerce.number().nullable().optional(),
-  new_travel_rate: z.coerce.number().nullable().optional(),
+  hourly_rate: z.coerce.number().min(1),
+  travel_rate: z.coerce.number().min(1),
+  new_hourly_rate: z.coerce.number().min(1).nullable().optional(),
+  new_travel_rate: z.coerce.number().min(1).nullable().optional(),
   new_rate_effective_date: z.date().or(z.string()).nullable().optional(),
   assigned_identifier: z.string().nullable().optional(),
   include_on_skills_matrix: z.boolean(),
   notes: z.string().nullable().optional(),
 });
 
-const schema = z.object({
-  title: z.string().optional().nullable(),
-  first_name: z.string().min(1, 'First name is required'),
-  last_name: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
-  inspector_profile: inspector_profile,
-  password: z.string().min(8).optional().nullable(),
-  password_confirmation: z.string().optional().nullable(),
-  address: addressSchema.optional().nullable()
-});
-
+const schema = z.union([
+  z.object({
+    for_user_id: z.literal('').nullable().optional(),
+    title: z.string().optional().nullable(),
+    first_name: z.string().min(1, 'First name is required'),
+    last_name: z.string().min(1, 'Last name is required'),
+    email: z.string().email('Invalid email address'),
+    inspector_profile: inspector_profile,
+    password: z.string().min(8).optional().nullable(),
+    password_confirmation: z.string().optional().nullable(),
+    address: addressSchema.optional().nullable(),
+  }),
+  z.object({
+    for_user_id: z.number(),
+    inspector_profile: inspector_profile,
+    address: addressSchema.optional().nullable(),
+  })
+]);
 
 export function InspectorForm(props: DialogFormProps<User>) {
   const form = useReactiveForm<z.infer<typeof schema>, User>({
-    ...useResource<User>('/api/v1/inspectors', {
+    ...useResource<User>('/api/v1/inspector-profiles', {
+      for_user_id: null,
       title: '',
       first_name: '',
       last_name: '',
@@ -253,31 +270,37 @@ export function InspectorForm(props: DialogFormProps<User>) {
         hourly_rate: 0,
         travel_rate: 0,
         include_on_skills_matrix: true,
-        initials: ''
+        initials: '',
       },
-      ...props.value
+      ...props.value,
     }),
     resolver: zodResolver(schema) as any,
   });
 
   const [open, setOpen] = useExternalState<boolean>(props.open ?? false);
 
+  const create_profile_for_existing_user = form.watch('for_user_id');
+  const is_updating = !!props.value;
+
   function save() {
-    form.submit().then(res => {
+    form.submit().then((res) => {
       if (res) {
         props.onOpenChange?.(false);
         setOpen(false);
         props.onSubmit?.(res.data);
       }
-    })
+    });
   }
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(open) => {
-        props.onOpenChange?.(open);
-        setOpen(open);
-      }}>
+      <Dialog
+        open={open}
+        onOpenChange={(open) => {
+          props.onOpenChange?.(open);
+          setOpen(open);
+        }}
+      >
         {props.children && <DialogTrigger asChild>{props.children}</DialogTrigger>}
         <DialogContent>
           <DialogHeader>
@@ -287,57 +310,148 @@ export function InspectorForm(props: DialogFormProps<User>) {
           <DialogInnerContent>
             <div className={'grid grid-cols-12 gap-6'}>
               <Form {...form}>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Title'}>
-                          <Input value={field.value ?? ''} onChange={field.onChange} placeholder={'Mr, Ms, Dr, etc.'} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'title'}
-                  />
-                </div>
-                <div className={'col-span-6'}>
-                  <FormField
-                    render={({ field }) => {
-                      return (
-                        <VFormField required label={'First Name'}>
-                          <Input value={field.value} onChange={field.onChange} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'first_name'}
-                  />
-                </div>
-                <div className={'col-span-6'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField required label={'Last Name'}>
-                          <Input value={field.value} onChange={field.onChange} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'last_name'}
-                  />
-                </div>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField required label={'Email'}>
-                          <Input autoComplete={'email'} placeholder={'example@mail.com'} type={'email'} value={field.value} onChange={field.onChange} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'email'}
-                  />
-                </div>
+                {
+                  is_updating ? null : (
+                    <div className={'col-span-12'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <VFormField label={'Existing Staff (Optional)'} description={'Select an existing staff member or create new inspector account with minimal permission.'}>
+                              <StaffSelect params={{
+                                'filter[exclude_inspectors]': '1',
+                              }} onValueChane={field.onChange} value={field.value ? field.value : null} />
+                            </VFormField>
+                          );
+                        }}
+                        name={'for_user_id'}
+                      />
+                    </div>
+                  )
+                }
+
+                {create_profile_for_existing_user ? null : (
+                  <>
+                    <div className={'col-span-12'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <VFormField label={'Title'}>
+                              <Input value={field.value ?? ''} onChange={field.onChange} placeholder={'Mr, Ms, Dr, etc.'} />
+                            </VFormField>
+                          );
+                        }}
+                        name={'title'}
+                      />
+                    </div>
+                    <div className={'col-span-6'}>
+                      <FormField
+                        render={({ field }) => {
+                          return (
+                            <VFormField required label={'First Name'}>
+                              <Input value={field.value} onChange={field.onChange} />
+                            </VFormField>
+                          );
+                        }}
+                        name={'first_name'}
+                      />
+                    </div>
+                    <div className={'col-span-6'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <VFormField required label={'Last Name'}>
+                              <Input value={field.value} onChange={field.onChange} />
+                            </VFormField>
+                          );
+                        }}
+                        name={'last_name'}
+                      />
+                    </div>
+                    <div className={'col-span-12'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <VFormField required label={'Email'}>
+                              <Input
+                                autoComplete={'email'}
+                                placeholder={'example@mail.com'}
+                                type={'email'}
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            </VFormField>
+                          );
+                        }}
+                        name={'email'}
+                      />
+                    </div>
+                    <div className={'col-span-12'}>
+                      <FormField
+                        control={form.control}
+                        name={'address'}
+                        render={({ field }) => {
+                          return (
+                            <VFormField label={'Address'}>
+                              <div className={'border-border bg-background flex items-center gap-2 rounded-md border p-4 shadow-xs'}>
+                                <div className={'flex-1 text-sm'}>
+                                  {field.value?.address_line_1 ? (
+                                    <>
+                                      <p>{field.value?.address_line_1}</p>
+                                      <p>
+                                        {field.value?.city}, {field.value?.state}, {field.value?.zip}, {field.value?.country}
+                                      </p>
+                                    </>
+                                  ) : (
+                                    <p className={'text-muted-foreground'}>No address provided</p>
+                                  )}
+                                </div>
+                                <AddressDialog value={field.value} onChange={field.onChange}>
+                                  <Button variant={'secondary'} size={'sm'}>
+                                    <LocationEdit /> Edit Address
+                                  </Button>
+                                </AddressDialog>
+                              </div>
+                            </VFormField>
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className={'col-span-12'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <VFormField
+                              label={'Password'}
+                              required={!props.value}
+                              description={props.value ? 'Leave blank to keep the current password' : ''}
+                            >
+                              <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
+                            </VFormField>
+                          );
+                        }}
+                        name={'password'}
+                      />
+                    </div>
+                    <div className={'col-span-12'}>
+                      <FormField
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <VFormField label={'Confirm Password'}>
+                              <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
+                            </VFormField>
+                          );
+                        }}
+                        name={'password_confirmation'}
+                      />
+                    </div>
+                  </>
+                )}
                 <div className={'col-span-6'}>
                   <FormField
                     control={form.control}
@@ -447,11 +561,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                     render={({ field }) => {
                       return (
                         <VFormField label={'Initials'}>
-                          <Input
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                            placeholder={''}
-                          />
+                          <Input value={field.value ?? ''} onChange={field.onChange} placeholder={''} />
                         </VFormField>
                       );
                     }}
@@ -464,11 +574,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                     render={({ field }) => {
                       return (
                         <VFormField label={'Assigned ID'}>
-                          <Input
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                            placeholder={''}
-                          />
+                          <Input value={field.value ?? ''} onChange={field.onChange} placeholder={''} />
                         </VFormField>
                       );
                     }}
@@ -482,11 +588,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                     render={({ field }) => {
                       return (
                         <div className={'flex items-center space-x-2'}>
-                          <Checkbox
-                            checked={field.value ?? true}
-                            onCheckedChange={field.onChange}
-                            id={'include_on_skills_matrix'}
-                          />
+                          <Checkbox checked={field.value ?? true} onCheckedChange={field.onChange} id={'include_on_skills_matrix'} />
                           <label htmlFor={'include_on_skills_matrix'} className={'text-sm'}>
                             Include on skills matrix
                           </label>
@@ -494,65 +596,6 @@ export function InspectorForm(props: DialogFormProps<User>) {
                       );
                     }}
                     name={'inspector_profile.include_on_skills_matrix'}
-                  />
-                </div>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    name={'address'}
-                    render={({field}) => {
-                      return (
-                        <VFormField
-                          label={'Address'}
-                        >
-                          <div className={'flex items-center gap-2  p-4 rounded-md border shadow-xs border-border bg-background'}>
-                            <div className={'text-sm flex-1'}>
-                              {field.value?.address_line_1 ? (
-                                <>
-                                  <p>{field.value?.address_line_1}</p>
-                                  <p>
-                                    {field.value?.city}, {field.value?.state}, {field.value?.zip}, {field.value?.country}
-                                  </p>
-                                </>
-                              ) : (
-                                <p className={'text-muted-foreground'}>No address provided</p>
-                              )}
-                            </div>
-                            <AddressDialog value={field.value} onChange={field.onChange}>
-                              <Button variant={'secondary'} size={'sm'}>
-                                <LocationEdit/> Edit Address
-                              </Button>
-                            </AddressDialog>
-                          </div>
-                        </VFormField>
-                      );
-                    }}
-                  />
-                </div>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Password'} required={!props.value} description={props.value ? 'Leave blank to keep the current password' : ''}>
-                          <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'password'}
-                  />
-                </div>
-                <div className={'col-span-12'}>
-                  <FormField
-                    control={form.control}
-                    render={({ field }) => {
-                      return (
-                        <VFormField label={'Confirm Password'}>
-                          <Input autoComplete={'new-password'} type={'password'} value={field.value ?? ''} onChange={field.onChange} />
-                        </VFormField>
-                      );
-                    }}
-                    name={'password_confirmation'}
                   />
                 </div>
 
@@ -584,12 +627,12 @@ export function InspectorForm(props: DialogFormProps<User>) {
               </Button>
             </DialogClose>
             <Button disabled={form.submitDisabled} onClick={save}>
-              {form.formState.isSubmitting ? (<Circle className={'animate-spin'}/>) : null}
+              {form.formState.isSubmitting ? <Circle className={'animate-spin'} /> : null}
               Save
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

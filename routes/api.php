@@ -13,7 +13,7 @@ use App\Http\Controllers\APIv1\CertificateTypeController;
 use App\Http\Controllers\APIv1\ClientController;
 use App\Http\Controllers\APIv1\CommentController;
 use App\Http\Controllers\APIv1\ContactController;
-use App\Http\Controllers\APIv1\InspectorController;
+use App\Http\Controllers\APIv1\InspectorProfileController;
 use App\Http\Controllers\APIv1\MenuController;
 use App\Http\Controllers\APIv1\NotificationOfInspectionController;
 use App\Http\Controllers\APIv1\OrgController;
@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
         'certificate-techniques' => CertificateTechniqueController::class,
         'certificate-levels' => CertificateLevelController::class,
         'comments' => CommentController::class,
-        'inspectors' => InspectorController::class,
+        'inspector-profiles' => InspectorProfileController::class,
         'assignments' => AssignmentController::class,
         'assignment-types' => AssignmentTypeController::class,
         'assignment-inspectors' => AssignmentInspectorController::class,
