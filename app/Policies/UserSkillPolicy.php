@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\InspectorProfile;
 use App\Models\User;
 use App\Models\UserRole;
 use App\Models\UserSkill;
@@ -34,7 +35,7 @@ class UserSkillPolicy
             UserRole::ADMIN,
             UserRole::STAFF,
             UserRole::PM,
-        ]) && $inspector->user_role->role === UserRole::INSPECTOR && $user->org->id === $inspector->org->id;
+        ]) && InspectorProfile::query()->where('user_id', $inspector->id)->exists();
     }
 
     /**

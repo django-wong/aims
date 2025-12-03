@@ -9,12 +9,14 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
+            'for_user_id' => ['nullable', 'exists:users,id'],
+
+            'password' => ['required_without:for_user_id', 'string', 'min:8', 'max:255', 'confirmed'],
 
             'title' => ['string', 'max:255', 'nullable'],
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'first_name' => ['required_without:for_user_id', 'string', 'max:255'],
+            'last_name' => ['required_without:for_user_id', 'string', 'max:255'],
+            'email' => ['required_without:for_user_id', 'string', 'email', 'max:255', 'unique:users,email'],
 
             'inspector_profile' => ['array', 'nullable'],
             'inspector_profile.initials' => ['string', 'max:10', 'nullable'],

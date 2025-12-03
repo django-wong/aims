@@ -18,12 +18,14 @@ class AssignmentController extends Controller
     {
         $assigned = AssignmentInspector::query()->where('assignment_id', $id)->where('user_id', auth()->id())->exists();
 
-        // Redirect to timesheet if user is an inspector for the assignment
-        if ($assigned) {
+        // Redirect to timesheet if user is an inspector and assigned to the assignment
+        if ($assigned && auth()->user()->isRole(UserRole::INSPECTOR)) {
             return to_route('assignments.record', $id);
         }
 
+        // Otherwise, show the edit view with option to record timesheet if assigned
         return inertia('assignments/edit', [
+            'assigned' => $assigned,
             'detail' => AssignmentDetail::query()->find($id),
             'assignment' => Assignment::query()
                 ->with(

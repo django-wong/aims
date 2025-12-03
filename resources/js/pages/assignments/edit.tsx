@@ -41,11 +41,11 @@ import { AssignmentStatusBadge } from '@/pages/assignments/assignment-status-bad
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { useIsClient } from '@/hooks/use-role';
 import { formatCurrency } from '@/lib/helpers';
-import { useState } from 'react';
 
 interface AssignmentEditProps {
   assignment: Assignment;
   detail: AssignmentDetail
+  assigned: boolean;
 }
 
 export default function AssignmentEdit(props: AssignmentEditProps) {
@@ -76,6 +76,13 @@ export default function AssignmentEdit(props: AssignmentEditProps) {
         largeTitle={'View Assignment'}
         pageAction={
           <>
+            {props.assigned ? (
+                <Button variant={'outline'} asChild>
+                  <Link href={route('assignments.record', props.assignment.id)} target={'_blank'}>
+                    <AlarmClockIcon /> Record Your Work
+                  </Link>
+                </Button>
+            ) : null}
             <VisibleToClient>
               <NotificationOfInspectionForm>
                 <Button variant={'outline'}>

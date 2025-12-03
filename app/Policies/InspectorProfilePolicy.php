@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\InspectorProfile;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Auth\Access\Response;
 
 class InspectorProfilePolicy
@@ -27,9 +28,19 @@ class InspectorProfilePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, ?User $for_user = null): bool
     {
-        return false;
+        $allow = $user->isAnyRole([
+            UserRole::ADMIN, UserRole::PM, UserRole::STAFF
+        ]);
+
+        if ($allow && $for_user) {
+            if ($user->user_role->org_id !== $for_user->user_role->org_id) {
+                return false;
+            }
+        }
+
+        return $allow;
     }
 
     /**
@@ -45,6 +56,11 @@ class InspectorProfilePolicy
      */
     public function delete(User $user, InspectorProfile $inspectorProfile): bool
     {
+        if ($user->user_role->org_id === $inspectorProfile->user->user_role->org_id) {
+            return $user->isAnyRole([
+                UserRole::ADMIN
+            ]);
+        }
         return false;
     }
 
