@@ -318,6 +318,13 @@ class TimesheetController extends Controller
 
         $attachment = Attachment::store($request->file('attachment'), $timesheet, 'signed_copy');
 
+        if ($timesheet->status <= Timesheet::APPROVED) {
+            $timesheet->client_approved_at = now();
+            $timesheet->status = Timesheet::CLIENT_APPROVED;
+            $timesheet->save();
+            // TODO: Consider using the ClientApproved status class if needed
+        }
+
         activity()->on($timesheet)
             ->log(
                 'Uploaded signed timesheet copy'

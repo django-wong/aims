@@ -39,28 +39,26 @@ export function UploadSignedCopy(props: DialogFormProps) {
     })
   }
 
-  function remove() {
-    setRemoving(true);
-    axios.delete('/api/v1/timesheets/' + timesheet?.id + '/remove-signed-copy').then(() => {
-      reload();
-      props.onOpenChange?.(false);
-    }).finally(() => {
-      setRemoving(false);
-    })
-  }
+  // function remove() {
+  //   setRemoving(true);
+  //   axios.delete('/api/v1/timesheets/' + timesheet?.id + '/remove-signed-copy').then(() => {
+  //     reload();
+  //     props.onOpenChange?.(false);
+  //   }).finally(() => {
+  //     setRemoving(false);
+  //   })
+  // }
 
   const footer = (
-    <div className={'flex justify-between w-full items-center'}>
-      <Button variant={'destructive'} onClick={remove} disabled={removing}>
-        {removing ? 'Removing...' : 'Remove signed copy'}
-      </Button>
-      <div className={'flex gap-4'}>
-        <DialogClose asChild>
-          <Button variant={'outline'}>Close</Button>
-        </DialogClose>
-        <Button onClick={submit}>Submit</Button>
-      </div>
-    </div>
+    <>
+      {/*<Button variant={'destructive'} onClick={remove} disabled={removing}>*/}
+      {/*  {removing ? 'Removing...' : 'Remove signed copy'}*/}
+      {/*</Button>*/}
+      <DialogClose asChild>
+        <Button variant={'outline'}>Close</Button>
+      </DialogClose>
+      <Button onClick={submit}>Upload and Mark as Approved</Button>
+    </>
   );
   return (
     <DialogWrapper open={props.open} onOpenChange={props.onOpenChange} footer={footer} trigger={null} title={'Upload a signed copy'} description={'This will replace the system generated PDF with your signed copy.'}>
