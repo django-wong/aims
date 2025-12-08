@@ -27,4 +27,6 @@ Route::middleware('auth')->group(function () {
             ]
         );
     })->name('billing');
+
+    Route::get('settings/api-key', fn () => Inertia::render('settings/api-key'))->name('api-key');
 });

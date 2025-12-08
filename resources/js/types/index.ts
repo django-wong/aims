@@ -239,6 +239,8 @@ export enum AssignmentStatus {
   ASSIGNED = 4,
   PARTIAL_ACKED = 5,
   ACKED = 6,
+  OPEN = 7,
+  CLOSED = 8
 }
 
 export interface Assignment extends BaseModel {

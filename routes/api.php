@@ -32,7 +32,7 @@ use App\Http\Controllers\APIv1\UserSkillController;
 use App\Http\Controllers\APIv1\VendorController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('menus', MenuController::class);
 
     Route::get('assignments/next-assignment-number', [AssignmentController::class, 'next_assignment_number']);
@@ -70,8 +70,12 @@ Route::middleware('auth')->group(function () {
     ]);
 
     // Users
-    Route::post('users/{id}/update-role', [UserController::class, 'updateRole'])->name('users.update_role');
-
+    Route::prefix('users')->group(function () {
+        Route::controller(UserController::class)->group(function () {
+            Route::post('{id}/update-role', 'updateRole')->name('users.update_role');
+            Route::post('api-key/generate', 'generateApiKey')->name('users.api-key.generate');
+        });
+    });
     // Assignments
     Route::post('assignments/{id}/notify-inspector', [AssignmentController::class, 'notify'])->name('assignments.notify_inspector');
     Route::get('assignments/{assignment}/pdf', [AssignmentController::class, 'pdf']);
@@ -83,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::get('assignments/{assignment}/inspectors', [
         AssignmentController::class, 'inspectors'
     ])->name('assignments.inspectors');
+    Route::post('assignments/{assignment}/close', [AssignmentController::class, 'close'])->name('assignments.close');
 
     // Timesheets
     Route::post('timesheets/{timesheet}/sign-off', [TimesheetController::class, 'sign_off']);

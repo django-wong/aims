@@ -187,4 +187,17 @@ class UserController extends Controller
             'message' => 'User deleted successfully'
         ]);
     }
+
+    public function generateApiKey(Request $request)
+    {
+        $user = $request->user();
+        $token = $user->createToken('api-token');
+
+        return response()->json([
+            'data' => [
+                'api_key' => $token->plainTextToken
+            ],
+            'message' => 'API key generated successfully'
+        ]);
+    }
 }

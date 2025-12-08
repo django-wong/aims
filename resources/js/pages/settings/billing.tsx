@@ -24,6 +24,14 @@ const schema = z.object({
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
+    title: 'Home',
+    href: '/',
+  },
+  {
+    title: 'Settings',
+    href: '/settings',
+  },
+  {
     title: 'Billing',
     href: '/settings/billing',
   },
