@@ -154,7 +154,7 @@ export interface BaseModel extends Model {
 
 export interface Client extends BaseModel {
   business_name: string;
-  group: string | null;
+  client_group: string | null;
   code: string | null;
   org_id: number;
   user_id: number;
