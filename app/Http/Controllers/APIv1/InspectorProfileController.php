@@ -61,13 +61,10 @@ class InspectorProfileController extends Controller
          * @var \App\Models\User $user
          */
 
-        if ($request->has('for_user_id')) {
-
+        if (! empty($request->input('for_user_id'))) {
             $user = User::query()->find($request->input('for_user_id'));
             Gate::authorize('create', [InspectorProfile::class, $user]);
-
         } else {
-
             $user = User::query()->create($request->validated());
             $user->user_role()->create([
                 'org_id' => $request->user()->user_role->org_id,
@@ -76,7 +73,6 @@ class InspectorProfileController extends Controller
             $user->notify(
                 new AccountCreated($user, $request->input('password'))
             );
-
         }
 
         /**
