@@ -154,7 +154,7 @@ export interface BaseModel extends Model {
 
 export interface Client extends BaseModel {
   business_name: string;
-  group: string | null;
+  client_group: string | null;
   code: string | null;
   org_id: number;
   user_id: number;
@@ -239,6 +239,8 @@ export enum AssignmentStatus {
   ASSIGNED = 4,
   PARTIAL_ACKED = 5,
   ACKED = 6,
+  OPEN = 7,
+  CLOSED = 8
 }
 
 export interface Assignment extends BaseModel {

@@ -27,6 +27,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
               Billing
             </a>
           </FlatTabTrigger>
+          {/*<FlatTabTrigger value={'/settings/api-key'}>*/}
+          {/*  <a href={route('api-key')}>*/}
+          {/*    API KEY*/}
+          {/*  </a>*/}
+          {/*</FlatTabTrigger>*/}
         </FlatTabList>
       </FlatTabs>
 

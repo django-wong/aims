@@ -94,9 +94,9 @@ export default function Clients() {
       cell: ({ row }) => row.original.business_name || 'N/A',
     },
     {
-      accessorKey: 'group',
+      accessorKey: 'client_group',
       header: 'Group',
-      cell: ({ row }) => row.original.group || '',
+      cell: ({ row }) => row.original.client_group || '',
     },
     {
       accessorKey: 'code',

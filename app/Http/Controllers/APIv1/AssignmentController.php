@@ -333,4 +333,16 @@ class AssignmentController extends Controller
 
         return $query->paginate();
     }
+
+    public function close(Assignment $assignment)
+    {
+        $assignment->update([
+            'close_date' => now(),
+            'status' => Assignment::CLOSED,
+        ]);
+
+        return [
+            'message' => 'Assignment closed successfully.',
+        ];
+    }
 }

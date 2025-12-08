@@ -15,7 +15,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import TableCellWrapper from '@/components/ui/table-cell-wrapper';
@@ -25,15 +25,27 @@ import { useTable } from '@/hooks/use-table';
 import AppLayout from '@/layouts/app-layout';
 import { CloseDate } from '@/pages/assignments/close-date';
 import { AssignmentForm } from '@/pages/assignments/form';
-import { Assignment, BreadcrumbItem, Project } from '@/types';
+import { Assignment, AssignmentStatus, BreadcrumbItem, Project } from '@/types';
 import { download } from '@/utils/download-response-as-blob';
 import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { ClipboardTypeIcon, CopyIcon, EllipsisVertical, Eye, Mail, MessageSquare, PencilIcon, PlusIcon, Trash2 } from 'lucide-react';
+import {
+  CheckIcon,
+  ClipboardTypeIcon,
+  CopyIcon,
+  EllipsisVertical,
+  Eye,
+  Mail,
+  MessageSquare,
+  PencilIcon,
+  PlusIcon,
+  Trash2
+} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useReload } from '@/hooks/use-reload';
 
 export const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -86,6 +98,7 @@ interface AssignmentActionsProps {
 export function AssignmentActions({ assignment, ...props }: AssignmentActionsProps) {
   const isClient = useIsClient();
   const table = useTableApi();
+  const reload = useReload();
 
   return (
     <div className={'flex items-center justify-end gap-2'}>
@@ -113,18 +126,6 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {isClient ? (
-              <DropdownMenuItem
-                onClick={() => {
-                  alert('Not available yet');
-                }}
-              >
-                New NOI
-                <DropdownMenuShortcut>
-                  <CopyIcon />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ) : null}
             {props.hideDetails ? null : (
               <DropdownMenuItem
                 onClick={() => {
@@ -162,19 +163,35 @@ export function AssignmentActions({ assignment, ...props }: AssignmentActionsPro
               </>
             )}
             {isClient ? null : (
-              <DropdownMenuItem
-                onClick={() => {
-                  axios.get('/api/v1/assignments/' + assignment.id + '/link').then((response) => {
-                    navigator.clipboard.writeText(response.data['data']);
-                    toast.success('Link copied to clipboard!');
-                  });
-                }}
-              >
-                Copy Link for Inspector
-                <DropdownMenuShortcut>
-                  <CopyIcon />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem
+                  onClick={() => {
+                    axios.get('/api/v1/assignments/' + assignment.id + '/link').then((response) => {
+                      navigator.clipboard.writeText(response.data['data']);
+                      toast.success('Link copied to clipboard!');
+                    });
+                  }}
+                >
+                  Copy Link for Inspector
+                  <DropdownMenuShortcut>
+                    <CopyIcon />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={assignment.status === AssignmentStatus.CLOSED}
+                  variant={'destructive'}
+                  onClick={() => {
+                    axios.post('/api/v1/assignments/' + assignment.id + '/close').then(() => {
+                      reload();
+                    });
+                  }}
+                >
+                  Mark as Closed
+                  <DropdownMenuShortcut>
+                    <CheckIcon/>
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </>
             )}
             {isClient ? null : (
               <DropdownMenuSub>
