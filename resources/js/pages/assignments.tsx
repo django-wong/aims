@@ -381,11 +381,6 @@ export function useAssignmentsTable(options: UseAssignmentsTableOptions = {}) {
       header: 'Coordinating Office',
       cell: ({ row }) => row.original.org?.name ?? '-',
     },
-    {
-      accessorKey: 'equipment_category',
-      header: 'Equipment Category',
-      cell: ({ row }) => row.original.equipment_category?.name ?? '-',
-    },
     // Notes
     {
       accessorKey: 'notes',
