@@ -12,6 +12,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
@@ -37,13 +38,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Auth::macro('isClient', function () {
-            return auth()->user()?->user_role->isAnyOf([UserRole::CLIENT]);
-        });
 
-        Auth::macro('role', function () {
-            return auth()->user()?->user_role;
-        });
+        $guards = Config::get('auth.guards');
+
+        foreach (array_keys($guards) as $guard) {
+            Auth::guard($guard)->macro('isClient', function () {
+                return auth()->user()?->user_role->isAnyOf([UserRole::CLIENT]);
+            });
+
+            Auth::guard($guard)->macro('role', function () {
+                return auth()->user()?->user_role;
+            });
+        }
+
 
         // System admin can do everything
         \Illuminate\Support\Facades\Gate::before(function (User $user, $ability) {
