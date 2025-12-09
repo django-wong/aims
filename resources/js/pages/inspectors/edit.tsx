@@ -1,7 +1,7 @@
 import { PopoverConfirm } from '@/components/popover-confirm';
 import { Button } from '@/components/ui/button';
 import Layout from '@/layouts/app-layout';
-import { BreadcrumbItem, User } from '@/types';
+import { BreadcrumbItem, InspectorProfile } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Trash, UserRoundPen } from 'lucide-react';
@@ -16,7 +16,7 @@ import { UserCertificates } from '@/pages/inspectors/certificates';
 import { Impersonate } from '@/pages/clients/impersonate';
 
 interface InspectorEditProps {
-  inspector: User;
+  inspector: InspectorProfile;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -43,12 +43,13 @@ export default function EditPage(props: InspectorEditProps) {
     <Layout
       pageAction={
         <>
-          <Impersonate userId={props.inspector.id}/>
+          <Impersonate userId={props.inspector.user_id}/>
           <PopoverConfirm
             asChild
             message={'Are you sure to delete this inspector? THis action cannot be undone.'}
             onConfirm={() => {
-              axios.delete(route('users.destroy', { id: props.inspector.id })).then(() => {
+              // TODO: Delete inspector profile first if needed
+              axios.delete(route('users.destroy', { id: props.inspector.user_id })).then(() => {
                 router.visit(route('inspectors'));
               });
             }}
@@ -69,9 +70,9 @@ export default function EditPage(props: InspectorEditProps) {
           </InspectorForm>
         </>
       }
-      breadcrumbs={[...breadcrumbs, { title: props.inspector.name, href: '.' }]}
+      breadcrumbs={[...breadcrumbs, { title: props.inspector.user?.name ?? '', href: '.' }]}
     >
-      <Head title={props.inspector.name} />
+      <Head title={props.inspector.user?.name ?? ''} />
       <TwoColumnLayout73
         left={
           <Tabs value={hash} onValueChange={setHash}>
@@ -80,10 +81,18 @@ export default function EditPage(props: InspectorEditProps) {
               <TabsTrigger value={'certificates'}>Certificates</TabsTrigger>
             </TabsList>
             <TabsContent value={'skills'}>
-              <UserSkills inspector={props.inspector} />
+              {
+                props.inspector.user ? (
+                  <UserSkills user_id={props.inspector.user_id} />
+                ) : null
+              }
             </TabsContent>
             <TabsContent value={'certificates'}>
-              <UserCertificates inspector={props.inspector} />
+              {
+                props.inspector.user ? (
+                  <UserCertificates user_id={props.inspector.user_id} />
+                ) : null
+              }
             </TabsContent>
           </Tabs>
         }
@@ -92,47 +101,47 @@ export default function EditPage(props: InspectorEditProps) {
             <InfoHead>Inspector Profile</InfoHead>
             <div>
               <InfoLine label={'Name'} icon={'user'}>
-                {props.inspector.name}
+                {props.inspector.user?.name}
               </InfoLine>
               <InfoLine label={'Email'} icon={'mail'}>
-                {props.inspector.email}
+                {props.inspector.user?.email}
               </InfoLine>
               <InfoLine label={'Initials'} icon={'type'}>
-                {props.inspector.inspector_profile?.initials ?? 'N/A'}
+                {props.inspector?.initials ?? 'N/A'}
               </InfoLine>
               <InfoLine label={'Assigned ID'} icon={'id-card'}>
-                {props.inspector.inspector_profile?.assigned_identifier ?? 'N/A'}
+                {props.inspector.assigned_identifier ?? 'N/A'}
               </InfoLine>
               <InfoLine label={'Address'} icon={'map-pin'}>
                 {props.inspector.address?.full_address ?? 'N/A'}
               </InfoLine>
               <InfoLine label={'Hourly Rate'} icon={'dollar-sign'}>
-                {props.inspector.inspector_profile?.hourly_rate != null ? `$${props.inspector.inspector_profile.hourly_rate}` : 'N/A'}
+                {props.inspector.hourly_rate != null ? `$${props.inspector.hourly_rate}` : 'N/A'}
               </InfoLine>
               <InfoLine label={'Travel Rate'} icon={'car'}>
-                {props.inspector.inspector_profile?.travel_rate != null ? `$${props.inspector.inspector_profile.travel_rate}` : 'N/A'}
+                {props.inspector?.travel_rate != null ? `$${props.inspector.travel_rate}` : 'N/A'}
               </InfoLine>
-              {(props.inspector.inspector_profile?.new_hourly_rate != null ||
-                props.inspector.inspector_profile?.new_travel_rate != null ||
-                props.inspector.inspector_profile?.new_rate_effective_date != null) && (
+              {(props.inspector?.new_hourly_rate != null ||
+                props.inspector?.new_travel_rate != null ||
+                props.inspector?.new_rate_effective_date != null) && (
                 <>
                   <InfoLine label={'New Hourly Rate'} icon={'trending-up'}>
-                    {props.inspector.inspector_profile?.new_hourly_rate != null ? `$${props.inspector.inspector_profile.new_hourly_rate}` : 'N/A'}
+                    {props.inspector?.new_hourly_rate != null ? `$${props.inspector.new_hourly_rate}` : 'N/A'}
                   </InfoLine>
                   <InfoLine label={'New Travel Rate'} icon={'trending-up'}>
-                    {props.inspector.inspector_profile?.new_travel_rate != null ? `$${props.inspector.inspector_profile.new_travel_rate}` : 'N/A'}
+                    {props.inspector?.new_travel_rate != null ? `$${props.inspector.new_travel_rate}` : 'N/A'}
                   </InfoLine>
                   <InfoLine label={'Effective Date'} icon={'calendar'}>
-                    {props.inspector.inspector_profile?.new_rate_effective_date ?? 'N/A'}
+                    {props.inspector?.new_rate_effective_date ?? 'N/A'}
                   </InfoLine>
                 </>
               )}
               <InfoLine label={'On Skills Matrix'} icon={'check-circle'}>
-                {props.inspector.inspector_profile?.include_on_skills_matrix ? 'Yes' : 'No'}
+                {props.inspector?.include_on_skills_matrix ? 'Yes' : 'No'}
               </InfoLine>
             </div>
             <InfoHead>Notes</InfoHead>
-            <InfoLineValue>{props.inspector.inspector_profile?.notes}</InfoLineValue>
+            <InfoLineValue>{props.inspector?.notes}</InfoLineValue>
           </Info>
         }
       />

@@ -121,14 +121,14 @@ function CertificateActions({ certificate }: { certificate: Certificate }) {
 }
 
 interface UserCertificatesProps {
-  inspector: User;
+  user_id: User['id'];
 }
 
 export function UserCertificates(props: UserCertificatesProps) {
   const table = useTable(`/api/v1/certificates`, {
     columns: certificates_columns,
     defaultParams: {
-      'filter[user_id]': String(props.inspector.id),
+      'filter[user_id]': String(props.user_id),
       include: 'certificate_type,certificate_technique,certificate_level',
       sort: '-created_at',
     },
@@ -161,7 +161,7 @@ export function UserCertificates(props: UserCertificatesProps) {
         }
         table={table}
         right={
-          <CertificateForm value={props.inspector} onSubmit={() => table.reload()} mode="create">
+          <CertificateForm value={{user_id: props.user_id}} onSubmit={() => table.reload()} mode="create">
             <Button>
               <Plus /> Add Certificate
             </Button>
@@ -195,21 +195,21 @@ const schema = z
     },
   );
 
-interface CertificateFormProps extends DialogFormProps<User | Certificate, Certificate> {
+interface CertificateFormProps extends DialogFormProps<z.infer<typeof schema>, Certificate> {
   mode: 'create' | 'edit';
 }
 
 function CertificateForm(props: CertificateFormProps) {
   const isEdit = props.mode === 'edit';
   const certificate = isEdit ? (props.value as Certificate) : null;
-  const user = isEdit ? certificate?.user : (props.value as User);
+  const user_id = props.value?.user_id;
 
   const form = useReactiveForm<z.infer<typeof schema>, Certificate>({
     url: isEdit ? `/api/v1/certificates/${certificate?.id}` : '/api/v1/certificates',
     method: isEdit ? 'PUT' : 'POST',
     defaultValues: isEdit
       ? {
-          user_id: certificate?.user_id,
+          user_id: user_id,
           certificate_type_id: certificate?.certificate_type_id,
           certificate_technique_id: certificate?.certificate_technique_id,
           certificate_level_id: certificate?.certificate_level_id,
@@ -218,7 +218,7 @@ function CertificateForm(props: CertificateFormProps) {
           expires_at: certificate?.expires_at || null,
         }
       : {
-          user_id: user?.id,
+          user_id: user_id,
           certificate_type_id: null,
           certificate_technique_id: null,
           certificate_level_id: null,
@@ -240,7 +240,7 @@ function CertificateForm(props: CertificateFormProps) {
         } else {
           // Reset form for creating another certificate
           form.reset({
-            user_id: user?.id,
+            user_id: user_id,
             certificate_type_id: null,
             certificate_technique_id: null,
             certificate_level_id: null,
