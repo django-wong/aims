@@ -73,14 +73,14 @@ function UserSkillActions({ user_skill }: { user_skill: UserSkill }) {
 }
 
 interface UserSkillsProps {
-  inspector: User;
+  user_id: number;
 }
 
 export function UserSkills(props: UserSkillsProps) {
   const table = useTable(`/api/v1/user-skills`, {
     columns: user_skills_columns,
     defaultParams: {
-      'user_id': String(props.inspector.id),
+      'user_id': String(props.user_id),
       'include': 'skill',
       'sort': 'code',
     },
@@ -110,7 +110,7 @@ export function UserSkills(props: UserSkillsProps) {
         }
         table={table}
         right={
-          <UserSkillForm value={props.inspector} onSubmit={() => table.reload()}>
+          <UserSkillForm value={{user_id: props.user_id}} onSubmit={() => table.reload()}>
             <Button>
               <Plus/> Add Skill
             </Button>
@@ -126,11 +126,11 @@ const schema = z.object({
   user_id: z.number().min(1),
 });
 
-function UserSkillForm(props: DialogFormProps<User, UserSkill>) {
+function UserSkillForm(props: DialogFormProps<z.infer<typeof schema>, UserSkill>) {
   const form = useReactiveForm<z.infer<typeof schema>, UserSkill>({
     url: '/api/v1/user-skills',
     defaultValues: {
-      user_id: props.value?.id
+      user_id: props.value?.user_id
     },
     resolver: zodResolver(schema)
   });

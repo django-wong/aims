@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InspectorProfile;
 use App\Models\User;
 
 class InspectorController
@@ -18,7 +19,7 @@ class InspectorController
 
         return inertia(
             'inspectors/edit', [
-                'inspector' => User::query()->with('inspector_profile', 'address', 'user_role')->findOrFail($id),
+                'inspector' => InspectorProfile::query()->with(['user.user_role', 'address'])->findOrFail($id),
             ]
         );
     }

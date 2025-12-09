@@ -60,7 +60,7 @@ const columns: ColumnDef<InspectorProfile & User & Address>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => (
-      <Link className={'underline'} href={`/inspectors/${row.original.user_id}/edit`}>
+      <Link className={'underline'} href={`/inspectors/${row.original.id}/edit`}>
         {row.original.name}
       </Link>
     ),
@@ -237,24 +237,24 @@ const inspector_profile = z.object({
   assigned_identifier: z.string().nullable().optional(),
   include_on_skills_matrix: z.boolean(),
   notes: z.string().nullable().optional(),
+  address: addressSchema.optional().nullable(),
 });
 
 const schema = z.union([
-  z.object({
+  inspector_profile.extend({
     for_user_id: z.literal('').nullable().optional(),
-    title: z.string().optional().nullable(),
-    first_name: z.string().min(1, 'First name is required'),
-    last_name: z.string().min(1, 'Last name is required'),
-    email: z.string().email('Invalid email address'),
-    inspector_profile: inspector_profile,
-    password: z.string().min(8).optional().nullable(),
-    password_confirmation: z.string().optional().nullable(),
-    address: addressSchema.optional().nullable(),
+    user: z.object({
+      title: z.string().optional().nullable(),
+      first_name: z.string().min(1, 'First name is required'),
+      last_name: z.string().min(1, 'Last name is required'),
+      email: z.string().email('Invalid email address'),
+      password: z.string().min(8).optional().nullable(),
+      password_confirmation: z.string().optional().nullable(),
+    }),
+
   }),
-  z.object({
+  inspector_profile.extend({
     for_user_id: z.number(),
-    inspector_profile: inspector_profile,
-    address: addressSchema.optional().nullable(),
   })
 ]);
 
@@ -262,15 +262,15 @@ export function InspectorForm(props: DialogFormProps<User>) {
   const form = useReactiveForm<z.infer<typeof schema>, User>({
     ...useResource<User>('/api/v1/inspector-profiles', {
       for_user_id: null,
-      title: '',
-      first_name: '',
-      last_name: '',
-      email: '',
-      inspector_profile: {
-        hourly_rate: 0,
-        travel_rate: 0,
-        include_on_skills_matrix: true,
-        initials: '',
+      hourly_rate: 0,
+      travel_rate: 0,
+      include_on_skills_matrix: true,
+      initials: '',
+      user: {
+        title: '',
+        first_name: '',
+        last_name: '',
+        email: '',
       },
       ...props.value,
     }),
@@ -342,7 +342,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                             </VFormField>
                           );
                         }}
-                        name={'title'}
+                        name={'user.title'}
                       />
                     </div>
                     <div className={'col-span-6'}>
@@ -354,7 +354,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                             </VFormField>
                           );
                         }}
-                        name={'first_name'}
+                        name={'user.first_name'}
                       />
                     </div>
                     <div className={'col-span-6'}>
@@ -367,7 +367,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                             </VFormField>
                           );
                         }}
-                        name={'last_name'}
+                        name={'user.last_name'}
                       />
                     </div>
                     <div className={'col-span-12'}>
@@ -386,7 +386,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                             </VFormField>
                           );
                         }}
-                        name={'email'}
+                        name={'user.email'}
                       />
                     </div>
                     <div className={'col-span-12'}>
@@ -434,7 +434,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                             </VFormField>
                           );
                         }}
-                        name={'password'}
+                        name={'user.password'}
                       />
                     </div>
                     <div className={'col-span-12'}>
@@ -447,7 +447,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                             </VFormField>
                           );
                         }}
-                        name={'password_confirmation'}
+                        name={'user.password_confirmation'}
                       />
                     </div>
                   </>
@@ -469,7 +469,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.hourly_rate'}
+                    name={'hourly_rate'}
                   />
                 </div>
 
@@ -490,7 +490,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.travel_rate'}
+                    name={'travel_rate'}
                   />
                 </div>
 
@@ -511,7 +511,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.new_hourly_rate'}
+                    name={'new_hourly_rate'}
                   />
                 </div>
 
@@ -532,7 +532,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.new_travel_rate'}
+                    name={'new_travel_rate'}
                   />
                 </div>
 
@@ -551,7 +551,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.new_rate_effective_date'}
+                    name={'new_rate_effective_date'}
                   />
                 </div>
 
@@ -565,7 +565,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.initials'}
+                    name={'initials'}
                   />
                 </div>
                 <div className={'col-span-6'}>
@@ -578,7 +578,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.assigned_identifier'}
+                    name={'assigned_identifier'}
                   />
                 </div>
 
@@ -595,7 +595,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </div>
                       );
                     }}
-                    name={'inspector_profile.include_on_skills_matrix'}
+                    name={'include_on_skills_matrix'}
                   />
                 </div>
 
@@ -614,7 +614,7 @@ export function InspectorForm(props: DialogFormProps<User>) {
                         </VFormField>
                       );
                     }}
-                    name={'inspector_profile.notes'}
+                    name={'notes'}
                   />
                 </div>
               </Form>

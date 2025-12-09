@@ -87,6 +87,7 @@ export interface UserRole extends BaseModel {
 
 export interface InspectorProfile extends BaseModel {
   user_id: number;
+  user?: User;
   address_id: number | null;
   address?: Address;
   initials: string | null;

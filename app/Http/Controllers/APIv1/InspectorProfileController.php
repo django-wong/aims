@@ -40,7 +40,17 @@ class InspectorProfileController extends Controller
                 'inspector_profiles.*',
                 'users.name as name',
                 'users.email as email',
-                'addresses.*'
+                'addresses.full_address',
+                'addresses.address_line_1',
+                'addresses.address_line_2',
+                'addresses.address_line_3',
+                'addresses.suburb',
+                'addresses.city',
+                'addresses.state',
+                'addresses.zip',
+                'addresses.country',
+                'addresses.latitude',
+                'addresses.longitude',
             ]);
 
         })->paginate();
@@ -48,9 +58,7 @@ class InspectorProfileController extends Controller
 
     protected function allowedSorts()
     {
-        return [
-            'name'
-        ];
+        return ['name'];
     }
 
     public function store(StoreRequest $request)
@@ -65,20 +73,20 @@ class InspectorProfileController extends Controller
             $user = User::query()->find($request->input('for_user_id'));
             Gate::authorize('create', [InspectorProfile::class, $user]);
         } else {
-            $user = User::query()->create($request->validated());
+            $user = User::query()->create($request->validated('user'));
             $user->user_role()->create([
                 'org_id' => $request->user()->user_role->org_id,
                 'role' => UserRole::INSPECTOR,
             ]);
             $user->notify(
-                new AccountCreated($user, $request->input('password'))
+                new AccountCreated($user, $request->input('user.password'))
             );
         }
 
         /**
          * @var \App\Models\InspectorProfile $profile
          */
-        $profile = $user->inspector_profile()->create($request->validated('inspector_profile') ?? []);
+        $profile = $user->inspector_profile()->create($request->validated() ?? []);
 
         if (! empty($request->validated('address'))) {
             $address = $user->address()->create($request->validated('address'));
@@ -97,9 +105,7 @@ class InspectorProfileController extends Controller
 
     public function update(UpdateInspectorRequest $request, InspectorProfile $inspector_profile)
     {
-        if (! empty($request->validated('inspector_profile'))) {
-            $inspector_profile->update($request->validated('inspector_profile'));
-        }
+        $inspector_profile->update($request->validated());
 
         if (! empty($request->validated('address'))) {
             $address = $inspector_profile->address()->updateOrCreate([], $request->validated('address'));
@@ -108,7 +114,9 @@ class InspectorProfileController extends Controller
             }
         }
 
-        $inspector_profile->user->update($request->basic());
+        if (! empty($request->validated('user'))) {
+            $inspector_profile->user->update($request->validated('user'));
+        }
 
         return [
             'data' => $inspector_profile->user->load('inspector_profile', 'user_role'),
