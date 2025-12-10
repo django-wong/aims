@@ -36,8 +36,9 @@ class InvoiceApproved extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
+            ->greeting('Hi ' . $notifiable->name)
+            ->line('The invoice #' . $this->invoice->id . ' has been approved by client.')
+            ->action('View Invoice', route('invoices.edit', $this->invoice->id))
             ->line('Thank you for using our application!');
     }
 
